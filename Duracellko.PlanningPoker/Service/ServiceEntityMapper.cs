@@ -44,11 +44,11 @@ namespace Duracellko.PlanningPoker.Service
 
         private static IConfigurationProvider CreateMapperConfiguration()
         {
-            var result = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.AllMappers());
+            var result = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.Mappers);
 
             result.CreateMap<D.ScrumTeam, ScrumTeam>();
             result.CreateMap<D.Observer, TeamMember>()
-                .ForMember(m => m.Type, mc => mc.ResolveUsing(o => o.GetType().Name));
+                .ForMember(m => m.Type, mc => mc.ResolveUsing((D.Observer o) => o.GetType().Name));
             result.CreateMap<D.Message, Message>()
                 .Include<D.MemberMessage, MemberMessage>()
                 .Include<D.EstimationResultMessage, EstimationResultMessage>()
