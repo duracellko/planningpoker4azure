@@ -1,0 +1,366 @@
+/*
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+*/
+
+body {
+    margin: 20px 0;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    font-size: 9pt;
+    color: #808080;
+}
+
+h1 {
+}
+
+h2, h3, h4, h5, h6 {
+    color: #2582A4;
+}
+
+p, ol {
+    text-align: justify;
+}
+
+strong {
+    font-weight: bold;
+    color: #666666;
+}
+
+a {
+    color: #87A019;
+}
+
+    a:hover {
+        text-decoration: none;
+        color: #2582A4;
+    }
+
+.header {
+    display: block;
+    width: 928px;
+    height: 37px;
+    margin: 0 auto;
+    background: #BECF74 url(images/img01.gif) repeat-x;
+    border-bottom: 3px solid #FFFFFF;
+}
+
+footer, nav, section {
+    display: block;
+}
+
+/* Menu */
+
+.menu {
+    float: left;
+    width: 600px;
+    height: 37px;
+    margin: 0;
+    padding: 0 0 0 10px;
+    list-style: none;
+    background: url(images/img02.gif) no-repeat;
+}
+
+    .menu li {
+        display: inline;
+    }
+
+    .menu a {
+	display: block;
+	float: left;
+	height: 27px;
+	padding: 10px 15px 0px 15px;
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+    .menu a:hover {
+        background: #A4B74C url(images/img04.gif) repeat-x;
+    }
+
+.rightMenu {
+    float: right;
+    width: 10px;
+    height: 37px;
+    margin: 0;
+    padding: 0 0 0 10px;
+    list-style: none;
+    background: url(images/img03.gif) no-repeat right top;
+}
+
+    .rightMenu li {
+        display: inline;
+    }
+
+#userInfoPanel {
+    float: right;
+    height: 37px;
+    margin: 0;
+    padding: 5px 0 0 0;
+    list-style: none;
+}
+
+    #userInfoPanel > li {
+        display: inline;
+    }
+
+        #userInfoPanel > li > span {
+            height: 27px;
+            padding: 10px 5px 0px 5px;
+            font-size: 9pt;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        #userInfoPanel > li a {
+            font-size: 0.9em;
+        }
+
+/* Content */
+
+.content {
+    width: 928px;
+    margin: 0 auto;
+}
+
+.box {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    background: url(images/img07.gif) repeat-x left bottom;
+}
+
+.colOne {
+    float: left;
+    width: 238px;
+    background: url(images/img05.gif) repeat-x;
+}
+
+    .colOne h3 {
+        padding: 0 20px 5px 20px;
+        margin-bottom: 3px;
+        font-size: 9pt;
+    }
+
+    .colOne ul {
+        margin-top: 0;
+        margin-left: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+        list-style: none;
+    }
+
+    .colOne li {
+        padding: 5px 0;
+        border-top: 1px solid #EFEFEF;
+        color: #87A019;
+    }
+
+        .colOne li.first {
+            border: none;
+            padding-top: 0 !important;
+        }
+
+.colTwo {
+    float: right;
+    width: 617px;
+    padding: 30px 40px 0 30px;
+    background: url(images/img09.gif) repeat-x;
+}
+
+    .colTwo h2 {
+        margin-top: 0;
+        font-size: 24px;
+    }
+
+    .colTwo h3 {
+        margin-bottom: 0;
+        font-size: 18px;
+    }
+
+    .colTwo h4 {
+        margin-top: 0;
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    .colTwo .box {
+        margin: 0 -30px 30px -20px;
+        padding: 0 30px 0 20px;
+    }
+
+    .colTwo .bottom {
+        margin: 0 0 20px -20px;
+        padding: 0 0 20px 20px;
+    }
+
+/* Logo */
+
+.logo {
+    height: 150px;
+    background: url(images/img06.gif) no-repeat;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+    .logo h1, .logo h2, .logo a {
+        margin: 0;
+        padding: 0;
+        text-decoration: none;
+        text-align: center;
+        color: #FFFFFF;
+    }
+
+    .logo h1 {
+        padding-top: 18px;
+        font-size: 32px;
+    }
+
+    .logo h2 {
+        margin-top: -5px;
+        font-size: 14px;
+    }
+
+/* Footer */
+
+.footer {
+    clear: both;
+    width: 928px;
+    margin: 0 auto;
+    padding-top: 40px;
+    background: url(images/img11.gif) repeat-x;
+}
+
+    .footer p {
+        margin: 0;
+        text-align: center;
+    }
+
+/* Styles for basic forms
+-----------------------------------------------------------*/
+.field-row {
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
+fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+textarea {
+    min-height: 75px;
+}
+
+.editor-label {
+    display: inline-block;
+    margin: 1em 0 0 0;
+    width: 120px;
+}
+
+.editor-field {
+    margin: 0.5em 0 0 0;
+    width: 220px;
+}
+
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+label.field-validation-error {
+    color: #ff0000;
+    margin-left: 3px;
+}
+
+label.field-validation-valid {
+    display: none;
+}
+
+input.field-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Scrum Master Command */
+
+.scrumMasterCommands ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.scrumMasterCommands il {
+    display: inline-block;
+}
+
+/* Select estimation */
+
+.availableEstimations ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.availableEstimations li {
+    display: inline-block;
+    margin: 4px;
+    width: 74px;
+    height: 105px;
+    font-size: 32pt;
+    background: url(images/cardbg.png) no-repeat center center;
+}
+
+.availableEstimations a {
+    display: block;
+    width: 74px;
+    height: 81px;
+    padding-top: 24px;
+    text-align: center;
+    text-decoration: none;
+}
+
+/* Estimation result */
+
+.estimationResult ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.estimationResult li {
+    display: inline-block;
+    margin: 4px;
+    vertical-align: top;
+}
+
+.estimationResult .estimationItemValue {
+    display: block;
+    width: 74px;
+    height: 81px;
+    padding-top: 24px;
+    background: url(images/cardbg.png) no-repeat center center;
+    text-align: center;
+    font-size: 32pt;
+    color: #87A019;
+}
+
+.estimationResult .estimationItemName {
+    display: block;
+    width: 74px;
+    padding: 3px 0 5px 0;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+}

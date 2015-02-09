@@ -1,0 +1,112 @@
+﻿<div>
+    <div class="header">
+        <ul class="menu">
+            <li><a href="http://planningpoker4azure.codeplex.com/" target="_blank">Planning Poker Website</a></li>
+        </ul>
+        <ul class="rightMenu"></ul>
+        <ul id="userInfoPanel" style="display: none">
+            <li><span data-bind="text: userName"></span></li>
+            <li><span><a href="#disconnect">Disconnect</a></span></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="colOne">
+            <div class="logo">
+                <h1>Scrum Planning Poker</h1>
+            </div>
+            <div id="membersPanel" style="display: none">
+                <div class="box">
+                    <h3>Scrum Master</h3>
+                    <ul data-bind="with: scrumMaster">
+                        <li data-bind="text: name" class="first"></li>
+                    </ul>
+                </div>
+                <div class="box">
+                    <h3>Members</h3>
+                    <ul data-bind="foreach: members">
+                        <li data-bind="text: name, css: { first: $index() == 0 }"></li>
+                    </ul>
+                </div>
+                <div class="box">
+                    <h3>Observers</h3>
+                    <ul data-bind="foreach: observers">
+                        <li data-bind="text: name, css: { first: $index() == 0 }"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="colTwo">
+
+            <div id="createTeamPanel" class="box" style="display: none">
+                <form action="." id="createTeam">
+                    <h3>Create team</h3>
+                    <p class="field-row">
+                        <label for="createTeam$teamName" class="editor-label">Team name:</label>
+                        <input type="text" id="createTeam$teamName" name="teamName" data-bind="value: teamName" class="editor-field required" maxlength="50" />
+                    </p>
+                    <p class="field-row">
+                        <label for="createTeam$scrumMasterName" class="editor-label">Scrum Master name:</label>
+                        <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" data-bind="value: scrumMasterName" class="editor-field required" maxlength="50" />
+                    </p>
+                    <p class="bottom">
+                        <span class="editor-label"></span>
+                        <input type="submit" id="createTeam$Submit" value="Create team" />
+                    </p>
+                </form>
+            </div>
+
+            <div id="joinTeamPanel" class="box" style="display: none">
+                <form action="." id="joinTeam">
+                    <h3>Join team</h3>
+                    <p class="field-row">
+                        <label for="joinTeam$teamName" class="editor-label">Team name:</label>
+                        <input type="text" id="joinTeam$teamName" name="teamName" data-bind="value: teamName" class="editor-field required" maxlength="50" />
+                    </p>
+                    <p class="field-row">
+                        <label for="joinTeam$memberName" class="editor-label">Member name:</label>
+                        <input type="text" id="joinTeam$memberName" name="memberName" data-bind="value: memberName" class="editor-field required" maxlength="50" />
+                    </p>
+                    <p class="field-row">
+                        <label for="joinTeam$asObserver" class="editor-label">As observer only:</label>
+                        <input type="checkbox" id="joinTeam$asObserver" name="asObserver" data-bind="checked: asObserver" />
+                    </p>
+                    <p class="bottom">
+                        <span class="editor-label"></span>
+                        <input type="submit" id="joinTeam$submit" value="Join team" />
+                    </p>
+                </form>
+            </div>
+
+            <div id="pokerDeskPanel" style="display: none">
+                <h2 data-bind="text: name"></h2>
+
+                <div data-bind="visible: canSelectEstimation" class="availableEstimations">
+                    <h3>Pick estimation</h3>
+                    <ul data-bind="foreach: availableEstimations">
+                        <li><a data-bind="text: caption, click: $root.selectEstimation, clickBubble: false" href="#selectEstimation"></a></li>
+                    </ul>
+                </div>
+
+                <div data-bind="visible: isScrumMaster" class="scrumMasterCommands">
+                    <ul>
+                        <li data-bind="visible: canStartEstimation"><a href="#startEstimation">Start estimation</a></li>
+                        <li data-bind="visible: canCancelEstimation"><a href="#cancelEstimation">Cancel estimation</a></li>
+                    </ul>
+                </div>
+
+                <div data-bind="visible: hasEstimationResult" class="estimationResult">
+                    <h3>Selected estimates</h3>
+                    <ul data-bind="foreach: estimationResultItems">
+                        <li>
+                            <span data-bind="text: estimation() != null ? estimation().caption() : ''" class="estimationItemValue"></span>
+                            <span data-bind="text: member() != null ? member().name() : ''" class="estimationItemName"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

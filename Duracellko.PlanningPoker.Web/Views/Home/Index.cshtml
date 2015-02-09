@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Scrum Planning Poker";
+}
+<div class="page">
+    <div id="globalMessagePanel" style="display: none">
+        <p id="globalMessageContainer"></p>
+    </div>
+    <div id="planningPokerContainer" data-serviceurl="@Url.Content("~/Service/PlanningPoker.svc")" data-templateurl="@Url.Action("PlanningPoker")">
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var planningPokerContainer = $("#planningPokerContainer");
+            var planningPoker = new Duracellko.PlanningPoker(planningPokerContainer,
+                planningPokerContainer.attr("data-serviceurl"),
+                planningPokerContainer.attr("data-templateurl"));
+            planningPokerContainer.get(0).planningPoker = planningPoker;
+            planningPoker.initialize();
+        });
+    </script>
+</div>
+<div class="footer">
+    <p>Copyright (c) 2012 Duracellko.net. All rights reserved. Design by <a href="http://www.freecsstemplates.org/" target="_blank">FCT</a>.</p>
+</div>

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Duracellko.PlanningPoker.Domain.Message">
+    <Position X="2" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Message.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MessageType" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.EstimationResult" Collapsed="true">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACIAgAAAAAAAADEQCAEgAAQAAIIAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>EstimationResult.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.EstimationResultMessage">
+    <Position X="0.5" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>EstimationResultMessage.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EstimationResult" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.MemberMessage">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MemberMessage.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Member" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.Observer" Collapsed="true">
+    <Position X="4.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAQAAAAAAAACAAAAQAEAAAAAABEAAAAAAAAgA=</HashCode>
+      <FileName>Observer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Duracellko.PlanningPoker.Domain.MessageType" Collapsed="true">
+    <Position X="6.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEIAAAAAAAEAAAAIAAEAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>MessageType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

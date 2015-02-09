@@ -1,0 +1,63 @@
+﻿// <copyright>
+// Copyright (c) 2012 Rasto Novotny
+// </copyright>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Duracellko.PlanningPoker.Domain
+{
+    /// <summary>
+    /// Type of message that can be sent to Scrum team members or observers.
+    /// </summary>
+    [Serializable]
+    public enum MessageType
+    {
+        /// <summary>
+        /// Empty message that can be ignored. Used to notify member, that he/she should stop waiting for message.
+        /// </summary>
+        Empty,
+
+        /// <summary>
+        /// Message specifies that a new member joined Scrum team.
+        /// </summary>
+        MemberJoined,
+
+        /// <summary>
+        /// Message specifies that a member disconnected from Scrum team.
+        /// </summary>
+        MemberDisconnected,
+
+        /// <summary>
+        /// Message specifies that estimation started and members can pick estimation.
+        /// </summary>
+        EstimationStarted,
+
+        /// <summary>
+        /// Message specifies that estimation ended and all members picked their estimations.
+        /// </summary>
+        EstimationEnded,
+
+        /// <summary>
+        /// Message specifies that estimation was canceled by Scrum master.
+        /// </summary>
+        EstimationCanceled,
+
+        /// <summary>
+        /// Message specifies that a member placed estimation.
+        /// </summary>
+        MemberEstimated,
+
+        /// <summary>
+        /// Message specifies that a member is still active.
+        /// </summary>
+        MemberActivity,
+
+        /// <summary>
+        /// Message specifies that a new Scrum team was created.
+        /// </summary>
+        TeamCreated
+    }
+}

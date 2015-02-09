@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="Duracellko.PlanningPoker.Service.PlanningPokerService" Factory="Duracellko.PlanningPoker.Web.Service.PlanningPokerServiceHostFactory" %>

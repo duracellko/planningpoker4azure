@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Duracellko.PlanningPoker.Domain.Estimation">
+    <Position X="3.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAgAAAAAAA=</HashCode>
+      <FileName>Estimation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.Member">
+    <Position X="3.25" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAACAAAAAgAAA=</HashCode>
+      <FileName>Member.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Estimation" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.Observer">
+    <Position X="0.5" Y="5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAFEAAAAQAAAAAAAACAAAAQBEAAAAAABEAAAAQAAAgA=</HashCode>
+      <FileName>Observer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.ScrumMaster">
+    <Position X="6.5" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ScrumMaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.ScrumTeam">
+    <Position X="3.75" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Observers" Type="Duracellko.PlanningPoker.Domain.Observer" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="1.628" />
+        <Point X="1.375" Y="1.628" />
+        <Point X="1.375" Y="5" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="ScrumMaster" Type="Duracellko.PlanningPoker.Domain.ScrumMaster" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="3" />
+        <Point X="7.375" Y="3" />
+        <Point X="7.375" Y="5" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>CgQMIgEAQIAAAAgAACQAAAQEwgAAGAQAABAEBAAACgA=</HashCode>
+      <FileName>ScrumTeam.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ScrumMaster" />
+      <Property Name="EstimationResult" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Observers" />
+      <Property Name="Members" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Duracellko.PlanningPoker.Domain.EstimationResult">
+    <Position X="8.75" Y="0.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACIAgAAAAAAAADEQCAEgAAQAAIIAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>EstimationResult.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
