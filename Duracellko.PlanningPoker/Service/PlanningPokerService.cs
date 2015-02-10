@@ -438,14 +438,15 @@ namespace Duracellko.PlanningPoker.Service
                         var team = teamLock.Team;
                         var member = team.FindMemberOrObserver(this.MemberName);
 
-                        // Updates last activity on member to record time, when member checked for new messages.
-                        member.UpdateActivity();
-
                         // Removes old messages, which the member has already read, from the member's message queue.
                         while (member.HasMessage && member.Messages.First().Id <= this.LastMessageId)
                         {
                             member.PopMessage();
                         }
+
+                        // Updates last activity on member to record time, when member checked for new messages.
+                        // also notifies to save the team into repository
+                        member.UpdateActivity();
 
                         this.PlanningPoker.GetMessagesAsync(member, this.ProcessMessages);
                     }

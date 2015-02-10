@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using Duracellko.PlanningPoker.Configuration;
+using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Controllers
@@ -23,6 +24,7 @@ namespace Duracellko.PlanningPoker.Controllers
         #region Fields
 
         private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+        private readonly IScrumTeamRepository repository;
 
         #endregion
 
@@ -32,19 +34,21 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
         /// </summary>
         public PlanningPokerController()
-            : this(null, null)
+            : this(null, null, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
+        /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
-        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration)
+        /// <param name="repository">The Scrum teams repository.</param>
+        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository)
         {
             this.DateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
             this.Configuration = configuration ?? new PlanningPokerConfigurationElement();
+            this.repository = repository ?? new EmptyScrumTeamRepository();
         }
 
         #endregion
@@ -103,6 +107,9 @@ namespace Duracellko.PlanningPoker.Controllers
             var teamLock = new object();
             var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
 
+            // loads team from repository and adds it to in-memory collection
+            this.LoadScrumTeam(teamName);
+
             if (!this.scrumTeams.TryAdd(teamName, teamTuple))
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamAlreadyExists, teamName), "teamName");
@@ -129,6 +136,9 @@ namespace Duracellko.PlanningPoker.Controllers
             var teamLock = new object();
             var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
 
+            // loads team from repository and adds it to in-memory collection
+            this.LoadScrumTeam(teamName);
+
             if (!this.scrumTeams.TryAdd(teamName, teamTuple))
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamAlreadyExists, teamName), "teamName");
@@ -153,8 +163,8 @@ namespace Duracellko.PlanningPoker.Controllers
                 throw new ArgumentNullException("teamName");
             }
 
-            Tuple<ScrumTeam, object> teamTuple;
-            if (!this.scrumTeams.TryGetValue(teamName, out teamTuple))
+            Tuple<ScrumTeam, object> teamTuple = this.LoadScrumTeam(teamName);
+            if (teamTuple == null)
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamNotExist, teamName), "teamName");
             }
@@ -186,6 +196,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
             else
             {
+                // not nead to load from repository, because team was already obtained
                 Tuple<ScrumTeam, object> teamTuple;
                 if (!this.scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
                 {
@@ -262,17 +273,73 @@ namespace Duracellko.PlanningPoker.Controllers
         private void ScrumTeamOnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             var team = (ScrumTeam)sender;
+            bool saveTeam = true;
 
             if (e.Message.MessageType == MessageType.MemberDisconnected)
             {
                 if (!team.Members.Any() && !team.Observers.Any())
                 {
+                    saveTeam = false;
                     this.OnTeamRemoved(team);
 
                     Tuple<ScrumTeam, object> teamTuple;
                     this.scrumTeams.TryRemove(team.Name, out teamTuple);
+                    this.repository.DeleteScrumTeam(team.Name);
                 }
             }
+
+            if (saveTeam)
+            {
+                this.SaveScrumTeam(team);
+            }
+        }
+
+        private Tuple<ScrumTeam, object> LoadScrumTeam(string teamName)
+        {
+            Tuple<ScrumTeam, object> result = null;
+            bool retry = true;
+
+            while (retry)
+            {
+                retry = false;
+
+                if (!this.scrumTeams.TryGetValue(teamName, out result))
+                {
+                    result = null;
+
+                    var team = this.repository.LoadScrumTeam(teamName);
+                    if (team != null)
+                    {
+                        if (this.VerifyTeamActive(team))
+                        {
+                            var teamLock = new object();
+                            result = new Tuple<ScrumTeam, object>(team, teamLock);
+                            if (!this.scrumTeams.TryAdd(team.Name, result))
+                            {
+                                result = null;
+                                retry = true;
+                            }
+                        }
+                        else
+                        {
+                            this.repository.DeleteScrumTeam(team.Name);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void SaveScrumTeam(ScrumTeam team)
+        {
+            this.repository.SaveScrumTeam(team);
+        }
+
+        private bool VerifyTeamActive(ScrumTeam team)
+        {
+            team.DisconnectInactiveObservers(this.Configuration.ClientInactivityTimeout);
+            return team.Members.Any() || team.Observers.Any();
         }
 
         #endregion
