@@ -2,10 +2,10 @@
 // Copyright (c) 2012 Rasto Novotny
 // </copyright>
 
-/// <reference path="jquery-1.9.1.js" />
-/// <reference path="jquery-ui-1.10.2.js" />
+/// <reference path="jquery-2.1.3.js" />
+/// <reference path="jquery-ui-1.11.2.js" />
 /// <reference path="jquery.validate.js" />
-/// <reference path="knockout-2.2.1.js" />
+/// <reference path="knockout-3.2.0.js" />
 /// <reference path="jquery.blockUI.js" />
 /// <reference path="JSLINQ.js" />
 
@@ -237,13 +237,9 @@
             if (errorMessage != "") {
                 errorMessage = errorMessage.split("\n", 1)[0];
                 var globalMessagePanel = $("#globalMessagePanel");
+                $("#globalMessageTitle", globalMessagePanel).text("Error");
                 $("#globalMessageContainer", globalMessagePanel).text(errorMessage);
-                globalMessagePanel.dialog({
-                    modal: true,
-                    title: "Error",
-                    resizable: false,
-                    buttons: { "Close": function () { $(this).dialog("close"); } }
-                });
+                globalMessagePanel.modal("show");
             }
         },
         _initializeTemplate: function (data) {
@@ -262,14 +258,24 @@
             $("#membersPanel", t._container).slideUp();
             $("#pokerDeskPanel", t._container).slideUp();
             var createTeamPanel = $("#createTeamPanel", t._container);
-            $("input[type='submit']", createTeamPanel).button();
             createTeamPanel.slideDown();
             ko.applyBindings(t._createTeamViewModel, createTeamPanel.get(0));
             $("form", createTeamPanel)
                 .submit(t, t._createTeamSubmit)
                 .validate({
-                    errorClass: "field-validation-error",
-                    validClass: "field-validation-valid"
+                    errorClass: "has-error has-feedback",
+                    validClass: "",
+                    errorContainer: "#createTeamPanel div.alert-danger",
+                    highlight: function (element, errorClass, validClass) {
+                        $(element).closest(".form-group").removeClass(validClass).addClass(errorClass);
+                    },
+                    unhighlight: function (element, errorClass, validClass) {
+                        $(element).closest(".form-group").removeClass(errorClass).addClass(validClass);
+                    },
+                    showErrors: function (errorMap, errorList) {
+                        $("#createTeamPanel div.alert-danger span").text("Enter required values and try again.");
+                        this.defaultShowErrors();
+                    }
                 });
         },
         _initializeJoinTeam: function () {
@@ -283,14 +289,24 @@
             $("#membersPanel", t._container).slideUp();
             $("#pokerDeskPanel", t._container).slideUp();
             var joinTeamPanel = $("#joinTeamPanel", t._container);
-            $("input[type='submit']", joinTeamPanel).button();
             joinTeamPanel.slideDown();
             ko.applyBindings(t._joinTeamViewModel, joinTeamPanel.get(0));
             $("form", joinTeamPanel)
                 .submit(t, t._joinTeamSubmit)
                 .validate({
-                    errorClass: "field-validation-error",
-                    validClass: "field-validation-valid"
+                    errorClass: "has-error has-feedback",
+                    validClass: "",
+                    errorContainer: "#joinTeamPanel div.alert-danger",
+                    highlight: function (element, errorClass, validClass) {
+                        $(element).closest(".form-group").removeClass(validClass).addClass(errorClass);
+                    },
+                    unhighlight: function (element, errorClass, validClass) {
+                        $(element).closest(".form-group").removeClass(errorClass).addClass(validClass);
+                    },
+                    showErrors: function (errorMap, errorList) {
+                        $("#joinTeamPanel div.alert-danger span").text("Enter required values and try again.");
+                        this.defaultShowErrors();
+                    }
                 });
         },
         _initializePokerDesk: function (st) {
@@ -298,15 +314,15 @@
             $("#createTeamPanel, #joinTeamPanel", t._container).slideUp();
 
             var userInfoPanel = $("#userInfoPanel", t._container);
-            $("a[href='#disconnect']", userInfoPanel).button().click(t, t._disconnectClick);
+            $("a[href='#disconnect']", userInfoPanel).click(t, t._disconnectClick);
             userInfoPanel.show();
 
             var membersPanel = $("#membersPanel", t._container);
             membersPanel.slideDown();
 
             var pokerDeskPanel = $("#pokerDeskPanel", t._container);
-            $("a[href='#startEstimation']", pokerDeskPanel).button().click(t, t._startEstimationClick);
-            $("a[href='#cancelEstimation']", pokerDeskPanel).button().click(t, t._cancelEstimationClick);
+            $("a[href='#startEstimation']", pokerDeskPanel).click(t, t._startEstimationClick);
+            $("a[href='#cancelEstimation']", pokerDeskPanel).click(t, t._cancelEstimationClick);
             pokerDeskPanel.slideDown();
 
             ko.applyBindings(st, pokerDeskPanel.get(0));

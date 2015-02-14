@@ -1,12 +1,27 @@
 ﻿@{
     ViewBag.Title = "Scrum Planning Poker";
 }
-<div class="page">
-    <div id="globalMessagePanel" style="display: none">
-        <p id="globalMessageContainer"></p>
+<div class="pageContent">
+    <div id="globalMessagePanel" class="modal fade" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="globalMessageTitle" class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <p id="globalMessageContainer"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div id="planningPokerContainer" data-serviceurl="@Url.Content("~/Service/PlanningPoker.svc")" data-templateurl="@Url.Action("PlanningPoker")">
     </div>
+
     <script type="text/javascript">
         $(document).ready(function () {
             var planningPokerContainer = $("#planningPokerContainer");
@@ -18,6 +33,9 @@
         });
     </script>
 </div>
-<div class="footer">
-    <p>Copyright (c) 2012 Duracellko.net. All rights reserved. Design by <a href="http://www.freecsstemplates.org/" target="_blank">FCT</a>.</p>
-</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Copyright (c) 2012 Duracellko.net. All rights reserved.</p>
+    </div>
+</footer>
