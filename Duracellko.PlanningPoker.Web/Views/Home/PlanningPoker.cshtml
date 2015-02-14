@@ -1,112 +1,138 @@
-﻿<div>
-    <div class="header">
-        <ul class="menu">
-            <li><a href="http://planningpoker4azure.codeplex.com/" target="_blank">Planning Poker Website</a></li>
-        </ul>
-        <ul class="rightMenu"></ul>
-        <ul id="userInfoPanel" style="display: none">
-            <li><span data-bind="text: userName"></span></li>
-            <li><span><a href="#disconnect">Disconnect</a></span></li>
-        </ul>
-    </div>
-
-    <div class="content">
-        <div class="colOne">
-            <div class="logo">
-                <h1>Scrum Planning Poker</h1>
+﻿<div class="planningPokerContainer">
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://github.com/duracellko/planningpoker4azure" target="_blank">Planning Poker Website</a>
             </div>
-            <div id="membersPanel" style="display: none">
-                <div class="box">
-                    <h3>Scrum Master</h3>
-                    <ul data-bind="with: scrumMaster">
-                        <li data-bind="text: name" class="first"></li>
-                    </ul>
-                </div>
-                <div class="box">
-                    <h3>Members</h3>
-                    <ul data-bind="foreach: members">
-                        <li data-bind="text: name, css: { first: $index() == 0 }"></li>
-                    </ul>
-                </div>
-                <div class="box">
-                    <h3>Observers</h3>
-                    <ul data-bind="foreach: observers">
-                        <li data-bind="text: name, css: { first: $index() == 0 }"></li>
-                    </ul>
+            <div id="navbar" class="collapse navbar-collapse">
+                <div id="userInfoPanel" class="navbar-right" style="display: none">
+                    <p class="navbar-text"><span data-bind="text: userName"></span></p>
+                    <p class="navbar-btn"><a href="#disconnect" class="btn btn-default">Disconnect</a></p>
                 </div>
             </div>
         </div>
-        <div class="colTwo">
+    </nav>
 
-            <div id="createTeamPanel" class="box" style="display: none">
-                <form action="." id="createTeam">
-                    <h3>Create team</h3>
-                    <p class="field-row">
-                        <label for="createTeam$teamName" class="editor-label">Team name:</label>
-                        <input type="text" id="createTeam$teamName" name="teamName" data-bind="value: teamName" class="editor-field required" maxlength="50" />
-                    </p>
-                    <p class="field-row">
-                        <label for="createTeam$scrumMasterName" class="editor-label">Scrum Master name:</label>
-                        <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" data-bind="value: scrumMasterName" class="editor-field required" maxlength="50" />
-                    </p>
-                    <p class="bottom">
-                        <span class="editor-label"></span>
-                        <input type="submit" id="createTeam$Submit" value="Create team" />
-                    </p>
-                </form>
-            </div>
-
-            <div id="joinTeamPanel" class="box" style="display: none">
-                <form action="." id="joinTeam">
-                    <h3>Join team</h3>
-                    <p class="field-row">
-                        <label for="joinTeam$teamName" class="editor-label">Team name:</label>
-                        <input type="text" id="joinTeam$teamName" name="teamName" data-bind="value: teamName" class="editor-field required" maxlength="50" />
-                    </p>
-                    <p class="field-row">
-                        <label for="joinTeam$memberName" class="editor-label">Member name:</label>
-                        <input type="text" id="joinTeam$memberName" name="memberName" data-bind="value: memberName" class="editor-field required" maxlength="50" />
-                    </p>
-                    <p class="field-row">
-                        <label for="joinTeam$asObserver" class="editor-label">As observer only:</label>
-                        <input type="checkbox" id="joinTeam$asObserver" name="asObserver" data-bind="checked: asObserver" />
-                    </p>
-                    <p class="bottom">
-                        <span class="editor-label"></span>
-                        <input type="submit" id="joinTeam$submit" value="Join team" />
-                    </p>
-                </form>
-            </div>
-
-            <div id="pokerDeskPanel" style="display: none">
-                <h2 data-bind="text: name"></h2>
-
-                <div data-bind="visible: canSelectEstimation" class="availableEstimations">
-                    <h3>Pick estimation</h3>
-                    <ul data-bind="foreach: availableEstimations">
-                        <li><a data-bind="text: caption, click: $root.selectEstimation, clickBubble: false" href="#selectEstimation"></a></li>
-                    </ul>
-                </div>
-
-                <div data-bind="visible: isScrumMaster" class="scrumMasterCommands">
-                    <ul>
-                        <li data-bind="visible: canStartEstimation"><a href="#startEstimation">Start estimation</a></li>
-                        <li data-bind="visible: canCancelEstimation"><a href="#cancelEstimation">Cancel estimation</a></li>
-                    </ul>
-                </div>
-
-                <div data-bind="visible: hasEstimationResult" class="estimationResult">
-                    <h3>Selected estimates</h3>
-                    <ul data-bind="foreach: estimationResultItems">
-                        <li>
-                            <span data-bind="text: estimation() != null ? estimation().caption() : ''" class="estimationItemValue"></span>
-                            <span data-bind="text: member() != null ? member().name() : ''" class="estimationItemName"></span>
-                        </li>
-                    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="joinTeamPanel" class="panel panel-primary panel-collapse" style="display: none">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Join team</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-danger" role="alert" style="display: none">
+                            <span></span>
+                        </div>
+                        <form action="." id="joinTeam">
+                            <div class="form-group">
+                                <label for="joinTeam$teamName">Team name:</label>
+                                <input type="text" id="joinTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control required" maxlength="50" />
+                            </div>
+                            <div class="form-group">
+                                <label for="joinTeam$memberName">Member name:</label>
+                                <input type="text" id="joinTeam$memberName" name="memberName" data-bind="value: memberName" class="form-control required" maxlength="50" />
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" data-bind="checked: asObserver" />
+                                    As observer only
+                                </label>
+                            </div>
+                            <input type="submit" id="joinTeam$submit" class="btn btn-primary" value="Join team" />
+                        </form>
+                    </div>
                 </div>
             </div>
 
+            <div class="col-md-6">
+                <div id="createTeamPanel" class="panel panel-primary panel-collapse" style="display: none">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Create team</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-danger" role="alert" style="display: none">
+                            <span></span>
+                        </div>
+                        <form action="." id="createTeam">
+                            <div class="form-group">
+                                <label for="createTeam$teamName">Team name:</label>
+                                <input type="text" id="createTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control required" maxlength="50" />
+                            </div>
+                            <div class="form-group">
+                                <label for="createTeam$scrumMasterName">Scrum Master name:</label>
+                                <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" data-bind="value: scrumMasterName" class="form-control required" maxlength="50" />
+                            </div>
+                            <input type="submit" id="createTeam$Submit" class="btn btn-primary" value="Create team" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div id="membersPanel" style="display: none">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Scrum Master</div>
+                        <ul data-bind="with: scrumMaster" class="list-group">
+                            <li data-bind="text: name" class="list-group-item"></li>
+                        </ul>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Members</div>
+                        <ul data-bind="foreach: members" class="list-group">
+                            <li data-bind="text: name" class="list-group-item"></li>
+                        </ul>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Observers</div>
+                        <ul data-bind="foreach: observers" class="list-group">
+                            <li data-bind="text: name" class="list-group-item"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="pokerDeskPanel" style="display: none">
+                    <h2 data-bind="text: name"></h2>
+
+                    <div data-bind="visible: canSelectEstimation" class="availableEstimations">
+                        <h3>Pick estimation</h3>
+                        <ul data-bind="foreach: availableEstimations">
+                            <li><a data-bind="text: caption, click: $root.selectEstimation, clickBubble: false" href="#selectEstimation"></a></li>
+                        </ul>
+                    </div>
+
+                    <div data-bind="visible: isScrumMaster">
+                        <p>
+                            <span data-bind="visible: canStartEstimation">
+                                <a href="#startEstimation" class="btn btn-default">Start estimation</a>
+                            </span>
+                            <span data-bind="visible: canCancelEstimation">
+                                <a href="#cancelEstimation" class="btn btn-default">Cancel estimation</a>
+                            </span>
+                        </p>
+                    </div>
+
+                    <div data-bind="visible: hasEstimationResult" class="estimationResult">
+                        <h3>Selected estimates</h3>
+                        <ul data-bind="foreach: estimationResultItems">
+                            <li>
+                                <span data-bind="text: estimation() != null ? estimation().caption() : ''" class="estimationItemValue"></span>
+                                <span data-bind="text: member() != null ? member().name() : ''" class="estimationItemName"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
