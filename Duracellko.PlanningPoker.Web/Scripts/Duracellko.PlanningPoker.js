@@ -43,6 +43,9 @@
         this.selectEstimation = function (estimation) {
             self.serviceProvider.selectEstimation.call(self.serviceProvider, estimation);
         };
+        this.kickoffMember = function (member) {
+            self.serviceProvider.kickoffMember.call(self.serviceProvider, member, self);
+        };
     };
     ScrumTeam.prototype = {
         userName: null,
@@ -161,11 +164,7 @@
     };
     Estimation.prototype = {
         value: null,
-        caption: null,
-        selectEstimation: function (estimation) {
-            var t = estimation;
-
-        }
+        caption: null
     }
 
     var EstimationResultItem = function (memberName) {
@@ -461,6 +460,23 @@
             });
         },
         _selectEstimationSuccess: function (data) {
+            // do nothing. just wait for message
+        },
+        kickoffMember: function (member, team) {
+            var t = this._t;
+            var disconnectTeamData = {
+                teamName: team.name(),
+                memberName: member.name()
+            };
+            var url = t._serviceUrl + "/DisconnectTeam?" + $.param(disconnectTeamData);
+            $.ajax({
+                context: t,
+                url: url,
+                dataType: "text",
+                success: t._kickoffMemberSuccess
+            });
+        },
+        _kickoffMemberSuccess: function (data) {
             // do nothing. just wait for message
         },
         _getMessages: function (data) {

@@ -88,13 +88,27 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Members</div>
                         <ul data-bind="foreach: members" class="list-group">
-                            <li data-bind="text: name" class="list-group-item"></li>
+                            <li class="list-group-item">
+                                <span data-bind="text: name"></span>
+                                <a data-bind="click: $root.kickoffMember, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
+                                   class="pull-right text-danger">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    <span class="sr-only">remove</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">Observers</div>
                         <ul data-bind="foreach: observers" class="list-group">
-                            <li data-bind="text: name" class="list-group-item"></li>
+                            <li class="list-group-item">
+                                <span data-bind="text: name"></span>
+                                <a data-bind="click: $root.kickoffMember, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
+                                   class="pull-right text-danger">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    <span class="sr-only">remove</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
