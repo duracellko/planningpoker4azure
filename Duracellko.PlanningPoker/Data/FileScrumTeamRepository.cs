@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Data
@@ -26,6 +27,7 @@ namespace Duracellko.PlanningPoker.Data
         private const string FileExtension = ".team";
 
         private readonly IFileScrumTeamRepositorySettings settings;
+        private readonly IPlanningPokerConfiguration configuration;
         private readonly DateTimeProvider dateTimeProvider;
         private readonly Lazy<string> folder;
         private readonly Lazy<char[]> invalidCharacters;
@@ -35,11 +37,12 @@ namespace Duracellko.PlanningPoker.Data
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileScrumTeamRepository"/> class.
+        /// Initializes a new instance of the <see cref="FileScrumTeamRepository" /> class.
         /// </summary>
         /// <param name="settings">The repository settings.</param>
+        /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="dateTimeProvider">The date-time provider.</param>
-        public FileScrumTeamRepository(IFileScrumTeamRepositorySettings settings, DateTimeProvider dateTimeProvider)
+        public FileScrumTeamRepository(IFileScrumTeamRepositorySettings settings, IPlanningPokerConfiguration configuration, DateTimeProvider dateTimeProvider)
         {
             if (settings == null)
             {
@@ -47,6 +50,7 @@ namespace Duracellko.PlanningPoker.Data
             }
 
             this.settings = settings;
+            this.configuration = configuration ?? new PlanningPokerConfigurationElement();
             this.dateTimeProvider = dateTimeProvider ?? new DateTimeProvider();
             this.folder = new Lazy<string>(this.GetFolder);
             this.invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);
@@ -159,6 +163,33 @@ namespace Duracellko.PlanningPoker.Data
                 catch (IOException)
                 {
                     // ignore, file might be already deleted
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deletes the expired Scrum teams, which were not used for period of expiration time.
+        /// </summary>
+        public void DeleteExpiredScrumTeams()
+        {
+            var expirationTime = this.dateTimeProvider.UtcNow - this.configuration.RepositoryTeamExpiration;
+            var directory = new DirectoryInfo(this.Folder);
+            if (directory.Exists)
+            {
+                var files = directory.GetFiles("*" + FileExtension);
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        if (file.LastWriteTimeUtc < expirationTime)
+                        {
+                            file.Delete();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignore and continue
+                    }
                 }
             }
         }

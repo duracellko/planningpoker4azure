@@ -34,5 +34,10 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         void DeleteScrumTeam(string teamName);
+
+        /// <summary>
+        /// Deletes the expired Scrum teams, which were not used for period of expiration time.
+        /// </summary>
+        void DeleteExpiredScrumTeams();
     }
 }

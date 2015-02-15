@@ -45,5 +45,13 @@ namespace Duracellko.PlanningPoker.Data
         {
             // do nothing
         }
+
+        /// <summary>
+        /// Deletes the expired Scrum teams, which were not used for period of expiration time.
+        /// </summary>
+        public void DeleteExpiredScrumTeams()
+        {
+            // do nothing
+        }
     }
 }

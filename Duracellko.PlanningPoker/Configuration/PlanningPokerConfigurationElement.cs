@@ -61,6 +61,17 @@ namespace Duracellko.PlanningPoker.Configuration
             set { this["repositoryFolder"] = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the time in seconds, after which team (file) is deleted from repository when it is not used.
+        /// </summary>
+        /// <value>The repository file expiration time.</value>
+        [ConfigurationProperty("repositoryTeamExpiration", DefaultValue = 1200)]
+        public int RepositoryTeamExpiration
+        {
+            get { return (int)this["repositoryTeamExpiration"]; }
+            set { this["repositoryTeamExpiration"] = value; }
+        }
+
         #region IPlanningPokerConfiguration
 
         TimeSpan IPlanningPokerConfiguration.ClientInactivityTimeout
@@ -76,6 +87,11 @@ namespace Duracellko.PlanningPoker.Configuration
         TimeSpan IPlanningPokerConfiguration.WaitForMessageTimeout
         {
             get { return TimeSpan.FromSeconds(this.WaitForMessageTimeout); }
+        }
+
+        TimeSpan IPlanningPokerConfiguration.RepositoryTeamExpiration
+        {
+            get { return TimeSpan.FromSeconds(this.RepositoryTeamExpiration); }
         }
 
         #endregion

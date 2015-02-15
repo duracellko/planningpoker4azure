@@ -15,6 +15,7 @@ using System.Web.Routing;
 using Duracellko.PlanningPoker.Azure;
 #endif
 using Duracellko.PlanningPoker.Configuration;
+using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.Practices.Unity;
 
@@ -28,7 +29,7 @@ namespace Duracellko.PlanningPoker.Web
     {
         #region Fields
 
-        private Timer disconnectInactiveMembersTimer;
+        private Timer cleanupTimer;
 
         #endregion
 
@@ -57,10 +58,10 @@ namespace Duracellko.PlanningPoker.Web
         /// </summary>
         protected void Application_End()
         {
-            if (this.disconnectInactiveMembersTimer != null)
+            if (this.cleanupTimer != null)
             {
-                this.disconnectInactiveMembersTimer.Dispose();
-                this.disconnectInactiveMembersTimer = null;
+                this.cleanupTimer.Dispose();
+                this.cleanupTimer = null;
             }
 
             ServiceContainer.Container.Dispose();
@@ -85,19 +86,44 @@ namespace Duracellko.PlanningPoker.Web
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional }); // Parameter defaults
         }
 
-        private static void DisconnectInactiveMembersTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private static void CleanupTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            ServiceContainer.Container.Resolve<IPlanningPoker>().DisconnectInactiveObservers();
+            DisconnectInactiveMembers();
+            DeleteExpiredScrumTeams();
+        }
+
+        private static void DisconnectInactiveMembers()
+        {
+            try
+            {
+                ServiceContainer.Container.Resolve<IPlanningPoker>().DisconnectInactiveObservers();
+            }
+            catch (Exception)
+            {
+                // ignore and try next time
+            }
+        }
+
+        private static void DeleteExpiredScrumTeams()
+        {
+            try
+            {
+                ServiceContainer.Container.Resolve<IScrumTeamRepository>().DeleteExpiredScrumTeams();
+            }
+            catch (Exception)
+            {
+                // ignore and try next time
+            }
         }
 
         private void StartTimer()
         {
             var configuration = (PlanningPokerConfigurationElement)ConfigurationManager.GetSection("planningPoker");
-            var timerInterval = configuration != null ? configuration.ClientInactivityCheckInterval : 30;
+            var timerInterval = configuration != null ? configuration.ClientInactivityCheckInterval : 60;
 
-            this.disconnectInactiveMembersTimer = new Timer(timerInterval * 1000);
-            this.disconnectInactiveMembersTimer.Elapsed += new ElapsedEventHandler(DisconnectInactiveMembersTimerOnElapsed);
-            this.disconnectInactiveMembersTimer.Start();
+            this.cleanupTimer = new Timer(timerInterval * 1000);
+            this.cleanupTimer.Elapsed += new ElapsedEventHandler(CleanupTimerOnElapsed);
+            this.cleanupTimer.Start();
         }
 
         #endregion
