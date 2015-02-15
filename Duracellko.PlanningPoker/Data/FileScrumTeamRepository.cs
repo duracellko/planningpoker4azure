@@ -79,6 +79,33 @@ namespace Duracellko.PlanningPoker.Data
         #region IScrumTeamRepository
 
         /// <summary>
+        /// Gets a collection of Scrum team names.
+        /// </summary>
+        public IEnumerable<string> ScrumTeamNames
+        {
+            get
+            {
+                var expirationTime = this.dateTimeProvider.UtcNow - this.configuration.RepositoryTeamExpiration;
+                var directory = new DirectoryInfo(this.Folder);
+                if (directory.Exists)
+                {
+                    var files = directory.GetFiles("*" + FileExtension);
+                    foreach (var file in files)
+                    {
+                        if (file.LastWriteTimeUtc >= expirationTime)
+                        {
+                            var teamName = this.GetScrumTeamName(file.Name);
+                            if (teamName != null)
+                            {
+                                yield return teamName;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Loads the Scrum team from repository.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
@@ -194,6 +221,29 @@ namespace Duracellko.PlanningPoker.Data
             }
         }
 
+        /// <summary>
+        /// Deletes all Scrum teams.
+        /// </summary>
+        public void DeleteAll()
+        {
+            var directory = new DirectoryInfo(this.Folder);
+            if (directory.Exists)
+            {
+                var files = directory.GetFiles("*" + FileExtension);
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception)
+                    {
+                        // ignore and continue
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Private methods
@@ -243,6 +293,50 @@ namespace Duracellko.PlanningPoker.Data
             }
 
             result.Append(FileExtension);
+            return result.ToString();
+        }
+
+        private string GetScrumTeamName(string filename)
+        {
+            var name = Path.GetFileNameWithoutExtension(filename);
+
+            var result = new StringBuilder(name.Length);
+            int specialPosition = 0;
+            for (int i = 0; i < name.Length; i++)
+            {
+                char c = name[i];
+                if (specialPosition == 0)
+                {
+                    if (c == SpecialCharacter)
+                    {
+                        if (name.Length <= i + 5)
+                        {
+                            return null;
+                        }
+
+                        int special = 0;
+                        if (int.TryParse(name.Substring(i + 1, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out special))
+                        {
+                            result.Append((char)special);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+
+                        specialPosition = 4;
+                    }
+                    else
+                    {
+                        result.Append(c);
+                    }
+                }
+                else
+                {
+                    specialPosition--;
+                }
+            }
+
             return result.ToString();
         }
 

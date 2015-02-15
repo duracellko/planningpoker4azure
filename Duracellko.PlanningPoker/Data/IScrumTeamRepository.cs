@@ -17,6 +17,11 @@ namespace Duracellko.PlanningPoker.Data
     public interface IScrumTeamRepository
     {
         /// <summary>
+        /// Gets a collection of Scrum team names.
+        /// </summary>
+        IEnumerable<string> ScrumTeamNames { get; }
+
+        /// <summary>
         /// Loads the Scrum team from repository.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
@@ -39,5 +44,10 @@ namespace Duracellko.PlanningPoker.Data
         /// Deletes the expired Scrum teams, which were not used for period of expiration time.
         /// </summary>
         void DeleteExpiredScrumTeams();
+
+        /// <summary>
+        /// Deletes all Scrum teams.
+        /// </summary>
+        void DeleteAll();
     }
 }

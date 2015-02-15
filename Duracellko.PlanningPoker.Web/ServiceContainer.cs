@@ -11,6 +11,7 @@ using System.Web;
 #if AZURE
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
+using Duracellko.PlanningPoker.Azure.Data;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 #endif
 using Duracellko.PlanningPoker.Configuration;
@@ -54,6 +55,8 @@ namespace Duracellko.PlanningPoker.Web
                 container.RegisterType<IAzurePlanningPoker, AzurePlanningPokerController>(new ContainerControlledLifetimeManager());
                 container.RegisterType<PlanningPokerAzureNode>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IPlanningPokerService, PlanningPokerService>();
+                container.RegisterType<IScrumTeamRepository, FileScrumTeamRepository>();
+                container.RegisterType<IFileScrumTeamRepositorySettings, AzureScrumTeamRepositorySettings>();
                 container.RegisterType<IServiceBehavior, NoCacheServiceBehavior>("NoCacheServiceBehavior");
                 container.RegisterType<IServiceBus, AzureServiceBus>();
                 container.RegisterType<IMessageConverter, MessageConverter>();
@@ -65,6 +68,7 @@ namespace Duracellko.PlanningPoker.Web
                 }
 
                 container.RegisterInstance<IAzurePlanningPokerConfiguration>(configuration);
+                container.RegisterInstance<IPlanningPokerConfiguration>(configuration);
 #else
                 container.RegisterType<IPlanningPoker, PlanningPokerController>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IPlanningPokerService, PlanningPokerService>();

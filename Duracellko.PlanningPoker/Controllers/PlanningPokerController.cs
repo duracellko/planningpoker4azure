@@ -24,7 +24,6 @@ namespace Duracellko.PlanningPoker.Controllers
         #region Fields
 
         private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
-        private readonly IScrumTeamRepository repository;
 
         #endregion
 
@@ -48,7 +47,7 @@ namespace Duracellko.PlanningPoker.Controllers
         {
             this.DateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
             this.Configuration = configuration ?? new PlanningPokerConfigurationElement();
-            this.repository = repository ?? new EmptyScrumTeamRepository();
+            this.Repository = repository ?? new EmptyScrumTeamRepository();
         }
 
         #endregion
@@ -67,6 +66,15 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <value>The configuration.</value>
         public IPlanningPokerConfiguration Configuration { get; private set; }
 
+        /// <summary>
+        /// Gets the team repository.
+        /// </summary>
+        /// <value>
+        /// The team repository.
+        /// </value>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1202:ElementsMustBeOrderedByAccess", Justification = "Properties in interface implementation.")]
+        protected IScrumTeamRepository Repository { get; private set; }
+
         #endregion
 
         #region IPlanningPoker
@@ -78,7 +86,8 @@ namespace Duracellko.PlanningPoker.Controllers
         {
             get
             {
-                return this.scrumTeams.ToArray().Select(p => p.Key);
+                return this.scrumTeams.ToArray().Select(p => p.Key)
+                    .Union(this.Repository.ScrumTeamNames.ToArray(), StringComparer.OrdinalIgnoreCase).ToArray();
             }
         }
 
@@ -284,7 +293,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
                     Tuple<ScrumTeam, object> teamTuple;
                     this.scrumTeams.TryRemove(team.Name, out teamTuple);
-                    this.repository.DeleteScrumTeam(team.Name);
+                    this.Repository.DeleteScrumTeam(team.Name);
                 }
             }
 
@@ -307,7 +316,7 @@ namespace Duracellko.PlanningPoker.Controllers
                 {
                     result = null;
 
-                    var team = this.repository.LoadScrumTeam(teamName);
+                    var team = this.Repository.LoadScrumTeam(teamName);
                     if (team != null)
                     {
                         if (this.VerifyTeamActive(team))
@@ -322,7 +331,7 @@ namespace Duracellko.PlanningPoker.Controllers
                         }
                         else
                         {
-                            this.repository.DeleteScrumTeam(team.Name);
+                            this.Repository.DeleteScrumTeam(team.Name);
                         }
                     }
                 }
@@ -333,7 +342,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
         private void SaveScrumTeam(ScrumTeam team)
         {
-            this.repository.SaveScrumTeam(team);
+            this.Repository.SaveScrumTeam(team);
         }
 
         private bool VerifyTeamActive(ScrumTeam team)

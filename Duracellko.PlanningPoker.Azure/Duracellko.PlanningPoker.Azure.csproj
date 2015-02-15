@@ -49,6 +49,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -80,7 +81,9 @@
     <Compile Include="AzurePlanningPokerController.cs" />
     <Compile Include="Configuration\AzurePlanningPokerConfigurationElement.cs" />
     <Compile Include="Configuration\IAzurePlanningPokerConfiguration.cs" />
+    <Compile Include="Data\AzureScrumTeamRepositorySettings.cs" />
     <Compile Include="IAzurePlanningPoker.cs" />
+    <Compile Include="InitializationList.cs" />
     <Compile Include="NodeMessage.cs" />
     <Compile Include="NodeMessageType.cs" />
     <Compile Include="PlanningPokerAzureNode.cs" />

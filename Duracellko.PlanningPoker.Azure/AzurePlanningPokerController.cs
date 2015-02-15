@@ -13,6 +13,7 @@ using System.Text;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
+using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -47,8 +48,9 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
-        public AzurePlanningPokerController(DateTimeProvider dateTimeProvider, IAzurePlanningPokerConfiguration configuration)
-            : base(dateTimeProvider, configuration)
+        /// <param name="repository">The Scrum teams repository.</param>
+        public AzurePlanningPokerController(DateTimeProvider dateTimeProvider, IAzurePlanningPokerConfiguration configuration, IScrumTeamRepository repository)
+            : base(dateTimeProvider, configuration, repository)
         {
         }
 
@@ -77,7 +79,11 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 lock (this.teamsToInitializeLock)
                 {
-                    this.teamsToInitialize = new HashSet<string>(teamNames, StringComparer.OrdinalIgnoreCase);
+                    if (!this.initialized)
+                    {
+                        this.Repository.DeleteAll();
+                        this.teamsToInitialize = new HashSet<string>(teamNames, StringComparer.OrdinalIgnoreCase);
+                    }
                 }
             }
         }
@@ -101,10 +107,13 @@ namespace Duracellko.PlanningPoker.Azure
 
                 lock (this.teamsToInitializeLock)
                 {
-                    this.teamsToInitialize.Remove(team.Name);
-                    if (this.teamsToInitialize.Count == 0)
+                    if (!this.initialized)
                     {
-                        this.initialized = true;
+                        this.teamsToInitialize.Remove(team.Name);
+                        if (this.teamsToInitialize.Count == 0)
+                        {
+                            this.initialized = true;
+                        }
                     }
                 }
             }
@@ -115,9 +124,9 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         public void EndInitialization()
         {
-            this.initialized = true;
             lock (this.teamsToInitializeLock)
             {
+                this.initialized = true;
                 this.teamsToInitialize = null;
             }
         }

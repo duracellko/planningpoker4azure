@@ -23,6 +23,8 @@ namespace Duracellko.PlanningPoker.Azure
     {
         #region Fields
 
+        private readonly InitializationList teamsToInitialize = new InitializationList();
+
         private IDisposable sendNodeMessageSubscription;
         private IDisposable serviceBusScrumTeamMessageSubscription;
         private IDisposable serviceBusTeamCreatedMessageSubscription;
@@ -30,7 +32,6 @@ namespace Duracellko.PlanningPoker.Azure
         private IDisposable serviceBusRequestTeamsMessageSubscription;
 
         private volatile string processingScrumTeamName;
-        private List<string> teamsToInitialize;
 
         #endregion
 
@@ -238,7 +239,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessTeamMessage(ScrumTeamMessage message)
         {
-            if (this.teamsToInitialize != null && !this.teamsToInitialize.Contains(message.TeamName, StringComparer.OrdinalIgnoreCase))
+            if (!this.teamsToInitialize.ContainsOrNotInit(message.TeamName))
             {
                 switch (message.MessageType)
                 {
@@ -386,7 +387,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void RequestTeamList()
         {
-            if (this.teamsToInitialize == null || this.teamsToInitialize.Count > 0)
+            if (!this.teamsToInitialize.IsEmpty)
             {
                 var serviceBusMessages = this.ServiceBus.ObservableMessages.Where(m => !string.Equals(m.SenderNodeId, this.NodeId, StringComparison.OrdinalIgnoreCase));
                 var teamListActions = serviceBusMessages.Where(m => m.MessageType == NodeMessageType.TeamList).Take(1)
@@ -407,10 +408,9 @@ namespace Duracellko.PlanningPoker.Azure
             if (message != null)
             {
                 var teamList = (IEnumerable<string>)message.Data;
-                if (this.teamsToInitialize == null)
+                if (this.teamsToInitialize.Setup(teamList))
                 {
-                    this.teamsToInitialize = teamList.ToList();
-                    this.PlanningPoker.SetTeamsInitializingList(this.teamsToInitialize);
+                    this.PlanningPoker.SetTeamsInitializingList(teamList);
                 }
 
                 this.RequestTeams(message.SenderNodeId);
@@ -423,7 +423,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void RequestTeams(string recipientId)
         {
-            if (this.teamsToInitialize.Count == 0)
+            if (this.teamsToInitialize.IsEmpty)
             {
                 this.EndInitialization();
             }
@@ -436,7 +436,7 @@ namespace Duracellko.PlanningPoker.Azure
                 var lastMessageTime = this.PlanningPoker.DateTimeProvider.UtcNow;
 
                 var initTeamActions = serviceBusMessages.Where(m => m.MessageType == NodeMessageType.InitializeTeam)
-                    .TakeWhile(m => this.teamsToInitialize.Count > 0)
+                    .TakeWhile(m => !this.teamsToInitialize.IsEmpty)
                     .Select(m => new Action(() => { lastMessageTime = this.PlanningPoker.DateTimeProvider.UtcNow; this.ProcessInitializeTeamMessage(m); }));
                 var messageTimeoutActions = Observable.Interval(TimeSpan.FromSeconds(1.0)).Synchronize(lockObject)
                     .SelectMany(i => lastMessageTime + this.Configuration.InitializationMessageTimeout > this.PlanningPoker.DateTimeProvider.UtcNow ? Observable.Throw<Action>(new TimeoutException()) : Observable.Empty<Action>());
@@ -447,7 +447,7 @@ namespace Duracellko.PlanningPoker.Azure
                 var requestTeamsMessage = new NodeMessage(NodeMessageType.RequestTeams)
                 {
                     RecipientNodeId = recipientId,
-                    Data = this.teamsToInitialize.ToArray()
+                    Data = this.teamsToInitialize.Values.ToArray()
                 };
                 this.SendNodeMessage(requestTeamsMessage);
             }
@@ -455,12 +455,20 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessInitializeTeamMessage(NodeMessage message)
         {
-            var scrumTeamData = (byte[])message.Data;
-            var scrumTeam = ScrumTeamHelper.DeserializeScrumTeam(scrumTeamData, this.PlanningPoker.DateTimeProvider);
-            this.teamsToInitialize.Remove(scrumTeam.Name);
-            this.PlanningPoker.InitializeScrumTeam(scrumTeam);
+            var scrumTeamData = message.Data as byte[];
+            if (scrumTeamData != null)
+            {
+                var scrumTeam = ScrumTeamHelper.DeserializeScrumTeam(scrumTeamData, this.PlanningPoker.DateTimeProvider);
+                this.teamsToInitialize.Remove(scrumTeam.Name);
+                this.PlanningPoker.InitializeScrumTeam(scrumTeam);
+            }
+            else
+            {
+                // team does not exist anymore
+                this.teamsToInitialize.Remove((string)message.Data);
+            }
 
-            if (this.teamsToInitialize.Count == 0)
+            if (this.teamsToInitialize.IsEmpty)
             {
                 this.EndInitialization();
             }
@@ -468,7 +476,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void EndInitialization()
         {
-            this.teamsToInitialize = new List<string>();
+            this.teamsToInitialize.Clear();
             this.PlanningPoker.EndInitialization();
 
             var serviceBusMessages = this.ServiceBus.ObservableMessages.Where(m => !string.Equals(m.SenderNodeId, this.NodeId, StringComparison.OrdinalIgnoreCase));
@@ -499,16 +507,23 @@ namespace Duracellko.PlanningPoker.Azure
                 try
                 {
                     byte[] scrumTeamData = null;
-                    using (var teamLock = this.PlanningPoker.GetScrumTeam(scrumTeamName))
+                    try
                     {
-                        teamLock.Lock();
-                        scrumTeamData = ScrumTeamHelper.SerializeScrumTeam(teamLock.Team);
+                        using (var teamLock = this.PlanningPoker.GetScrumTeam(scrumTeamName))
+                        {
+                            teamLock.Lock();
+                            scrumTeamData = ScrumTeamHelper.SerializeScrumTeam(teamLock.Team);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        scrumTeamData = null;
                     }
 
                     var initializeTeamMessage = new NodeMessage(NodeMessageType.InitializeTeam)
                     {
                         RecipientNodeId = message.SenderNodeId,
-                        Data = scrumTeamData
+                        Data = scrumTeamData != null ? (object)scrumTeamData : (object)scrumTeamName
                     };
                     this.SendNodeMessage(initializeTeamMessage);
                 }

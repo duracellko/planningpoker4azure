@@ -233,7 +233,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         {
             // Arrange
             var configuration = new AzurePlanningPokerConfigurationElement() { InitializationTimeout = 1 };
-            var target = new AzurePlanningPokerController(null, configuration);
+            var target = new AzurePlanningPokerController(null, configuration, null);
 
             // Act
             target.CreateScrumTeam("test", "master");
@@ -302,7 +302,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         {
             // Arrange
             var configuration = new AzurePlanningPokerConfigurationElement() { InitializationTimeout = 1 };
-            var target = new AzurePlanningPokerController(null, configuration);
+            var target = new AzurePlanningPokerController(null, configuration, null);
 
             // Act
             target.GetScrumTeam("test team");
