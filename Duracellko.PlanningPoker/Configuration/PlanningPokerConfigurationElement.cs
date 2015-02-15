@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Configuration
         /// Gets or sets the time in seconds, after which is client disconnected when he/she does not check for new messages.
         /// </summary>
         /// <value>The client inactivity timeout.</value>
-        [ConfigurationProperty("clientInactivityTimeout", DefaultValue = 90)]
+        [ConfigurationProperty("clientInactivityTimeout", DefaultValue = 900)]
         public int ClientInactivityTimeout
         {
             get { return (int)this["clientInactivityTimeout"]; }
@@ -30,7 +30,7 @@ namespace Duracellko.PlanningPoker.Configuration
         /// Gets or sets the interval in seconds, how often is executed job to search for and disconnect inactive clients.
         /// </summary>
         /// <value>The client inactivity check interval.</value>
-        [ConfigurationProperty("clientInactivityCheckInterval", DefaultValue = 30)]
+        [ConfigurationProperty("clientInactivityCheckInterval", DefaultValue = 60)]
         public int ClientInactivityCheckInterval
         {
             get { return (int)this["clientInactivityCheckInterval"]; }
@@ -46,6 +46,19 @@ namespace Duracellko.PlanningPoker.Configuration
         {
             get { return (int)this["waitForMessageTimeout"]; }
             set { this["waitForMessageTimeout"] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the repository folder to store scrum teams.
+        /// </summary>
+        /// <value>
+        /// The repository folder.
+        /// </value>
+        [ConfigurationProperty("repositoryFolder", DefaultValue = @"App_Data\Teams")]
+        public string RepositoryFolder
+        {
+            get { return (string)this["repositoryFolder"]; }
+            set { this["repositoryFolder"] = value; }
         }
 
         #region IPlanningPokerConfiguration

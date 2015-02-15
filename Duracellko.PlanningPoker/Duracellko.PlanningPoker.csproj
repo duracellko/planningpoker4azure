@@ -82,6 +82,9 @@
     <Compile Include="Configuration\PlanningPokerConfigurationElement.cs" />
     <Compile Include="Controllers\PlanningPokerController.cs" />
     <Compile Include="Data\EmptyScrumTeamRepository.cs" />
+    <Compile Include="Data\FileScrumTeamRepository.cs" />
+    <Compile Include="Data\FileScrumTeamRepositorySettings.cs" />
+    <Compile Include="Data\IFileScrumTeamRepositorySettings.cs" />
     <Compile Include="Data\IScrumTeamRepository.cs" />
     <Compile Include="Service\Estimation.cs" />
     <Compile Include="Service\EstimationResultItem.cs" />

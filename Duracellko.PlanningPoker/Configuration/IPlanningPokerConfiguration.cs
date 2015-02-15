@@ -31,5 +31,13 @@ namespace Duracellko.PlanningPoker.Configuration
         /// </summary>
         /// <value>The wait for message timeout.</value>
         TimeSpan WaitForMessageTimeout { get; }
+
+        /// <summary>
+        /// Gets the repository folder to store scrum teams.
+        /// </summary>
+        /// <value>
+        /// The repository folder.
+        /// </value>
+        string RepositoryFolder { get; }
     }
 }

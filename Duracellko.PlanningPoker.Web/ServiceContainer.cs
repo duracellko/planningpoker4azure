@@ -15,6 +15,7 @@ using Duracellko.PlanningPoker.Azure.ServiceBus;
 #endif
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
+using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Service;
 using Duracellko.PlanningPoker.Web.Service;
@@ -67,6 +68,8 @@ namespace Duracellko.PlanningPoker.Web
 #else
                 container.RegisterType<IPlanningPoker, PlanningPokerController>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IPlanningPokerService, PlanningPokerService>();
+                container.RegisterType<IScrumTeamRepository, FileScrumTeamRepository>();
+                container.RegisterType<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
                 container.RegisterType<IServiceBehavior, NoCacheServiceBehavior>("NoCacheServiceBehavior");
 
                 var configuration = (PlanningPokerConfigurationElement)ConfigurationManager.GetSection("planningPoker");
