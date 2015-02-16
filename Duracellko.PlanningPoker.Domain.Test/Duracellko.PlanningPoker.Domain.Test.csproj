@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DateTimeProviderMock.cs" />
+    <Compile Include="EstimationParticipantStatusTest.cs" />
     <Compile Include="EstimationResultMessageTest.cs" />
     <Compile Include="EstimationResultTest.cs" />
     <Compile Include="EstimationTest.cs" />

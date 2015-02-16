@@ -119,6 +119,16 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Clears the message queue.
+        /// </summary>
+        /// <returns>ID of last message sent to client.</returns>
+        public long ClearMessages()
+        {
+            this.messages.Clear();
+            return this.lastMessageId;
+        }
+
+        /// <summary>
         /// Updates time of <see cref="P:LastActivity"/> to current time.
         /// </summary>
         public void UpdateActivity()

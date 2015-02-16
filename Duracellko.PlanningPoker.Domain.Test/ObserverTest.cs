@@ -109,6 +109,42 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
         #endregion
 
+        #region ClearMessages
+
+        [TestMethod]
+        public void ClearMessages_AfterConstruction_ReturnsZero()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+
+            // Act
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(0, result);
+        }
+
+        [TestMethod]
+        public void ClearMessages_After2Messages_HasNoMessages()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var master = team.SetScrumMaster("master");
+            var target = team.Join("test", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+
+            // Act
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(2, result);
+            Assert.IsFalse(target.HasMessage);
+        }
+
+        #endregion
+
         #region LastActivity
 
         [TestMethod]

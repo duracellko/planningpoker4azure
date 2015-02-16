@@ -62,5 +62,13 @@ namespace Duracellko.PlanningPoker.Service
         [DataMember(Name = "avilableEstimations")]
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
         public IList<Estimation> AvailableEstimations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of participants in current estimation.
+        /// </summary>
+        /// <value>The collection of estimation participants.</value>
+        [DataMember(Name = "estimationParticipants")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
+        public IList<EstimationParticipantStatus> EstimationParticipants { get; set; }
     }
 }

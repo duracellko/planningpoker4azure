@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="DateTimeProvider.cs" />
     <Compile Include="Estimation.cs" />
+    <Compile Include="EstimationParticipantStatus.cs" />
     <Compile Include="EstimationResult.cs" />
     <Compile Include="EstimationResultMessage.cs" />
     <Compile Include="IPlanningPoker.cs" />

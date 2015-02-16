@@ -87,6 +87,7 @@
     <Compile Include="Data\IFileScrumTeamRepositorySettings.cs" />
     <Compile Include="Data\IScrumTeamRepository.cs" />
     <Compile Include="Service\Estimation.cs" />
+    <Compile Include="Service\EstimationParticipantStatus.cs" />
     <Compile Include="Service\EstimationResultItem.cs" />
     <Compile Include="Service\EstimationResultMessage.cs" />
     <Compile Include="Service\IPlanningPokerService.cs" />
@@ -101,6 +102,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Service\ReconnectTeamResult.cs" />
     <Compile Include="Service\ScrumTeam.cs" />
     <Compile Include="Service\ServiceEntityMapper.cs" />
     <Compile Include="Service\TeamMember.cs" />

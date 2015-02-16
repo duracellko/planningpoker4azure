@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -97,6 +98,51 @@ namespace Duracellko.PlanningPoker.Service
                     var team = teamLock.Team;
                     team.Join(memberName, asObserver);
                     return ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                throw new FaultException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Reconnects member with specified name to the Scrum team with specified name.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <returns>
+        /// The Scrum team the member or observer reconnected to.
+        /// </returns>
+        /// <remarks>
+        /// This operation is used to resynchronize client and server. Current status of ScrumTeam is returned and message queue for the member is cleared.
+        /// </remarks>
+        public ReconnectTeamResult ReconnectTeam(string teamName, string memberName)
+        {
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, "memberName");
+
+            try
+            {
+                using (var teamLock = this.PlanningPoker.GetScrumTeam(teamName))
+                {
+                    teamLock.Lock();
+                    var team = teamLock.Team;
+                    var member = team.FindMemberOrObserver(memberName);
+                    if (member == null)
+                    {
+                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.Error_MemberNotFound, memberName), "memberName");
+                    }
+
+                    var lastMessageId = member.ClearMessages();
+                    member.UpdateActivity();
+
+                    var teamResult = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    return new ReconnectTeamResult()
+                    {
+                        ScrumTeam = teamResult,
+                        LastMessageId = lastMessageId
+                    };
                 }
             }
             catch (ArgumentException ex)

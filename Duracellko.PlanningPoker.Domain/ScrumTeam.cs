@@ -152,6 +152,27 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Gets the collection of participants in current estimation.
+        /// </summary>
+        /// <value>
+        /// The estimation participants.
+        /// </value>
+        public IEnumerable<EstimationParticipantStatus> EstimationParticipants
+        {
+            get
+            {
+                if (this.State == TeamState.EstimationInProgress)
+                {
+                    return this.estimationResult.Select(p => new EstimationParticipantStatus(p.Key.Name, p.Value != null)).ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the date time provider used by the Scrum team.
         /// </summary>
         /// <value>The date-time provider.</value>

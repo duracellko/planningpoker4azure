@@ -58,6 +58,7 @@ namespace Duracellko.PlanningPoker.Service
             result.CreateMap<KeyValuePair<D.Member, D.Estimation>, EstimationResultItem>()
                 .ForMember(i => i.Member, mc => mc.MapFrom(p => p.Key))
                 .ForMember(i => i.Estimation, mc => mc.MapFrom(p => p.Value));
+            result.CreateMap<D.EstimationParticipantStatus, EstimationParticipantStatus>();
             result.CreateMap<D.Estimation, Estimation>()
                 .ForMember(e => e.Value, mc => mc.ResolveUsing(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value) ? Estimation.PositiveInfinity : e.Value));
 

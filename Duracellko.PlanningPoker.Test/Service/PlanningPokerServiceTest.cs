@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -204,6 +205,25 @@ namespace Duracellko.PlanningPoker.Service.Test
         }
 
         [TestMethod]
+        public void JoinTeam_TeamNameAndMemberNameAsMemberAndEstimationStarted_ScrumMasterIsEstimationParticipant()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            team.ScrumMaster.StartEstimation();
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.JoinTeam(TeamName, MemberName, false);
+
+            // Verify
+            var expectedParticipants = new string[] { ScrumMasterName };
+            CollectionAssert.AreEquivalent(expectedParticipants, team.EstimationParticipants.Select(m => m.MemberName).ToList());
+        }
+
+        [TestMethod]
         public void JoinTeam_TeamNameAndObserverNameAsObserver_ReturnsTeamJoined()
         {
             // Arrange
@@ -296,6 +316,200 @@ namespace Duracellko.PlanningPoker.Service.Test
 
             // Act
             target.JoinTeam(TeamName, LongMemberName, false);
+        }
+
+        #endregion
+
+        #region ReconnectTeam
+
+        [TestMethod]
+        public void ReconnectTeam_TeamNameAndScrumMasterName_ReturnsReconnectedTeam()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, ScrumMasterName);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.ScrumTeam);
+            Assert.AreEqual<long>(0, result.LastMessageId);
+            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+            Assert.IsNotNull(result.ScrumTeam.Members);
+            var expectedMembers = new string[] { ScrumMasterName };
+            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+        }
+
+        [TestMethod]
+        public void ReconnectTeam_TeamNameAndMemberName_ReturnsReconnectedTeam()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var member = team.Join(MemberName, false);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, MemberName);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.ScrumTeam);
+            Assert.AreEqual<long>(0, result.LastMessageId);
+            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+            Assert.IsNotNull(result.ScrumTeam.Members);
+            var expectedMembers = new string[] { ScrumMasterName, MemberName };
+            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+        }
+
+        [TestMethod]
+        public void ReconnectTeam_TeamNameAndObserverName_ReturnsReconnectedTeam()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var observer = team.Join(ObserverName, true);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, ObserverName);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.ScrumTeam);
+            Assert.AreEqual<long>(0, result.LastMessageId);
+            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+            
+            Assert.IsNotNull(result.ScrumTeam.Members);
+            var expectedMembers = new string[] { ScrumMasterName };
+            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+
+            Assert.IsNotNull(result.ScrumTeam.Observers);
+            var expectedObservers = new string[] { ObserverName };
+            CollectionAssert.AreEquivalent(expectedObservers, result.ScrumTeam.Observers.Select(m => m.Name).ToList());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FaultException))]
+        public void ReconnectTeam_TeamNameAndNonExistingMemberName_ArgumentException()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, MemberName);
+        }
+
+        [TestMethod]
+        public void ReconnectTeam_TeamNameAndMemberNameWithMessages_ReturnsLastMessageId()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var member = team.Join(MemberName, false);
+            team.ScrumMaster.StartEstimation();
+
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, MemberName);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.ScrumTeam);
+            Assert.AreEqual<long>(1, result.LastMessageId);
+            Assert.IsFalse(member.HasMessage);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReconnectTeam_TeamNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.ReconnectTeam(null, MemberName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ReconnectTeam_MemberNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.ReconnectTeam(TeamName, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ReconnectTeam_TeamNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.ReconnectTeam(LongTeamName, MemberName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ReconnectTeam_MemberNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.ReconnectTeam(TeamName, LongMemberName);
         }
 
         #endregion

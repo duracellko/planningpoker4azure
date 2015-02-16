@@ -123,6 +123,9 @@
   <data name="Error_MemberNameTooLong" xml:space="preserve">
     <value>Member name cannot be longer than 50 characters.</value>
   </data>
+  <data name="Error_MemberNotFound" xml:space="preserve">
+    <value>Team member "{0}" has not been found.</value>
+  </data>
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
     <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
   </data>

@@ -39,6 +39,21 @@ namespace Duracellko.PlanningPoker.Service
         ScrumTeam JoinTeam(string teamName, string memberName, bool asObserver);
 
         /// <summary>
+        /// Reconnects member with specified name to the Scrum team with specified name.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <returns>
+        /// The Scrum team the member or observer reconnected to.
+        /// </returns>
+        /// <remarks>
+        /// This operation is used to resynchronize client and server. Current status of ScrumTeam is returned and message queue for the member is cleared.
+        /// </remarks>
+        [OperationContract]
+        [WebGet]
+        ReconnectTeamResult ReconnectTeam(string teamName, string memberName);
+
+        /// <summary>
         /// Disconnects member from the Scrum team.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>

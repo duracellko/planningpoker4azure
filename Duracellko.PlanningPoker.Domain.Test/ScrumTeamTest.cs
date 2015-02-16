@@ -164,6 +164,66 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
         #endregion
 
+        #region EstimationParticipants
+
+        [TestMethod]
+        public void EstimationParticipants_GetAfterConstruction_ReturnsNull()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+
+            // Act
+            var result = target.EstimationParticipants;
+
+            // Verify
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void EstimationParticipants_EstimationStarted_ReturnsScrumMaster()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            master.StartEstimation();
+
+            // Act
+            var result = target.EstimationParticipants;
+
+            // Verify
+            Assert.IsNotNull(result);
+            Assert.AreEqual<int>(1, result.Count());
+            Assert.AreEqual<string>(master.Name, result.First().MemberName);
+            Assert.IsFalse(result.First().Estimated);
+        }
+
+        [TestMethod]
+        public void EstimationParticipants_MemberEstimated_MemberEstimatedButNotScrumMaster()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = target.Join("member", false);
+            master.StartEstimation();
+
+            // Act
+            var result = target.EstimationParticipants;
+
+            // Verify
+            Assert.IsNotNull(result);
+            Assert.AreEqual<int>(2, result.Count());
+
+            var masterParticipant = result.First(p => p.MemberName == master.Name);
+            Assert.IsNotNull(masterParticipant);
+            Assert.IsFalse(masterParticipant.Estimated);
+
+            var memberParticipant = result.First(p => p.MemberName == member.Name);
+            Assert.IsNotNull(memberParticipant);
+            Assert.IsFalse(memberParticipant.Estimated);
+        }
+
+        #endregion
+
         #region SetScrumMaster
 
         [TestMethod]
@@ -603,6 +663,24 @@ namespace Duracellko.PlanningPoker.Domain.Test
                 new KeyValuePair<Member, Estimation>(master, masterEstimation)
             };
             CollectionAssert.AreEquivalent(expectedResult, target.EstimationResult.ToList());
+        }
+
+        [TestMethod]
+        public void Join_EstimationStarted_OnlyScrumMasterIsInEstimationParticipants()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            master.StartEstimation();
+
+            // Act
+            var member = (Member)target.Join("member", false);
+            var result = target.EstimationParticipants;
+
+            // Verify
+            Assert.IsNotNull(result);
+            Assert.AreEqual<int>(1, result.Count());
+            Assert.AreEqual<string>(master.Name, result.First().MemberName);
         }
 
         [TestMethod]
