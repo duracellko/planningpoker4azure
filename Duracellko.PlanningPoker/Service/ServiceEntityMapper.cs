@@ -46,6 +46,7 @@ namespace Duracellko.PlanningPoker.Service
         {
             var result = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.Mappers);
 
+            result.AllowNullCollections = true;
             result.CreateMap<D.ScrumTeam, ScrumTeam>();
             result.CreateMap<D.Observer, TeamMember>()
                 .ForMember(m => m.Type, mc => mc.ResolveUsing((D.Observer o) => o.GetType().Name));

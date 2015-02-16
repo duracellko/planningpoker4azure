@@ -128,20 +128,31 @@ namespace Duracellko.PlanningPoker.Service
                 {
                     teamLock.Lock();
                     var team = teamLock.Team;
-                    var member = team.FindMemberOrObserver(memberName);
-                    if (member == null)
+                    var observer = team.FindMemberOrObserver(memberName);
+                    if (observer == null)
                     {
                         throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.Error_MemberNotFound, memberName), "memberName");
                     }
 
-                    var lastMessageId = member.ClearMessages();
-                    member.UpdateActivity();
+                    Estimation selectedEstimation = null;
+                    if (team.State == D.TeamState.EstimationInProgress)
+                    {
+                        var member = observer as D.Member;
+                        if (member != null)
+                        {
+                            selectedEstimation = ServiceEntityMapper.Map<D.Estimation, Estimation>(member.Estimation);
+                        }
+                    }
+
+                    var lastMessageId = observer.ClearMessages();
+                    observer.UpdateActivity();
 
                     var teamResult = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
                     return new ReconnectTeamResult()
                     {
                         ScrumTeam = teamResult,
-                        LastMessageId = lastMessageId
+                        LastMessageId = lastMessageId,
+                        SelectedEstimation = selectedEstimation
                     };
                 }
             }

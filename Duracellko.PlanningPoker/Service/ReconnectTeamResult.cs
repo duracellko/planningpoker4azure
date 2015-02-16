@@ -35,5 +35,14 @@ namespace Duracellko.PlanningPoker.Service
         /// </value>
         [DataMember(Name = "lastMessageId")]
         public long LastMessageId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last selected estimation by member.
+        /// </summary>
+        /// <value>
+        /// The selected estimation.
+        /// </value>
+        [DataMember(Name = "lastMessageId")]
+        public Estimation SelectedEstimation { get; set; }
     }
 }

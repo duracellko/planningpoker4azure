@@ -64,6 +64,16 @@ namespace Duracellko.PlanningPoker.Service
         public IList<Estimation> AvailableEstimations { get; set; }
 
         /// <summary>
+        /// Gets or sets the estimation result of last team estimation.
+        /// </summary>
+        /// <value>
+        /// The estimation result items collection.
+        /// </value>
+        [DataMember(Name = "estimationResult")]
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Data contract has all properties read-write.")]
+        public IList<EstimationResultItem> EstimationResult { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of participants in current estimation.
         /// </summary>
         /// <value>The collection of estimation participants.</value>
