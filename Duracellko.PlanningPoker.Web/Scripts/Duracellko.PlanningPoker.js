@@ -225,6 +225,10 @@
             });
         },
         _processAjaxError: function (event, jqXHR, ajaxSettings, thrownError) {
+            if (jqXHR.errorHandled) {
+                return;
+            }
+
             var errorXml = null;
             if (typeof (jqXHR.responseXML) == "undefined" || jqXHR.responseXML == null) {
                 errorXml = $.parseXML(jqXHR.responseText);
@@ -238,6 +242,7 @@
                 var globalMessagePanel = $("#globalMessagePanel");
                 $("#globalMessageTitle", globalMessagePanel).text("Error");
                 $("#globalMessageContainer", globalMessagePanel).text(errorMessage);
+                $("#globalMessagePrimaryButton", globalMessagePanel).hide().unbind("click");
                 globalMessagePanel.modal("show");
             }
         },
@@ -355,7 +360,7 @@
         _createTeamSuccess: function (data) {
             var t = this._t;
             t._lastMessageId = 0;
-            var st = t._createScrumTeamViewModel(data);
+            var st = t._createScrumTeamViewModel(data, null);
             t._initializePokerDesk(st);
         },
         _joinTeamSubmit: function (e) {
@@ -376,14 +381,67 @@
                     context: t,
                     url: url,
                     dataType: "json",
-                    success: t._joinTeamSuccess
+                    success: t._joinTeamSuccess,
+                    error: t._joinTeamError
                 });
             }
         },
         _joinTeamSuccess: function (data) {
             var t = this._t;
             t._lastMessageId = 0;
-            var st = t._createScrumTeamViewModel(data);
+            var st = t._createScrumTeamViewModel(data, null);
+            t._initializePokerDesk(st);
+        },
+        _joinTeamError: function (jqXHR, textStatus, thrownError) {
+            var t = this._t;
+            var errorXml = null;
+            if (typeof (jqXHR.responseXML) == "undefined" || jqXHR.responseXML == null) {
+                errorXml = $.parseXML(jqXHR.responseText);
+            }
+            else {
+                errorXml = jqXHR.responseXML;
+            }
+            var errorMessage = $(errorXml).children("Fault").children("Reason").text();
+            if (errorMessage != "") {
+                if (errorMessage.indexOf("Member or observer named") >= 0 &&
+                    errorMessage.indexOf("already exists in the team.") >= 0) {
+                    errorMessage = errorMessage.split("\n", 1)[0];
+                    errorMessage += " Do you want to reconnect?";
+                    var globalMessagePanel = $("#globalMessagePanel");
+                    $("#globalMessageTitle", globalMessagePanel).text("Reconnect");
+                    $("#globalMessageContainer", globalMessagePanel).text(errorMessage);
+                    $("#globalMessagePrimaryButton", globalMessagePanel).text("Reconnect").show()
+                        .unbind("click").bind("click", t, t._reconnectTeamSubmit);
+                    globalMessagePanel.modal("show");
+                    
+                    jqXHR.errorHandled = true;
+                }
+            }
+        },
+        _reconnectTeamSubmit: function (e) {
+            var t = e.data;
+            e.preventDefault();
+
+            $("#globalMessagePanel").modal("hide");
+
+            if (t._memberInfo != null && t._memberInfo.teamName() != null && t._memberInfo.memberName() != null) {
+                var reconnectTeamData = {
+                    teamName: t._memberInfo.teamName(),
+                    memberName: t._memberInfo.memberName()
+                };
+                var url = t._serviceUrl + "/ReconnectTeam?" + $.param(reconnectTeamData);
+                $.ajax({
+                    context: t,
+                    url: url,
+                    dataType: "json",
+                    success: t._reconnectTeamSubmitSuccess
+                });
+            }
+        },
+        _reconnectTeamSubmitSuccess: function (data) {
+            var t = this._t;
+            t._lastMessageId = data.lastMessageId;
+            var st = t._createScrumTeamViewModel(data.scrumTeam, data.selectedEstimation);
             t._initializePokerDesk(st);
         },
         _disconnectClick: function (e) {
@@ -550,7 +608,7 @@
                 }
             }
         },
-        _createScrumTeamViewModel: function (data) {
+        _createScrumTeamViewModel: function (data, selectedEstimation) {
             var t = this._t;
 
             var st = new ScrumTeam(data.name, t._memberInfo.memberName());
@@ -580,6 +638,42 @@
                     st.availableEstimations.push(estimation);
                 }
             }
+
+            if (data.estimationResult != null) {
+                for (var i = 0; i < data.estimationResult.length; i++) {
+                    var item = data.estimationResult[i];
+                    var estimationItem = new EstimationResultItem(item.member.name);
+                    if (item.estimation != null) {
+                        estimationItem.estimation(new Estimation(item.estimation.value));
+                    }
+                    st.estimationResultItems.push(estimationItem);
+                }
+            }
+            else if (data.estimationParticipants != null) {
+                for (var i = 0; i < data.estimationParticipants.length; i++) {
+                    var estimationParticipant = data.estimationParticipants[i];
+                    if (estimationParticipant.estimated) {
+                        st.estimationResultItems.push(new EstimationResultItem(estimationParticipant.memberName));
+                    }
+                }
+            }
+
+            if (selectedEstimation != null) {
+                var estimation = new Estimation(selectedEstimation.value);
+                st.selectedEstimation(estimation);
+            }
+            
+            var isJoined = false;
+            if (data.estimationParticipants != null) {
+                for (var i = 0; i < data.estimationParticipants.length; i++) {
+                    if (data.estimationParticipants[i].memberName == t._memberInfo.memberName()) {
+                        isJoined = true;
+                        break;
+                    }
+                }
+            }
+
+            st.isJoinedInEstimation(isJoined);
 
             t._scrumTeamViewModel = st;
             st.serviceProvider = t;
