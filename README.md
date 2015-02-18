@@ -8,6 +8,10 @@ The application can be deployed to Internet Information Server (on-premise) or t
 
 Another goal of this project is to describe, how to develop similar applications (application with real-time communication), so they are prepared for Azure. Cloud services uses ServiceBus to communicate to each other. The application is written in C# and uses ASP.NET MVC 5.
 
-![Planning Poker screenshot](https://github.com/duracellko/planningpoker4azure/wiki/images/Screenshot.png)
+## Documentation
+
+More information about how to install, use the application and some implementation details can be found in [Documentation](https://github.com/duracellko/planningpoker4azure/wiki)
 
 More information about planning poker can be found at Wikipedia: http://en.wikipedia.org/wiki/Planning_poker
+
+![Planning Poker screenshot](https://github.com/duracellko/planningpoker4azure/wiki/images/Screenshot.png)
