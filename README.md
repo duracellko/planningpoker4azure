@@ -14,4 +14,6 @@ More information about how to install, use the application and some implementati
 
 More information about planning poker can be found at Wikipedia: http://en.wikipedia.org/wiki/Planning_poker
 
+## Screenshot
+
 ![Planning Poker screenshot](https://github.com/duracellko/planningpoker4azure/wiki/images/Screenshot.png)
