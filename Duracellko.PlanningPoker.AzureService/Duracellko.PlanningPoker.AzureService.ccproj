@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Duracellko.PlanningPoker.Azure</RootNamespace>
     <AssemblyName>Duracellko.PlanningPoker.Azure</AssemblyName>
-    <StartDevelopmentStorage>True</StartDevelopmentStorage>
+    <StartDevelopmentStorage>False</StartDevelopmentStorage>
     <Name>Duracellko.PlanningPoker.AzureService</Name>
     <ValidationIssuesAreErrors>True</ValidationIssuesAreErrors>
     <SccProjectName>SAK</SccProjectName>
@@ -19,7 +19,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <UseEmulatorExpressByDefault>False</UseEmulatorExpressByDefault>
     <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
-    <UseWebProjectPorts>True</UseWebProjectPorts>
+    <UseWebProjectPorts>False</UseWebProjectPorts>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Azure|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
