@@ -9,8 +9,10 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
+using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Duracellko.PlanningPoker.Azure.Test
 {
@@ -306,6 +308,40 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Act
             target.GetScrumTeam("test team");
+        }
+
+        #endregion
+
+        #region SetTeamsInitializingList
+
+        [TestMethod]
+        public void SetTeamsInitializingList_TeamSpeacified_DeleteAllFromRepository()
+        {
+            // Arrange
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            repository.Setup(r => r.DeleteAll());
+            var target = new AzurePlanningPokerController(null, null, repository.Object);
+
+            // Act
+            target.SetTeamsInitializingList(new string[] { "team" });
+
+            // Verify
+            repository.Verify(r => r.DeleteAll());
+        }
+
+        [TestMethod]
+        public void SetTeamsInitializingList_AfterEndInitialization_NotDeleteAnythingFromRepository()
+        {
+            // Arrange
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            var target = new AzurePlanningPokerController(null, null, repository.Object);
+            target.EndInitialization();
+
+            // Act
+            target.SetTeamsInitializingList(new string[] { "team" });
+
+            // Verify
+            repository.Verify(r => r.DeleteAll(), Times.Never());
         }
 
         #endregion

@@ -19,6 +19,70 @@ namespace Duracellko.PlanningPoker.Test.Controllers
     [TestClass]
     public class PlanningPokerControllerWithRepositoryTest
     {
+        #region ScrumTeamNames
+
+        [TestMethod]
+        public void ScrumTeamNames_2TeamsInRepository_Returns2Teams()
+        {
+            // Arrange
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+            var target = new PlanningPokerController(null, null, repository.Object);
+            
+            // Act
+            var result = target.ScrumTeamNames;
+
+            // Verify
+            repository.VerifyGet(r => r.ScrumTeamNames);
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEquivalent(new string[] { "team1", "team2" }, result.ToList());
+        }
+
+        [TestMethod]
+        public void ScrumTeamNames_2TeamsInRepositoryAnd2TeamCreated_Returns2Teams()
+        {
+            // Arrange
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+            repository.Setup(r => r.LoadScrumTeam("team1")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team3")).Returns((ScrumTeam)null);
+            var target = new PlanningPokerController(null, null, repository.Object);
+            using (target.CreateScrumTeam("team1", "master"))
+            {
+            }
+
+            using (target.CreateScrumTeam("team3", "master"))
+            {
+            }
+
+            // Act
+            var result = target.ScrumTeamNames;
+
+            // Verify
+            repository.VerifyGet(r => r.ScrumTeamNames);
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEquivalent(new string[] { "team1", "team2", "team3" }, result.ToList());
+        }
+
+        [TestMethod]
+        public void ScrumTeamNames_AllEmpty_ReturnsZeroTeams()
+        {
+            // Arrange
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+            var target = new PlanningPokerController(null, null, repository.Object);
+
+            // Act
+            var result = target.ScrumTeamNames;
+
+            // Verify
+            repository.VerifyGet(r => r.ScrumTeamNames);
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEquivalent(new string[0], result.ToList());
+        }
+
+        #endregion
+
         #region CreateScrumTeam
 
         [TestMethod]

@@ -586,6 +586,34 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void Start_InitializeTeamMessageReceivedWithTeamNameOnly_SkipsInitializationOfThisTeam()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var teamList = new string[] { TeamName };
+            var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = TeamName };
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
+
+            planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(DateTimeProvider.Default);
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
         public void Start_RequestTeamListMessageReceived_TeamListIsObtainedFromPlanningPoker()
         {
             // Arrange
@@ -705,6 +733,42 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(initializeTeamMessage);
             Assert.IsNotNull(initializeTeamMessage.Data);
             Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
+            Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
+        }
+
+        [TestMethod]
+        public void Start_RequestTeamsMessageReceivedButTeamDoesNotExistAnymore_TeamNameIsSentToServiceBus()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var teamList = new string[] { TeamName };
+            var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+            NodeMessage initializeTeamMessage = null;
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
+                .Callback<NodeMessage>(m => initializeTeamMessage = m).Verifiable();
+
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization()).Verifiable();
+            planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(new ArgumentException()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            Assert.IsNotNull(initializeTeamMessage);
+            Assert.IsNotNull(initializeTeamMessage.Data);
+            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
+            Assert.AreEqual<string>(TeamName, (string)initializeTeamMessage.Data);
             Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 

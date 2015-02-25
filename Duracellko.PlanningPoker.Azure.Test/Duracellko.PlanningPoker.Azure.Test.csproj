@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="AzurePlanningPokerControllerTest.cs" />
     <Compile Include="DateTimeProviderMock.cs" />
+    <Compile Include="InitializationListTest.cs" />
     <Compile Include="NodeMessageTest.cs" />
     <Compile Include="PlanningPokerAzureNodeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
