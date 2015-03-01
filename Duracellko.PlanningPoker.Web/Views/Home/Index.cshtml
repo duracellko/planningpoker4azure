@@ -2,6 +2,16 @@
     ViewBag.Title = "Scrum Planning Poker";
 }
 <div class="pageContent">
+    <div id="busyIndicatorPanel" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p class="modal-title">Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="globalMessagePanel" class="modal fade" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -26,7 +36,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var planningPokerContainer = $("#planningPokerContainer");
-            var planningPoker = new Duracellko.PlanningPoker(planningPokerContainer,
+            var planningPoker = new Duracellko.PlanningPoker.PlanningPokerController(planningPokerContainer,
                 planningPokerContainer.attr("data-serviceurl"),
                 planningPokerContainer.attr("data-templateurl"));
             planningPokerContainer.get(0).planningPoker = planningPoker;

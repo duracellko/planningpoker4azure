@@ -13,7 +13,7 @@
             <div id="navbar" class="collapse navbar-collapse">
                 <div id="userInfoPanel" class="navbar-right" style="display: none">
                     <p class="navbar-text"><span data-bind="text: userName"></span></p>
-                    <p class="navbar-btn"><a href="#disconnect" class="btn btn-default">Disconnect</a></p>
+                    <p class="navbar-btn"><a href="#disconnect" data-bind="click: disconnectCommand, clickBubble: false" class="btn btn-default">Disconnect</a></p>
                 </div>
             </div>
         </div>
@@ -27,17 +27,20 @@
                         <h3 class="panel-title">Join team</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="alert alert-danger" role="alert" style="display: none">
-                            <span></span>
-                        </div>
-                        <form action="." id="joinTeam">
-                            <div class="form-group">
+                        <form action="." id="joinTeam" data-bind="submit: joinTeamCommand">
+                            <div class="form-group" data-bind="css: { 'has-error': !isTeamNameValid(), 'has-feedback': !isTeamNameValid() }">
                                 <label for="joinTeam$teamName">Team name:</label>
-                                <input type="text" id="joinTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control required" maxlength="50" />
+                                <div data-bind="css: { 'input-group': !isTeamNameValid() }">
+                                    <input type="text" id="joinTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control" maxlength="50" />
+                                    <span class="input-group-addon" data-bind="visible: !isTeamNameValid()">Required</span>
+                                </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" data-bind="css: { 'has-error': !isMemberNameValid(), 'has-feedback': !isMemberNameValid() }">
                                 <label for="joinTeam$memberName">Member name:</label>
-                                <input type="text" id="joinTeam$memberName" name="memberName" data-bind="value: memberName" class="form-control required" maxlength="50" />
+                                <div data-bind="css: { 'input-group': !isMemberNameValid() }">
+                                    <input type="text" id="joinTeam$memberName" name="memberName" data-bind="value: memberName" class="form-control" maxlength="50" />
+                                    <span class="input-group-addon" data-bind="visible: !isMemberNameValid()">Required</span>
+                                </div>
                             </div>
                             <div class="checkbox">
                                 <label>
@@ -57,17 +60,20 @@
                         <h3 class="panel-title">Create team</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="alert alert-danger" role="alert" style="display: none">
-                            <span></span>
-                        </div>
-                        <form action="." id="createTeam">
-                            <div class="form-group">
+                        <form action="." id="createTeam" data-bind="submit: createTeamCommand">
+                            <div class="form-group" data-bind="css: { 'has-error': !isTeamNameValid(), 'has-feedback': !isTeamNameValid() }">
                                 <label for="createTeam$teamName">Team name:</label>
-                                <input type="text" id="createTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control required" maxlength="50" />
+                                <div data-bind="css: { 'input-group': !isTeamNameValid() }">
+                                    <input type="text" id="createTeam$teamName" name="teamName" data-bind="value: teamName" class="form-control" maxlength="50" />
+                                    <span class="input-group-addon" data-bind="visible: !isTeamNameValid()">Required</span>
+                                </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" data-bind="css: { 'has-error': !isScrumMasterNameValid(), 'has-feedback': !isScrumMasterNameValid() }">
                                 <label for="createTeam$scrumMasterName">Scrum Master name:</label>
-                                <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" data-bind="value: scrumMasterName" class="form-control required" maxlength="50" />
+                                <div data-bind="css: { 'input-group': !isScrumMasterNameValid() }">
+                                    <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" data-bind="value: scrumMasterName" class="form-control" maxlength="50" />
+                                    <span class="input-group-addon" data-bind="visible: !isScrumMasterNameValid()">Required</span>
+                                </div>
                             </div>
                             <input type="submit" id="createTeam$Submit" class="btn btn-primary" value="Create team" />
                         </form>
@@ -90,7 +96,7 @@
                         <ul data-bind="foreach: members" class="list-group">
                             <li class="list-group-item">
                                 <span data-bind="text: name"></span>
-                                <a data-bind="click: $root.kickoffMember, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
+                                <a data-bind="click: $root.kickoffMemberCommand, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
                                    class="pull-right text-danger">
                                     <span class="glyphicon glyphicon-remove"></span>
                                     <span class="sr-only">remove</span>
@@ -103,7 +109,7 @@
                         <ul data-bind="foreach: observers" class="list-group">
                             <li class="list-group-item">
                                 <span data-bind="text: name"></span>
-                                <a data-bind="click: $root.kickoffMember, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
+                                <a data-bind="click: $root.kickoffMemberCommand, clickBubble: false, visible: $root.isScrumMaster" href="#kickoff"
                                    class="pull-right text-danger">
                                     <span class="glyphicon glyphicon-remove"></span>
                                     <span class="sr-only">remove</span>
@@ -121,17 +127,17 @@
                     <div data-bind="visible: canSelectEstimation" class="availableEstimations">
                         <h3>Pick estimation</h3>
                         <ul data-bind="foreach: availableEstimations">
-                            <li><a data-bind="text: caption, click: $root.selectEstimation, clickBubble: false" href="#selectEstimation"></a></li>
+                            <li><a data-bind="text: caption, click: $root.selectEstimationCommand, clickBubble: false" href="#selectEstimation"></a></li>
                         </ul>
                     </div>
 
                     <div data-bind="visible: isScrumMaster">
                         <p>
                             <span data-bind="visible: canStartEstimation">
-                                <a href="#startEstimation" class="btn btn-default">Start estimation</a>
+                                <a href="#startEstimation" data-bind="click: startEstimationCommand, clickBubble: false" class="btn btn-default">Start estimation</a>
                             </span>
                             <span data-bind="visible: canCancelEstimation">
-                                <a href="#cancelEstimation" class="btn btn-default">Cancel estimation</a>
+                                <a href="#cancelEstimation" data-bind="click: cancelEstimationCommand, clickBubble: false" class="btn btn-default">Cancel estimation</a>
                             </span>
                         </p>
                     </div>
