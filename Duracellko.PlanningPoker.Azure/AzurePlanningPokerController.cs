@@ -131,94 +131,6 @@ namespace Duracellko.PlanningPoker.Azure
             }
         }
 
-        /// <summary>
-        /// Creates new Scrum team with specified Scrum master.
-        /// </summary>
-        /// <param name="teamName">Name of the team.</param>
-        /// <param name="scrumMasterName">Name of the Scrum master.</param>
-        /// <returns>
-        /// The new Scrum team.
-        /// </returns>
-        public override IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName)
-        {
-            if (!this.initialized)
-            {
-                bool teamListInitialized = false;
-                lock (this.teamsToInitializeLock)
-                {
-                    teamListInitialized = this.teamsToInitialize != null;
-                }
-
-                if (!teamListInitialized)
-                {
-                    var timeout = this.InitializationTimeout;
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    while (!teamListInitialized && stopwatch.Elapsed < timeout)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        lock (this.teamsToInitializeLock)
-                        {
-                            teamListInitialized = this.initialized || this.teamsToInitialize != null;
-                        }
-                    }
-                }
-
-                lock (this.teamsToInitializeLock)
-                {
-                    if (!this.initialized)
-                    {
-                        if (this.teamsToInitialize == null)
-                        {
-                            throw new TimeoutException();
-                        }
-                        else if (this.teamsToInitialize.Contains(teamName))
-                        {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamAlreadyExists, teamName), "teamName");
-                        }
-                    }
-                }
-            }
-
-            return base.CreateScrumTeam(teamName, scrumMasterName);
-        }
-
-        /// <summary>
-        /// Gets existing Scrum team with specified name.
-        /// </summary>
-        /// <param name="teamName">Name of the team.</param>
-        /// <returns>
-        /// The Scrum team.
-        /// </returns>
-        public override IScrumTeamLock GetScrumTeam(string teamName)
-        {
-            if (!this.initialized)
-            {
-                bool teamInitialized = false;
-                lock (this.teamsToInitializeLock)
-                {
-                    teamInitialized = this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName);
-                }
-
-                if (!teamInitialized)
-                {
-                    var timeout = this.InitializationTimeout;
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    while (!teamInitialized && stopwatch.Elapsed < timeout)
-                    {
-                        System.Threading.Thread.Sleep(100);
-                        lock (this.teamsToInitializeLock)
-                        {
-                            teamInitialized = this.initialized || (this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName));
-                        }
-                    }
-                }
-            }
-
-            return base.GetScrumTeam(teamName);
-        }
-        
         #endregion
 
         #region IDisposable
@@ -287,6 +199,88 @@ namespace Duracellko.PlanningPoker.Azure
         {
             team.MessageReceived -= this.ScrumTeamOnMessageReceived;
             base.OnTeamRemoved(team);
+        }
+
+        /// <summary>
+        /// Executed before creating new Scrum team with specified Scrum master.
+        /// </summary>
+        /// <param name="teamName">Name of the team.</param>
+        /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        protected override void OnBeforeCreateScrumTeam(string teamName, string scrumMasterName)
+        {
+            if (!this.initialized)
+            {
+                bool teamListInitialized = false;
+                lock (this.teamsToInitializeLock)
+                {
+                    teamListInitialized = this.teamsToInitialize != null;
+                }
+
+                if (!teamListInitialized)
+                {
+                    var timeout = this.InitializationTimeout;
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    while (!teamListInitialized && stopwatch.Elapsed < timeout)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        lock (this.teamsToInitializeLock)
+                        {
+                            teamListInitialized = this.initialized || this.teamsToInitialize != null;
+                        }
+                    }
+                }
+
+                lock (this.teamsToInitializeLock)
+                {
+                    if (!this.initialized)
+                    {
+                        if (this.teamsToInitialize == null)
+                        {
+                            throw new TimeoutException();
+                        }
+                        else if (this.teamsToInitialize.Contains(teamName))
+                        {
+                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamAlreadyExists, teamName), "teamName");
+                        }
+                    }
+                }
+            }
+
+            base.OnBeforeCreateScrumTeam(teamName, scrumMasterName);
+        }
+
+        /// <summary>
+        /// Executed before getting existing Scrum team with specified name.
+        /// </summary>
+        /// <param name="teamName">Name of the team.</param>
+        protected override void OnBeforeGetScrumTeam(string teamName)
+        {
+            if (!this.initialized)
+            {
+                bool teamInitialized = false;
+                lock (this.teamsToInitializeLock)
+                {
+                    teamInitialized = this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName);
+                }
+
+                if (!teamInitialized)
+                {
+                    var timeout = this.InitializationTimeout;
+                    var stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    while (!teamInitialized && stopwatch.Elapsed < timeout)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        lock (this.teamsToInitializeLock)
+                        {
+                            teamInitialized = this.initialized || (this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName));
+                        }
+                    }
+                }
+            }
+
+            base.OnBeforeGetScrumTeam(teamName);
         }
 
         #endregion

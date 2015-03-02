@@ -235,6 +235,36 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void Start_NotInitAndMemberJoinedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
+            {
+                MemberName = MemberName,
+                MemberType = "Member"
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
         public void Start_ObserverJoinedFromServiceBus_ObserverJoinedTeam()
         {
             // Arrange
@@ -300,6 +330,36 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void Start_NotInitAndMasterDisconnectedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberDisconnected)
+            {
+                MemberName = ScrumMasterName,
+                MemberType = "ScrumMaster"
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
         public void Start_EstimationStartedFromServiceBus_TeamEstimationStarted()
         {
             // Arrange
@@ -324,6 +384,32 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             teamLock.Verify();
             Assert.AreEqual<TeamState>(TeamState.EstimationInProgress, team.State);
+        }
+
+        [TestMethod]
+        public void Start_NotInitAndEstimationStartedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
         }
 
         [TestMethod]
@@ -352,6 +438,32 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             teamLock.Verify();
             Assert.AreEqual<TeamState>(TeamState.EstimationCanceled, team.State);
+        }
+
+        [TestMethod]
+        public void Start_NotInitAndEstimationCanceledFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMessage(TeamName, MessageType.EstimationCanceled);
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
         }
 
         [TestMethod]
@@ -385,6 +497,36 @@ namespace Duracellko.PlanningPoker.Azure.Test
             teamLock.Verify();
             Assert.IsNotNull(team.ScrumMaster.Estimation);
             Assert.AreEqual<double?>(5.0, team.ScrumMaster.Estimation.Value);
+        }
+
+        [TestMethod]
+        public void Start_NotInitAndMasterEstimatedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
+            {
+                MemberName = ScrumMasterName,
+                Estimation = 5.0
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
         }
 
         [TestMethod]
@@ -425,6 +567,36 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void Start_NotInitAndMasterActivityFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberActivity)
+            {
+                MemberName = ScrumMasterName,
+                MemberType = "ScrumMaster"
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
         public void Start_TeamCreatedFromServiceBus_TeamAttachedToPlanningPoker()
         {
             // Arrange
@@ -455,6 +627,31 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(team);
             Assert.AreEqual<string>(TeamName, team.Name);
             Assert.AreEqual<DateTimeProvider>(dateTimeProvider, team.DateTimeProvider);
+        }
+
+        [TestMethod]
+        public void Start_NotInitAndTeamCreatedFromServiceBus_IgnoreMessage()
+        {
+            // Arrange
+            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            target.Start();
+            sendMessages();
+            target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.AttachScrumTeam(It.IsAny<ScrumTeam>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
         }
 
         #endregion
@@ -810,7 +1007,15 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var observableMessages = new Subject<NodeMessage>();
             serviceBus.Setup(b => b.ObservableMessages).Returns(observableMessages).Verifiable();
-            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeamList))).Verifiable();
+            if (initializationTeamList != null && initializationTeamList.Length != 0)
+            {
+                serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m =>
+                    m.MessageType == NodeMessageType.RequestTeamList || m.MessageType == NodeMessageType.RequestTeams))).Verifiable();
+            }
+            else
+            {
+                serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeamList))).Verifiable();
+            }
 
             return new Action(
                 () =>
@@ -825,14 +1030,25 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 });
         }
 
-        private static Mock<IScrumTeamLock> SetupPlanningPoker(Mock<IAzurePlanningPoker> planningPoker, ScrumTeam team)
+        private static Mock<IScrumTeamLock> SetupPlanningPoker(Mock<IAzurePlanningPoker> planningPoker, ScrumTeam team, bool noEnd = false)
         {
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
-            planningPoker.Setup(p => p.EndInitialization()).Verifiable();
-            var teamLock = CreateTeamLock(team);
+            if (!noEnd)
+            {
+                planningPoker.Setup(p => p.EndInitialization()).Verifiable();
+            }
+
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
-            planningPoker.Setup(p => p.GetScrumTeam(team.Name)).Returns(teamLock.Object).Verifiable();
-            return teamLock;
+            if (team != null)
+            {
+                var teamLock = CreateTeamLock(team);
+                planningPoker.Setup(p => p.GetScrumTeam(team.Name)).Returns(teamLock.Object).Verifiable();
+                return teamLock;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private static Action SetupPlanningPokerMsg(Mock<IAzurePlanningPoker> planningPoker, ScrumTeamMessage message)

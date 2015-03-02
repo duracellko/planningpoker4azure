@@ -99,7 +99,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <returns>
         /// The new Scrum team.
         /// </returns>
-        public virtual IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName)
+        public IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName)
         {
             if (string.IsNullOrEmpty(teamName))
             {
@@ -110,6 +110,8 @@ namespace Duracellko.PlanningPoker.Controllers
             {
                 throw new ArgumentNullException("scrumMasterName");
             }
+
+            this.OnBeforeCreateScrumTeam(teamName, scrumMasterName);
 
             var team = new ScrumTeam(teamName, this.DateTimeProvider);
             team.SetScrumMaster(scrumMasterName);
@@ -134,7 +136,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// </summary>
         /// <param name="team">The Scrum team to add.</param>
         /// <returns>The joined Scrum team.</returns>
-        public virtual IScrumTeamLock AttachScrumTeam(ScrumTeam team)
+        public IScrumTeamLock AttachScrumTeam(ScrumTeam team)
         {
             if (team == null)
             {
@@ -165,12 +167,14 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <returns>
         /// The Scrum team.
         /// </returns>
-        public virtual IScrumTeamLock GetScrumTeam(string teamName)
+        public IScrumTeamLock GetScrumTeam(string teamName)
         {
             if (string.IsNullOrEmpty(teamName))
             {
                 throw new ArgumentNullException("teamName");
             }
+
+            this.OnBeforeGetScrumTeam(teamName);
 
             Tuple<ScrumTeam, object> teamTuple = this.LoadScrumTeam(teamName);
             if (teamTuple == null)
@@ -187,7 +191,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="observer">The observer to wait for message to receive.</param>
         /// <param name="callback">The callback delegate to call when a message is received or after timeout. First parameter specifies if message was received or not
         /// (the timeout occurs). Second parameter specifies observer, who received a message.</param>
-        public virtual void GetMessagesAsync(Observer observer, Action<bool, Observer> callback)
+        public void GetMessagesAsync(Observer observer, Action<bool, Observer> callback)
         {
             if (observer == null)
             {
@@ -231,7 +235,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Disconnects all observers, who did not checked for messages for specified period of time.
         /// </summary>
         /// <param name="inactivityTime">The inactivity time.</param>
-        public virtual void DisconnectInactiveObservers(TimeSpan inactivityTime)
+        public void DisconnectInactiveObservers(TimeSpan inactivityTime)
         {
             var teamTuples = this.scrumTeams.ToArray();
             foreach (var teamTuple in teamTuples)
@@ -264,6 +268,25 @@ namespace Duracellko.PlanningPoker.Controllers
         protected virtual void OnTeamRemoved(ScrumTeam team)
         {
             team.MessageReceived -= new EventHandler<MessageReceivedEventArgs>(this.ScrumTeamOnMessageReceived);
+        }
+
+        /// <summary>
+        /// Executed before creating new Scrum team with specified Scrum master.
+        /// </summary>
+        /// <param name="teamName">Name of the team.</param>
+        /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        protected virtual void OnBeforeCreateScrumTeam(string teamName, string scrumMasterName)
+        {
+            // empty implementation by default
+        }
+
+        /// <summary>
+        /// Executed before getting existing Scrum team with specified name.
+        /// </summary>
+        /// <param name="teamName">Name of the team.</param>
+        protected virtual void OnBeforeGetScrumTeam(string teamName)
+        {
+            // empty implementation by default
         }
 
         #endregion
@@ -323,7 +346,11 @@ namespace Duracellko.PlanningPoker.Controllers
                         {
                             var teamLock = new object();
                             result = new Tuple<ScrumTeam, object>(team, teamLock);
-                            if (!this.scrumTeams.TryAdd(team.Name, result))
+                            if (this.scrumTeams.TryAdd(team.Name, result))
+                            {
+                                this.OnTeamAdded(team);
+                            }
+                            else
                             {
                                 result = null;
                                 retry = true;

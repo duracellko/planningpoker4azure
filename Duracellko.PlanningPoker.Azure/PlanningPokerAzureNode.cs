@@ -224,16 +224,19 @@ namespace Duracellko.PlanningPoker.Azure
         {
             var scrumTeamData = (byte[])message.Data;
             var scrumTeam = ScrumTeamHelper.DeserializeScrumTeam(scrumTeamData, this.PlanningPoker.DateTimeProvider);
-            try
+            if (!this.teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
             {
-                this.processingScrumTeamName = scrumTeam.Name;
-                using (var teamLock = this.PlanningPoker.AttachScrumTeam(scrumTeam))
+                try
                 {
+                    this.processingScrumTeamName = scrumTeam.Name;
+                    using (var teamLock = this.PlanningPoker.AttachScrumTeam(scrumTeam))
+                    {
+                    }
                 }
-            }
-            finally
-            {
-                this.processingScrumTeamName = null;
+                finally
+                {
+                    this.processingScrumTeamName = null;
+                }
             }
         }
 

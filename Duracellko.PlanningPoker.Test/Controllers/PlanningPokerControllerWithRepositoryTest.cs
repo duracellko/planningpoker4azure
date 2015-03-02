@@ -614,6 +614,41 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
         }
 
+        [TestMethod]
+        public void GetScrumTeam_DisconnectAfterwards_TeamIsRemovedFromRepository()
+        {
+            // Arrange
+            var timeProvider = new DateTimeProviderMock();
+            var configuration = new Mock<IPlanningPokerConfiguration>(MockBehavior.Strict);
+            configuration.SetupGet(c => c.ClientInactivityTimeout).Returns(TimeSpan.FromMinutes(15));
+
+            timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 0, 0, DateTimeKind.Utc));
+            var team = new ScrumTeam("team");
+            var master = team.SetScrumMaster("master");
+            master.UpdateActivity();
+
+            var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns(team);
+            repository.Setup(r => r.DeleteScrumTeam("team"));
+            repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+
+            timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 14, 0, DateTimeKind.Utc));
+            var target = new PlanningPokerController(timeProvider, configuration.Object, repository.Object);
+
+            // Act
+            using (var teamLock = target.GetScrumTeam("team"))
+            {
+                teamLock.Team.Disconnect(master.Name);
+                var result = target.ScrumTeamNames;
+
+                // Verify
+                Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
+                Assert.IsFalse(result.Any());
+                repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+                repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
+            }
+        }
+
         #endregion
 
         #region ScrumTeam activity
