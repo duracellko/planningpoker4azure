@@ -25,14 +25,14 @@ module Duracellko.PlanningPoker {
     };
 
     export class ScrumTeam {
-        public name: string;
-        public scrumMaster: TeamMember;
-        public members: TeamMember[];
-        public observers: TeamMember[];
-        public state: TeamState;
-        public avilableEstimations: Estimation[];
-        public estimationResult: EstimationResultItem[];
-        public estimationParticipants: EstimationParticipantStatus[];
+        public name: string = null;
+        public scrumMaster: TeamMember = null;
+        public members: TeamMember[] = null;
+        public observers: TeamMember[] = null;
+        public state: TeamState = null;
+        public avilableEstimations: Estimation[] = null;
+        public estimationResult: EstimationResultItem[] = null;
+        public estimationParticipants: EstimationParticipantStatus[] = null;
     }
 
     export class TeamMember {
@@ -245,6 +245,7 @@ module Duracellko.PlanningPoker {
         private service: PlanningPokerService;
         private viewModel: CreateTeamViewModel = null;
         private view: JQuery = null;
+        private viewTemplate: JQuery = null;
 
         public onTeamCreated: (scrumTeam: ScrumTeam, userName: string) => void = null;
 
@@ -261,9 +262,13 @@ module Duracellko.PlanningPoker {
                 throw new Exception("view");
             }
 
+            if (this.viewTemplate == null) {
+                this.viewTemplate = view.clone();
+            }
+
             this.viewModel = new CreateTeamViewModel(this.service);
             this.viewModel.onTeamCreated = (scrumTeam, userName) => this.viewModelOnTeamCreated(scrumTeam, userName);
-            this.view = view;
+            this.view = this.viewTemplate.clone().replaceAll(view);
             ko.applyBindings(this.viewModel, this.view.get(0));
         }
 
@@ -352,6 +357,7 @@ module Duracellko.PlanningPoker {
         private messageBoxService: MessageBoxService;
         private viewModel: JoinTeamViewModel = null;
         private view: JQuery = null;
+        private viewTemplate: JQuery = null;
 
         public onTeamJoined: (scrumTeam: ScrumTeam, userName: string) => void = null;
         public onTeamReconnected: (teamResult: ReconnectTeamResult, userName: string) => void = null;
@@ -373,10 +379,14 @@ module Duracellko.PlanningPoker {
                 throw new Exception("view");
             }
 
+            if (this.viewTemplate == null) {
+                this.viewTemplate = view.clone();
+            }
+
             this.viewModel = new JoinTeamViewModel(this.service, this.messageBoxService);
             this.viewModel.onTeamJoined = (scrumTeam, userName) => this.viewModelOnTeamJoined(scrumTeam, userName);
             this.viewModel.onTeamReconnected = (teamResult, userName) => this.viewModelOnTeamReconnected(teamResult, userName);
-            this.view = view;
+            this.view = this.viewTemplate.clone().replaceAll(view);
             ko.applyBindings(this.viewModel, this.view.get(0));
         }
 
@@ -705,7 +715,9 @@ module Duracellko.PlanningPoker {
         private service: PlanningPokerService;
         private _viewModel: ScrumTeamViewModel = null;
         private pokerDeskView: JQuery = null;
+        private pokerDeskViewTemplate: JQuery = null;
         private membersView: JQuery = null;
+        private membersViewTemplate: JQuery = null;
 
         constructor(service: PlanningPokerService) {
             if (service == null) {
@@ -727,9 +739,16 @@ module Duracellko.PlanningPoker {
                 throw new Exception("userName");
             }
 
+            if (this.pokerDeskViewTemplate == null) {
+                this.pokerDeskViewTemplate = pokerDeskView.clone();
+            }
+            if (this.membersViewTemplate == null) {
+                this.membersViewTemplate = membersView.clone();
+            }
+
             this._viewModel = new ScrumTeamViewModel(this.service, scrumTeam, userName, selectedEstimation);
-            this.pokerDeskView = pokerDeskView;
-            this.membersView = membersView;
+            this.pokerDeskView = this.pokerDeskViewTemplate.clone().replaceAll(pokerDeskView);
+            this.membersView = this.membersViewTemplate.clone().replaceAll(membersView);
             if (this.pokerDeskView != null) {
                 ko.applyBindings(this.viewModel, this.pokerDeskView.get(0));
             }
@@ -971,8 +990,12 @@ module Duracellko.PlanningPoker {
 
         private selectEstimationCommandHandler(estimation: EstimationViewModel): void {
             if (estimation != null) {
-                this.service.submitEstimation(this.name(), this.userName, estimation.value());
+                this.service.submitEstimation(this.name(), this.userName, estimation.value()).done(() => this.submitEstimationDone(estimation));
             }
+        }
+
+        private submitEstimationDone(estimation: EstimationViewModel) {
+            this.selectedEstimation(estimation);
         }
 
         private kickoffMemberCommandHandler(member: TeamMemberViewModel): void {
@@ -1052,6 +1075,7 @@ module Duracellko.PlanningPoker {
         private service: PlanningPokerService;
         private viewModel: UserInfoViewModel = null;
         private view: JQuery = null;
+        private viewTemplate: JQuery = null;
 
         public onTeamDisconnected: (teamName: string, userName: string) => void = null;
 
@@ -1068,9 +1092,13 @@ module Duracellko.PlanningPoker {
                 throw new Exception("view");
             }
 
+            if (this.viewTemplate == null) {
+                this.viewTemplate = view.clone();
+            }
+
             this.viewModel = new UserInfoViewModel(this.service, teamName, userName);
             this.viewModel.onTeamDisconnected = (teamName, userName) => this.viewModelOnTeamDisconnected(teamName, userName);
-            this.view = view;
+            this.view = this.viewTemplate.clone().replaceAll(view);
             ko.applyBindings(this.viewModel, this.view.get(0));
         }
 
