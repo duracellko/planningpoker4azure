@@ -229,6 +229,12 @@ module Duracellko.PlanningPoker {
                 errorMessage = errorMessage.split("\n", 1)[0];
                 this.messageBoxService.show(errorMessage, "Error");
             }
+            else if (jqXHR.status != 0) {
+                this.messageBoxService.show("Service is temporarily not available. Please, try again later.", "Error");
+            }
+            else {
+                this.messageBoxService.show("Connection failed. Please, check your internet connection.", "Error");
+            }
         }
 
         private JQueryAjaxOnBeforeSend(jqXHR: JQueryXHR, settings: JQueryAjaxSettings): boolean {
@@ -545,6 +551,7 @@ module Duracellko.PlanningPoker {
 
             this.messageController = new PlanningPokerMessageController(this.service, scrumTeam.name, userName);
             this.messageController.onMessageReceived = m => this.processMessage(m);
+            this.messageController.onTeamDisconnected = (teamName, userName) => this.messageControllerOnTeamDisconnected(teamName, userName);
             if (lastMessageId != null) {
                 this.messageController.lastMessageId = lastMessageId;
             }
@@ -563,6 +570,7 @@ module Duracellko.PlanningPoker {
             if (this.messageController != null) {
                 this.messageController.stop();
                 this.messageController.onMessageReceived = null;
+                this.messageController.onTeamDisconnected = null;
                 this.messageController = null;
             }
 
@@ -619,6 +627,12 @@ module Duracellko.PlanningPoker {
                 this.onTeamDisconnected(teamName, userName);
             }
         }
+
+        private messageControllerOnTeamDisconnected(teamName: string, userName: string): void {
+            if (this.onTeamDisconnected != null) {
+                this.onTeamDisconnected(teamName, userName);
+            }
+        }
     }
 
     export class PlanningPokerMessageController {
@@ -632,6 +646,7 @@ module Duracellko.PlanningPoker {
         private timer: number = null;
 
         public onMessageReceived: (message: Message) => boolean = null;
+        public onTeamDisconnected: (teamName: string, userName: string) => void = null;
 
         constructor(service: PlanningPokerService, teamName: string, userName: string) {
             if (service == null) {
@@ -701,12 +716,19 @@ module Duracellko.PlanningPoker {
         }
 
         private onGetMessagesError(): void {
-            if (this.isActive && this.errorCount < 24) {
-                this.errorCount++;
-                this.timer = window.setTimeout(() => {
-                    this.timer = null;
-                    this.getMessages();
-                }, 5000);
+            if (this.isActive) {
+                if (this.errorCount < 24) {
+                    this.errorCount++;
+                    this.timer = window.setTimeout(() => {
+                        this.timer = null;
+                        this.getMessages();
+                    }, 5000);
+                }
+                else {
+                    if (this.onTeamDisconnected != null) {
+                        this.onTeamDisconnected(this.teamName, this.userName);
+                    }
+                }
             }
         }
     }
