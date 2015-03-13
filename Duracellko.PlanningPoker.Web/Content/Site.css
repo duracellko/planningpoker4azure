@@ -40,6 +40,20 @@ body {
     color: #5cb85c;
 }
 
+.team-title {
+    margin: 2px 0px 10px 0px;
+}
+
+.team-title h2, .team-title h3 {
+    display: inline-block;
+    margin: 0px 18px 0px 0px;
+}
+
+.team-title .badge {
+    position: relative;
+    top: -3px;
+}
+
 /* Select estimation */
 
 .availableEstimations ul {
