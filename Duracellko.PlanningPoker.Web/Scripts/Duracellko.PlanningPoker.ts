@@ -113,6 +113,7 @@ module Duracellko.PlanningPoker {
         private templateUrl: string;
         private messageBoxService = new MessageBoxService();
         private service: PlanningPokerService = null;
+        private userManager: UserManager = null;
         private createTeamController: CreateTeamController = null;
         private joinTeamController: JoinTeamController = null;
         private planningPokerDeskController: PlanningPokerDeskController = null;
@@ -135,6 +136,7 @@ module Duracellko.PlanningPoker {
 
         public initialize(): void {
             this.service = this.createPlanningPokerService();
+            this.userManager = new UserManager();
 
             var settings = <JQueryAjaxSettings>{
                 dataType: "html",
@@ -151,10 +153,10 @@ module Duracellko.PlanningPoker {
 
             this.createTeamController = new CreateTeamController(this.service);
             this.createTeamController.onTeamCreated = (scrumTeam, userName) => this.onTeamCreated(scrumTeam, userName);
-            this.joinTeamController = new JoinTeamController(this.service, this.messageBoxService);
+            this.joinTeamController = new JoinTeamController(this.service, this.messageBoxService, this.userManager);
             this.joinTeamController.onTeamJoined = (scrumTeam, userName) => this.onTeamJoined(scrumTeam, userName);
             this.joinTeamController.onTeamReconnected = (teamResult, userName) => this.onTeamReconnected(teamResult, userName);
-            this.planningPokerDeskController = new PlanningPokerDeskController(this.service);
+            this.planningPokerDeskController = new PlanningPokerDeskController(this.service, this.userManager);
             this.planningPokerDeskController.onTeamDisconnected = (teamName, userName) => this.onTeamDisconnected(teamName, userName);
 
             this.initializeHomeScreen();
@@ -361,6 +363,7 @@ module Duracellko.PlanningPoker {
     export class JoinTeamController {
         private service: PlanningPokerService;
         private messageBoxService: MessageBoxService;
+        private userManager: UserManager;
         private viewModel: JoinTeamViewModel = null;
         private view: JQuery = null;
         private viewTemplate: JQuery = null;
@@ -368,16 +371,20 @@ module Duracellko.PlanningPoker {
         public onTeamJoined: (scrumTeam: ScrumTeam, userName: string) => void = null;
         public onTeamReconnected: (teamResult: ReconnectTeamResult, userName: string) => void = null;
 
-        constructor(service: PlanningPokerService, messageBoxService: MessageBoxService) {
+        constructor(service: PlanningPokerService, messageBoxService: MessageBoxService, userManager: UserManager) {
             if (service == null) {
                 throw new Exception("service");
             }
             if (messageBoxService == null) {
                 throw new Exception("messageBoxService");
             }
+            if (userManager == null) {
+                throw new Exception("userManager");
+            }
 
             this.service = service;
             this.messageBoxService = messageBoxService;
+            this.userManager = userManager;
         }
 
         public initialize(view: JQuery): void {
@@ -389,11 +396,13 @@ module Duracellko.PlanningPoker {
                 this.viewTemplate = view.clone();
             }
 
-            this.viewModel = new JoinTeamViewModel(this.service, this.messageBoxService);
+            this.viewModel = new JoinTeamViewModel(this.service, this.messageBoxService, this.userManager);
             this.viewModel.onTeamJoined = (scrumTeam, userName) => this.viewModelOnTeamJoined(scrumTeam, userName);
             this.viewModel.onTeamReconnected = (teamResult, userName) => this.viewModelOnTeamReconnected(teamResult, userName);
             this.view = this.viewTemplate.clone().replaceAll(view);
             ko.applyBindings(this.viewModel, this.view.get(0));
+
+            this.viewModel.initialize();
         }
 
         public dispose(): void {
@@ -435,6 +444,7 @@ module Duracellko.PlanningPoker {
     export class JoinTeamViewModel {
         private service: PlanningPokerService;
         private messageBoxService: MessageBoxService;
+        private userManager: UserManager;
         public teamName = ko.observable("");
         public memberName = ko.observable("");
         public asObserver = ko.observable(false);
@@ -447,16 +457,36 @@ module Duracellko.PlanningPoker {
 
         private wasValidated = ko.observable(false);
 
-        constructor(service: PlanningPokerService, messageBoxService: MessageBoxService) {
+        constructor(service: PlanningPokerService, messageBoxService: MessageBoxService, userManager: UserManager) {
             if (service == null) {
                 throw new Exception("service");
             }
             if (messageBoxService == null) {
                 throw new Exception("messageBoxService");
             }
+            if (userManager == null) {
+                throw new Exception("userManager");
+            }
 
             this.service = service;
             this.messageBoxService = messageBoxService;
+            this.userManager = userManager;
+        }
+
+        public initialize(): void {
+            var configTeamName = this.userManager.teamName;
+            var configUserName = this.userManager.userName;
+
+            if (configTeamName != null && configTeamName != "") {
+                this.teamName(configTeamName);
+
+                if (configUserName != null && configUserName != "") {
+                    this.memberName(configUserName);
+
+                    var message = "You were disconnected. Do you want to reconnect to team '" + configTeamName + "' as user '" + configUserName + "'?";
+                    this.messageBoxService.show(message, "Reconnect", "Reconnect",() => this.reconnectCommandHandler());
+                }
+            }
         }
 
         public dispose(): void {
@@ -524,18 +554,23 @@ module Duracellko.PlanningPoker {
 
     export class PlanningPokerDeskController {
         private service: PlanningPokerService;
+        private userManager: UserManager;
         private scrumTeamController: ScrumTeamController;
         private userInfoController: UserInfoController;
         private messageController: PlanningPokerMessageController = null;
 
         public onTeamDisconnected: (teamName: string, userName: string) => void = null;
 
-        constructor(service: PlanningPokerService) {
+        constructor(service: PlanningPokerService, userManager: UserManager) {
             if (service == null) {
                 throw new Exception("service");
             }
+            if (userManager == null) {
+                throw new Exception("userManager");
+            }
 
             this.service = service;
+            this.userManager = userManager;
             this.scrumTeamController = new ScrumTeamController(this.service);
             this.userInfoController = new UserInfoController(this.service);
             this.userInfoController.onTeamDisconnected = (teamName, userName) => this.userInfoControllerOnTeamDisconnected(teamName, userName);
@@ -549,7 +584,7 @@ module Duracellko.PlanningPoker {
                 throw new Exception("userName");
             }
 
-            this.messageController = new PlanningPokerMessageController(this.service, scrumTeam.name, userName);
+            this.messageController = new PlanningPokerMessageController(this.service, scrumTeam.name, userName, this.userManager);
             this.messageController.onMessageReceived = m => this.processMessage(m);
             this.messageController.onTeamDisconnected = (teamName, userName) => this.messageControllerOnTeamDisconnected(teamName, userName);
             if (lastMessageId != null) {
@@ -637,6 +672,7 @@ module Duracellko.PlanningPoker {
 
     export class PlanningPokerMessageController {
         private service: PlanningPokerService;
+        private userManager: UserManager;
         private teamName: string;
         private userName: string;
         private isActive: boolean = false;
@@ -648,7 +684,7 @@ module Duracellko.PlanningPoker {
         public onMessageReceived: (message: Message) => boolean = null;
         public onTeamDisconnected: (teamName: string, userName: string) => void = null;
 
-        constructor(service: PlanningPokerService, teamName: string, userName: string) {
+        constructor(service: PlanningPokerService, teamName: string, userName: string, userManager: UserManager) {
             if (service == null) {
                 throw new Exception("service");
             }
@@ -658,10 +694,14 @@ module Duracellko.PlanningPoker {
             if (userName == null || userName == "") {
                 throw new Exception("userName");
             }
+            if (userManager == null) {
+                throw new Exception("userManager");
+            }
 
             this.service = service;
             this.teamName = teamName;
             this.userName = userName;
+            this.userManager = userManager;
         }
 
         public get lastMessageId(): number {
@@ -675,6 +715,7 @@ module Duracellko.PlanningPoker {
         public start(): void {
             this.isActive = true;
             this.errorCount = 0;
+            this.userManager.saveUser(this.teamName, this.userName);
             this.getMessages();
         }
 
@@ -688,6 +729,8 @@ module Duracellko.PlanningPoker {
             if (this.getMessagesPromise != null) {
                 this.getMessagesPromise.abort();
             }
+
+            this.userManager.saveUser(this.teamName, null);
         }
 
         private getMessages(): void {
@@ -701,6 +744,7 @@ module Duracellko.PlanningPoker {
             if (this.isActive) {
                 if (messages != null) {
                     this.errorCount = 0;
+                    this.userManager.saveUser(this.teamName, this.userName);
 
                     Enumerable.From(messages).ForEach(m => {
                         if (this.onMessageReceived != null) {
@@ -1195,6 +1239,156 @@ module Duracellko.PlanningPoker {
     class PromiseWithAbort<T> {
         public promise: JQueryPromise<T> = null;
         public abort = () => { };
+    }
+
+    class UserManager {
+        private static cookieExpiration: number = 900000;
+        private static cookiePrefix: string = "TEAM_";
+
+        public get teamName(): string {
+            var teamUser = this.parseUrlHash();
+            return teamUser != null && teamUser.team != "" ? teamUser.team : null;
+        }
+
+        public get userName(): string {
+            var teamUser = this.parseUrlHash();
+            if (teamUser != null && teamUser.team != null && teamUser.team != "" && teamUser.user != null && teamUser.user != "") {
+                var userCookie = this.getCookie(teamUser.team);
+                if (teamUser.user == userCookie) {
+                    return teamUser.user;
+                }
+            }
+
+            return null;
+        }
+
+        public saveUser(teamName: string, userName: string = null): void {
+            var userData = {
+                team: teamName,
+                user: userName
+            };
+            window.location.replace("#" + $.param(userData));
+            this.setCookie(teamName, userName);
+        }
+
+        private static parseCookiePair(pair: string): TeamUser {
+            var nameValue = pair.split("=", 2);
+            if (nameValue.length < 2) {
+                return null;
+            }
+
+            var name = nameValue[0];
+            try {
+                name = decodeURIComponent(name.trim());
+            }
+            catch (ex) {
+                name = null;
+            }
+
+            var value = nameValue[1];
+            try {
+                value = decodeURIComponent(value.trim());
+            }
+            catch (ex) {
+                value = null;
+            }
+
+            if (name == null || name.length <= UserManager.cookiePrefix.length ||
+                name.substr(0, UserManager.cookiePrefix.length) != UserManager.cookiePrefix) {
+                return null;
+            }
+
+            return <TeamUser>{
+                team: name.substr(UserManager.cookiePrefix.length),
+                user: value
+            }
+        }
+
+        private static parseUrlHashPair(pair: string): string[]{
+            var name: string = null;
+            var value: string = null;
+
+            var nameValue = pair.split("=", 2);
+            if (nameValue.length < 2) {
+                return [name, value];
+            }
+
+            try {
+                name = decodeURIComponent(nameValue[0]);
+            }
+            catch (ex) {
+                name = null;
+            }
+
+            try {
+                value = decodeURIComponent(nameValue[1]);
+            }
+            catch (ex) {
+                value = null;
+            }
+
+            return [name, value];
+        }
+
+        private parseUrlHash(): TeamUser {
+            var url = window.location.toString();
+            var urlParts = url.split("#", 2);
+            if (urlParts.length < 2) {
+                return null;
+            }
+
+            var hash = urlParts[1];
+            if (hash == null || hash.length == 0) {
+                return null;
+            }
+
+            if (hash[0] == "#") {
+                hash = hash.substr(1);
+            }
+
+            if (hash == "") {
+                return null;
+            }
+
+            var result = new TeamUser();
+            var hashComponents = Enumerable.From(hash.split("&"));
+            var hashPairs = hashComponents.Select(c => UserManager.parseUrlHashPair(c));
+            hashPairs.ForEach(p => {
+                if (p[0] == "team") {
+                    result.team = p[1];
+                }
+                else if (p[0] == "user") {
+                    result.user = p[1];
+                }
+            });
+
+            return result.team != null && result.team != "" ? result : null;
+        }
+
+        private getCookie(teamName: string): string {
+            var cookie = document.cookie;
+            var cookiePairs = Enumerable.From(cookie.split(";"));
+            var teamUserList = cookiePairs.Select(p => UserManager.parseCookiePair(p)).Where(tu => tu != null);
+            var teamUser = teamUserList.FirstOrDefault(null, tu => tu.team == teamName);
+            return teamUser != null ? teamUser.user : null;
+        }
+
+        private setCookie(teamName: string, userName: string): void {
+            var cookie = encodeURIComponent(UserManager.cookiePrefix + teamName) + "=";
+            if (userName != null && userName != "") {
+                cookie += encodeURIComponent(userName);
+            }
+
+            var expiration = new Date(Date.now() + UserManager.cookieExpiration);
+            cookie += "; expires=" + expiration.toUTCString();
+
+            document.cookie = cookie;
+        }
+    }
+
+    class TeamUser {
+        public team: string = null;
+        public user: string = null;
     }
 
     class PlanningPokerService {
