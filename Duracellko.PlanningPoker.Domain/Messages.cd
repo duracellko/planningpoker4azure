@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Duracellko.PlanningPoker.Domain.Message">
-    <Position X="2" Y="0.5" Width="1.5" />
+    <Position X="1.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Message.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -11,7 +11,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Duracellko.PlanningPoker.Domain.EstimationResult" Collapsed="true">
-    <Position X="0.75" Y="4.75" Width="1.5" />
+    <Position X="0.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACIAgAAAAAAAADEQCAEgAAQAAIIAAAAQAAAAAAAAAAA=</HashCode>
       <FileName>EstimationResult.cs</FileName>
@@ -19,7 +19,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Duracellko.PlanningPoker.Domain.EstimationResultMessage">
-    <Position X="0.5" Y="2.5" Width="2" />
+    <Position X="0.5" Y="3.5" Width="2" />
     <TypeIdentifier>
       <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>EstimationResultMessage.cs</FileName>
@@ -29,7 +29,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Duracellko.PlanningPoker.Domain.MemberMessage">
-    <Position X="4.75" Y="2.5" Width="1.5" />
+    <Position X="3.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
       <FileName>MemberMessage.cs</FileName>
@@ -39,16 +39,16 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Duracellko.PlanningPoker.Domain.Observer" Collapsed="true">
-    <Position X="4.75" Y="4.75" Width="1.5" />
+    <Position X="3.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AABAAAAAQAAAAAAAACAAAAQAEAAAAAABEAAAAAAAAgA=</HashCode>
+      <HashCode>IAFEAAAAQAAAAAAAACAAAAQBEAAAAAABEAAAAQAAAgA=</HashCode>
       <FileName>Observer.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="Duracellko.PlanningPoker.Domain.MessageType" Collapsed="true">
-    <Position X="6.25" Y="0.75" Width="1.5" />
+  <Enum Name="Duracellko.PlanningPoker.Domain.MessageType">
+    <Position X="4" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEIAAAAAAAEAAAAIAAEAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <HashCode>AAEAEIAAAAAAAEAgAAIAAEAAAABAAAAAAAAAAACAAAA=</HashCode>
       <FileName>MessageType.cs</FileName>
     </TypeIdentifier>
   </Enum>
