@@ -173,6 +173,7 @@ module Duracellko.PlanningPoker {
         private initializeHomeScreen(): void {
             this.planningPokerDeskController.hide();
             this.planningPokerDeskController.dispose();
+            $("#navbarPlanningPoker", this.container).collapse("hide");
 
             this.createTeamController.initialize($("#createTeamPanel", this.container));
             this.joinTeamController.initialize($("#joinTeamPanel", this.container));
@@ -185,6 +186,7 @@ module Duracellko.PlanningPoker {
             this.joinTeamController.hide();
             this.createTeamController.dispose();
             this.joinTeamController.dispose();
+            $("#navbarPlanningPoker", this.container).collapse("hide");
 
             this.planningPokerDeskController.initialize(scrumTeam, userName, this.container, lastMessageId, selectedEstimation);
             this.planningPokerDeskController.show();
