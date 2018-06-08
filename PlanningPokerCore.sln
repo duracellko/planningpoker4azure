@@ -9,6 +9,10 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Duracellko.PlanningPoker.Sh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Domain.Test", "src\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj", "{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker", "src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj", "{53DB6376-CAE2-461C-9C66-7B93006A363E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Test", "src\Duracellko.PlanningPoker.Test\Duracellko.PlanningPoker.Test.csproj", "{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{58ea5522-c08f-4a58-860c-32e1c52cf291}*SharedItemsImports = 13
@@ -26,6 +30,14 @@ Global
 		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
