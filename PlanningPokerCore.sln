@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Domain", "src\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj", "{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Duracellko.PlanningPoker.Shared", "src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.shproj", "{58EA5522-C08F-4A58-860C-32E1C52CF291}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Domain.Test", "src\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj", "{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{58ea5522-c08f-4a58-860c-32e1c52cf291}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C22E21A9-E10B-4324-BD51-350342EA8627}
+	EndGlobalSection
+EndGlobal
