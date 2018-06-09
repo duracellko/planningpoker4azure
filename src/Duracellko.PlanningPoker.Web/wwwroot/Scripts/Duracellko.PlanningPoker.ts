@@ -504,15 +504,8 @@ module Duracellko.PlanningPoker {
         }
 
         private onJoinedTeamFail(jqXHR: JQueryXHR): void {
-            var errorXml = null;
-            if (typeof (jqXHR.responseXML) == "undefined" || jqXHR.responseXML == null) {
-                errorXml = $.parseXML(jqXHR.responseText);
-            }
-            else {
-                errorXml = jqXHR.responseXML;
-            }
-            var errorMessage = $(errorXml).children("Fault").children("Reason").text();
-            if (errorMessage != "") {
+            var errorMessage = jqXHR.responseText;
+            if (errorMessage != null && errorMessage != "") {
                 if (errorMessage.indexOf("Member or observer named") >= 0 &&
                     errorMessage.indexOf("already exists in the team.") >= 0) {
                     errorMessage = errorMessage.split("\n", 1)[0];
