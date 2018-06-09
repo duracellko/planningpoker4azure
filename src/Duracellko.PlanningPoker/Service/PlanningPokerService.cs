@@ -14,6 +14,7 @@ namespace Duracellko.PlanningPoker.Service
     /// </summary>
     [Route("api/PlanningPokerService")]
     [Controller]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PlanningPokerService : ControllerBase
     {
         /// <summary>

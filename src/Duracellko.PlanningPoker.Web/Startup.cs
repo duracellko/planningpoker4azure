@@ -28,11 +28,20 @@ namespace Duracellko.PlanningPoker.Web
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
 
-            services.AddSingleton<IPlanningPoker, PlanningPokerController>();
-            services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
-            services.AddSingleton<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
-            services.AddSingleton<IPlanningPokerConfiguration, PlanningPokerConfiguration>();
+            var planningPokerConfiguration = GetPlanningPokerConfiguration();
+
             services.AddSingleton<DateTimeProvider>();
+            services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
+            services.AddSingleton<IPlanningPoker, PlanningPokerController>();
+            if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
+            {
+                services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
+                services.AddSingleton<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
+            }
+            else
+            {
+                services.AddSingleton<IScrumTeamRepository, EmptyScrumTeamRepository>();
+            }
 
             services.AddScoped<IHostedService, PlanningPokerCleanupService>();
 
@@ -53,6 +62,11 @@ namespace Duracellko.PlanningPoker.Web
 
             app.UseStaticFiles();
             app.UseMvc();
+        }
+
+        private PlanningPokerConfiguration GetPlanningPokerConfiguration()
+        {
+            return Configuration.GetSection("PlanningPoker").Get<PlanningPokerConfiguration>() ?? new PlanningPokerConfiguration();
         }
     }
 }

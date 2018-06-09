@@ -31,7 +31,7 @@ namespace Duracellko.PlanningPoker.Configuration
         /// <value>
         /// The repository folder.
         /// </value>
-        public string RepositoryFolder { get; set; } = @"App_Data\Teams";
+        public string RepositoryFolder { get; set; }
 
         /// <summary>
         /// Gets or sets the time in seconds, after which team (file) is deleted from repository when it is not used.
