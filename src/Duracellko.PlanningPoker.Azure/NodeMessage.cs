@@ -1,13 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Duracellko.PlanningPoker.Azure
+﻿namespace Duracellko.PlanningPoker.Azure
 {
     /// <summary>
     /// Message sent from one Planning Poker Azure node to another or broadcasted to all nodes.
@@ -20,7 +11,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="messageType">The node message type.</param>
         public NodeMessage(NodeMessageType messageType)
         {
-            this.MessageType = messageType;
+            MessageType = messageType;
         }
 
         /// <summary>

@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Test", "src\Duracellko.PlanningPoker.Test\Duracellko.PlanningPoker.Test.csproj", "{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Web", "src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj", "{E6A0A645-D69E-40DA-A778-E706FDA84E2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Web", "src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj", "{E6A0A645-D69E-40DA-A778-E706FDA84E2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Azure", "src\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj", "{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -44,6 +46,10 @@ Global
 		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

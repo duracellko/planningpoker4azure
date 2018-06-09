@@ -1,12 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.ServiceBus.Messaging;
+﻿using Microsoft.Azure.ServiceBus;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
@@ -20,13 +12,13 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of BrokeredMessage type.</returns>
-        BrokeredMessage ConvertToBrokeredMessage(NodeMessage message);
+        Message ConvertToBrokeredMessage(NodeMessage message);
 
         /// <summary>
         /// Converts BrokeredMessage message to <see cref="T:NodeMessage"/> object.
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of NodeMessage type.</returns>
-        NodeMessage ConvertToNodeMessage(BrokeredMessage message);
+        NodeMessage ConvertToNodeMessage(Message message);
     }
 }

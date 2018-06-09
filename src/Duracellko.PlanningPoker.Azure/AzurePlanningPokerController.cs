@@ -1,17 +1,11 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using Duracellko.PlanningPoker.Azure.Configuration;
-using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
@@ -24,16 +18,10 @@ namespace Duracellko.PlanningPoker.Azure
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Destructor is placed together with Dispose.")]
     public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IDisposable
     {
-        #region Fields
-
-        private readonly Subject<ScrumTeamMessage> observableMessages = new Subject<ScrumTeamMessage>();
-        private HashSet<string> teamsToInitialize;
-        private object teamsToInitializeLock = new object();
-        private volatile bool initialized = false;
-
-        #endregion
-
-        #region Constructor
+        private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
+        private HashSet<string> _teamsToInitialize;
+        private object _teamsToInitializeLock = new object();
+        private volatile bool _initialized = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
@@ -54,10 +42,6 @@ namespace Duracellko.PlanningPoker.Azure
         {
         }
 
-        #endregion
-
-        #region IAzurePlanningPoker
-
         /// <summary>
         /// Gets an observable object sending messages from all Scrum teams.
         /// </summary>
@@ -65,7 +49,7 @@ namespace Duracellko.PlanningPoker.Azure
         {
             get
             {
-                return this.observableMessages;
+                return _observableMessages;
             }
         }
 
@@ -75,14 +59,14 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="teamNames">The list of team names.</param>
         public void SetTeamsInitializingList(IEnumerable<string> teamNames)
         {
-            if (!this.initialized)
+            if (!_initialized)
             {
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    if (!this.initialized)
+                    if (!_initialized)
                     {
-                        this.Repository.DeleteAll();
-                        this.teamsToInitialize = new HashSet<string>(teamNames, StringComparer.OrdinalIgnoreCase);
+                        Repository.DeleteAll();
+                        _teamsToInitialize = new HashSet<string>(teamNames, StringComparer.OrdinalIgnoreCase);
                     }
                 }
             }
@@ -96,23 +80,23 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (team == null)
             {
-                throw new ArgumentNullException("team");
+                throw new ArgumentNullException(nameof(team));
             }
 
-            if (!this.initialized)
+            if (!_initialized)
             {
-                using (var teamLock = this.AttachScrumTeam(team))
+                using (var teamLock = AttachScrumTeam(team))
                 {
                 }
 
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    if (!this.initialized)
+                    if (!_initialized)
                     {
-                        this.teamsToInitialize.Remove(team.Name);
-                        if (this.teamsToInitialize.Count == 0)
+                        _teamsToInitialize.Remove(team.Name);
+                        if (_teamsToInitialize.Count == 0)
                         {
-                            this.initialized = true;
+                            _initialized = true;
                         }
                     }
                 }
@@ -124,47 +108,39 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         public void EndInitialization()
         {
-            lock (this.teamsToInitializeLock)
+            lock (_teamsToInitializeLock)
             {
-                this.initialized = true;
-                this.teamsToInitialize = null;
+                _initialized = true;
+                _teamsToInitialize = null;
             }
         }
-
-        #endregion
-
-        #region IDisposable
 
         /// <summary>
         /// Releases all resources.
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Releases all unmanaged and optionally managed resources. 
+        /// Releases all unmanaged and optionally managed resources.
         /// </summary>
         /// <param name="disposing"><c>True</c> if disposing not using GC; otherwise <c>false</c>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                this.observableMessages.OnCompleted();
-                this.observableMessages.Dispose();
+                _observableMessages.OnCompleted();
+                _observableMessages.Dispose();
             }
         }
 
         ~AzurePlanningPokerController()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
-
-        #endregion
-
-        #region Protected methods
 
         /// <summary>
         /// Executed when a Scrum team is added to collection of teams.
@@ -173,21 +149,21 @@ namespace Duracellko.PlanningPoker.Azure
         protected override void OnTeamAdded(ScrumTeam team)
         {
             base.OnTeamAdded(team);
-            team.MessageReceived += this.ScrumTeamOnMessageReceived;
+            team.MessageReceived += ScrumTeamOnMessageReceived;
 
             bool isInitializingTeam = false;
-            if (!this.initialized)
+            if (!_initialized)
             {
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    isInitializingTeam = this.teamsToInitialize != null && this.teamsToInitialize.Contains(team.Name, StringComparer.OrdinalIgnoreCase);
+                    isInitializingTeam = _teamsToInitialize != null && _teamsToInitialize.Contains(team.Name, StringComparer.OrdinalIgnoreCase);
                 }
             }
 
             if (!isInitializingTeam)
             {
                 var teamCreatedMessage = new ScrumTeamMessage(team.Name, MessageType.TeamCreated);
-                this.observableMessages.OnNext(teamCreatedMessage);
+                _observableMessages.OnNext(teamCreatedMessage);
             }
         }
 
@@ -197,7 +173,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="team">The Scrum team that was removed.</param>
         protected override void OnTeamRemoved(ScrumTeam team)
         {
-            team.MessageReceived -= this.ScrumTeamOnMessageReceived;
+            team.MessageReceived -= ScrumTeamOnMessageReceived;
             base.OnTeamRemoved(team);
         }
 
@@ -208,40 +184,40 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
         protected override void OnBeforeCreateScrumTeam(string teamName, string scrumMasterName)
         {
-            if (!this.initialized)
+            if (!_initialized)
             {
                 bool teamListInitialized = false;
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    teamListInitialized = this.teamsToInitialize != null;
+                    teamListInitialized = _teamsToInitialize != null;
                 }
 
                 if (!teamListInitialized)
                 {
-                    var timeout = this.InitializationTimeout;
+                    var timeout = InitializationTimeout;
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
                     while (!teamListInitialized && stopwatch.Elapsed < timeout)
                     {
                         System.Threading.Thread.Sleep(100);
-                        lock (this.teamsToInitializeLock)
+                        lock (_teamsToInitializeLock)
                         {
-                            teamListInitialized = this.initialized || this.teamsToInitialize != null;
+                            teamListInitialized = _initialized || _teamsToInitialize != null;
                         }
                     }
                 }
 
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    if (!this.initialized)
+                    if (!_initialized)
                     {
-                        if (this.teamsToInitialize == null)
+                        if (_teamsToInitialize == null)
                         {
                             throw new TimeoutException();
                         }
-                        else if (this.teamsToInitialize.Contains(teamName))
+                        else if (_teamsToInitialize.Contains(teamName))
                         {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.Error_ScrumTeamAlreadyExists, teamName), "teamName");
+                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
                         }
                     }
                 }
@@ -256,25 +232,25 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="teamName">Name of the team.</param>
         protected override void OnBeforeGetScrumTeam(string teamName)
         {
-            if (!this.initialized)
+            if (!_initialized)
             {
                 bool teamInitialized = false;
-                lock (this.teamsToInitializeLock)
+                lock (_teamsToInitializeLock)
                 {
-                    teamInitialized = this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName);
+                    teamInitialized = _teamsToInitialize != null && !_teamsToInitialize.Contains(teamName);
                 }
 
                 if (!teamInitialized)
                 {
-                    var timeout = this.InitializationTimeout;
+                    var timeout = InitializationTimeout;
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
                     while (!teamInitialized && stopwatch.Elapsed < timeout)
                     {
                         System.Threading.Thread.Sleep(100);
-                        lock (this.teamsToInitializeLock)
+                        lock (_teamsToInitializeLock)
                         {
-                            teamInitialized = this.initialized || (this.teamsToInitialize != null && !this.teamsToInitialize.Contains(teamName));
+                            teamInitialized = _initialized || (_teamsToInitialize != null && !_teamsToInitialize.Contains(teamName));
                         }
                     }
                 }
@@ -283,22 +259,14 @@ namespace Duracellko.PlanningPoker.Azure
             base.OnBeforeGetScrumTeam(teamName);
         }
 
-        #endregion
-
-        #region Properties properties
-
         private TimeSpan InitializationTimeout
         {
             get
             {
-                var configuration = this.Configuration as IAzurePlanningPokerConfiguration;
+                var configuration = Configuration as IAzurePlanningPokerConfiguration;
                 return configuration != null ? configuration.InitializationTimeout : TimeSpan.FromMinutes(1.0);
             }
         }
-
-        #endregion
-
-        #region Private methods
 
         private void ScrumTeamOnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
@@ -337,10 +305,8 @@ namespace Duracellko.PlanningPoker.Azure
 
             if (scrumTeamMessage != null)
             {
-                this.observableMessages.OnNext(scrumTeamMessage);
+                _observableMessages.OnNext(scrumTeamMessage);
             }
         }
-
-        #endregion
     }
 }

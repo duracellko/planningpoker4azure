@@ -1,12 +1,7 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text;
-using Microsoft.ServiceBus.Messaging;
+using Microsoft.Azure.ServiceBus;
+using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
@@ -24,7 +19,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// Name of property in BrokeredMessage holding sender node ID.
         /// </summary>
         internal const string SenderIdPropertyName = "SenderId";
-        
+
         private const string MessageTypePropertyName = "MessageType";
         private const string MessageSubtypePropertyName = "MessageSubtype";
 
@@ -33,17 +28,27 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of BrokeredMessage type.</returns>
-        public BrokeredMessage ConvertToBrokeredMessage(NodeMessage message)
+        public Message ConvertToBrokeredMessage(NodeMessage message)
         {
-            var result = new BrokeredMessage(message.Data);
-            result.Properties[MessageTypePropertyName] = message.MessageType.ToString();
-            if (message.Data != null)
+            byte[] messageData;
+            if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
-                result.Properties[MessageSubtypePropertyName] = message.Data.GetType().Name;
+                messageData = (byte[])message.Data;
+            }
+            else
+            {
+                messageData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message.Data));
             }
 
-            result.Properties[SenderIdPropertyName] = message.SenderNodeId;
-            result.Properties[RecipientIdPropertyName] = message.RecipientNodeId;
+            var result = new Message(messageData);
+            result.UserProperties[MessageTypePropertyName] = message.MessageType.ToString();
+            if (message.Data != null)
+            {
+                result.UserProperties[MessageSubtypePropertyName] = message.Data.GetType().Name;
+            }
+
+            result.UserProperties[SenderIdPropertyName] = message.SenderNodeId;
+            result.UserProperties[RecipientIdPropertyName] = message.RecipientNodeId;
             return result;
         }
 
@@ -52,39 +57,42 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of NodeMessage type.</returns>
-        public NodeMessage ConvertToNodeMessage(BrokeredMessage message)
+        public NodeMessage ConvertToNodeMessage(Message message)
         {
-            var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.Properties[MessageTypePropertyName]);
-            var messageSubtype = message.Properties.ContainsKey(MessageSubtypePropertyName) ? (string)message.Properties[MessageSubtypePropertyName] : null;
+            var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.UserProperties[MessageTypePropertyName]);
+            var messageSubtype = message.UserProperties.ContainsKey(MessageSubtypePropertyName) ? (string)message.UserProperties[MessageSubtypePropertyName] : null;
 
             var result = new NodeMessage(messageType);
-            result.SenderNodeId = (string)message.Properties[SenderIdPropertyName];
-            result.RecipientNodeId = (string)message.Properties[RecipientIdPropertyName];
+            result.SenderNodeId = (string)message.UserProperties[SenderIdPropertyName];
+            result.RecipientNodeId = (string)message.UserProperties[RecipientIdPropertyName];
 
+            string messageJson;
             switch (result.MessageType)
             {
                 case NodeMessageType.ScrumTeamMessage:
+                    messageJson = Encoding.UTF8.GetString(message.Body);
                     if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        result.Data = message.GetBody<ScrumTeamMemberMessage>();
+                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMemberMessage>(messageJson);
                     }
                     else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        result.Data = message.GetBody<ScrumTeamMemberEstimationMessage>();
+                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMemberEstimationMessage>(messageJson);
                     }
                     else
                     {
-                        result.Data = message.GetBody<ScrumTeamMessage>();
+                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMessage>(messageJson);
                     }
 
                     break;
                 case NodeMessageType.TeamCreated:
                 case NodeMessageType.InitializeTeam:
-                    result.Data = message.GetBody<byte[]>();
+                    result.Data = message.Body;
                     break;
                 case NodeMessageType.TeamList:
                 case NodeMessageType.RequestTeams:
-                    result.Data = message.GetBody<string[]>();
+                    messageJson = Encoding.UTF8.GetString(message.Body);
+                    result.Data = JsonConvert.DeserializeObject<string[]>(messageJson);
                     break;
             }
 

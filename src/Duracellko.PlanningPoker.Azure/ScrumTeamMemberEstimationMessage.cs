@@ -1,12 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Duracellko.PlanningPoker.Domain;
+﻿using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure
 {
@@ -15,8 +7,6 @@ namespace Duracellko.PlanningPoker.Azure
     /// </summary>
     public class ScrumTeamMemberEstimationMessage : ScrumTeamMessage
     {
-        #region Contructor
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamMemberEstimationMessage"/> class.
         /// </summary>
@@ -34,10 +24,6 @@ namespace Duracellko.PlanningPoker.Azure
         {
         }
 
-        #endregion
-
-        #region Properties
-
         /// <summary>
         /// Gets or sets a name of member, which this message is related to.
         /// </summary>
@@ -49,7 +35,5 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         /// <value>The member's estimation.</value>
         public double? Estimation { get; set; }
-
-        #endregion
     }
 }

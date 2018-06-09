@@ -1,11 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -15,8 +8,6 @@ namespace Duracellko.PlanningPoker.Azure
     /// </summary>
     public class ScrumTeamMessage
     {
-        #region Contructor
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamMessage"/> class.
         /// </summary>
@@ -33,16 +24,12 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (string.IsNullOrEmpty(teamName))
             {
-                throw new ArgumentNullException("teamName");
+                throw new ArgumentNullException(nameof(teamName));
             }
 
-            this.TeamName = teamName;
-            this.MessageType = messageType;
+            TeamName = teamName;
+            MessageType = messageType;
         }
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// Gets or sets a name of team, which this message is related to.
@@ -55,7 +42,5 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         /// <value>The message type.</value>
         public MessageType MessageType { get; set; }
-
-        #endregion
     }
 }

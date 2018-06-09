@@ -1,13 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Duracellko.PlanningPoker.Azure
+﻿namespace Duracellko.PlanningPoker.Azure
 {
     /// <summary>
     /// Type of Planning Poker Azure node message

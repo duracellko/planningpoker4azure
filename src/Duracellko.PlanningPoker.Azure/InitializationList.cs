@@ -1,12 +1,6 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Duracellko.PlanningPoker.Azure
 {
@@ -15,15 +9,9 @@ namespace Duracellko.PlanningPoker.Azure
     /// </summary>
     public class InitializationList
     {
-        #region Fields
-
-        private readonly StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-        private readonly object listLock = new object();
-        private List<string> list;
-
-        #endregion
-
-        #region Properties
+        private readonly StringComparer _comparer = StringComparer.OrdinalIgnoreCase;
+        private readonly object _listLock = new object();
+        private List<string> _list;
 
         /// <summary>
         /// Gets a value indicating whether the initialization queue is empty.
@@ -35,9 +23,9 @@ namespace Duracellko.PlanningPoker.Azure
         {
             get
             {
-                lock (this.listLock)
+                lock (_listLock)
                 {
-                    return this.list != null && this.list.Count == 0;
+                    return _list != null && _list.Count == 0;
                 }
             }
         }
@@ -52,16 +40,12 @@ namespace Duracellko.PlanningPoker.Azure
         {
             get
             {
-                lock (this.listLock)
+                lock (_listLock)
                 {
-                    return this.list != null ? this.list.ToList() : null;
+                    return _list != null ? _list.ToList() : null;
                 }
             }
         }
-
-        #endregion
-
-        #region Public methods
 
         /// <summary>
         /// Determines whether specified value is in queue for initialization or initialization has not started yet.
@@ -70,9 +54,9 @@ namespace Duracellko.PlanningPoker.Azure
         /// <returns><c>True</c> if the value is in queue or initialization has not started; otherwise <c>false</c>.</returns>
         public bool ContainsOrNotInit(string value)
         {
-            lock (this.listLock)
+            lock (_listLock)
             {
-                return this.list == null || this.list.Contains(value, StringComparer.OrdinalIgnoreCase);
+                return _list == null || _list.Contains(value, StringComparer.OrdinalIgnoreCase);
             }
         }
 
@@ -85,14 +69,14 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
 
-            lock (this.listLock)
+            lock (_listLock)
             {
-                if (this.list == null)
+                if (_list == null)
                 {
-                    this.list = values.ToList();
+                    _list = values.ToList();
                     return true;
                 }
                 else
@@ -109,9 +93,9 @@ namespace Duracellko.PlanningPoker.Azure
         /// <returns><c>True</c> if value was removed successfully; otherwise <c>false</c>.</returns>
         public bool Remove(string value)
         {
-            lock (this.listLock)
+            lock (_listLock)
             {
-                return this.list != null && this.list.RemoveAll(v => this.comparer.Equals(v, value)) != 0;
+                return _list != null && _list.RemoveAll(v => _comparer.Equals(v, value)) != 0;
             }
         }
 
@@ -120,12 +104,10 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         public void Clear()
         {
-            lock (this.listLock)
+            lock (_listLock)
             {
-                this.list = new List<string>();
+                _list = new List<string>();
             }
         }
-
-        #endregion
     }
 }

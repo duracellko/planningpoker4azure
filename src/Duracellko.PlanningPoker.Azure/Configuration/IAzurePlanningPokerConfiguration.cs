@@ -1,11 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using Duracellko.PlanningPoker.Configuration;
 
 namespace Duracellko.PlanningPoker.Azure.Configuration
@@ -15,6 +8,16 @@ namespace Duracellko.PlanningPoker.Azure.Configuration
     /// </summary>
     public interface IAzurePlanningPokerConfiguration : IPlanningPokerConfiguration
     {
+        /// <summary>
+        /// Gets a connection string to Azure ServiceBus.
+        /// </summary>
+        string ServiceBusConnectionString { get; }
+
+        /// <summary>
+        /// Gets a topic for communication on Azure ServiceBus.
+        /// </summary>
+        string ServiceBusTopic { get; }
+
         /// <summary>
         /// Gets a time to wait for end of initialization phase.
         /// </summary>

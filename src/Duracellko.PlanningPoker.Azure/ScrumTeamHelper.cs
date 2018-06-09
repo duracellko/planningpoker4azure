@@ -1,14 +1,7 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -27,7 +20,7 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (scrumTeam == null)
             {
-                throw new ArgumentNullException("scrumTeam");
+                throw new ArgumentNullException(nameof(scrumTeam));
             }
 
             using (var memoryStream = new MemoryStream())
@@ -58,7 +51,7 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (buffer == null)
             {
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             }
 
             using (var memoryStream = new MemoryStream(buffer))
