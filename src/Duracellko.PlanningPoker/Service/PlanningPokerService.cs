@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using D = Duracellko.PlanningPoker.Domain;
@@ -13,6 +12,8 @@ namespace Duracellko.PlanningPoker.Service
     /// <summary>
     /// Service providing operations for planning poker web clients.
     /// </summary>
+    [Route("api/PlanningPokerService")]
+    [Controller]
     public class PlanningPokerService : ControllerBase
     {
         /// <summary>
@@ -37,7 +38,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        [HttpGet]
+        [HttpGet("CreateTeam")]
         public ActionResult<ScrumTeam> CreateTeam(string teamName, string scrumMasterName)
         {
             ValidateTeamName(teamName);
@@ -66,7 +67,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        [HttpGet]
+        [HttpGet("JoinTeam")]
         public ActionResult<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver)
         {
             ValidateTeamName(teamName);
@@ -99,7 +100,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <remarks>
         /// This operation is used to resynchronize client and server. Current status of ScrumTeam is returned and message queue for the member is cleared.
         /// </remarks>
-        [HttpGet]
+        [HttpGet("ReconnectTeam")]
         public ActionResult<ReconnectTeamResult> ReconnectTeam(string teamName, string memberName)
         {
             ValidateTeamName(teamName);
@@ -150,7 +151,7 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
-        [HttpGet]
+        [HttpGet("DisconnectTeam")]
         public void DisconnectTeam(string teamName, string memberName)
         {
             ValidateTeamName(teamName);
@@ -168,7 +169,7 @@ namespace Duracellko.PlanningPoker.Service
         /// Signal from Scrum master to starts the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
-        [HttpGet]
+        [HttpGet("StartEstimation")]
         public void StartEstimation(string teamName)
         {
             ValidateTeamName(teamName);
@@ -185,7 +186,7 @@ namespace Duracellko.PlanningPoker.Service
         /// Signal from Scrum master to cancels the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
-        [HttpGet]
+        [HttpGet("CancelEstimation")]
         public void CancelEstimation(string teamName)
         {
             ValidateTeamName(teamName);
@@ -204,7 +205,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
         /// <param name="estimation">The estimation the member is submitting.</param>
-        [HttpGet]
+        [HttpGet("SubmitEstimation")]
         public void SubmitEstimation(string teamName, string memberName, double estimation)
         {
             ValidateTeamName(teamName);
@@ -242,12 +243,11 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
-        /// <param name="cancellationToken">Cancellation token to cancel assynchronous task.</param>
         /// <returns>
         /// The <see cref="T:System.IAsyncResult"/> object representing asynchronous operation.
         /// </returns>
-        [HttpGet]
-        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        [HttpGet("GetMessages")]
+        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId)
         {
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
@@ -257,7 +257,6 @@ namespace Duracellko.PlanningPoker.Service
                 TeamName = teamName,
                 MemberName = memberName,
                 LastMessageId = lastMessageId,
-                CancellationToken = cancellationToken
             };
             getMessagesTask.Start();
 
@@ -337,14 +336,6 @@ namespace Duracellko.PlanningPoker.Service
             /// The last message ID.
             /// </value>
             public long LastMessageId { get; set; }
-
-            /// <summary>
-            /// Gets or sets cancellation token to cancel task.
-            /// </summary>
-            /// <value>
-            /// The cancellation token.
-            /// </value>
-            public CancellationToken CancellationToken { get; set; }
 
             /// <summary>
             /// Gets the asynchronous operation of receiving messages for the team member.

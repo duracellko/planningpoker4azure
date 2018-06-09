@@ -1082,7 +1082,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 0);
 
             // Verify
             planningPoker.Verify();
@@ -1117,7 +1117,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 1, default(CancellationToken));
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 1);
 
             // Verify
             planningPoker.Verify();
@@ -1160,7 +1160,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 0);
 
             // Verify
             planningPoker.Verify();
@@ -1178,7 +1178,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(null, MemberName, 0, default(CancellationToken));
+            await target.GetMessages(null, MemberName, 0);
         }
 
         [TestMethod]
@@ -1190,7 +1190,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(TeamName, null, 0, default(CancellationToken));
+            await target.GetMessages(TeamName, null, 0);
         }
 
         [TestMethod]
@@ -1202,7 +1202,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(LongTeamName, MemberName, 0, default(CancellationToken));
+            await target.GetMessages(LongTeamName, MemberName, 0);
         }
 
         [TestMethod]
@@ -1214,7 +1214,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(TeamName, LongMemberName, 0, default(CancellationToken));
+            await target.GetMessages(TeamName, LongMemberName, 0);
         }
 
         private static D.ScrumTeam CreateBasicTeam()

@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Do
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Duracellko.PlanningPoker.Shared", "src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.shproj", "{58EA5522-C08F-4A58-860C-32E1C52CF291}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Domain.Test", "src\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj", "{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Domain.Test", "src\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj", "{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker", "src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj", "{53DB6376-CAE2-461C-9C66-7B93006A363E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker", "src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj", "{53DB6376-CAE2-461C-9C66-7B93006A363E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Test", "src\Duracellko.PlanningPoker.Test\Duracellko.PlanningPoker.Test.csproj", "{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Test", "src\Duracellko.PlanningPoker.Test\Duracellko.PlanningPoker.Test.csproj", "{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Web", "src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj", "{E6A0A645-D69E-40DA-A778-E706FDA84E2B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -38,6 +40,10 @@ Global
 		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

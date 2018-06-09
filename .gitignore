@@ -327,3 +327,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Compiled JavaScript
+src/Duracellko.PlanningPoker.Web/wwwroot/Scripts/Duracellko.PlanningPoker.js*

@@ -1,4 +1,5 @@
-﻿@{
+﻿@page
+@{
     ViewBag.Title = "Scrum Planning Poker";
 }
 <div class="pageContent">
@@ -30,7 +31,7 @@
         </div>
     </div>
 
-    <div id="planningPokerContainer" data-serviceurl="@Url.Content("~/Service/PlanningPoker.svc")" data-templateurl="@Url.Action("PlanningPoker")">
+    <div id="planningPokerContainer" data-serviceurl="@Url.Content("~/api/PlanningPokerService")" data-templateurl="@Url.Page("PlanningPoker")">
     </div>
 
     <script type="text/javascript">
