@@ -1,8 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,16 +16,10 @@ namespace Duracellko.PlanningPoker.Azure.Test
     [TestClass]
     public class PlanningPokerAzureNodeTest
     {
-        #region Consts
-
         private const string TeamName = "test team";
         private const string ScrumMasterName = "master";
         private const string MemberName = "member";
         private const string ObserverName = "observer";
-
-        #endregion
-
-        #region Constructor
 
         [TestMethod]
         public void Constructor_PlanningPoker_PlanningPokerIsSet()
@@ -95,10 +85,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Act
             var result = new PlanningPokerAzureNode(planningPoker.Object, null, null);
         }
-
-        #endregion
-
-        #region Messages from Planning Poker to Service Bus
 
         [TestMethod]
         public void Start_TeamCreatedMessage_MessageIsSentToServiceBus()
@@ -195,10 +181,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             serviceBus.Verify(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType != NodeMessageType.RequestTeamList)), Times.Never());
         }
-
-        #endregion
-
-        #region Messages from Service Bus
 
         [TestMethod]
         public void Start_MemberJoinedFromServiceBus_MemberJoinedTeam()
@@ -610,7 +592,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var dateTimeProvider = new DateTimeProviderMock();
             ScrumTeam team = null;
             planningPoker.Setup(p => p.AttachScrumTeam(It.IsAny<ScrumTeam>()))
-                .Callback<ScrumTeam>(t => team = t).Returns<ScrumTeam>(null).Verifiable();
+                .Callback<ScrumTeam>(t => team = t).Returns(default(IScrumTeamLock)).Verifiable();
             planningPoker.Setup(p => p.DateTimeProvider).Returns(dateTimeProvider).Verifiable();
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
@@ -653,10 +635,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Verify();
             serviceBus.Verify();
         }
-
-        #endregion
-
-        #region Initialization phase
 
         [TestMethod]
         public void Start_TeamListMessageReceived_SetScrumTeamListOnPlanningPoker()
@@ -952,7 +930,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization()).Verifiable();
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
-            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(new ArgumentException()).Verifiable();
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(new ArgumentException("teamName")).Verifiable();
 
             // Act
             target.Start();
@@ -968,10 +946,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.AreEqual<string>(TeamName, (string)initializeTeamMessage.Data);
             Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
-
-        #endregion
-
-        #region Private methods
 
         private static ScrumTeam CreateBasicTeam()
         {
@@ -1001,7 +975,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var emptyTeamListMessage = new NodeMessage(NodeMessageType.TeamList)
             {
-                Data = initializationTeamList ?? new string[0],
+                Data = initializationTeamList ?? Array.Empty<string>(),
                 RecipientNodeId = nodeId
             };
 
@@ -1074,11 +1048,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             }
         }
 
-        private static AzurePlanningPokerConfigurationElement CreateConfigutartion()
+        private static AzurePlanningPokerConfiguration CreateConfigutartion()
         {
-            return new AzurePlanningPokerConfigurationElement();
+            return new AzurePlanningPokerConfiguration();
         }
-
-        #endregion
     }
 }

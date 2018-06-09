@@ -1,12 +1,5 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Azure.Test
@@ -14,8 +7,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
     [TestClass]
     public class InitializationListTest
     {
-        #region IsEmpty
-
         [TestMethod]
         public void IsEmpty_NewInstance_True()
         {
@@ -29,10 +20,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsFalse(result);
         }
 
-        #endregion
-
-        #region Clear
-
         [TestMethod]
         public void Values_NewInstance_Null()
         {
@@ -45,10 +32,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             Assert.IsNull(result);
         }
-
-        #endregion
-
-        #region ContainsOrNotInit
 
         [TestMethod]
         public void ContainsOrNotInit_ExistingValue_ReturnsTrue()
@@ -104,10 +87,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             Assert.IsFalse(result);
         }
-
-        #endregion
-
-        #region Setup
 
         [TestMethod]
         public void Setup_2ValuesAndNotInitialized_ValuesAreSet()
@@ -180,7 +159,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             Assert.IsTrue(target.IsEmpty);
             Assert.IsNotNull(target.Values);
-            CollectionAssert.AreEquivalent(new string[0], target.Values.ToList());
+            CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
         }
 
         [TestMethod]
@@ -208,10 +187,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.Setup(null);
         }
 
-        #endregion
-
-        #region Remove
-
         [TestMethod]
         public void Remove_ExistingValue_ValueNotInCollection()
         {
@@ -238,7 +213,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.Remove("team2");
 
             // Verify
-            CollectionAssert.AreEquivalent(new string[0], target.Values.ToList());
+            CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
             Assert.IsTrue(target.IsEmpty);
         }
 
@@ -285,10 +260,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsFalse(result);
         }
 
-        #endregion
-
-        #region Clear
-
         [TestMethod]
         public void Clear_AfterInitialization_IsEmpty()
         {
@@ -301,7 +272,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsTrue(target.IsEmpty);
-            CollectionAssert.AreEquivalent(new string[0], target.Values.ToList());
+            CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
         }
 
         [TestMethod]
@@ -315,9 +286,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsTrue(target.IsEmpty);
-            CollectionAssert.AreEquivalent(new string[0], target.Values.ToList());
+            CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
         }
-
-        #endregion
     }
 }

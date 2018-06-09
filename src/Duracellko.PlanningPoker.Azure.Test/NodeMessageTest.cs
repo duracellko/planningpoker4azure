@@ -1,9 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Azure.Test
 {

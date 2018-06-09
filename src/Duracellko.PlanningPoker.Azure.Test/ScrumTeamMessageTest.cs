@@ -1,8 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
+﻿using System;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,8 +7,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
     [TestClass]
     public class ScrumTeamMessageTest
     {
-        #region Constructor
-
         [TestMethod]
         public void Constructor_TeamNameSpecified_TeamNameIsSet()
         {
@@ -52,7 +46,5 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Act
             var result = new ScrumTeamMessage(teamName, messageType);
         }
-
-        #endregion
     }
 }

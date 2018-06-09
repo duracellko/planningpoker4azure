@@ -1,8 +1,4 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -19,8 +15,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
     [TestClass]
     public class AzurePlanningPokerControllerTest
     {
-        #region ObservableMessages
-
         [TestMethod]
         public void ObservableMessages_TeamCreated_ScrumTeamCreatedMessage()
         {
@@ -28,7 +22,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = new AzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            
+
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
             target.CreateScrumTeam("test", "master");
@@ -178,10 +172,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.AreEqual<double?>(3.0, memberMessage.Estimation);
         }
 
-        #endregion
-
-        #region CreateScrumTeam
-
         [TestMethod]
         public void CreateScrumteam_AfterInitialization_CreatesNewTeam()
         {
@@ -204,9 +194,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
         {
             // Arrange
             var target = new AzurePlanningPokerController();
-            
+
             // Act
-            var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.CreateScrumTeam("test", "master"));
+            var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.CreateScrumTeam("test", "master"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
             Assert.IsFalse(task.IsCompleted);
             Thread.Sleep(50);
             Assert.IsFalse(task.IsCompleted);
@@ -234,16 +224,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void CreateScrumteam_InitializationTimeout_Exception()
         {
             // Arrange
-            var configuration = new AzurePlanningPokerConfigurationElement() { InitializationTimeout = 1 };
+            var configuration = new AzurePlanningPokerConfiguration() { InitializationTimeout = 1 };
             var target = new AzurePlanningPokerController(null, configuration, null);
 
             // Act
             target.CreateScrumTeam("test", "master");
         }
-
-        #endregion
-
-        #region GetScrumTeam
 
         [TestMethod]
         public void GetScrumTeam_AfterInitialization_GetsExistingTeam()
@@ -272,7 +258,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.SetTeamsInitializingList(new string[] { "test team", "team2" });
 
             // Act
-            var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"));
+            var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
             Assert.IsFalse(task.IsCompleted);
             Thread.Sleep(50);
             Assert.IsFalse(task.IsCompleted);
@@ -303,16 +289,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void GetScrumTeam_InitializationTimeout_ArgumentException()
         {
             // Arrange
-            var configuration = new AzurePlanningPokerConfigurationElement() { InitializationTimeout = 1 };
+            var configuration = new AzurePlanningPokerConfiguration() { InitializationTimeout = 1 };
             var target = new AzurePlanningPokerController(null, configuration, null);
 
             // Act
             target.GetScrumTeam("test team");
         }
-
-        #endregion
-
-        #region SetTeamsInitializingList
 
         [TestMethod]
         public void SetTeamsInitializingList_TeamSpeacified_DeleteAllFromRepository()
@@ -343,10 +325,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             repository.Verify(r => r.DeleteAll(), Times.Never());
         }
-
-        #endregion
-
-        #region InitializeScrumTeam
 
         [TestMethod]
         public void InitializeScrumTeam_TeamSpeacified_TeamAddedToController()
@@ -380,7 +358,5 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             Assert.IsNull(message);
         }
-
-        #endregion
     }
 }

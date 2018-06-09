@@ -1,25 +1,18 @@
-﻿// <copyright>
-// Copyright (c) 2012 Rasto Novotny
-// </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure.Test
 {
     public class DateTimeProviderMock : DateTimeProvider
     {
-        private DateTime now = DateTime.Now;
-        private DateTime utcNow = DateTime.UtcNow;
+        private DateTime _now = DateTime.Now;
+        private DateTime _utcNow = DateTime.UtcNow;
 
         public override DateTime Now
         {
             get
             {
-                return this.now;
+                return _now;
             }
         }
 
@@ -27,18 +20,18 @@ namespace Duracellko.PlanningPoker.Azure.Test
         {
             get
             {
-                return this.utcNow;
+                return _utcNow;
             }
         }
 
         public void SetNow(DateTime value)
         {
-            this.now = value;
+            _now = value;
         }
 
         public void SetUtcNow(DateTime value)
         {
-            this.utcNow = value;
+            _utcNow = value;
         }
     }
 }
