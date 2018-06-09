@@ -217,19 +217,13 @@ module Duracellko.PlanningPoker {
         }
 
         private serviceOnRequestError(jqXHR: JQueryXHR): void {
+            this.serviceOnRequestEnd(jqXHR);
             if ((<any>jqXHR).duracellkoErrorHandled) {
                 return;
             }
 
-            var errorXml = null;
-            if (typeof (jqXHR.responseXML) == "undefined" || jqXHR.responseXML == null) {
-                errorXml = $.parseXML(jqXHR.responseText);
-            }
-            else {
-                errorXml = jqXHR.responseXML;
-            }
-            var errorMessage = $(errorXml).children("Fault").children("Reason").text();
-            if (errorMessage != "") {
+            var errorMessage = jqXHR.responseText;
+            if (errorMessage != null && errorMessage != "") {
                 errorMessage = errorMessage.split("\n", 1)[0];
                 this.messageBoxService.show(errorMessage, "Error");
             }

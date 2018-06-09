@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Duracellko.PlanningPoker.Web
 {
@@ -31,13 +32,16 @@ namespace Duracellko.PlanningPoker.Web
             services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
             services.AddSingleton<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
             services.AddSingleton<IPlanningPokerConfiguration, PlanningPokerConfiguration>();
+            services.AddSingleton<DateTimeProvider>();
+
+            services.AddScoped<IHostedService, PlanningPokerCleanupService>();
 
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var env = app.ApplicationServices.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

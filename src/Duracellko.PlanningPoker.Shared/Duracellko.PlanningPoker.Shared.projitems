@@ -19,11 +19,11 @@
     <TreatSpecificWarningsAsErrors />
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Duracellko.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.CallOfDutyFree.Host' And '$(MSBuildProjectName)'!='Duracellko.CallOfDutyFree.RestTester'">
-    <OutputPath>..\..\..\Build\bin\Debug\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\Build\bin\Debug\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.CallOfDutyFree.Host' And '$(MSBuildProjectName)'!='Duracellko.CallOfDutyFree.RestTester'">
-    <OutputPath>..\..\..\Build\bin\Release\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\Build\bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1" />
