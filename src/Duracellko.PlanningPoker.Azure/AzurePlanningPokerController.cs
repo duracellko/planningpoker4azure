@@ -132,8 +132,11 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (disposing)
             {
-                _observableMessages.OnCompleted();
-                _observableMessages.Dispose();
+                if (!_observableMessages.IsDisposed)
+                {
+                    _observableMessages.OnCompleted();
+                    _observableMessages.Dispose();
+                }
             }
         }
 

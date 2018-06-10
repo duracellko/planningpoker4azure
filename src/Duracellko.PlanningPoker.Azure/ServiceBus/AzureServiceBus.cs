@@ -2,12 +2,17 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reactive.Subjects;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Xml.Linq;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Primitives;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
@@ -19,6 +24,10 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
     {
         private const string DefaultTopicName = "PlanningPoker";
         private const string SubscriptionPingPropertyName = "SubscriptionPing";
+
+        private static readonly XNamespace _entityNamespace = XNamespace.Get("http://www.w3.org/2005/Atom");
+        private static readonly XNamespace _servicebusNamespace = XNamespace.Get("http://schemas.microsoft.com/netservices/2010/10/servicebus/connect");
+        private static readonly TimeSpan _serviceBusTokenTimeOut = TimeSpan.FromMinutes(1);
 
         private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
         private readonly ConcurrentDictionary<string, DateTime> _nodes = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
@@ -97,7 +106,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// Register for receiving messages from other nodes.
         /// </summary>
         /// <param name="nodeId">Current node ID.</param>
-        public void Register(string nodeId)
+        public async void Register(string nodeId)
         {
             if (string.IsNullOrEmpty(nodeId))
             {
@@ -112,7 +121,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 _topicName = DefaultTopicName;
             }
 
-            CreateSubscription();
+            await CreateSubscription();
 
             SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -137,8 +146,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 _subscriptionClient = null;
             }
 
-            _observableMessages.OnCompleted();
-            _observableMessages.Dispose();
+            if (!_observableMessages.IsDisposed)
+            {
+                _observableMessages.OnCompleted();
+                _observableMessages.Dispose();
+            }
         }
 
         /// <summary>
@@ -167,10 +179,36 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             Dispose(false);
         }
 
-        private async void CreateSubscription()
+        private static XDocument CreateSubscriptionDescription()
+        {
+            var subscriptionDescription = new XElement(
+                _servicebusNamespace + "SubscriptionDescription",
+                new XElement(_servicebusNamespace + "DefaultMessageTimeToLive", TimeSpan.FromMinutes(1)));
+            return new XDocument(
+                new XElement(
+                    _entityNamespace + "entry",
+                    new XElement(_entityNamespace + "content", new XAttribute("type", "application/xml"), subscriptionDescription)));
+        }
+
+        private async Task CreateSubscription()
         {
             if (_subscriptionClient == null)
             {
+                using (var httpClient = new HttpClient())
+                {
+                    var uri = GetSubscriptionUri(_nodeId);
+                    var tokenProvider = CreateTokenProvider();
+                    var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
+                    httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
+
+                    using (var content = new StringContent(CreateSubscriptionDescription().ToString(SaveOptions.None), Encoding.UTF8, "application/atom+xml"))
+                    {
+                        content.Headers.ContentType.Parameters.Add(new NameValueHeaderValue("type", "entry"));
+                        var subscriptionResponse = await httpClient.PutAsync(uri, content);
+                        subscriptionResponse.Dispose();
+                    }
+                }
+
                 _subscriptionClient = new SubscriptionClient(_connectionString, _topicName, _nodeId);
 
                 string sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
@@ -238,6 +276,20 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                     await topicClient.CloseAsync();
                 }
             }
+        }
+
+        private ITokenProvider CreateTokenProvider()
+        {
+            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
+            return TokenProvider.CreateSharedAccessSignatureTokenProvider(connectionStringBuilder.SasKeyName, connectionStringBuilder.SasKey, TokenScope.Namespace);
+        }
+
+        private Uri GetSubscriptionUri(string subcriptionName)
+        {
+            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
+            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://");
+            uri = $"{uri}/{Uri.EscapeDataString(_topicName)}/subscriptions/{Uri.EscapeDataString(subcriptionName)}";
+            return new Uri(uri);
         }
     }
 }

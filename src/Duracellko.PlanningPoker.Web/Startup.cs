@@ -1,4 +1,7 @@
 ﻿using System;
+using Duracellko.PlanningPoker.Azure;
+using Duracellko.PlanningPoker.Azure.Configuration;
+using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
@@ -29,10 +32,25 @@ namespace Duracellko.PlanningPoker.Web
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration();
+            var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
 
             services.AddSingleton<DateTimeProvider>();
             services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
-            services.AddSingleton<IPlanningPoker, PlanningPokerController>();
+            if (isAzure)
+            {
+                services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
+                services.AddSingleton<IAzurePlanningPoker, AzurePlanningPokerController>();
+                services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<IAzurePlanningPoker>());
+                services.AddSingleton<PlanningPokerAzureNode>();
+                services.AddSingleton<IServiceBus, AzureServiceBus>();
+                services.AddSingleton<IMessageConverter, MessageConverter>();
+                services.AddScoped<IHostedService, AzurePlanningPokerNodeService>();
+            }
+            else
+            {
+                services.AddSingleton<IPlanningPoker, PlanningPokerController>();
+            }
+
             if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
             {
                 services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
@@ -64,9 +82,9 @@ namespace Duracellko.PlanningPoker.Web
             app.UseMvc();
         }
 
-        private PlanningPokerConfiguration GetPlanningPokerConfiguration()
+        private AzurePlanningPokerConfiguration GetPlanningPokerConfiguration()
         {
-            return Configuration.GetSection("PlanningPoker").Get<PlanningPokerConfiguration>() ?? new PlanningPokerConfiguration();
+            return Configuration.GetSection("PlanningPoker").Get<AzurePlanningPokerConfiguration>() ?? new AzurePlanningPokerConfiguration();
         }
     }
 }
