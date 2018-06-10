@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reactive.Subjects;
@@ -123,7 +125,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
             await CreateSubscription();
 
-            SendSubscriptionIsAliveMessage();
+            await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
             _subscriptionsMaintenanceTimer.Elapsed += SubscriptionsMaintenanceTimerOnElapsed;
             _subscriptionsMaintenanceTimer.Start();
@@ -151,6 +153,8 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 _observableMessages.OnCompleted();
                 _observableMessages.Dispose();
             }
+
+            DeleteSubscription().Wait();
         }
 
         /// <summary>
@@ -221,9 +225,18 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
+        private async Task DeleteSubscription()
+        {
+            if (_nodeId != null)
+            {
+                await DeleteSubscription(_nodeId);
+                _nodeId = null;
+            }
+        }
+
         private async Task ReceiveMessage(Message message, CancellationToken cancellationToken)
         {
-            if (message != null)
+            if (message != null && _nodeId != null)
             {
                 try
                 {
@@ -246,9 +259,17 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
-        private void SubscriptionsMaintenanceTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private async void SubscriptionsMaintenanceTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            SendSubscriptionIsAliveMessage();
+            try
+            {
+                await SendSubscriptionIsAliveMessage();
+                await DeleteInactiveSubscriptions();
+            }
+            catch (Exception)
+            {
+                // ignore error and try next time
+            }
         }
 
         private void ProcessSubscriptionIsAliveMessage(Message message)
@@ -258,7 +279,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             _nodes[subscriptionId] = subscriptionLastActivityTime;
         }
 
-        private async void SendSubscriptionIsAliveMessage()
+        private async Task SendSubscriptionIsAliveMessage()
         {
             var message = new Message();
             message.UserProperties[SubscriptionPingPropertyName] = DateTime.UtcNow;
@@ -275,6 +296,61 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 {
                     await topicClient.CloseAsync();
                 }
+            }
+        }
+
+        private async Task DeleteInactiveSubscriptions()
+        {
+            var subscriptions = await GetTopicSubscriptions();
+            foreach (var subscription in subscriptions)
+            {
+                if (!string.Equals(subscription, _nodeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    // if subscription is new, then assume that it has been created very recently and
+                    // this node has not received notification about it yet
+                    _nodes.TryAdd(subscription, DateTime.UtcNow);
+
+                    DateTime lastSubscriptionActivity;
+                    if (_nodes.TryGetValue(subscription, out lastSubscriptionActivity))
+                    {
+                        if (lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
+                        {
+                            await DeleteSubscription(subscription);
+                            _nodes.TryRemove(subscription, out lastSubscriptionActivity);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task<IEnumerable<string>> GetTopicSubscriptions()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var uri = GetSubscriptionUri(string.Empty);
+                var tokenProvider = CreateTokenProvider();
+                var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
+                httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
+
+                var subscriptionsResponse = await httpClient.GetStringAsync(uri);
+                var subscriptionsXml = XDocument.Parse(subscriptionsResponse);
+
+                var subscriptionElements = subscriptionsXml.Root.Elements(_entityNamespace + "entry").Elements(_entityNamespace + "title");
+                return subscriptionElements.Select(e => e.Value).ToList();
+            }
+        }
+
+        private async Task DeleteSubscription(string name)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var uri = GetSubscriptionUri(name);
+                var tokenProvider = CreateTokenProvider();
+                var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
+                httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
+
+                var subscriptionResponse = await httpClient.DeleteAsync(uri);
+                subscriptionResponse.Dispose();
             }
         }
 
