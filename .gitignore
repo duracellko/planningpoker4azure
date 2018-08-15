@@ -328,5 +328,10 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
+# LibMan restored files
+src/Duracellko.PlanningPoker.Web/wwwroot/css
+src/Duracellko.PlanningPoker.Web/wwwroot/fonts
+src/Duracellko.PlanningPoker.Web/wwwroot/js
+
 # Compiled JavaScript
-src/Duracellko.PlanningPoker.Web/wwwroot/Scripts/Duracellko.PlanningPoker.js*
+src/Duracellko.PlanningPoker.Web/wwwroot/Scripts/*.js*
