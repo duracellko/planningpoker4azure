@@ -61,6 +61,105 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service Bus subscription &quot;{subscriptionId}&quot; was deleted due to inactivity by Node ID &quot;{nodeId}&quot;..
+        /// </summary>
+        internal static string AzureServiceBus_Debug_InactiveSubscriptionDeleted {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_InactiveSubscriptionDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus message was received (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId}).
+        /// </summary>
+        internal static string AzureServiceBus_Debug_MessageReceived {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_MessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message sent to Azure Service Bus..
+        /// </summary>
+        internal static string AzureServiceBus_Debug_SendMessage {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_SendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus subscription is alive (Topic: {topic}, NodeID: {nodeId}, SubscriptionID: {subscriptionId}).
+        /// </summary>
+        internal static string AzureServiceBus_Debug_SubscriptionAliveMessageReceived {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_SubscriptionAliveMessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notification sent, that Node ID &quot;{nodeId}&quot; is alive..
+        /// </summary>
+        internal static string AzureServiceBus_Debug_SubscriptionAliveSent {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_SubscriptionAliveSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus subscription was created (Topic: {topic}, NodeID: {nodeId}).
+        /// </summary>
+        internal static string AzureServiceBus_Debug_SubscriptionCreated {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_SubscriptionCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus subscription was deleted (Topic: {topic}, NodeID: {nodeId}).
+        /// </summary>
+        internal static string AzureServiceBus_Debug_SubscriptionDeleted {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Debug_SubscriptionDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus message processing failed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId}).
+        /// </summary>
+        internal static string AzureServiceBus_Error_MessageError {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Error_MessageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error sending message to Azure Service Bus..
+        /// </summary>
+        internal static string AzureServiceBus_Error_SendMessage {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Error_SendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus subscriptions maintenance failed for Node ID: {nodeId}.
+        /// </summary>
+        internal static string AzureServiceBus_Error_SubscriptionsMaintenance {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Error_SubscriptionsMaintenance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Bus message was processed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId}).
+        /// </summary>
+        internal static string AzureServiceBus_Info_MessageProcessed {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Info_MessageProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
         /// </summary>
         internal static string Error_ScrumTeamAlreadyExists {

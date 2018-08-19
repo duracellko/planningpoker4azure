@@ -117,6 +117,39 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AzureServiceBus_Debug_InactiveSubscriptionDeleted" xml:space="preserve">
+    <value>Service Bus subscription "{subscriptionId}" was deleted due to inactivity by Node ID "{nodeId}".</value>
+  </data>
+  <data name="AzureServiceBus_Debug_MessageReceived" xml:space="preserve">
+    <value>Service Bus message was received (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId})</value>
+  </data>
+  <data name="AzureServiceBus_Debug_SendMessage" xml:space="preserve">
+    <value>Message sent to Azure Service Bus.</value>
+  </data>
+  <data name="AzureServiceBus_Debug_SubscriptionAliveMessageReceived" xml:space="preserve">
+    <value>Service Bus subscription is alive (Topic: {topic}, NodeID: {nodeId}, SubscriptionID: {subscriptionId})</value>
+  </data>
+  <data name="AzureServiceBus_Debug_SubscriptionAliveSent" xml:space="preserve">
+    <value>Notification sent, that Node ID "{nodeId}" is alive.</value>
+  </data>
+  <data name="AzureServiceBus_Debug_SubscriptionCreated" xml:space="preserve">
+    <value>Service Bus subscription was created (Topic: {topic}, NodeID: {nodeId})</value>
+  </data>
+  <data name="AzureServiceBus_Debug_SubscriptionDeleted" xml:space="preserve">
+    <value>Service Bus subscription was deleted (Topic: {topic}, NodeID: {nodeId})</value>
+  </data>
+  <data name="AzureServiceBus_Error_MessageError" xml:space="preserve">
+    <value>Service Bus message processing failed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId})</value>
+  </data>
+  <data name="AzureServiceBus_Error_SendMessage" xml:space="preserve">
+    <value>Error sending message to Azure Service Bus.</value>
+  </data>
+  <data name="AzureServiceBus_Error_SubscriptionsMaintenance" xml:space="preserve">
+    <value>Service Bus subscriptions maintenance failed for Node ID: {nodeId}</value>
+  </data>
+  <data name="AzureServiceBus_Info_MessageProcessed" xml:space="preserve">
+    <value>Service Bus message was processed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId})</value>
+  </data>
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
     <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
   </data>
