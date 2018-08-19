@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Data
 {
@@ -23,6 +24,7 @@ namespace Duracellko.PlanningPoker.Data
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly Lazy<string> _folder;
         private readonly Lazy<char[]> _invalidCharacters;
+        private readonly ILogger<FileScrumTeamRepository> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileScrumTeamRepository" /> class.
@@ -30,18 +32,15 @@ namespace Duracellko.PlanningPoker.Data
         /// <param name="settings">The repository settings.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="dateTimeProvider">The date-time provider.</param>
-        public FileScrumTeamRepository(IFileScrumTeamRepositorySettings settings, IPlanningPokerConfiguration configuration, DateTimeProvider dateTimeProvider)
+        /// <param name="logger">Logger instance to log events.</param>
+        public FileScrumTeamRepository(IFileScrumTeamRepositorySettings settings, IPlanningPokerConfiguration configuration, DateTimeProvider dateTimeProvider, ILogger<FileScrumTeamRepository> logger)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            _settings = settings;
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = configuration ?? new PlanningPokerConfiguration();
             _dateTimeProvider = dateTimeProvider ?? new DateTimeProvider();
             _folder = new Lazy<string>(GetFolder);
             _invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);
+            _logger = logger;
         }
 
         /// <summary>
@@ -65,6 +64,8 @@ namespace Duracellko.PlanningPoker.Data
         {
             get
             {
+                _logger?.LogDebug(Resources.Repository_Debug_LoadScrumTeamNames);
+
                 var expirationTime = _dateTimeProvider.UtcNow - _configuration.RepositoryTeamExpiration;
                 var directory = new DirectoryInfo(Folder);
                 if (directory.Exists)
@@ -122,6 +123,11 @@ namespace Duracellko.PlanningPoker.Data
                 }
             }
 
+            if (result != null)
+            {
+                _logger?.LogDebug(Resources.Repository_Debug_LoadScrumTeam, result.Name);
+            }
+
             return result;
         }
 
@@ -145,6 +151,8 @@ namespace Duracellko.PlanningPoker.Data
             {
                 SerializeScrumTeam(team, stream);
             }
+
+            _logger?.LogDebug(Resources.Repository_Debug_SaveScrumTeam, team.Name);
         }
 
         /// <summary>
@@ -166,6 +174,7 @@ namespace Duracellko.PlanningPoker.Data
                 try
                 {
                     File.Delete(file);
+                    _logger?.LogDebug(Resources.Repository_Debug_DeleteScrumTeam, teamName);
                 }
                 catch (IOException)
                 {
@@ -179,6 +188,8 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         public void DeleteExpiredScrumTeams()
         {
+            _logger?.LogDebug(Resources.Repository_Debug_DeleteExpiredScrumTeams);
+
             var expirationTime = _dateTimeProvider.UtcNow - _configuration.RepositoryTeamExpiration;
             var directory = new DirectoryInfo(Folder);
             if (directory.Exists)
@@ -206,6 +217,8 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         public void DeleteAll()
         {
+            _logger?.LogDebug(Resources.Repository_Debug_DeleteAllScrumTeams);
+
             var directory = new DirectoryInfo(Folder);
             if (directory.Exists)
             {

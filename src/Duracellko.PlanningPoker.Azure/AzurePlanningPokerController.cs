@@ -9,6 +9,7 @@ using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Azure
 {
@@ -37,8 +38,9 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
-        public AzurePlanningPokerController(DateTimeProvider dateTimeProvider, IAzurePlanningPokerConfiguration configuration, IScrumTeamRepository repository)
-            : base(dateTimeProvider, configuration, repository)
+        /// <param name="logger">Logger instance to log events.</param>
+        public AzurePlanningPokerController(DateTimeProvider dateTimeProvider, IAzurePlanningPokerConfiguration configuration, IScrumTeamRepository repository, ILogger<PlanningPokerController> logger)
+            : base(dateTimeProvider, configuration, repository, logger)
         {
         }
 

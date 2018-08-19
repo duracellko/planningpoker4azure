@@ -8,6 +8,7 @@ using System.Threading;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Controllers
 {
@@ -17,12 +18,13 @@ namespace Duracellko.PlanningPoker.Controllers
     public class PlanningPokerController : IPlanningPoker
     {
         private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+        private readonly ILogger<PlanningPokerController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
         /// </summary>
         public PlanningPokerController()
-            : this(null, null, null)
+            : this(null, null, null, null)
         {
         }
 
@@ -32,11 +34,13 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
-        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository)
+        /// <param name="logger">Logger instance to log events.</param>
+        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository, ILogger<PlanningPokerController> logger)
         {
             DateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
             Configuration = configuration ?? new PlanningPokerConfiguration();
             Repository = repository ?? new EmptyScrumTeamRepository();
+            _logger = logger;
         }
 
         /// <summary>
@@ -107,6 +111,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             OnTeamAdded(team);
+            _logger?.LogInformation(Resources.Info_ScrumTeamCreated, team.Name, team.ScrumMaster.Name);
 
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
@@ -136,6 +141,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             OnTeamAdded(team);
+            _logger?.LogInformation(Resources.Info_ScrumTeamAttached, team.Name);
 
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
@@ -162,6 +168,7 @@ namespace Duracellko.PlanningPoker.Controllers
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, teamName), nameof(teamName));
             }
 
+            _logger?.LogDebug(Resources.Debug_ReadScrumTeam, teamTuple.Item1.Name);
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
 
@@ -185,6 +192,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             if (observer.HasMessage)
             {
+                _logger?.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, observer.Team.Name, true);
                 callback(true, observer);
             }
             else
@@ -223,6 +231,7 @@ namespace Duracellko.PlanningPoker.Controllers
                 using (var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2))
                 {
                     teamLock.Lock();
+                    _logger?.LogInformation(Resources.Info_DisconnectingInactiveObservers, teamLock.Team.Name);
                     teamLock.Team.DisconnectInactiveObservers(inactivityTime);
                 }
             }
@@ -235,6 +244,7 @@ namespace Duracellko.PlanningPoker.Controllers
         protected virtual void OnTeamAdded(ScrumTeam team)
         {
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
+            _logger?.LogDebug(Resources.Debug_ScrumTeamAdded, team.Name);
         }
 
         /// <summary>
@@ -244,6 +254,7 @@ namespace Duracellko.PlanningPoker.Controllers
         protected virtual void OnTeamRemoved(ScrumTeam team)
         {
             team.MessageReceived -= new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
+            _logger?.LogDebug(Resources.Debug_ScrumTeamRemoved, team.Name);
         }
 
         /// <summary>
@@ -265,11 +276,12 @@ namespace Duracellko.PlanningPoker.Controllers
             // empty implementation by default
         }
 
-        private static void ExecuteGetMessagesAsyncCallback(Action<bool, Observer> callback, Observer observer, Tuple<ScrumTeam, object> teamTuple)
+        private void ExecuteGetMessagesAsyncCallback(Action<bool, Observer> callback, Observer observer, Tuple<ScrumTeam, object> teamTuple)
         {
             using (var teamLock = new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2))
             {
                 teamLock.Lock();
+                _logger?.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, teamLock.Team.Name, observer.HasMessage);
                 callback(observer.HasMessage, observer.HasMessage ? observer : null);
             }
         }
@@ -278,6 +290,8 @@ namespace Duracellko.PlanningPoker.Controllers
         {
             var team = (ScrumTeam)sender;
             bool saveTeam = true;
+
+            LogScrumTeamMessage(team, e.Message);
 
             if (e.Message.MessageType == MessageType.MemberDisconnected)
             {
@@ -289,6 +303,7 @@ namespace Duracellko.PlanningPoker.Controllers
                     Tuple<ScrumTeam, object> teamTuple;
                     _scrumTeams.TryRemove(team.Name, out teamTuple);
                     Repository.DeleteScrumTeam(team.Name);
+                    _logger?.LogInformation(Resources.Info_ScrumTeamRemoved, team.Name);
                 }
             }
 
@@ -348,6 +363,18 @@ namespace Duracellko.PlanningPoker.Controllers
         {
             team.DisconnectInactiveObservers(Configuration.ClientInactivityTimeout);
             return team.Members.Any() || team.Observers.Any();
+        }
+
+        private void LogScrumTeamMessage(ScrumTeam team, Message message)
+        {
+            if (message is MemberMessage memberMessage)
+            {
+                _logger?.LogInformation(Resources.Info_MemberMessage, team.Name, memberMessage.Id, memberMessage.MessageType, memberMessage.Member?.Name);
+            }
+            else
+            {
+                _logger?.LogInformation(Resources.Info_ScrumTeamMessage, team.Name, message.Id, message.MessageType);
+            }
         }
 
         /// <summary>

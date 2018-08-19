@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Debug_ObserverMessageReceived" xml:space="preserve">
+    <value>Observer "{observer}" in Scrum team "{scrumTeam}" received message: {hasMessages}</value>
+  </data>
+  <data name="Debug_ReadScrumTeam" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was locked.</value>
+  </data>
+  <data name="Debug_ScrumTeamAdded" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was added.</value>
+  </data>
+  <data name="Debug_ScrumTeamRemoved" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was removed.</value>
+  </data>
   <data name="Error_EndGetMessagesAsyncResult" xml:space="preserve">
     <value>IAsyncResult object was not provided by BeginGetMessage method.</value>
   </data>
@@ -137,5 +149,41 @@
   </data>
   <data name="Error_TeamNameTooLong" xml:space="preserve">
     <value>Team name cannot be longer than 50 characters.</value>
+  </data>
+  <data name="Info_DisconnectingInactiveObservers" xml:space="preserve">
+    <value>Disconnecting inactive observers in Scrum team: {scrumTeam}</value>
+  </data>
+  <data name="Info_MemberMessage" xml:space="preserve">
+    <value>Scrum team member message (team: {scrumTeam}, ID: {messageId}, type: {messageType}, member: {observer})</value>
+  </data>
+  <data name="Info_ScrumTeamAttached" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was attached.</value>
+  </data>
+  <data name="Info_ScrumTeamCreated" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was created with Scrum master: {scrumMaster}</value>
+  </data>
+  <data name="Info_ScrumTeamMessage" xml:space="preserve">
+    <value>Scrum team message (team: {scrumTeam}, ID: {messageId}, type: {messageType})</value>
+  </data>
+  <data name="Info_ScrumTeamRemoved" xml:space="preserve">
+    <value>Scrum team "{scrumTeam}" was removed.</value>
+  </data>
+  <data name="Repository_Debug_DeleteAllScrumTeams" xml:space="preserve">
+    <value>Deleting all Scrum teams.</value>
+  </data>
+  <data name="Repository_Debug_DeleteExpiredScrumTeams" xml:space="preserve">
+    <value>Deleting expired Scrum teams.</value>
+  </data>
+  <data name="Repository_Debug_DeleteScrumTeam" xml:space="preserve">
+    <value>Deleted Scrum team: {scrumTeam}</value>
+  </data>
+  <data name="Repository_Debug_LoadScrumTeam" xml:space="preserve">
+    <value>Loaded Scrum team: {scrumTeam}</value>
+  </data>
+  <data name="Repository_Debug_LoadScrumTeamNames" xml:space="preserve">
+    <value>Loading Scrum team names.</value>
+  </data>
+  <data name="Repository_Debug_SaveScrumTeam" xml:space="preserve">
+    <value>Saved Scrum team: {scrumTeam}</value>
   </data>
 </root>
