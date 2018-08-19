@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -29,7 +30,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
-            var result = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, null);
+            var result = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, null);
 
             // Verify
             Assert.AreEqual<IAzurePlanningPoker>(planningPoker.Object, result.PlanningPoker);
@@ -44,7 +45,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var configuration = CreateConfigutartion();
 
             // Act
-            var result = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, configuration);
+            var result = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, configuration);
 
             // Verify
             Assert.AreEqual<IAzurePlanningPokerConfiguration>(configuration, result.Configuration);
@@ -58,7 +59,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
-            var result = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, null);
+            var result = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, null);
 
             // Verify
             Assert.IsNotNull(result.Configuration);
@@ -72,7 +73,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
-            var result = new PlanningPokerAzureNode(null, serviceBus.Object, null);
+            var result = CreatePlanningPokerAzureNode(null, serviceBus.Object, null);
         }
 
         [TestMethod]
@@ -83,7 +84,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
 
             // Act
-            var result = new PlanningPokerAzureNode(planningPoker.Object, null, null);
+            var result = CreatePlanningPokerAzureNode(planningPoker.Object, null, null);
         }
 
         [TestMethod]
@@ -92,7 +93,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -129,7 +130,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -161,7 +162,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -188,7 +189,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
@@ -222,7 +223,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
@@ -252,7 +253,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
@@ -286,7 +287,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberDisconnected)
             {
@@ -317,7 +318,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberDisconnected)
             {
@@ -347,7 +348,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
@@ -374,7 +375,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
@@ -400,7 +401,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMessage(TeamName, MessageType.EstimationCanceled);
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
@@ -428,7 +429,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMessage(TeamName, MessageType.EstimationCanceled);
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
@@ -454,7 +455,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
             {
@@ -487,7 +488,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
             {
@@ -517,7 +518,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberActivity)
             {
@@ -554,7 +555,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberActivity)
             {
@@ -584,7 +585,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -617,7 +618,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
@@ -642,7 +643,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
@@ -672,7 +673,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, null);
@@ -704,7 +705,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = CreateSerializedBasicTeam() };
@@ -736,7 +737,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName, "team 2" };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = CreateSerializedBasicTeam() };
@@ -766,7 +767,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = TeamName };
@@ -794,7 +795,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList);
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
@@ -823,7 +824,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList) { SenderNodeId = "sender" };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
@@ -859,7 +860,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
@@ -885,7 +886,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
@@ -917,7 +918,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = new PlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
@@ -945,6 +946,20 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
             Assert.AreEqual<string>(TeamName, (string)initializeTeamMessage.Data);
             Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
+        }
+
+        private static PlanningPokerAzureNode CreatePlanningPokerAzureNode(
+            IAzurePlanningPoker planningPoker = null,
+            IServiceBus serviceBus = null,
+            IAzurePlanningPokerConfiguration configuration = null,
+            ILogger<PlanningPokerAzureNode> logger = null)
+        {
+            if (logger == null)
+            {
+                logger = Mock.Of<ILogger<PlanningPokerAzureNode>>();
+            }
+
+            return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, logger);
         }
 
         private static ScrumTeam CreateBasicTeam()

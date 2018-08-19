@@ -68,5 +68,77 @@ namespace Duracellko.PlanningPoker.Azure {
                 return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}).
+        /// </summary>
+        internal static string Info_NodeMessageReceived {
+            get {
+                return ResourceManager.GetString("Info_NodeMessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node message sent (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}).
+        /// </summary>
+        internal static string Info_NodeMessageSent {
+            get {
+                return ResourceManager.GetString("Info_NodeMessageSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node &quot;{nodeId}&quot; is initialized..
+        /// </summary>
+        internal static string Info_PlanningPokerAzureNodeInitialized {
+            get {
+                return ResourceManager.GetString("Info_PlanningPokerAzureNodeInitialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node &quot;{nodeId}&quot; is starting..
+        /// </summary>
+        internal static string Info_PlanningPokerAzureNodeStarting {
+            get {
+                return ResourceManager.GetString("Info_PlanningPokerAzureNodeStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node &quot;{nodeId}&quot; is stopping..
+        /// </summary>
+        internal static string Info_PlanningPokerAzureNodeStopping {
+            get {
+                return ResourceManager.GetString("Info_PlanningPokerAzureNodeStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam}).
+        /// </summary>
+        internal static string Info_ScrumTeamCreatedNodeMessageReceived {
+            get {
+                return ResourceManager.GetString("Info_ScrumTeamCreatedNodeMessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam}, Message type: {messageType}).
+        /// </summary>
+        internal static string Info_ScrumTeamNodeMessageReceived {
+            get {
+                return ResourceManager.GetString("Info_ScrumTeamNodeMessageReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retry to request Scrum team list for Node &quot;{nodeId}&quot;..
+        /// </summary>
+        internal static string Warning_RetryRequestTeamList {
+            get {
+                return ResourceManager.GetString("Warning_RetryRequestTeamList", resourceCulture);
+            }
+        }
     }
 }

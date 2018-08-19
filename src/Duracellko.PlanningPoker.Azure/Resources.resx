@@ -120,4 +120,28 @@
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
     <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
   </data>
+  <data name="Info_NodeMessageReceived" xml:space="preserve">
+    <value>Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type})</value>
+  </data>
+  <data name="Info_NodeMessageSent" xml:space="preserve">
+    <value>Planning Poker Azure Node message sent (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type})</value>
+  </data>
+  <data name="Info_PlanningPokerAzureNodeInitialized" xml:space="preserve">
+    <value>Planning Poker Azure Node "{nodeId}" is initialized.</value>
+  </data>
+  <data name="Info_PlanningPokerAzureNodeStarting" xml:space="preserve">
+    <value>Planning Poker Azure Node "{nodeId}" is starting.</value>
+  </data>
+  <data name="Info_PlanningPokerAzureNodeStopping" xml:space="preserve">
+    <value>Planning Poker Azure Node "{nodeId}" is stopping.</value>
+  </data>
+  <data name="Info_ScrumTeamCreatedNodeMessageReceived" xml:space="preserve">
+    <value>Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam})</value>
+  </data>
+  <data name="Info_ScrumTeamNodeMessageReceived" xml:space="preserve">
+    <value>Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam}, Message type: {messageType})</value>
+  </data>
+  <data name="Warning_RetryRequestTeamList" xml:space="preserve">
+    <value>Retry to request Scrum team list for Node "{nodeId}".</value>
+  </data>
 </root>
