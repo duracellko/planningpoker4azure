@@ -80,7 +80,8 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// Sends a message to service bus.
         /// </summary>
         /// <param name="message">The message to send.</param>
-        public async void SendMessage(NodeMessage message)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task SendMessage(NodeMessage message)
         {
             if (message == null)
             {
@@ -113,7 +114,8 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// Register for receiving messages from other nodes.
         /// </summary>
         /// <param name="nodeId">Current node ID.</param>
-        public async void Register(string nodeId)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task Register(string nodeId)
         {
             if (string.IsNullOrEmpty(nodeId))
             {
@@ -139,7 +141,8 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <summary>
         /// Stop receiving messages from other nodes.
         /// </summary>
-        public void Unregister()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task Unregister()
         {
             if (_subscriptionsMaintenanceTimer != null)
             {
@@ -149,7 +152,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
             if (_subscriptionClient != null)
             {
-                _subscriptionClient.CloseAsync().Wait();
+                await _subscriptionClient.CloseAsync();
                 _subscriptionClient = null;
             }
 
@@ -159,7 +162,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 _observableMessages.Dispose();
             }
 
-            DeleteSubscription().Wait();
+            await DeleteSubscription();
         }
 
         /// <summary>
@@ -179,7 +182,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         {
             if (disposing)
             {
-                Unregister();
+                Unregister().Wait();
             }
         }
 

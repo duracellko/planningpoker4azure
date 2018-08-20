@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
@@ -88,7 +89,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_TeamCreatedMessage_MessageIsSentToServiceBus()
+        public async Task Start_TeamCreatedMessage_MessageIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -105,13 +106,14 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
             NodeMessage nodeMessage = null;
-            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamCreated))).Callback<NodeMessage>(m => nodeMessage = m).Verifiable();
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamCreated)))
+                .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendServiceBusMsg();
             startPlanningPokerMsg();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -125,7 +127,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_MemberJoined_MessageIsSentToServiceBus()
+        public async Task Start_MemberJoined_MessageIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -139,13 +141,14 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
             NodeMessage nodeMessage = null;
-            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage))).Callback<NodeMessage>(m => nodeMessage = m).Verifiable();
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage)))
+                .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendServiceBusMsg();
             startPlanningPokerMsg();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -157,7 +160,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_EstimationEnded_NoMessageIsSentToServiceBus()
+        public async Task Start_EstimationEnded_NoMessageIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -172,10 +175,10 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
 
             // Act
-            target.Start();
+            await target.Start();
             sendServiceBusMsg();
             startPlanningPokerMsg();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -184,7 +187,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_MemberJoinedFromServiceBus_MemberJoinedTeam()
+        public async Task Start_MemberJoinedFromServiceBus_MemberJoinedTeam()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -203,9 +206,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -218,7 +221,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndMemberJoinedFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndMemberJoinedFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -237,9 +240,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -248,7 +251,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_ObserverJoinedFromServiceBus_ObserverJoinedTeam()
+        public async Task Start_ObserverJoinedFromServiceBus_ObserverJoinedTeam()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -267,9 +270,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -282,7 +285,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_MasterDisconnectedFromServiceBus_MasterDisconnectedFromTeam()
+        public async Task Start_MasterDisconnectedFromServiceBus_MasterDisconnectedFromTeam()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -301,9 +304,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -313,7 +316,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndMasterDisconnectedFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndMasterDisconnectedFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -332,9 +335,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -343,7 +346,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_EstimationStartedFromServiceBus_TeamEstimationStarted()
+        public async Task Start_EstimationStartedFromServiceBus_TeamEstimationStarted()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -358,9 +361,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -370,7 +373,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndEstimationStartedFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndEstimationStartedFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -385,9 +388,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -396,7 +399,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_EstimationCanceledFromServiceBus_TeamEstimationCanceled()
+        public async Task Start_EstimationCanceledFromServiceBus_TeamEstimationCanceled()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -412,9 +415,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -424,7 +427,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndEstimationCanceledFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndEstimationCanceledFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -439,9 +442,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -450,7 +453,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_MasterEstimatedFromServiceBus_MasterEstimationIsSet()
+        public async Task Start_MasterEstimatedFromServiceBus_MasterEstimationIsSet()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -470,9 +473,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -483,7 +486,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndMasterEstimatedFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndMasterEstimatedFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -502,9 +505,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -513,7 +516,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_MasterActivityFromServiceBus_MasterUpdatedActivityInTeam()
+        public async Task Start_MasterActivityFromServiceBus_MasterUpdatedActivityInTeam()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -538,9 +541,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 9, 9, 23, 28, 27, DateTimeKind.Utc));
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -550,7 +553,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndMasterActivityFromServiceBus_MessageIgnored()
+        public async Task Start_NotInitAndMasterActivityFromServiceBus_MessageIgnored()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -569,9 +572,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
@@ -580,7 +583,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_TeamCreatedFromServiceBus_TeamAttachedToPlanningPoker()
+        public async Task Start_TeamCreatedFromServiceBus_TeamAttachedToPlanningPoker()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -600,9 +603,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.EndInitialization());
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -613,7 +616,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_NotInitAndTeamCreatedFromServiceBus_IgnoreMessage()
+        public async Task Start_NotInitAndTeamCreatedFromServiceBus_IgnoreMessage()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -627,9 +630,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify(p => p.AttachScrumTeam(It.IsAny<ScrumTeam>()), Times.Never());
@@ -638,7 +641,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_TeamListMessageReceived_SetScrumTeamListOnPlanningPoker()
+        public async Task Start_TeamListMessageReceived_SetScrumTeamListOnPlanningPoker()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -656,9 +659,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 .Callback<IEnumerable<string>>(t => initializationTeamList = t).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -668,7 +671,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_TeamListMessageReceived_RequestForTeams()
+        public async Task Start_TeamListMessageReceived_RequestForTeams()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -679,16 +682,16 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, null);
             NodeMessage requestTeamsMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeams)))
-                .Callback<NodeMessage>(m => requestTeamsMessage = m).Verifiable();
+                .Callback<NodeMessage>(m => requestTeamsMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
             planningPoker.Setup(p => p.DateTimeProvider).Returns(DateTimeProvider.Default);
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>())).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -700,7 +703,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_InitializeTeamMessageReceived_InitializeTeamOnPlanningPoker()
+        public async Task Start_InitializeTeamMessageReceived_InitializeTeamOnPlanningPoker()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -720,9 +723,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.EndInitialization()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -732,7 +735,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_InitializeTeamMessageReceivedButAnotherTeamIsNotInitializedYet_EndInitializationIsNotExecuted()
+        public async Task Start_InitializeTeamMessageReceivedButAnotherTeamIsNotInitializedYet_EndInitializationIsNotExecuted()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -751,9 +754,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.InitializeScrumTeam(It.IsAny<ScrumTeam>())).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -762,7 +765,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_InitializeTeamMessageReceivedWithTeamNameOnly_SkipsInitializationOfThisTeam()
+        public async Task Start_InitializeTeamMessageReceivedWithTeamNameOnly_SkipsInitializationOfThisTeam()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -780,9 +783,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.EndInitialization()).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -790,7 +793,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_RequestTeamListMessageReceived_TeamListIsObtainedFromPlanningPoker()
+        public async Task Start_RequestTeamListMessageReceived_TeamListIsObtainedFromPlanningPoker()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -809,9 +812,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.ScrumTeamNames).Returns(teamList).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -819,7 +822,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_RequestTeamListMessageReceived_TeamListIsSentToServiceBus()
+        public async Task Start_RequestTeamListMessageReceived_TeamListIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -831,7 +834,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage teamListMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamList)))
-                .Callback<NodeMessage>(m => teamListMessage = m).Verifiable();
+                .Callback<NodeMessage>(m => teamListMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             var teamList = new string[] { TeamName };
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
@@ -841,9 +844,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.ScrumTeamNames).Returns(teamList);
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -855,7 +858,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_RequestTeamsMessageReceived_TeamIsObtainedFromPlanningPoker()
+        public async Task Start_RequestTeamsMessageReceived_TeamIsObtainedFromPlanningPoker()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -870,9 +873,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var teamLock = SetupPlanningPoker(planningPoker, CreateBasicTeam());
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -881,7 +884,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_RequestTeamsMessageReceived_TeamIsSentToServiceBus()
+        public async Task Start_RequestTeamsMessageReceived_TeamIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -894,14 +897,14 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
-                .Callback<NodeMessage>(m => initializeTeamMessage = m).Verifiable();
+                .Callback<NodeMessage>(m => initializeTeamMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             SetupPlanningPoker(planningPoker, CreateBasicTeam());
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -913,7 +916,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void Start_RequestTeamsMessageReceivedButTeamDoesNotExistAnymore_TeamNameIsSentToServiceBus()
+        public async Task Start_RequestTeamsMessageReceivedButTeamDoesNotExistAnymore_TeamNameIsSentToServiceBus()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -926,7 +929,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
-                .Callback<NodeMessage>(m => initializeTeamMessage = m).Verifiable();
+                .Callback<NodeMessage>(m => initializeTeamMessage = m).Returns(Task.CompletedTask).Verifiable();
 
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization()).Verifiable();
@@ -934,9 +937,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(new ArgumentException("teamName")).Verifiable();
 
             // Act
-            target.Start();
+            await target.Start();
             sendMessages();
-            target.Stop();
+            await target.Stop();
 
             // Verify
             planningPoker.Verify();
@@ -985,8 +988,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
         private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, string[] initializationTeamList, NodeMessage nodeMessage)
         {
-            serviceBus.Setup(b => b.Register(nodeId)).Verifiable();
-            serviceBus.Setup(b => b.Unregister()).Verifiable();
+            serviceBus.Setup(b => b.Register(nodeId)).Returns(Task.CompletedTask).Verifiable();
+            serviceBus.Setup(b => b.Unregister()).Returns(Task.CompletedTask).Verifiable();
 
             var emptyTeamListMessage = new NodeMessage(NodeMessageType.TeamList)
             {
@@ -999,11 +1002,13 @@ namespace Duracellko.PlanningPoker.Azure.Test
             if (initializationTeamList != null && initializationTeamList.Length != 0)
             {
                 serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m =>
-                    m.MessageType == NodeMessageType.RequestTeamList || m.MessageType == NodeMessageType.RequestTeams))).Verifiable();
+                    m.MessageType == NodeMessageType.RequestTeamList || m.MessageType == NodeMessageType.RequestTeams)))
+                    .Returns(Task.CompletedTask).Verifiable();
             }
             else
             {
-                serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeamList))).Verifiable();
+                serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeamList)))
+                    .Returns(Task.CompletedTask).Verifiable();
             }
 
             return new Action(

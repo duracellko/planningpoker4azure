@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
@@ -16,17 +17,20 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// Sends a message to service bus.
         /// </summary>
         /// <param name="message">The message to send.</param>
-        void SendMessage(NodeMessage message);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task SendMessage(NodeMessage message);
 
         /// <summary>
         /// Register for receiving messages from other nodes.
         /// </summary>
         /// <param name="nodeId">Current node ID.</param>
-        void Register(string nodeId);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task Register(string nodeId);
 
         /// <summary>
         /// Stop receiving messages from other nodes.
         /// </summary>
-        void Unregister();
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task Unregister();
     }
 }

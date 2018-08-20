@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
@@ -67,11 +68,12 @@ namespace Duracellko.PlanningPoker.Azure
         /// <summary>
         /// Starts synchronization with other nodes.
         /// </summary>
-        public void Start()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task Start()
         {
             _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeStarting, NodeId);
 
-            ServiceBus.Register(NodeId);
+            await ServiceBus.Register(NodeId);
             SetupPlanningPokerListeners();
             SetupServiceBusListeners();
 
@@ -81,7 +83,8 @@ namespace Duracellko.PlanningPoker.Azure
         /// <summary>
         /// Stops synchronization with other nodes.
         /// </summary>
-        public void Stop()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task Stop()
         {
             _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeStopping, NodeId);
 
@@ -115,7 +118,7 @@ namespace Duracellko.PlanningPoker.Azure
                 _serviceBusRequestTeamsMessageSubscription = null;
             }
 
-            ServiceBus.Unregister();
+            return ServiceBus.Unregister();
         }
 
         /// <summary>
@@ -135,7 +138,7 @@ namespace Duracellko.PlanningPoker.Azure
         {
             if (disposing)
             {
-                Stop();
+                Stop().Wait();
             }
         }
 
@@ -181,10 +184,10 @@ namespace Duracellko.PlanningPoker.Azure
             }
         }
 
-        private void SendNodeMessage(NodeMessage message)
+        private async void SendNodeMessage(NodeMessage message)
         {
             message.SenderNodeId = NodeId;
-            ServiceBus.SendMessage(message);
+            await ServiceBus.SendMessage(message);
 
             _logger?.LogInformation(Resources.Info_NodeMessageSent, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
         }
@@ -378,10 +381,10 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessTeamListMessage(NodeMessage message)
         {
-            _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
-
             if (message != null)
             {
+                _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+
                 var teamList = (IEnumerable<string>)message.Data;
                 if (_teamsToInitialize.Setup(teamList))
                 {
@@ -418,7 +421,7 @@ namespace Duracellko.PlanningPoker.Azure
                         ProcessInitializeTeamMessage(m);
                     }));
                 var messageTimeoutActions = Observable.Interval(TimeSpan.FromSeconds(1.0)).Synchronize(lockObject)
-                    .SelectMany(i => lastMessageTime + Configuration.InitializationMessageTimeout > PlanningPoker.DateTimeProvider.UtcNow ? Observable.Throw<Action>(new TimeoutException()) : Observable.Empty<Action>());
+                    .SelectMany(i => lastMessageTime + Configuration.InitializationMessageTimeout < PlanningPoker.DateTimeProvider.UtcNow ? Observable.Throw<Action>(new TimeoutException()) : Observable.Empty<Action>());
 
                 void RetryRequestTeamList(Exception ex)
                 {
