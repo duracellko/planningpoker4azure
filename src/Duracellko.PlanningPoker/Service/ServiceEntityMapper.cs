@@ -32,7 +32,7 @@ namespace Duracellko.PlanningPoker.Service
                 config.AllowNullCollections = true;
                 config.CreateMap<D.ScrumTeam, ScrumTeam>();
                 config.CreateMap<D.Observer, TeamMember>()
-                    .ForMember(m => m.Type, mc => mc.ResolveUsing((D.Observer o) => o.GetType().Name));
+                    .ForMember(m => m.Type, mc => mc.MapFrom((s, d, m) => s.GetType().Name));
                 config.CreateMap<D.Message, Message>()
                     .Include<D.MemberMessage, MemberMessage>()
                     .Include<D.EstimationResultMessage, EstimationResultMessage>()
@@ -44,11 +44,14 @@ namespace Duracellko.PlanningPoker.Service
                     .ForMember(i => i.Estimation, mc => mc.MapFrom(p => p.Value));
                 config.CreateMap<D.EstimationParticipantStatus, EstimationParticipantStatus>();
                 config.CreateMap<D.Estimation, Estimation>()
-                    .ForMember(e => e.Value, mc => mc.ResolveUsing(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value) ? Estimation.PositiveInfinity : e.Value));
+                    .ForMember(e => e.Value, mc => mc.MapFrom((s, d, m) => MapEstimationValue(s.Value)));
             });
 
             result.AssertConfigurationIsValid();
             return result;
         }
+
+        private static double? MapEstimationValue(double? value) =>
+            value.HasValue && double.IsPositiveInfinity(value.Value) ? Estimation.PositiveInfinity : value;
     }
 }
