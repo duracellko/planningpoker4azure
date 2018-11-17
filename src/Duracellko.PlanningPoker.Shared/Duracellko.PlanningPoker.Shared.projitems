@@ -19,10 +19,10 @@
     <TreatSpecificWarningsAsErrors />
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Duracellko.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Client'">
     <OutputPath>..\..\Build\bin\Debug\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Client'">
     <OutputPath>..\..\Build\bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>

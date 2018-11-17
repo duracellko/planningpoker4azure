@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj" />
+    <ProjectReference Include="..\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

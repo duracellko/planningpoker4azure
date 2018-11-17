@@ -333,5 +333,9 @@ src/Duracellko.PlanningPoker.Web/wwwroot/css
 src/Duracellko.PlanningPoker.Web/wwwroot/fonts
 src/Duracellko.PlanningPoker.Web/wwwroot/js
 
+src/Duracellko.PlanningPoker.Client/wwwroot/css
+src/Duracellko.PlanningPoker.Client/wwwroot/fonts
+src/Duracellko.PlanningPoker.Client/wwwroot/js
+
 # Compiled JavaScript
 src/Duracellko.PlanningPoker.Web/wwwroot/Scripts/*.js*

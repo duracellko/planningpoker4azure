@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Mime;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -7,9 +9,11 @@ using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Service;
+using Microsoft.AspNetCore.Blazor.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +34,15 @@ namespace Duracellko.PlanningPoker.Web
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
+
+            services.AddResponseCompression(options =>
+            {
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+                {
+                    MediaTypeNames.Application.Octet,
+                    WasmMediaTypeNames.Application.Wasm,
+                });
+            });
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration();
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
@@ -78,8 +91,10 @@ namespace Duracellko.PlanningPoker.Web
                 app.UseHsts();
             }
 
+            app.UseResponseCompression();
             app.UseStaticFiles();
             app.UseMvc();
+            app.UseBlazor<Duracellko.PlanningPoker.Client.Startup>();
         }
 
         private AzurePlanningPokerConfiguration GetPlanningPokerConfiguration()
