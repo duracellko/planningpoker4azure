@@ -1,0 +1,68 @@
+﻿@implements IDisposable
+@inject UI.MessageBoxService _messageBoxService
+
+@if (IsDialogVisible)
+{
+    <div class="modal fade in" role="dialog" style="padding-right: 16px; display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="@CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">@Title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Message</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" style="display: none"></button>
+                    <button type="button" class="btn btn-default" onclick="@CloseDialog">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions
+{
+    private TaskCompletionSource<bool> _showMessageTask;
+
+    public bool IsDialogVisible { get; private set; }
+
+    public string Message { get; private set; }
+
+    public string Title { get; private set; }
+
+    public Task ShowMessage(string message, string title)
+    {
+        Message = message;
+        Title = title;
+        IsDialogVisible = true;
+
+        StateHasChanged();
+
+        _showMessageTask = new TaskCompletionSource<bool>();
+        return _showMessageTask.Task;
+    }
+
+    public void CloseDialog()
+    {
+        if (_showMessageTask != null)
+        {
+            _showMessageTask.SetResult(true);
+            _showMessageTask = null;
+        }
+
+        IsDialogVisible = false;
+    }
+
+    public void Dispose()
+    {
+        _messageBoxService.SetMessageHandler(null);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        _messageBoxService.SetMessageHandler(ShowMessage);
+    }
+}

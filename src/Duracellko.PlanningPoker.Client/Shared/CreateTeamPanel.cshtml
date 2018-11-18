@@ -1,0 +1,50 @@
+﻿@inject CreateTeamController Controller
+
+<div class="panel panel-primary panel-collapse">
+    <div class="panel-heading">
+        <h3 class="panel-title">Create team</h3>
+    </div>
+    <div class="panel-body">
+        <form action="." onsubmit="@CreateTeamCommand">
+            <div class="@GetFormGroupCss(IsTeamNameValid)">
+                <label for="createTeam$teamName">Team name:</label>
+                <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
+                    <input type="text" id="createTeam$teamName" name="teamName" bind="@TeamName" class="form-control" maxlength="50" />
+                    @if (!IsTeamNameValid)
+                    {
+                        <span class="input-group-addon">Required</span>
+                    }
+                </div>
+            </div>
+            <div class="@GetFormGroupCss(IsScrumMasterNameValid)">
+                <label for="createTeam$scrumMasterName">Scrum Master name:</label>
+                <div class="@(IsScrumMasterNameValid ? string.Empty : "input-group")">
+                    <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" bind="@ScrumMasterName" class="form-control" maxlength="50" />
+                    @if (!IsScrumMasterNameValid)
+                    {
+                        <span class="input-group-addon">Required</span>
+                    }
+                </div>
+            </div>
+            <input type="submit" id="createTeam$Submit" class="btn btn-primary" value="Create team" />
+        </form>
+    </div>
+</div>
+
+@functions
+{
+    public string TeamName { get; set; }
+
+    public string ScrumMasterName { get; set; }
+
+    private bool IsTeamNameValid => !string.IsNullOrWhiteSpace(TeamName);
+
+    private bool IsScrumMasterNameValid => !string.IsNullOrWhiteSpace(ScrumMasterName);
+
+    public Task CreateTeamCommand()
+    {
+        return Controller.CreateTeam(TeamName, ScrumMasterName);
+    }
+
+    private string GetFormGroupCss(bool valid) => valid ? "form-group" : "form-group has-error has-feedback";
+}

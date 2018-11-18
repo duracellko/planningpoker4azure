@@ -1,0 +1,33 @@
+﻿<nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarPlanningPoker" aria-expanded="false" aria-controls="navbarPlanningPoker">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://github.com/duracellko/planningpoker4azure" target="_blank">Planning Poker Website</a>
+        </div>
+        <div id="navbarPlanningPoker" class="collapse navbar-collapse">
+            @if (HasUser)
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#disconnect" onclick="@DisconnectCommand">
+                            <span class="glyphicon glyphicon-log-out"></span> Disconnect
+                        </a>
+                    </li>
+                </ul>
+            }
+        </div>
+    </div>
+</nav>
+
+@functions {
+    public bool HasUser { get; set; }
+
+    public void DisconnectCommand()
+    {
+    }
+}
