@@ -1,0 +1,37 @@
+﻿@implements IDisposable
+@inject UI.BusyIndicatorService _busyIndicatorService
+
+@if (IsVisible)
+{
+    <div class="modal in" role="dialog" style="padding-right: 16px; display: block;">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p class="modal-title">Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions
+{
+    public bool IsVisible { get; private set; }
+
+    public void SetVisibility(bool visible)
+    {
+        IsVisible = visible;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _busyIndicatorService.SetBusyIndicatorHandler(null);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        _busyIndicatorService.SetBusyIndicatorHandler(SetVisibility);
+    }
+}

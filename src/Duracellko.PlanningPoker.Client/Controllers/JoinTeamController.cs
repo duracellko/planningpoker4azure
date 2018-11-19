@@ -12,17 +12,20 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly PlanningPokerController _planningPokerController;
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IMessageBoxService _messageBoxService;
+        private readonly IBusyIndicatorService _busyIndicatorService;
         private readonly IUriHelper _uriHelper;
 
         public JoinTeamController(
             PlanningPokerController planningPokerController,
             IPlanningPokerClient planningPokerService,
             IMessageBoxService messageBoxService,
+            IBusyIndicatorService busyIndicatorService,
             IUriHelper uriHelper)
         {
             _planningPokerController = planningPokerController ?? throw new ArgumentNullException(nameof(planningPokerController));
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
+            _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
             _uriHelper = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper));
         }
 
@@ -35,7 +38,12 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             try
             {
-                var team = await _planningPokerService.JoinTeam(teamName, memberName, asObserver, CancellationToken.None);
+                ScrumTeam team = null;
+                using (_busyIndicatorService.Show())
+                {
+                    team = await _planningPokerService.JoinTeam(teamName, memberName, asObserver, CancellationToken.None);
+                }
+
                 if (team != null)
                 {
                     _planningPokerController.InitializeTeam(team);
@@ -43,9 +51,10 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     return true;
                 }
             }
-            catch (Exception ex)
+            catch (PlanningPokerException ex)
             {
-                await _messageBoxService.ShowMessage(ex.Message, Resources.MessagePanel_Error);
+                var message = ControllerHelper.GetErrorMessage(ex);
+                await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
             }
 
             return false;
