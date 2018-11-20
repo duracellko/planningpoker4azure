@@ -22,6 +22,7 @@ namespace Duracellko.PlanningPoker.Client
             services.AddSingleton<PlanningPokerController>();
             services.AddSingleton<CreateTeamController>();
             services.AddSingleton<JoinTeamController>();
+            services.AddTransient<MessageReceiver>();
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Startup interface expected by Blazor.")]

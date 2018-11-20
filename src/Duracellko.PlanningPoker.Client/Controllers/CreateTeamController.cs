@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
                 if (team != null)
                 {
-                    _planningPokerController.InitializeTeam(team);
+                    _planningPokerController.InitializeTeam(team, scrumMasterName);
                     _uriHelper.NavigateTo("PlanningPoker");
                     return true;
                 }

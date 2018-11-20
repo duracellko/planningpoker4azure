@@ -1,0 +1,121 @@
+﻿@implements IDisposable
+@inject PlanningPokerController Controller
+
+<div class="team-title">
+    <h2>
+        <span class="badge"><span class="glyphicon glyphicon-tasks"></span></span>
+        <span>@Controller.TeamName</span>
+    </h2>
+    <h3>
+        <span class="badge"><span class="glyphicon glyphicon-user"></span></span>
+        <span>@Controller.User?.Name</span>
+    </h3>
+</div>
+
+@if (Controller.CanSelectEstimation)
+{
+    <div class="availableEstimations">
+        <h3>Pick estimation</h3>
+        <ul data-bind="foreach: availableEstimations">
+            @foreach (var estimation in Controller.AvailableEstimations)
+            {
+                <li><a onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
+            }
+        </ul>
+    </div>
+}
+
+@if (Controller.IsScrumMaster)
+{
+    <div>
+        <p>
+            @if (Controller.CanStartEstimation)
+            {
+                <a onclick="@StartEstimationCommand" class="btn btn-default">
+                    <span class="glyphicon glyphicon-play"></span> Start estimation
+                </a>
+            }
+
+            @if (Controller.CanCancelEstimation)
+            {
+                <a onclick="@CancelEstimationCommand" class="btn btn-default">
+                    <span class="glyphicon glyphicon-stop"></span> Cancel estimation
+                </a>
+            }
+        </p>
+    </div>
+}
+
+@if (HasEstimationResult)
+{
+    <div class="estimationResult">
+        <h3>Selected estimates</h3>
+        <ul>
+            @foreach (var memberEstimation in Controller.Estimations)
+            {
+                <li>
+                    <span class="estimationItemValue">@(memberEstimation.HasEstimation ? GetEstimationText(memberEstimation.Estimation) : null)</span>
+                    <span class="estimationItemName">@memberEstimation.MemberName</span>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@functions
+{
+    public bool HasEstimationResult => Controller.Estimations != null;
+
+    public Task SelectEstimationCommand(double? estimation)
+    {
+        return Controller.SelectEstimation(estimation);
+    }
+
+    public Task StartEstimationCommand()
+    {
+        return Controller.StartEstimation();
+    }
+
+    public Task CancelEstimationCommand()
+    {
+        return Controller.CancelEstimation();
+    }
+
+    public void Dispose()
+    {
+        Controller.PropertyChanged -= ControllerOnPropertyChanged;
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private string GetEstimationText(double? estimation)
+    {
+        if (estimation == null)
+        {
+            return "?";
+        }
+
+        var value = estimation.Value;
+        if (value == Service.Estimation.PositiveInfinity)
+        {
+            return "\u221E";
+        }
+        else if (value == 0.5)
+        {
+            return "\u00BD";
+        }
+        else
+        {
+            return value.ToString();
+        }
+    }
+}

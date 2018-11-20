@@ -177,6 +177,28 @@ namespace Duracellko.PlanningPoker.Service
             return await GetJsonAsync<List<Message>>(uri, cancellationToken);
         }
 
+        private static void DeserializeMessages(List<Message> messages, string json)
+        {
+            var memberMessages = Json.Deserialize<List<MemberMessage>>(json);
+            var estimationResultMessages = Json.Deserialize<List<EstimationResultMessage>>(json);
+
+            for (int i = 0; i < messages.Count; i++)
+            {
+                var message = messages[i];
+                switch (message.Type)
+                {
+                    case MessageType.MemberJoined:
+                    case MessageType.MemberDisconnected:
+                    case MessageType.MemberEstimated:
+                        messages[i] = memberMessages[i];
+                        break;
+                    case MessageType.EstimationEnded:
+                        messages[i] = estimationResultMessages[i];
+                        break;
+                }
+            }
+        }
+
         private async Task<T> GetJsonAsync<T>(string requestUri, CancellationToken cancellationToken)
         {
             try
@@ -196,7 +218,13 @@ namespace Duracellko.PlanningPoker.Service
                         }
 
                         var responseContent = await response.Content.ReadAsStringAsync();
-                        return Json.Deserialize<T>(responseContent);
+                        var result = Json.Deserialize<T>(responseContent);
+                        if (result is List<Message> messages)
+                        {
+                            DeserializeMessages(messages, responseContent);
+                        }
+
+                        return result;
                     }
                 }
             }

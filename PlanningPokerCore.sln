@@ -19,9 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Az
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Azure.Test", "src\Duracellko.PlanningPoker.Azure.Test\Duracellko.PlanningPoker.Azure.Test.csproj", "{5313B324-0F9C-48C2-A453-2363C104DE82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Client", "src\Duracellko.PlanningPoker.Client\Duracellko.PlanningPoker.Client.csproj", "{4BD658E6-D2AB-4275-B954-5E600C43D3BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Client", "src\Duracellko.PlanningPoker.Client\Duracellko.PlanningPoker.Client.csproj", "{4BD658E6-D2AB-4275-B954-5E600C43D3BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Service", "src\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj", "{02D40C8C-C33D-4310-9DD6-B620E475DE4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Service", "src\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj", "{02D40C8C-C33D-4310-9DD6-B620E475DE4E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

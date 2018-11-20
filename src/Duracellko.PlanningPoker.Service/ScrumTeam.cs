@@ -52,7 +52,7 @@ namespace Duracellko.PlanningPoker.Service
         /// Gets or sets the available estimations the members can pick from.
         /// </summary>
         /// <value>The collection of available estimations.</value>
-        [JsonProperty("avilableEstimations")]
+        [JsonProperty("availableEstimations")]
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
         public IList<Estimation> AvailableEstimations { get; set; }
 

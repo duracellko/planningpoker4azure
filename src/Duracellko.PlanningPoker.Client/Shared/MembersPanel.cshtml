@@ -1,0 +1,69 @@
+﻿@implements IDisposable
+@inject PlanningPokerController Controller
+
+<div class="panel panel-default">
+    <div class="panel-heading">Scrum Master</div>
+    <ul class="list-group">
+        <li class="list-group-item">@Controller.ScrumMaster</li>
+    </ul>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">Members</div>
+    <ul class="list-group">
+        @foreach (var member in Controller.Members)
+        {
+            <li class="list-group-item">
+                <span>@member</span>
+                @if (Controller.IsScrumMaster)
+                {
+                    <a onclick="@(e => KickoffMemberCommand(member))" class="pull-right text-danger">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        <span class="sr-only"></span>
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">Observers</div>
+    <ul class="list-group">
+        @foreach (var observer in Controller.Observers)
+        {
+            <li class="list-group-item">
+                <span>@observer</span>
+                @if (Controller.IsScrumMaster)
+                {
+                    <a onclick="@(e => KickoffMemberCommand(observer))" class="pull-right text-danger">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        <span class="sr-only"></span>
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+</div>
+
+@functions
+{
+    public void KickoffMemberCommand(string member)
+    {
+
+    }
+
+    public void Dispose()
+    {
+        Controller.PropertyChanged -= ControllerOnPropertyChanged;
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+}
