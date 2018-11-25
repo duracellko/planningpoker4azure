@@ -87,7 +87,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// Asynchronous operation.
         /// </returns>
-        Task SubmitEstimation(string teamName, string memberName, double estimation, CancellationToken cancellationToken);
+        Task SubmitEstimation(string teamName, string memberName, double? estimation, CancellationToken cancellationToken);
 
         /// <summary>
         /// Begins to get messages of specified member asynchronously.

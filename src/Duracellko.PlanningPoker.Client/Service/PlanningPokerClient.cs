@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Encodings.Web;
@@ -37,13 +38,16 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, CancellationToken cancellationToken)
+        public async Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedScrumMasterName = _urlEncoder.Encode(scrumMasterName);
             var uri = $"CreateTeam?teamName={encodedTeamName}&scrumMasterName={encodedScrumMasterName}";
 
-            return GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+            var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+
+            ConvertScrumTeam(result);
+            return result;
         }
 
         /// <summary>
@@ -56,14 +60,17 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        public Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
+        public async Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
             var encodedAsObserver = asObserver.ToString(CultureInfo.InvariantCulture);
             var uri = $"JoinTeam?teamName={encodedTeamName}&memberName={encodedMemberName}&asObserver={encodedAsObserver}";
 
-            return GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+            var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+
+            ConvertScrumTeam(result);
+            return result;
         }
 
         /// <summary>
@@ -78,13 +85,17 @@ namespace Duracellko.PlanningPoker.Service
         /// <remarks>
         /// This operation is used to resynchronize client and server. Current status of ScrumTeam is returned and message queue for the member is cleared.
         /// </remarks>
-        public Task<ReconnectTeamResult> ReconnectTeam(string teamName, string memberName, CancellationToken cancellationToken)
+        public async Task<ReconnectTeamResult> ReconnectTeam(string teamName, string memberName, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
             var uri = $"ReconnectTeam?teamName={encodedTeamName}&memberName={encodedMemberName}";
 
-            return GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
+            var result = await GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
+
+            ConvertScrumTeam(result.ScrumTeam);
+            ConvertEstimation(result.SelectedEstimation);
+            return result;
         }
 
         /// <summary>
@@ -102,7 +113,7 @@ namespace Duracellko.PlanningPoker.Service
             var encodedMemberName = _urlEncoder.Encode(memberName);
             var uri = $"DisconnectTeam?teamName={encodedTeamName}&memberName={encodedMemberName}";
 
-            return GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
+            return SendAsync(uri, cancellationToken);
         }
 
         /// <summary>
@@ -147,11 +158,24 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// Asynchronous operation.
         /// </returns>
-        public Task SubmitEstimation(string teamName, string memberName, double estimation, CancellationToken cancellationToken)
+        public Task SubmitEstimation(string teamName, string memberName, double? estimation, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
-            var encodedEstimation = _urlEncoder.Encode(estimation.ToString(CultureInfo.InvariantCulture));
+            string encodedEstimation;
+            if (!estimation.HasValue)
+            {
+                encodedEstimation = "-1111111";
+            }
+            else if (double.IsPositiveInfinity(estimation.Value))
+            {
+                encodedEstimation = "-1111100";
+            }
+            else
+            {
+                encodedEstimation = _urlEncoder.Encode(estimation.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
             var uri = $"SubmitEstimation?teamName={encodedTeamName}&memberName={encodedMemberName}&estimation={encodedEstimation}";
 
             return SendAsync(uri, cancellationToken);
@@ -193,9 +217,48 @@ namespace Duracellko.PlanningPoker.Service
                         messages[i] = memberMessages[i];
                         break;
                     case MessageType.EstimationEnded:
-                        messages[i] = estimationResultMessages[i];
+                        var estimationResultMessage = estimationResultMessages[i];
+                        ConvertEstimations(estimationResultMessage.EstimationResult);
+                        messages[i] = estimationResultMessage;
                         break;
                 }
+            }
+        }
+
+        private static void ConvertScrumTeam(ScrumTeam scrumTeam)
+        {
+            if (scrumTeam.AvailableEstimations != null)
+            {
+                ConvertEstimations(scrumTeam.AvailableEstimations);
+            }
+
+            if (scrumTeam.EstimationResult != null)
+            {
+                ConvertEstimations(scrumTeam.EstimationResult);
+            }
+        }
+
+        private static void ConvertEstimations(IEnumerable<Estimation> estimations)
+        {
+            foreach (var estimation in estimations)
+            {
+                ConvertEstimation(estimation);
+            }
+        }
+
+        private static void ConvertEstimations(IEnumerable<EstimationResultItem> estimationResultItems)
+        {
+            foreach (var estimationResultItem in estimationResultItems)
+            {
+                ConvertEstimation(estimationResultItem.Estimation);
+            }
+        }
+
+        private static void ConvertEstimation(Estimation estimation)
+        {
+            if (estimation != null && estimation.Value == Estimation.PositiveInfinity)
+            {
+                estimation.Value = double.PositiveInfinity;
             }
         }
 

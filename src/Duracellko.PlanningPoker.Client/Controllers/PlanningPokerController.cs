@@ -10,7 +10,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 {
     public class PlanningPokerController : INotifyPropertyChanged
     {
-        private const double UnknownEstimation = -1111111;
         private readonly IPlanningPokerClient _planningPokerService;
         private List<MemberEstimation> _memberEstimations;
 
@@ -80,7 +79,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
         public Task SelectEstimation(double? estimation)
         {
-            return _planningPokerService.SubmitEstimation(TeamName, User.Name, estimation.GetValueOrDefault(UnknownEstimation), CancellationToken.None);
+            return _planningPokerService.SubmitEstimation(TeamName, User.Name, estimation, CancellationToken.None);
         }
 
         public Task StartEstimation()
