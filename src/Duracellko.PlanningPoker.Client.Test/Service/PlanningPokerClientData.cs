@@ -151,5 +151,147 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             ""scrumTeam"": " + scrumTeamJson + selectedEstimationJson + @"
 }";
         }
+
+        public static string GetMessagesJson(params string[] messages)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("[");
+            sb.AppendJoin(",\r\n", messages);
+            sb.AppendLine();
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        public static string GetEmptyMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 0
+}";
+        }
+
+        public static string GetMemberJoinedMessageJson(string id = "0", string name = MemberName, string type = MemberType)
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 1,
+            ""member"": {
+                ""name"": """ + name + @""",
+                ""type"": """ + type + @"""
+            }
+}";
+        }
+
+        public static string GetMemberDisconnectedMessageJson(string id = "0", string name = MemberName, string type = MemberType)
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 2,
+            ""member"": {
+                ""name"": """ + name + @""",
+                ""type"": """ + type + @"""
+            }
+}";
+        }
+
+        public static string GetEstimationStartedMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 3
+}";
+        }
+
+        public static string GetEstimationEndedMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 4,
+            ""estimationResult"": [
+                {
+                    ""member"": {
+                        ""name"": ""Test Scrum Master"",
+                        ""type"": ""ScrumMaster""
+                    },
+                    ""estimation"": {
+                        ""value"": 2
+                    }
+                },
+                {
+                    ""member"": {
+                        ""name"": ""Test member"",
+                        ""type"": ""Member""
+                    },
+                    ""estimation"": {
+                        ""value"": null
+                    }
+                },
+                {
+                    ""member"": {
+                        ""name"": ""Me"",
+                        ""type"": ""Member""
+                    },
+                    ""estimation"": null
+                },
+                {
+                    ""member"": {
+                        ""name"": ""Test observer"",
+                        ""type"": ""Member""
+                    },
+                    ""estimation"": {
+                        ""value"": -1111100
+                    }
+                }
+            ]
+}";
+        }
+
+        public static string GetEstimationEndedMessage2Json(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 4,
+            ""estimationResult"": [
+                {
+                    ""member"": {
+                        ""name"": ""Test Scrum Master"",
+                        ""type"": ""ScrumMaster""
+                    },
+                    ""estimation"": {
+                        ""value"": 5
+                    }
+                },
+                {
+                    ""member"": {
+                        ""name"": ""Test member"",
+                        ""type"": ""Member""
+                    },
+                    ""estimation"": {
+                        ""value"": 40
+                    }
+                }
+            ]
+}";
+        }
+
+        public static string GetEstimationCanceledMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 5
+}";
+        }
+
+        public static string GetMemberEstimatedMessageJson(string id = "0", string name = ScrumMasterName, string type = ScrumMasterType)
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 6,
+            ""member"": {
+                ""name"": """ + name + @""",
+                ""type"": """ + type + @"""
+            }
+}";
+        }
     }
 }

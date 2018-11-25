@@ -11,9 +11,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
     [TestClass]
     public class PlanningPokerClientTest
     {
-        private const string BaseUrl = "http://planningpoker.duracellko.net/";
-        private const string JsonType = "application/json";
-        private const string TextType = "text/plain";
+        internal const string BaseUrl = "http://planningpoker.duracellko.net/";
+        internal const string JsonType = "application/json";
+        internal const string TextType = "text/plain";
 
         [TestMethod]
         public async Task CreateTeam_TeamAndScrumMasterName_RequestsCreateTeamUrl()
@@ -714,7 +714,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             httpMock.VerifyNoOutstandingExpectation();
         }
 
-        private static PlanningPokerClient CreatePlanningPokerClient(MockHttpMessageHandler messageHandler)
+        internal static PlanningPokerClient CreatePlanningPokerClient(MockHttpMessageHandler messageHandler)
         {
             var httpClient = messageHandler.ToHttpClient();
             httpClient.BaseAddress = new Uri(BaseUrl);
