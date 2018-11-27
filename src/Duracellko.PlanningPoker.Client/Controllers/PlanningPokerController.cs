@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
@@ -11,11 +12,14 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     public class PlanningPokerController : INotifyPropertyChanged
     {
         private readonly IPlanningPokerClient _planningPokerService;
+        private readonly IBusyIndicatorService _busyIndicator;
         private List<MemberEstimation> _memberEstimations;
+        private bool _hasJoinedEstimation;
 
-        public PlanningPokerController(IPlanningPokerClient planningPokerService)
+        public PlanningPokerController(IPlanningPokerClient planningPokerService, IBusyIndicatorService busyIndicator)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
+            _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -33,18 +37,18 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public string ScrumMaster => ScrumTeam?.ScrumMaster?.Name;
 
         public IEnumerable<string> Members => ScrumTeam.Members
-            .Where(m => !string.Equals(m.Name, ScrumMaster, StringComparison.OrdinalIgnoreCase))
-            .Select(m => m.Name);
+            .Where(m => m.Type != "ScrumMaster").Select(m => m.Name).OrderBy(m => m);
 
-        public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name);
+        public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name).OrderBy(m => m);
 
-        public bool CanSelectEstimation => ScrumTeam.State == TeamState.EstimationInProgress;
+        public bool CanSelectEstimation => ScrumTeam.State == TeamState.EstimationInProgress && _hasJoinedEstimation;
 
         public bool CanStartEstimation => IsScrumMaster && ScrumTeam.State != TeamState.EstimationInProgress;
 
         public bool CanCancelEstimation => IsScrumMaster && ScrumTeam.State == TeamState.EstimationInProgress;
 
-        public IEnumerable<double?> AvailableEstimations => ScrumTeam.AvailableEstimations.Select(e => e.Value).OrderBy(v => v);
+        public IEnumerable<double?> AvailableEstimations => ScrumTeam.AvailableEstimations.Select(e => e.Value)
+            .OrderBy(v => v, EstimationComparer.Default);
 
         public IEnumerable<MemberEstimation> Estimations => _memberEstimations;
 
@@ -75,21 +79,40 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             IsScrumMaster = User != null && User == ScrumTeam.ScrumMaster;
             LastMessageId = -1;
             _memberEstimations = null;
+            _hasJoinedEstimation = false;
         }
 
-        public Task SelectEstimation(double? estimation)
+        public async Task SelectEstimation(double? estimation)
         {
-            return _planningPokerService.SubmitEstimation(TeamName, User.Name, estimation, CancellationToken.None);
+            if (CanSelectEstimation)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.SubmitEstimation(TeamName, User.Name, estimation, CancellationToken.None);
+                }
+            }
         }
 
-        public Task StartEstimation()
+        public async Task StartEstimation()
         {
-            return _planningPokerService.StartEstimation(TeamName, CancellationToken.None);
+            if (CanStartEstimation)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.StartEstimation(TeamName, CancellationToken.None);
+                }
+            }
         }
 
-        public Task CancelEstimation()
+        public async Task CancelEstimation()
         {
-            return _planningPokerService.CancelEstimation(TeamName, CancellationToken.None);
+            if (CanCancelEstimation)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.CancelEstimation(TeamName, CancellationToken.None);
+                }
+            }
         }
 
         public void ProcessMessages(IEnumerable<Message> messages)
@@ -181,6 +204,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         {
             _memberEstimations = new List<MemberEstimation>();
             ScrumTeam.State = TeamState.EstimationInProgress;
+            _hasJoinedEstimation = true;
         }
 
         private void OnEstimationEnded(EstimationResultMessage message)
@@ -219,6 +243,31 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             result = ScrumTeam.Observers.FirstOrDefault(m => string.Equals(m.Name, name, StringComparison.OrdinalIgnoreCase));
             return result;
+        }
+
+        private class EstimationComparer : IComparer<double?>
+        {
+            public static EstimationComparer Default { get; } = new EstimationComparer();
+
+            public int Compare(double? x, double? y)
+            {
+                if (x == null && y == null)
+                {
+                    return 0;
+                }
+                else if (x == null)
+                {
+                    return 1;
+                }
+                else if (y == null)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return Comparer<double>.Default.Compare(x.Value, y.Value);
+                }
+            }
         }
     }
 }
