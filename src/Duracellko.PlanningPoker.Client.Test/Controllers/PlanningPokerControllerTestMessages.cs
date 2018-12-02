@@ -472,7 +472,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
 
             var estimations = target.Estimations.ToList();
-            Assert.AreEqual(2, estimations.Count());
+            Assert.AreEqual(2, estimations.Count);
             var estimation = estimations[0];
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
             Assert.IsFalse(estimation.HasEstimation);
@@ -590,7 +590,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
 
             var estimations = target.Estimations.ToList();
-            Assert.AreEqual(5, estimations.Count());
+            Assert.AreEqual(5, estimations.Count);
 
             var estimation = estimations[0];
             Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -673,7 +673,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
 
             var estimations = target.Estimations.ToList();
-            Assert.AreEqual(5, estimations.Count());
+            Assert.AreEqual(5, estimations.Count);
 
             var estimation = estimations[0];
             Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
@@ -748,7 +748,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                     {
                         Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                         Estimation = new Estimation { Value = 20 }
-                    },
+                    }
                 }
             };
 
@@ -763,7 +763,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
 
             var estimations = target.Estimations.ToList();
-            Assert.AreEqual(6, estimations.Count());
+            Assert.AreEqual(6, estimations.Count);
 
             var estimation = estimations[0];
             Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -843,7 +843,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                     {
                         Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                         Estimation = new Estimation { Value = 5 }
-                    },
+                    }
                 }
             };
 
@@ -858,7 +858,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
 
             var estimations = target.Estimations.ToList();
-            Assert.AreEqual(6, estimations.Count());
+            Assert.AreEqual(6, estimations.Count);
 
             var estimation = estimations[0];
             Assert.AreEqual("Developer 1", estimation.MemberName);

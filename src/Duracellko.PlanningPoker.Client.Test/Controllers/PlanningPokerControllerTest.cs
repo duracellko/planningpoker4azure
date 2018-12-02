@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -305,6 +306,515 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public void InitializeTeam_EstimationFinishedAnd5Estimations_5Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
+            scrumTeam.State = TeamState.EstimationFinished;
+            scrumTeam.EstimationResult = new List<EstimationResultItem>
+            {
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
+                    Estimation = new Estimation { Value = 8 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" },
+                    Estimation = new Estimation { Value = 8 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
+                    Estimation = new Estimation { Value = 3 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
+                    Estimation = new Estimation { Value = 8 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
+                    Estimation = new Estimation { Value = 2 }
+                }
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            var estimations = target.Estimations.ToList();
+            Assert.AreEqual(5, estimations.Count);
+
+            var estimation = estimations[0];
+            Assert.AreEqual("Developer 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(8.0, estimation.Estimation);
+
+            estimation = estimations[1];
+            Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(8.0, estimation.Estimation);
+
+            estimation = estimations[2];
+            Assert.AreEqual("Tester", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(8.0, estimation.Estimation);
+
+            estimation = estimations[3];
+            Assert.AreEqual("Developer 2", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(2.0, estimation.Estimation);
+
+            estimation = estimations[4];
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(3.0, estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationFinishedAndMemberWithoutEstimation_4Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
+            scrumTeam.State = TeamState.EstimationFinished;
+            scrumTeam.EstimationResult = new List<EstimationResultItem>
+            {
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
+                    Estimation = new Estimation { Value = 0 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" },
+                    Estimation = new Estimation { Value = null }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
+                    Estimation = new Estimation { Value = double.PositiveInfinity }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
+                    Estimation = new Estimation { Value = double.PositiveInfinity }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
+                }
+            };
+
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = new Estimation { Value = double.PositiveInfinity }
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            var estimations = target.Estimations.ToList();
+            Assert.AreEqual(5, estimations.Count);
+
+            var estimation = estimations[0];
+            Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+
+            estimation = estimations[1];
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+
+            estimation = estimations[2];
+            Assert.AreEqual("Developer 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(0.0, estimation.Estimation);
+
+            estimation = estimations[3];
+            Assert.AreEqual("Tester", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+
+            estimation = estimations[4];
+            Assert.AreEqual("Developer 2", estimation.MemberName);
+            Assert.IsFalse(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationFinishedAndSameEstimationCount_6Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
+            scrumTeam.State = TeamState.EstimationFinished;
+            scrumTeam.EstimationResult = new List<EstimationResultItem>
+            {
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
+                    Estimation = new Estimation { Value = 20 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
+                    Estimation = new Estimation { Value = 0 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" },
+                    Estimation = new Estimation { Value = 13 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
+                    Estimation = new Estimation { Value = 13 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
+                    Estimation = new Estimation { Value = 0 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
+                    Estimation = new Estimation { Value = 20 }
+                }
+            };
+
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = null
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            var estimations = target.Estimations.ToList();
+            Assert.AreEqual(6, estimations.Count);
+
+            var estimation = estimations[0];
+            Assert.AreEqual("Developer 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(0.0, estimation.Estimation);
+
+            estimation = estimations[1];
+            Assert.AreEqual("Developer 2", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(0.0, estimation.Estimation);
+
+            estimation = estimations[2];
+            Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(13.0, estimation.Estimation);
+
+            estimation = estimations[3];
+            Assert.AreEqual("Tester 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(13.0, estimation.Estimation);
+
+            estimation = estimations[4];
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(20.0, estimation.Estimation);
+
+            estimation = estimations[5];
+            Assert.AreEqual("Tester 2", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(20.0, estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationFinishedAndSameEstimationCountWithNull_6Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
+            scrumTeam.State = TeamState.EstimationFinished;
+            scrumTeam.EstimationResult = new List<EstimationResultItem>
+            {
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
+                    Estimation = new Estimation { Value = double.PositiveInfinity }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
+                    Estimation = new Estimation { Value = null }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" },
+                    Estimation = new Estimation { Value = null }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
+                    Estimation = new Estimation { Value = double.PositiveInfinity }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
+                    Estimation = new Estimation { Value = 5 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
+                    Estimation = new Estimation { Value = 5 }
+                }
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            var estimations = target.Estimations.ToList();
+            Assert.AreEqual(6, estimations.Count);
+
+            var estimation = estimations[0];
+            Assert.AreEqual("Developer 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(5.0, estimation.Estimation);
+
+            estimation = estimations[1];
+            Assert.AreEqual("Tester 2", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(5.0, estimation.Estimation);
+
+            estimation = estimations[2];
+            Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+
+            estimation = estimations[3];
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+
+            estimation = estimations[4];
+            Assert.AreEqual("Developer 2", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+
+            estimation = estimations[5];
+            Assert.AreEqual("Tester 1", estimation.MemberName);
+            Assert.IsTrue(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationFinishedAndEmptyEstimationsList_NoEstimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationFinished;
+            scrumTeam.EstimationResult = new List<EstimationResultItem>();
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            Assert.AreEqual(0, target.Estimations.Count());
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAnd4Participants_3Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
+            scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
+            scrumTeam.State = TeamState.EstimationInProgress;
+            scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
+            {
+                new EstimationParticipantStatus { MemberName = PlanningPokerData.ScrumMasterName, Estimated = true },
+                new EstimationParticipantStatus { MemberName = "Tester", Estimated = false },
+                new EstimationParticipantStatus { MemberName = "Developer 1", Estimated = true },
+                new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = true }
+            };
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = new Estimation { Value = 8 }
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsTrue(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            var estimations = target.Estimations.ToList();
+            Assert.AreEqual(3, estimations.Count);
+
+            var estimation = estimations[0];
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
+            Assert.IsFalse(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+
+            estimation = estimations[1];
+            Assert.AreEqual("Developer 1", estimation.MemberName);
+            Assert.IsFalse(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+
+            estimation = estimations[2];
+            Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
+            Assert.IsFalse(estimation.HasEstimation);
+            Assert.IsNull(estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAnd0Participants_0Estimations()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationInProgress;
+            scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>();
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = null
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsTrue(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            Assert.AreEqual(0, target.Estimations.Count());
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAndParticipantsListIsNull_EstimationsIsNull()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationInProgress;
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = null
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsTrue(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+
+            Assert.IsNull(target.Estimations);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAndMemberInParticipantsAndNotEstimated_CanSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationInProgress;
+            scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
+            {
+                new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = false }
+            };
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = null
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsTrue(target.CanSelectEstimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAndMemberInParticipantsAndEstimated_CannotSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationInProgress;
+            scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
+            {
+                new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = true }
+            };
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = new Estimation { Value = 1 }
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+        }
+
+        [TestMethod]
+        public void InitializeTeam_EstimationInProgressAndMemberNotInParticipants_CannotSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            scrumTeam.State = TeamState.EstimationInProgress;
+            scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
+            {
+                new EstimationParticipantStatus { MemberName = PlanningPokerData.ScrumMasterName, Estimated = false }
+            };
+            var reconnectTeamResult = new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = 22,
+                SelectedEstimation = null
+            };
+            var target = CreateController();
+
+            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanSelectEstimation);
+        }
+
+        [TestMethod]
         public async Task StartEstimation_CanStartEstimation_StartEstimationOnService()
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
@@ -470,6 +980,57 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             await target.SelectEstimation(5);
 
             planningPokerClient.Verify(o => o.SubmitEstimation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double?>(), It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task SelectEstimation_Selects5_CannotSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
+            target.ProcessMessages(new Message[] { message });
+
+            Assert.IsTrue(target.CanSelectEstimation);
+
+            await target.SelectEstimation(5);
+
+            Assert.IsFalse(target.CanSelectEstimation);
+        }
+
+        [TestMethod]
+        public async Task SelectEstimation_SelectsPositiveInfinity_CannotSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
+            target.ProcessMessages(new Message[] { message });
+
+            Assert.IsTrue(target.CanSelectEstimation);
+
+            await target.SelectEstimation(double.PositiveInfinity);
+
+            Assert.IsFalse(target.CanSelectEstimation);
+        }
+
+        [TestMethod]
+        public async Task SelectEstimation_SelectsNull_CannotSelectEstimation()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController();
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
+            target.ProcessMessages(new Message[] { message });
+
+            Assert.IsTrue(target.CanSelectEstimation);
+
+            await target.SelectEstimation(null);
+
+            Assert.IsFalse(target.CanSelectEstimation);
         }
 
         [TestMethod]

@@ -9,6 +9,9 @@ using Duracellko.PlanningPoker.Service;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {
+    /// <summary>
+    /// Manages state of planning poker game and provides data for view.
+    /// </summary>
     public class PlanningPokerController : INotifyPropertyChanged
     {
         private const string ScrumMasterType = "ScrumMaster";
@@ -18,46 +21,99 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IBusyIndicatorService _busyIndicator;
         private List<MemberEstimation> _memberEstimations;
         private bool _hasJoinedEstimation;
+        private Estimation _selectedEstimation;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
+        /// </summary>
+        /// <param name="planningPokerService">Planning poker client to send messages to server.</param>
+        /// <param name="busyIndicator">Service to show busy indicator, when operation is in progress.</param>
         public PlanningPokerController(IPlanningPokerClient planningPokerService, IBusyIndicatorService busyIndicator)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Gets current user joining planning poker.
+        /// </summary>
         public TeamMember User { get; private set; }
 
+        /// <summary>
+        /// Gets Scrum Team data received from server.
+        /// </summary>
         public ScrumTeam ScrumTeam { get; private set; }
 
+        /// <summary>
+        /// Gets Scrum Team name.
+        /// </summary>
         public string TeamName => ScrumTeam?.Name;
 
+        /// <summary>
+        /// Gets ID of last received message.
+        /// </summary>
         public long LastMessageId { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether current user is Scrum Master and can start or stop estimation.
+        /// </summary>
         public bool IsScrumMaster { get; private set; }
 
+        /// <summary>
+        /// Gets name of Scrum Master.
+        /// </summary>
         public string ScrumMaster => ScrumTeam?.ScrumMaster?.Name;
 
+        /// <summary>
+        /// Gets collection of member names, who can estimate.
+        /// </summary>
         public IEnumerable<string> Members => ScrumTeam.Members
             .Where(m => m.Type != ScrumMasterType).Select(m => m.Name)
             .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
 
+        /// <summary>
+        /// Gets collection of observer names, who just observe estimation.
+        /// </summary>
         public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name)
             .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
 
+        /// <summary>
+        /// Gets a value indicating whether user can estimate and estimation is in progress.
+        /// </summary>
         public bool CanSelectEstimation => ScrumTeam.State == TeamState.EstimationInProgress &&
-            _hasJoinedEstimation && User.Type != ObserverType;
+            User.Type != ObserverType && _hasJoinedEstimation && _selectedEstimation == null;
 
+        /// <summary>
+        /// Gets a value indicating whether user can start estimation.
+        /// </summary>
         public bool CanStartEstimation => IsScrumMaster && ScrumTeam.State != TeamState.EstimationInProgress;
 
+        /// <summary>
+        /// Gets a value indicating whether user can cancel estimation.
+        /// </summary>
         public bool CanCancelEstimation => IsScrumMaster && ScrumTeam.State == TeamState.EstimationInProgress;
 
+        /// <summary>
+        /// Gets a collection of available estimation values, user can select from.
+        /// </summary>
         public IEnumerable<double?> AvailableEstimations => ScrumTeam.AvailableEstimations.Select(e => e.Value)
             .OrderBy(v => v, EstimationComparer.Default);
 
+        /// <summary>
+        /// Gets a collection of selected estimates by all users.
+        /// </summary>
         public IEnumerable<MemberEstimation> Estimations => _memberEstimations;
 
+        /// <summary>
+        /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
+        /// </summary>
+        /// <param name="scrumTeam">Scrum Team data received from server.</param>
+        /// <param name="username">Name of user joining the Scrum Team.</param>
         public void InitializeTeam(ScrumTeam scrumTeam, string username)
         {
             if (scrumTeam == null)
@@ -84,21 +140,72 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             User = FindTeamMember(username);
             IsScrumMaster = User != null && User == ScrumTeam.ScrumMaster;
             LastMessageId = -1;
-            _memberEstimations = null;
-            _hasJoinedEstimation = false;
+
+            if (scrumTeam.EstimationResult != null)
+            {
+                _memberEstimations = GetMemberEstimationList(scrumTeam.EstimationResult);
+            }
+            else if (scrumTeam.EstimationParticipants != null)
+            {
+                _memberEstimations = scrumTeam.EstimationParticipants
+                    .Where(p => p.Estimated).Select(p => new MemberEstimation(p.MemberName)).ToList();
+            }
+            else
+            {
+                _memberEstimations = null;
+            }
+
+            _hasJoinedEstimation = scrumTeam.EstimationParticipants != null &&
+                scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
+            _selectedEstimation = null;
         }
 
+        /// <summary>
+        /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
+        /// </summary>
+        /// <param name="teamInfo">Scrum Team data received from server.</param>
+        /// <param name="username">Name of user joining the Scrum Team.</param>
+        /// <remarks>This method overloads setup additional information after reconnecting to existing team.</remarks>
+        public void InitializeTeam(ReconnectTeamResult teamInfo, string username)
+        {
+            if (teamInfo == null)
+            {
+                throw new ArgumentNullException(nameof(teamInfo));
+            }
+
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            InitializeTeam(teamInfo.ScrumTeam, username);
+
+            LastMessageId = teamInfo.LastMessageId;
+            _selectedEstimation = teamInfo.SelectedEstimation;
+        }
+
+        /// <summary>
+        /// Selects estimation by user, when estimation is in progress.
+        /// </summary>
+        /// <param name="estimation">Selected estimation value.</param>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
         public async Task SelectEstimation(double? estimation)
         {
             if (CanSelectEstimation)
             {
                 using (_busyIndicator.Show())
                 {
+                    var selectedEstimation = ScrumTeam.AvailableEstimations.First(e => e.Value == estimation);
                     await _planningPokerService.SubmitEstimation(TeamName, User.Name, estimation, CancellationToken.None);
+                    _selectedEstimation = selectedEstimation;
                 }
             }
         }
 
+        /// <summary>
+        /// Starts estimation by Scrum Master.
+        /// </summary>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
         public async Task StartEstimation()
         {
             if (CanStartEstimation)
@@ -110,6 +217,10 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        /// <summary>
+        /// Stops estimation by Scrum Master.
+        /// </summary>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
         public async Task CancelEstimation()
         {
             if (CanCancelEstimation)
@@ -121,6 +232,10 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        /// <summary>
+        /// Processes messages received from server and updates status of planning poker game.
+        /// </summary>
+        /// <param name="messages">Collection of messages received from server.</param>
         public void ProcessMessages(IEnumerable<Message> messages)
         {
             if (messages == null)
@@ -134,9 +249,40 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        /// <summary>
+        /// Notifies that a property of this instance has been changed.
+        /// </summary>
+        /// <param name="e">Arguments of PropertyChanged event.</param>
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this, e);
+        }
+
+        private static List<MemberEstimation> GetMemberEstimationList(IList<EstimationResultItem> estimationResult)
+        {
+            var estimationValueCounts = new Dictionary<double, int>();
+            foreach (var estimation in estimationResult)
+            {
+                if (estimation.Estimation != null)
+                {
+                    double key = GetEstimationValueKey(estimation.Estimation.Value);
+                    if (estimationValueCounts.TryGetValue(key, out int count))
+                    {
+                        estimationValueCounts[key] = count + 1;
+                    }
+                    else
+                    {
+                        estimationValueCounts.Add(key, 1);
+                    }
+                }
+            }
+
+            return estimationResult
+                .OrderByDescending(i => i.Estimation != null ? estimationValueCounts[GetEstimationValueKey(i.Estimation.Value)] : 0)
+                .ThenBy(i => i.Estimation?.Value, EstimationComparer.Default)
+                .ThenBy(i => i.Member.Name, StringComparer.CurrentCultureIgnoreCase)
+                .Select(i => i.Estimation != null ? new MemberEstimation(i.Member.Name, i.Estimation.Value) : new MemberEstimation(i.Member.Name))
+                .ToList();
         }
 
         private static double GetEstimationValueKey(double? value)
@@ -227,33 +373,12 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _memberEstimations = new List<MemberEstimation>();
             ScrumTeam.State = TeamState.EstimationInProgress;
             _hasJoinedEstimation = true;
+            _selectedEstimation = null;
         }
 
         private void OnEstimationEnded(EstimationResultMessage message)
         {
-            var estimationValueCounts = new Dictionary<double, int>();
-            foreach (var estimation in message.EstimationResult)
-            {
-                if (estimation.Estimation != null)
-                {
-                    double key = GetEstimationValueKey(estimation.Estimation.Value);
-                    if (estimationValueCounts.TryGetValue(key, out int count))
-                    {
-                        estimationValueCounts[key] = count + 1;
-                    }
-                    else
-                    {
-                        estimationValueCounts.Add(key, 1);
-                    }
-                }
-            }
-
-            _memberEstimations = message.EstimationResult
-                .OrderByDescending(i => i.Estimation != null ? estimationValueCounts[GetEstimationValueKey(i.Estimation.Value)] : 0)
-                .ThenBy(i => i.Estimation?.Value, EstimationComparer.Default)
-                .ThenBy(i => i.Member.Name, StringComparer.CurrentCultureIgnoreCase)
-                .Select(i => i.Estimation != null ? new MemberEstimation(i.Member.Name, i.Estimation.Value) : new MemberEstimation(i.Member.Name))
-                .ToList();
+            _memberEstimations = GetMemberEstimationList(message.EstimationResult);
             ScrumTeam.State = TeamState.EstimationFinished;
         }
 

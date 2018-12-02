@@ -6,7 +6,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// <summary>
     /// Helper functions used by UI logic.
     /// </summary>
-    public static class ControllerHelper
+    internal static class ControllerHelper
     {
         /// <summary>
         /// Gets user friendly message from <see cref="PlanningPokerException"/> object.
