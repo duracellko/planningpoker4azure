@@ -20,6 +20,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public void TestInitialize()
         {
             _originalCultureInfo = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
         }
 
         [TestCleanup]

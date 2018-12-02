@@ -11,6 +11,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 {
     public class PlanningPokerController : INotifyPropertyChanged
     {
+        private const string ScrumMasterType = "ScrumMaster";
+        private const string ObserverType = "Observer";
+
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IBusyIndicatorService _busyIndicator;
         private List<MemberEstimation> _memberEstimations;
@@ -37,11 +40,14 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public string ScrumMaster => ScrumTeam?.ScrumMaster?.Name;
 
         public IEnumerable<string> Members => ScrumTeam.Members
-            .Where(m => m.Type != "ScrumMaster").Select(m => m.Name).OrderBy(m => m);
+            .Where(m => m.Type != ScrumMasterType).Select(m => m.Name)
+            .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
 
-        public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name).OrderBy(m => m);
+        public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name)
+            .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
 
-        public bool CanSelectEstimation => ScrumTeam.State == TeamState.EstimationInProgress && _hasJoinedEstimation;
+        public bool CanSelectEstimation => ScrumTeam.State == TeamState.EstimationInProgress &&
+            _hasJoinedEstimation && User.Type != ObserverType;
 
         public bool CanStartEstimation => IsScrumMaster && ScrumTeam.State != TeamState.EstimationInProgress;
 
@@ -133,6 +139,22 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             PropertyChanged?.Invoke(this, e);
         }
 
+        private static double GetEstimationValueKey(double? value)
+        {
+            if (!value.HasValue)
+            {
+                return -1111111.0;
+            }
+            else if (double.IsPositiveInfinity(value.Value))
+            {
+                return -1111100.0;
+            }
+            else
+            {
+                return value.Value;
+            }
+        }
+
         private void ProcessMessage(Message message)
         {
             switch (message.Type)
@@ -164,7 +186,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private void OnMemberJoined(MemberMessage message)
         {
             var member = message.Member;
-            if (member.Type == "Observer")
+            if (member.Type == ObserverType)
             {
                 ScrumTeam.Observers.Add(member);
             }
@@ -209,8 +231,29 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
         private void OnEstimationEnded(EstimationResultMessage message)
         {
-            _memberEstimations = message.EstimationResult.OrderBy(i => i.Estimation?.Value)
-                .Select(i => new MemberEstimation(i.Member.Name, i.Estimation?.Value)).ToList();
+            var estimationValueCounts = new Dictionary<double, int>();
+            foreach (var estimation in message.EstimationResult)
+            {
+                if (estimation.Estimation != null)
+                {
+                    double key = GetEstimationValueKey(estimation.Estimation.Value);
+                    if (estimationValueCounts.TryGetValue(key, out int count))
+                    {
+                        estimationValueCounts[key] = count + 1;
+                    }
+                    else
+                    {
+                        estimationValueCounts.Add(key, 1);
+                    }
+                }
+            }
+
+            _memberEstimations = message.EstimationResult
+                .OrderByDescending(i => i.Estimation != null ? estimationValueCounts[GetEstimationValueKey(i.Estimation.Value)] : 0)
+                .ThenBy(i => i.Estimation?.Value, EstimationComparer.Default)
+                .ThenBy(i => i.Member.Name, StringComparer.CurrentCultureIgnoreCase)
+                .Select(i => i.Estimation != null ? new MemberEstimation(i.Member.Name, i.Estimation.Value) : new MemberEstimation(i.Member.Name))
+                .ToList();
             ScrumTeam.State = TeamState.EstimationFinished;
         }
 
