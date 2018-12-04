@@ -32,10 +32,13 @@
 
     public string Title { get; private set; }
 
-    public Task ShowMessage(string message, string title)
+    public string PrimaryButtonText { get; private set; }
+
+    public Task<bool> ShowMessage(string message, string title, string primaryButton)
     {
         Message = message;
         Title = title;
+        PrimaryButtonText = primaryButton;
         IsDialogVisible = true;
 
         StateHasChanged();
@@ -48,7 +51,7 @@
     {
         if (_showMessageTask != null)
         {
-            _showMessageTask.SetResult(true);
+            _showMessageTask.SetResult(false);
             _showMessageTask = null;
         }
 

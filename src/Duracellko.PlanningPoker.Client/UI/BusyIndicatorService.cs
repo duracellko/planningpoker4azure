@@ -16,8 +16,12 @@ namespace Duracellko.PlanningPoker.Client.UI
         /// <returns><see cref="IDisposable"/> object that should be disposed, when operation is finished.</returns>
         public IDisposable Show()
         {
+            if (_counter == 0)
+            {
+                _handler?.Invoke(true);
+            }
+
             _counter++;
-            _handler?.Invoke(true);
             return new BusyIndicatorOperation(this);
         }
 
