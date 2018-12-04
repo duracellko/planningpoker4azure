@@ -50,6 +50,21 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
         }
 
+        public static ScrumTeam GetInitialScrumTeam()
+        {
+            return new ScrumTeam
+            {
+                Name = TeamName,
+                ScrumMaster = new TeamMember
+                {
+                    Name = ScrumMasterName,
+                    Type = ScrumMasterType
+                },
+                State = TeamState.Initial,
+                AvailableEstimations = GetAvailableEstimations()
+            };
+        }
+
         public static IList<Estimation> GetAvailableEstimations()
         {
             return new List<Estimation>
@@ -67,6 +82,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 new Estimation() { Value = 100.0 },
                 new Estimation() { Value = double.PositiveInfinity },
                 new Estimation() { Value = null }
+            };
+        }
+
+        public static ReconnectTeamResult GetReconnectTeamResult()
+        {
+            return new ReconnectTeamResult
+            {
+                ScrumTeam = GetScrumTeam(),
+                LastMessageId = 123
             };
         }
     }

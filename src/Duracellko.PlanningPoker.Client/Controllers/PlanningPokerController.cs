@@ -12,7 +12,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// <summary>
     /// Manages state of planning poker game and provides data for view.
     /// </summary>
-    public class PlanningPokerController : INotifyPropertyChanged
+    public class PlanningPokerController : IPlanningPokerInitializer, INotifyPropertyChanged
     {
         private const string ScrumMasterType = "ScrumMaster";
         private const string ObserverType = "Observer";

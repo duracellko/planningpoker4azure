@@ -5,15 +5,27 @@ using Duracellko.PlanningPoker.Service;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {
+    /// <summary>
+    /// Receives messages from server and sends them to <see cref="PlanningPokerController"/>.
+    /// </summary>
     public class MessageReceiver
     {
         private readonly IPlanningPokerClient _planningPokerClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageReceiver"/> class.
+        /// </summary>
+        /// <param name="planningPokerClient">Planning poker client to load messages from server.</param>
         public MessageReceiver(IPlanningPokerClient planningPokerClient)
         {
             _planningPokerClient = planningPokerClient ?? throw new ArgumentNullException(nameof(planningPokerClient));
         }
 
+        /// <summary>
+        /// Starts process of receiving messages from server.
+        /// </summary>
+        /// <param name="planningPokerController">Instance of <see cref="PlanningPokerController"/> to send messages to.</param>
+        /// <returns><see cref="IDisposable"/> object that can be used to stop receiving of messages.</returns>
         public IDisposable StartReceiving(PlanningPokerController planningPokerController)
         {
             var result = new MessageController(planningPokerController, _planningPokerClient);
@@ -68,6 +80,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                         _planningPokerController.User.Name,
                         _planningPokerController.LastMessageId,
                         cancellationToken);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+
                     _planningPokerController.ProcessMessages(messages);
                     return true;
                 }

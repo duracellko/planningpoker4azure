@@ -61,6 +61,33 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reconnect.
+        /// </summary>
+        internal static string JoinTeam_ReconnectButton {
+            get {
+                return ResourceManager.GetString("JoinTeam_ReconnectButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to reconnect?.
+        /// </summary>
+        internal static string JoinTeam_ReconnectMessage {
+            get {
+                return ResourceManager.GetString("JoinTeam_ReconnectMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reconnect.
+        /// </summary>
+        internal static string JoinTeam_ReconnectTitle {
+            get {
+                return ResourceManager.GetString("JoinTeam_ReconnectTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string MessagePanel_Error {
