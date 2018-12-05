@@ -1,32 +1,30 @@
 ﻿@implements IDisposable
 @inject UI.MessageBoxService _messageBoxService
 
-@if (IsDialogVisible)
-{
-    <div class="modal fade in" role="dialog" style="padding-right: 16px; display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onclick="@CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">@Title</h4>
-                </div>
-                <div class="modal-body">
-                    <p>@Message</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" style="display: none"></button>
-                    <button type="button" class="btn btn-default" onclick="@CloseDialog">Close</button>
-                </div>
+<div id="globalMessagePanel" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="@CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Message</p>
+            </div>
+            <div class="modal-footer">
+                @if (PrimaryButtonText != null)
+                {
+                    <button type="button" class="btn btn-primary" onclick="@PrimaryCommand">@PrimaryButtonText</button>
+                }
+                <button type="button" class="btn btn-default" onclick="@CloseDialog">Close</button>
             </div>
         </div>
     </div>
-}
+</div>
 
 @functions
 {
     private TaskCompletionSource<bool> _showMessageTask;
-
-    public bool IsDialogVisible { get; private set; }
 
     public string Message { get; private set; }
 
@@ -39,9 +37,9 @@
         Message = message;
         Title = title;
         PrimaryButtonText = primaryButton;
-        IsDialogVisible = true;
 
         StateHasChanged();
+        ShowDialog();
 
         _showMessageTask = new TaskCompletionSource<bool>();
         return _showMessageTask.Task;
@@ -49,13 +47,14 @@
 
     public void CloseDialog()
     {
-        if (_showMessageTask != null)
-        {
-            _showMessageTask.SetResult(false);
-            _showMessageTask = null;
-        }
+        EndShowMessageTask(false);
+        HideDialog();
+    }
 
-        IsDialogVisible = false;
+    public void PrimaryCommand()
+    {
+        EndShowMessageTask(true);
+        HideDialog();
     }
 
     public void Dispose()
@@ -67,5 +66,24 @@
     {
         base.OnInit();
         _messageBoxService.SetMessageHandler(ShowMessage);
+    }
+
+    private void EndShowMessageTask(bool result)
+    {
+        if (_showMessageTask != null)
+        {
+            _showMessageTask.SetResult(result);
+            _showMessageTask = null;
+        }
+    }
+
+    private async void ShowDialog()
+    {
+        await JSRuntime.Current.InvokeAsync<object>("eval", "$('#globalMessagePanel').modal({ backdrop: 'static' })");
+    }
+
+    private async void HideDialog()
+    {
+        await JSRuntime.Current.InvokeAsync<object>("eval", "$('#globalMessagePanel').modal('hide')");
     }
 }

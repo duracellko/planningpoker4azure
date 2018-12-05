@@ -1,27 +1,29 @@
 ﻿@implements IDisposable
 @inject UI.BusyIndicatorService _busyIndicatorService
 
-@if (IsVisible)
-{
-    <div class="modal in" role="dialog" style="padding-right: 16px; display: block;">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <p class="modal-title">Processing...</p>
-                </div>
+<div id="busyIndicatorPanel" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="modal-title">Processing...</p>
             </div>
         </div>
     </div>
-}
+</div>
 
 @functions
 {
-    public bool IsVisible { get; private set; }
-
-    public void SetVisibility(bool visible)
+    public async void SetVisibility(bool visible)
     {
-        IsVisible = visible;
         StateHasChanged();
+        if (visible)
+        {
+            await JSRuntime.Current.InvokeAsync<object>("eval", "$('#busyIndicatorPanel').modal({ backdrop: 'static', keyboard: false })");
+        }
+        else
+        {
+            await JSRuntime.Current.InvokeAsync<object>("eval", "$('#busyIndicatorPanel').modal('hide')");
+        }
     }
 
     public void Dispose()
