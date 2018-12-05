@@ -18,6 +18,7 @@ namespace Duracellko.PlanningPoker.Client
             services.AddSingleton<IMessageBoxService>(p => p.GetRequiredService<MessageBoxService>());
             services.AddSingleton<BusyIndicatorService>();
             services.AddSingleton<IBusyIndicatorService>(p => p.GetRequiredService<BusyIndicatorService>());
+            services.AddSingleton<IPlanningPokerInitializer>(p => p.GetRequiredService<PlanningPokerController>());
 
             services.AddSingleton<PlanningPokerController>();
             services.AddSingleton<CreateTeamController>();

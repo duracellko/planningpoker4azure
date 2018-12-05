@@ -46,9 +46,9 @@
 
 @functions
 {
-    public void KickoffMemberCommand(string member)
+    public Task KickoffMemberCommand(string member)
     {
-
+        return Controller.DisconnectMember(member);
     }
 
     public void Dispose()

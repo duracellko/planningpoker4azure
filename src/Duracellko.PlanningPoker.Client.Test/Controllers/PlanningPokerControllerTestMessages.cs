@@ -33,6 +33,20 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public void ProcessMessages_EmptyCollection_LastMessageIdIsNotUpdated()
+        {
+            var propertyChangedCounter = new PropertyChangedCounter();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(propertyChangedCounter);
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+
+            target.ProcessMessages(Enumerable.Empty<Message>());
+
+            Assert.AreEqual(0, propertyChangedCounter.Count);
+            Assert.AreEqual(-1, target.LastMessageId);
+        }
+
+        [TestMethod]
         public void ProcessMessages_EmptyMessage_LastMessageIdIsUpdated()
         {
             var propertyChangedCounter = new PropertyChangedCounter();
@@ -889,6 +903,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual("Tester 1", estimation.MemberName);
             Assert.IsTrue(estimation.HasEstimation);
             Assert.IsNull(estimation.Estimation);
+        }
+
+        [TestMethod]
+        public void ProcessMessages_Null_ArgumentNullException()
+        {
+            var propertyChangedCounter = new PropertyChangedCounter();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(propertyChangedCounter);
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+
+            Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null));
         }
 
         private static PlanningPokerController CreateController(PropertyChangedCounter propertyChangedCounter = null)

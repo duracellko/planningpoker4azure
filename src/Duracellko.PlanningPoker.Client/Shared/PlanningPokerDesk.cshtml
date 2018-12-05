@@ -105,7 +105,7 @@
         }
 
         var value = estimation.Value;
-        if (value == Service.Estimation.PositiveInfinity)
+        if (double.IsPositiveInfinity(value))
         {
             return "\u221E";
         }

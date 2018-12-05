@@ -185,6 +185,41 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         }
 
         /// <summary>
+        /// Disconnect current user from current Scrum Team.
+        /// </summary>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        public async Task Disconnect()
+        {
+            using (_busyIndicator.Show())
+            {
+                await _planningPokerService.DisconnectTeam(TeamName, User.Name, CancellationToken.None);
+            }
+        }
+
+        /// <summary>
+        /// Disconnects member from existing Planning Poker game. This functionality can be used by ScrumMaster only.
+        /// </summary>
+        /// <param name="member">Name of member to disconnect.</param>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        public async Task DisconnectMember(string member)
+        {
+            if (string.IsNullOrEmpty(member))
+            {
+                throw new ArgumentNullException(nameof(member));
+            }
+
+            if (string.Equals(member, User.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("ScrumMaster cannot disconnect himself.", nameof(member));
+            }
+
+            using (_busyIndicator.Show())
+            {
+                await _planningPokerService.DisconnectTeam(TeamName, member, CancellationToken.None);
+            }
+        }
+
+        /// <summary>
         /// Selects estimation by user, when estimation is in progress.
         /// </summary>
         /// <param name="estimation">Selected estimation value.</param>

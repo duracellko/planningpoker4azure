@@ -815,6 +815,117 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public async Task Disconnect_Initialized_DisconnectTeam()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.Disconnect();
+
+            planningPokerClient.Verify(o => o.DisconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, It.IsAny<CancellationToken>()));
+        }
+
+        [TestMethod]
+        public async Task Disconnect_Initialized_ShowsBusyIndicator()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var task = new TaskCompletionSource<bool>();
+            planningPokerClient.Setup(o => o.DisconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(task.Task);
+            var busyIndicatorService = new Mock<IBusyIndicatorService>();
+            var busyIndicatorDisposable = new Mock<IDisposable>();
+            busyIndicatorService.Setup(o => o.Show()).Returns(busyIndicatorDisposable.Object);
+
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            var result = target.Disconnect();
+
+            busyIndicatorService.Verify(o => o.Show());
+            busyIndicatorDisposable.Verify(o => o.Dispose(), Times.Never());
+
+            task.SetResult(true);
+            await result;
+
+            busyIndicatorDisposable.Verify(o => o.Dispose());
+        }
+
+        [TestMethod]
+        public async Task DisconnectMember_MemberName_DisconnectTeam()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.DisconnectMember(PlanningPokerData.MemberName);
+
+            planningPokerClient.Verify(o => o.DisconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()));
+        }
+
+        [TestMethod]
+        public async Task DisconnectMember_ScrumMasterName_ArgumentException()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.DisconnectMember(PlanningPokerData.ScrumMasterName));
+        }
+
+        [TestMethod]
+        public async Task DisconnectMember_Null_ArgumentNullException()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(null));
+        }
+
+        [TestMethod]
+        public async Task DisconnectMember_Empty_ArgumentNullException()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(string.Empty));
+        }
+
+        [TestMethod]
+        public async Task DisconnectMember_MemberName_ShowsBusyIndicator()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var task = new TaskCompletionSource<bool>();
+            planningPokerClient.Setup(o => o.DisconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(task.Task);
+            var busyIndicatorService = new Mock<IBusyIndicatorService>();
+            var busyIndicatorDisposable = new Mock<IDisposable>();
+            busyIndicatorService.Setup(o => o.Show()).Returns(busyIndicatorDisposable.Object);
+
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
+
+            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            var result = target.DisconnectMember(PlanningPokerData.MemberName);
+
+            busyIndicatorService.Verify(o => o.Show());
+            busyIndicatorDisposable.Verify(o => o.Dispose(), Times.Never());
+
+            task.SetResult(true);
+            await result;
+
+            busyIndicatorDisposable.Verify(o => o.Dispose());
+        }
+
+        [TestMethod]
         public async Task StartEstimation_CanStartEstimation_StartEstimationOnService()
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
