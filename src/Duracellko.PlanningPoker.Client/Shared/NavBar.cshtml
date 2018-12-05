@@ -1,4 +1,8 @@
-﻿<nav class="navbar navbar-fixed-top navbar-inverse">
+﻿@implements IDisposable
+@inject PlanningPokerController Controller
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper _uriHelper
+
+<nav class="navbar navbar-fixed-top navbar-inverse">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarPlanningPoker" aria-expanded="false" aria-controls="navbarPlanningPoker">
@@ -10,11 +14,11 @@
             <a class="navbar-brand" href="https://github.com/duracellko/planningpoker4azure" target="_blank">Planning Poker Website</a>
         </div>
         <div id="navbarPlanningPoker" class="collapse navbar-collapse">
-            @if (HasUser)
+            @if (IsConnected)
             {
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#disconnect" onclick="@DisconnectCommand">
+                        <a onclick="@DisconnectCommand">
                             <span class="glyphicon glyphicon-log-out"></span> Disconnect
                         </a>
                     </li>
@@ -25,9 +29,30 @@
 </nav>
 
 @functions {
-    public bool HasUser { get; set; }
+    public bool IsConnected => Controller.IsConnected;
 
-    public void DisconnectCommand()
+    public async Task DisconnectCommand()
     {
+        await Controller.Disconnect();
+        _uriHelper.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        Controller.PropertyChanged -= ControllerOnPropertyChanged;
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Controller.IsConnected))
+        {
+            StateHasChanged();
+        }
     }
 }

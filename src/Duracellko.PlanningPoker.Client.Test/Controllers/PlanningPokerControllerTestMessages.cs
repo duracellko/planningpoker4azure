@@ -923,6 +923,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var result = new PlanningPokerController(planningPokerClient.Object, busyIndicator.Object);
             if (propertyChangedCounter != null)
             {
+                // Subtract 1 PropertyChanged event raised by InitializeTeam
+                propertyChangedCounter.Count = -1;
                 propertyChangedCounter.Target = result;
             }
 

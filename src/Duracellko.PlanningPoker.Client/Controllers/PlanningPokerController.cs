@@ -20,6 +20,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IBusyIndicatorService _busyIndicator;
         private List<MemberEstimation> _memberEstimations;
+        private bool _isConnected;
         private bool _hasJoinedEstimation;
         private Estimation _selectedEstimation;
 
@@ -53,6 +54,26 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Gets Scrum Team name.
         /// </summary>
         public string TeamName => ScrumTeam?.Name;
+
+        /// <summary>
+        /// Gets a value indicating whether current user is connected to Planning Poker game.
+        /// </summary>
+        public bool IsConnected
+        {
+            get
+            {
+                return _isConnected;
+            }
+
+            private set
+            {
+                if (_isConnected != value)
+                {
+                    _isConnected = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsConnected)));
+                }
+            }
+        }
 
         /// <summary>
         /// Gets ID of last received message.
@@ -155,6 +176,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 _memberEstimations = null;
             }
 
+            IsConnected = true;
             _hasJoinedEstimation = scrumTeam.EstimationParticipants != null &&
                 scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
             _selectedEstimation = null;
@@ -193,6 +215,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             using (_busyIndicator.Show())
             {
                 await _planningPokerService.DisconnectTeam(TeamName, User.Name, CancellationToken.None);
+                IsConnected = false;
             }
         }
 

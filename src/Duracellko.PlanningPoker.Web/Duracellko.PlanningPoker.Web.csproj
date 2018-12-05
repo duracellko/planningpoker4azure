@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <UserSecretsId>3eb9c6dc-6f97-473c-9043-ba48877bb22f</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,9 +16,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="0.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="1.0.163" />
   </ItemGroup>
   
   <ItemGroup>
@@ -29,10 +25,9 @@
     <ProjectReference Include="..\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj" />
     <ProjectReference Include="..\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Content Remove="wwwroot\Scripts\*.ts" />
-    <TypeScriptCompile Include="wwwroot\Scripts\*.ts" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
   
 </Project>

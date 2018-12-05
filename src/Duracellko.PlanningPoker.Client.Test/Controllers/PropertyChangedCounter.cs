@@ -6,7 +6,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     {
         private INotifyPropertyChanged _target;
 
-        public int Count { get; private set; }
+        public int Count { get; set; }
 
         public INotifyPropertyChanged Target
         {

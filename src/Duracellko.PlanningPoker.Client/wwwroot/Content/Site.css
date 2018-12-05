@@ -27,16 +27,20 @@ body {
     padding-bottom: 30px;
 }
 
+.pageContent a {
+    cursor: pointer;
+}
+
 .planningPokerContainer > .container {
     padding-top: 60px;
 }
 
-#pokerDeskPanel h2 {
+.pokerDeskPanel h2 {
     color: #337ab7;
     margin-top: 2px;
 }
 
-#pokerDeskPanel h3 {
+.pokerDeskPanel h3 {
     color: #5cb85c;
 }
 
