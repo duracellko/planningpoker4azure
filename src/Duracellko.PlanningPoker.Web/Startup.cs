@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Web
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
                 {
                     MediaTypeNames.Application.Octet,
-                    WasmMediaTypeNames.Application.Wasm,
+                    WasmMediaTypeNames.Application.Wasm
                 });
             });
 
