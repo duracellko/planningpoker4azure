@@ -1,4 +1,5 @@
-﻿@inject JoinTeamController Controller
+﻿@inherits ViewComponentBase
+@inject JoinTeamController Controller
 
 <div class="panel panel-primary panel-collapse">
     <div class="panel-heading">
@@ -51,7 +52,7 @@
 
     public Task JoinTeamCommand()
     {
-        return Controller.JoinTeam(TeamName, MemberName, AsObserver);
+        return TryRun(() => Controller.JoinTeam(TeamName, MemberName, AsObserver));
     }
 
     private string GetFormGroupCss(bool valid) => valid ? "form-group" : "form-group has-error has-feedback";

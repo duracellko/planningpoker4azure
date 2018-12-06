@@ -1,4 +1,5 @@
-﻿@inject CreateTeamController Controller
+﻿@inherits ViewComponentBase
+@inject CreateTeamController Controller
 
 <div class="panel panel-primary panel-collapse">
     <div class="panel-heading">
@@ -43,7 +44,7 @@
 
     public Task CreateTeamCommand()
     {
-        return Controller.CreateTeam(TeamName, ScrumMasterName);
+        return TryRun(() => Controller.CreateTeam(TeamName, ScrumMasterName));
     }
 
     private string GetFormGroupCss(bool valid) => valid ? "form-group" : "form-group has-error has-feedback";

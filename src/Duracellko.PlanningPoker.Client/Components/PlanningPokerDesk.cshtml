@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@inherits ViewComponentBase
+@implements IDisposable
 @inject PlanningPokerController Controller
 
 <div class="pokerDeskPanel">
@@ -70,17 +71,17 @@
 
     public Task SelectEstimationCommand(double? estimation)
     {
-        return Controller.SelectEstimation(estimation);
+        return TryRun(() => Controller.SelectEstimation(estimation));
     }
 
     public Task StartEstimationCommand()
     {
-        return Controller.StartEstimation();
+        return TryRun(() => Controller.StartEstimation());
     }
 
     public Task CancelEstimationCommand()
     {
-        return Controller.CancelEstimation();
+        return TryRun(() => Controller.CancelEstimation());
     }
 
     public void Dispose()

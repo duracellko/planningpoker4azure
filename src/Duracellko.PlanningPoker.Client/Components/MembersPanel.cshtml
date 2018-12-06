@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@inherits ViewComponentBase
+@implements IDisposable
 @inject PlanningPokerController Controller
 
 <div class="panel panel-default">
@@ -48,7 +49,7 @@
 {
     public Task KickoffMemberCommand(string member)
     {
-        return Controller.DisconnectMember(member);
+        return TryRun(() => Controller.DisconnectMember(member));
     }
 
     public void Dispose()

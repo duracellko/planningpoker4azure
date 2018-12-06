@@ -1,6 +1,7 @@
-﻿@implements IDisposable
+﻿@inherits ViewComponentBase
+@implements IDisposable
 @inject PlanningPokerController Controller
-@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper _uriHelper
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
 <nav class="navbar navbar-fixed-top navbar-inverse">
     <div class="container">
@@ -28,13 +29,17 @@
     </div>
 </nav>
 
-@functions {
+@functions
+{
     public bool IsConnected => Controller.IsConnected;
 
-    public async Task DisconnectCommand()
+    public Task DisconnectCommand()
     {
-        await Controller.Disconnect();
-        _uriHelper.NavigateTo("/");
+        return TryRun(async () =>
+        {
+            await Controller.Disconnect();
+            UriHelper.NavigateTo("/");
+        });
     }
 
     public void Dispose()
