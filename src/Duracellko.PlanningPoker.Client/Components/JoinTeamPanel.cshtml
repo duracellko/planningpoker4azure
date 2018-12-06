@@ -46,9 +46,9 @@
 
     public bool AsObserver { get; set; }
 
-    private bool IsTeamNameValid => !string.IsNullOrWhiteSpace(TeamName);
+    private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
-    private bool IsMemberNameValid => !string.IsNullOrWhiteSpace(MemberName);
+    private bool IsMemberNameValid => MemberName == null || !string.IsNullOrWhiteSpace(MemberName);
 
     public Task JoinTeamCommand()
     {

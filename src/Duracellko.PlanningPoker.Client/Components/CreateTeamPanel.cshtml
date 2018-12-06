@@ -38,9 +38,9 @@
 
     public string ScrumMasterName { get; set; }
 
-    private bool IsTeamNameValid => !string.IsNullOrWhiteSpace(TeamName);
+    private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
-    private bool IsScrumMasterNameValid => !string.IsNullOrWhiteSpace(ScrumMasterName);
+    private bool IsScrumMasterNameValid => ScrumMasterName == null || !string.IsNullOrWhiteSpace(ScrumMasterName);
 
     public Task CreateTeamCommand()
     {
