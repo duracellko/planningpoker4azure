@@ -1,7 +1,7 @@
 ﻿@implements IDisposable
 @inject UI.BusyIndicatorService _busyIndicatorService
 
-<div id="busyIndicatorPanel" class="modal" role="dialog" aria-hidden="true">
+<div ref="BusyIndicatorElement" class="modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-body">
@@ -13,16 +13,18 @@
 
 @functions
 {
+    public ElementRef BusyIndicatorElement { get; set; }
+
     public async void SetVisibility(bool visible)
     {
         StateHasChanged();
         if (visible)
         {
-            await JSRuntime.Current.InvokeAsync<object>("eval", "$('#busyIndicatorPanel').modal({ backdrop: 'static', keyboard: false })");
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", BusyIndicatorElement);
         }
         else
         {
-            await JSRuntime.Current.InvokeAsync<object>("eval", "$('#busyIndicatorPanel').modal('hide')");
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", BusyIndicatorElement);
         }
     }
 

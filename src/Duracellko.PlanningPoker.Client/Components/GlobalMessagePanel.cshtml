@@ -1,7 +1,7 @@
 ﻿@implements IDisposable
 @inject UI.MessageBoxService _messageBoxService
 
-<div id="globalMessagePanel" class="modal fade" role="dialog" aria-hidden="true">
+<div ref="MessageBoxElement" class="modal fade" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -24,6 +24,8 @@
 
 @functions
 {
+    public ElementRef MessageBoxElement { get; set; }
+
     private TaskCompletionSource<bool> _showMessageTask;
 
     public string Message { get; private set; }
@@ -79,11 +81,11 @@
 
     private async void ShowDialog()
     {
-        await JSRuntime.Current.InvokeAsync<object>("eval", "$('#globalMessagePanel').modal({ backdrop: 'static' })");
+        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", MessageBoxElement);
     }
 
     private async void HideDialog()
     {
-        await JSRuntime.Current.InvokeAsync<object>("eval", "$('#globalMessagePanel').modal('hide')");
+        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", MessageBoxElement);
     }
 }
