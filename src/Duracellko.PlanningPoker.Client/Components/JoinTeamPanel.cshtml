@@ -52,13 +52,21 @@
 
     private bool IsMemberNameValid => MemberName == null || !string.IsNullOrWhiteSpace(MemberName);
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         base.OnParametersSet();
 
         if (!string.IsNullOrEmpty(MemberName))
         {
-            // TODO: Reconnect to the team
+            try
+            {
+                await Controller.TryReconnectTeam(TeamName, MemberName);
+            }
+            catch (Exception)
+            {
+                // Ignore error. User can connect manually.
+            }
+
             MemberName = null;
         }
     }

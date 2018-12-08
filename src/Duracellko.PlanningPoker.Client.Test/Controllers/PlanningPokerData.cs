@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
 
 namespace Duracellko.PlanningPoker.Client.Test.Controllers
@@ -91,6 +92,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             {
                 ScrumTeam = GetScrumTeam(),
                 LastMessageId = 123
+            };
+        }
+
+        public static MemberCredentials GetMemberCredentials()
+        {
+            return new MemberCredentials
+            {
+                TeamName = TeamName,
+                MemberName = MemberName
             };
         }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Controllers;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,12 +44,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeam_TeamNameIsSet()
+        public async Task InitializeTeam_ScrumTeam_TeamNameIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
@@ -58,12 +59,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberName_IsNotScrumMaster()
+        public async Task InitializeTeam_MemberName_IsNotScrumMaster()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
@@ -73,12 +74,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberNameIsLowerCase_UserIsSet()
+        public async Task InitializeTeam_MemberNameIsLowerCase_UserIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, "test member");
+            await target.InitializeTeam(scrumTeam, "test member");
 
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
@@ -88,12 +89,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumMasterNameIsUpperCase_UserIsSet()
+        public async Task InitializeTeam_ScrumMasterNameIsUpperCase_UserIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, "TEST SCRUM MASTER");
+            await target.InitializeTeam(scrumTeam, "TEST SCRUM MASTER");
 
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
@@ -103,12 +104,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ObserverName_UserIsSet()
+        public async Task InitializeTeam_ObserverName_UserIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ObserverName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ObserverName);
 
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
@@ -118,34 +119,34 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_LastMessageId_IsMinus1()
+        public async Task InitializeTeam_LastMessageId_IsMinus1()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(-1, target.LastMessageId);
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeam_ScrumMasterIsSet()
+        public async Task InitializeTeam_ScrumTeam_ScrumMasterIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster);
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeam_MembersAndObserversAreSet()
+        public async Task InitializeTeam_ScrumTeam_MembersAndObserversAreSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             var expectedMembers = new string[] { PlanningPokerData.MemberName };
             CollectionAssert.AreEqual(expectedMembers, target.Members.ToList());
@@ -154,7 +155,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeamWith4MembersAnd3Observers_MembersAndObserversAreSet()
+        public async Task InitializeTeam_ScrumTeamWith4MembersAnd3Observers_MembersAndObserversAreSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Name = "me", Type = PlanningPokerData.MemberType });
@@ -165,7 +166,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             var expectedMembers = new string[] { "1st Member", "me", PlanningPokerData.MemberName, "XYZ" };
             CollectionAssert.AreEqual(expectedMembers, target.Members.ToList());
@@ -174,14 +175,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeamWithMembersSetToNull_MembersAndObserversAreSet()
+        public async Task InitializeTeam_ScrumTeamWithMembersSetToNull_MembersAndObserversAreSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members = null;
             scrumTeam.Observers = null;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             CollectionAssert.AreEqual(Array.Empty<string>(), target.Members.ToList());
             CollectionAssert.AreEqual(Array.Empty<string>(), target.Observers.ToList());
@@ -192,24 +193,24 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeam_AvailableEstimationsAreSet()
+        public async Task InitializeTeam_ScrumTeam_AvailableEstimationsAreSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             var expectedEstimations = new double?[] { 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100, double.PositiveInfinity, null };
             CollectionAssert.AreEqual(expectedEstimations, target.AvailableEstimations.ToList());
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumMasterAndInitialState_CanStartEstimation()
+        public async Task InitializeTeam_ScrumMasterAndInitialState_CanStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -218,13 +219,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumMasterAndEstimationInProgress_CanCancelEstimation()
+        public async Task InitializeTeam_ScrumMasterAndEstimationInProgress_CanCancelEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
@@ -233,13 +234,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumMasterAndEstimationFinished_CanStartEstimation()
+        public async Task InitializeTeam_ScrumMasterAndEstimationFinished_CanStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationFinished;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -248,13 +249,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumMasterAndEstimationCanceled_CanStartEstimation()
+        public async Task InitializeTeam_ScrumMasterAndEstimationCanceled_CanStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -263,12 +264,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberAndInitialState_CannotStartEstimation()
+        public async Task InitializeTeam_MemberAndInitialState_CannotStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -277,13 +278,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberAndEstimationInProgress_CannotCancelEstimation()
+        public async Task InitializeTeam_MemberAndEstimationInProgress_CannotCancelEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -292,13 +293,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberAndEstimationFinished_CannotStartEstimation()
+        public async Task InitializeTeam_MemberAndEstimationFinished_CannotStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationFinished;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -307,13 +308,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_MemberAndEstimationCanceled_CannotStartEstimation()
+        public async Task InitializeTeam_MemberAndEstimationCanceled_CannotStartEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -322,7 +323,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationFinishedAnd5Estimations_5Estimations()
+        public async Task InitializeTeam_EstimationFinishedAnd5Estimations_5Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
@@ -359,7 +360,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -396,7 +397,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationFinishedAndMemberWithoutEstimation_4Estimations()
+        public async Task InitializeTeam_EstimationFinishedAndMemberWithoutEstimation_4Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
@@ -439,7 +440,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -476,7 +477,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationFinishedAndSameEstimationCount_6Estimations()
+        public async Task InitializeTeam_EstimationFinishedAndSameEstimationCount_6Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
@@ -526,7 +527,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -568,7 +569,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationFinishedAndSameEstimationCountWithNull_6Estimations()
+        public async Task InitializeTeam_EstimationFinishedAndSameEstimationCountWithNull_6Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
@@ -611,7 +612,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -653,14 +654,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationFinishedAndEmptyEstimationsList_NoEstimations()
+        public async Task InitializeTeam_EstimationFinishedAndEmptyEstimationsList_NoEstimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationFinished;
             scrumTeam.EstimationResult = new List<EstimationResultItem>();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -671,7 +672,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAnd4Participants_3Estimations()
+        public async Task InitializeTeam_EstimationInProgressAnd4Participants_3Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" });
@@ -693,7 +694,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
@@ -720,7 +721,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAnd0Participants_0Estimations()
+        public async Task InitializeTeam_EstimationInProgressAnd0Participants_0Estimations()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
@@ -733,7 +734,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
@@ -744,7 +745,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAndParticipantsListIsNull_EstimationsIsNull()
+        public async Task InitializeTeam_EstimationInProgressAndParticipantsListIsNull_EstimationsIsNull()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
@@ -756,7 +757,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
@@ -767,7 +768,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAndMemberInParticipantsAndNotEstimated_CanSelectEstimation()
+        public async Task InitializeTeam_EstimationInProgressAndMemberInParticipantsAndNotEstimated_CanSelectEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
@@ -783,7 +784,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -792,7 +793,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAndMemberInParticipantsAndEstimated_CannotSelectEstimation()
+        public async Task InitializeTeam_EstimationInProgressAndMemberInParticipantsAndEstimated_CannotSelectEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
@@ -808,7 +809,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -817,7 +818,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_EstimationInProgressAndMemberNotInParticipants_CannotSelectEstimation()
+        public async Task InitializeTeam_EstimationInProgressAndMemberNotInParticipants_CannotSelectEstimation()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
@@ -833,7 +834,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController();
 
-            target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
+            await target.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName);
 
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
@@ -842,16 +843,54 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public void InitializeTeam_ScrumTeam_NotifyPropertyChanged()
+        public async Task InitializeTeam_ScrumTeam_NotifyPropertyChanged()
         {
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
             propertyChangedCounter.Target = target;
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
+        }
+
+        [TestMethod]
+        public async Task InitializeTeam_ScrumTeam_SetCredentialsAsync()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            MemberCredentials memberCredentials = null;
+            memberCredentialsStore.Setup(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()))
+                .Callback<MemberCredentials>(c => memberCredentials = c)
+                .Returns(Task.CompletedTask);
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+
+            memberCredentialsStore.Verify(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()));
+            Assert.IsNotNull(memberCredentials);
+            Assert.AreEqual(PlanningPokerData.TeamName, memberCredentials.TeamName);
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, memberCredentials.MemberName);
+        }
+
+        [TestMethod]
+        public async Task InitializeTeam_ReconnectTeamResult_SetCredentialsAsync()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            MemberCredentials memberCredentials = null;
+            memberCredentialsStore.Setup(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()))
+                .Callback<MemberCredentials>(c => memberCredentials = c)
+                .Returns(Task.CompletedTask);
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            await target.InitializeTeam(reconnectTeamResult, "test member");
+
+            memberCredentialsStore.Verify(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()));
+            Assert.IsNotNull(memberCredentials);
+            Assert.AreEqual(PlanningPokerData.TeamName, memberCredentials.TeamName);
+            Assert.AreEqual(PlanningPokerData.MemberName, memberCredentials.MemberName);
         }
 
         [TestMethod]
@@ -861,7 +900,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await target.Disconnect();
 
             planningPokerClient.Verify(o => o.DisconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, It.IsAny<CancellationToken>()));
@@ -875,13 +914,26 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.IsFalse(target.IsConnected);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.IsTrue(target.IsConnected);
 
             await target.Disconnect();
 
             Assert.IsFalse(target.IsConnected);
+        }
+
+        [TestMethod]
+        public async Task Disconnect_Initialized_SetCredentialsToNull()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.Disconnect();
+
+            memberCredentialsStore.Verify(o => o.SetCredentialsAsync(null));
         }
 
         [TestMethod]
@@ -892,7 +944,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var target = CreateController();
             propertyChangedCounter.Target = target;
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
             await target.Disconnect();
 
             Assert.AreEqual(2, propertyChangedCounter.Count);
@@ -912,7 +964,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var result = target.Disconnect();
 
             busyIndicatorService.Verify(o => o.Show());
@@ -931,7 +983,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await target.DisconnectMember(PlanningPokerData.MemberName);
 
             planningPokerClient.Verify(o => o.DisconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()));
@@ -945,7 +997,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.DisconnectMember(PlanningPokerData.ScrumMasterName));
         }
 
@@ -956,7 +1008,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(null));
         }
 
@@ -967,7 +1019,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(string.Empty));
         }
 
@@ -985,7 +1037,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var result = target.DisconnectMember(PlanningPokerData.MemberName);
 
             busyIndicatorService.Verify(o => o.Show());
@@ -1004,7 +1056,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await target.StartEstimation();
 
             planningPokerClient.Verify(o => o.StartEstimation(PlanningPokerData.TeamName, It.IsAny<CancellationToken>()));
@@ -1017,7 +1069,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
             await target.StartEstimation();
 
             planningPokerClient.Verify(o => o.StartEstimation(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
@@ -1037,7 +1089,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var result = target.StartEstimation();
 
             busyIndicatorService.Verify(o => o.Show());
@@ -1057,7 +1109,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await target.CancelEstimation();
 
             planningPokerClient.Verify(o => o.CancelEstimation(PlanningPokerData.TeamName, It.IsAny<CancellationToken>()));
@@ -1071,7 +1123,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
             await target.CancelEstimation();
 
             planningPokerClient.Verify(o => o.CancelEstimation(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
@@ -1092,7 +1144,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var result = target.CancelEstimation();
 
             busyIndicatorService.Verify(o => o.Show());
@@ -1111,7 +1163,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1127,7 +1179,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1143,7 +1195,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1159,7 +1211,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             await target.SelectEstimation(5);
 
             planningPokerClient.Verify(o => o.SubmitEstimation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double?>(), It.IsAny<CancellationToken>()), Times.Never());
@@ -1171,7 +1223,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1188,7 +1240,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1205,7 +1257,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController();
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1230,7 +1282,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
 
-            target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
             var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
             target.ProcessMessages(new Message[] { message });
 
@@ -1245,7 +1297,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             busyIndicatorDisposable.Verify(o => o.Dispose());
         }
 
-        private static PlanningPokerController CreateController(IPlanningPokerClient planningPokerClient = null, IBusyIndicatorService busyIndicator = null)
+        private static PlanningPokerController CreateController(
+            IPlanningPokerClient planningPokerClient = null,
+            IBusyIndicatorService busyIndicator = null,
+            IMemberCredentialsStore memberCredentialsStore = null)
         {
             if (planningPokerClient == null)
             {
@@ -1259,7 +1314,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 busyIndicator = busyIndicatorMock.Object;
             }
 
-            return new PlanningPokerController(planningPokerClient, busyIndicator);
+            if (memberCredentialsStore == null)
+            {
+                var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
+                memberCredentialsStore = memberCredentialsStoreMock.Object;
+            }
+
+            return new PlanningPokerController(planningPokerClient, busyIndicator, memberCredentialsStore);
         }
     }
 }

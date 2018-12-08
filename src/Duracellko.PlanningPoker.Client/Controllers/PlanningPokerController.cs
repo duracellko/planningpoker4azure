@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
 
@@ -19,6 +20,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IBusyIndicatorService _busyIndicator;
+        private readonly IMemberCredentialsStore _memberCredentialsStore;
         private List<MemberEstimation> _memberEstimations;
         private bool _isConnected;
         private bool _hasJoinedEstimation;
@@ -29,10 +31,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         /// <param name="planningPokerService">Planning poker client to send messages to server.</param>
         /// <param name="busyIndicator">Service to show busy indicator, when operation is in progress.</param>
-        public PlanningPokerController(IPlanningPokerClient planningPokerService, IBusyIndicatorService busyIndicator)
+        /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
+        public PlanningPokerController(
+            IPlanningPokerClient planningPokerService,
+            IBusyIndicatorService busyIndicator,
+            IMemberCredentialsStore memberCredentialsStore)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
+            _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
         }
 
         /// <summary>
@@ -135,7 +142,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         /// <param name="scrumTeam">Scrum Team data received from server.</param>
         /// <param name="username">Name of user joining the Scrum Team.</param>
-        public void InitializeTeam(ScrumTeam scrumTeam, string username)
+        /// <returns>Asynchronous operation.</returns>
+        public Task InitializeTeam(ScrumTeam scrumTeam, string username)
         {
             if (scrumTeam == null)
             {
@@ -180,6 +188,13 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _hasJoinedEstimation = scrumTeam.EstimationParticipants != null &&
                 scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
             _selectedEstimation = null;
+
+            var memberCredentials = new MemberCredentials
+            {
+                TeamName = TeamName,
+                MemberName = User.Name
+            };
+            return _memberCredentialsStore.SetCredentialsAsync(memberCredentials);
         }
 
         /// <summary>
@@ -187,8 +202,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         /// <param name="teamInfo">Scrum Team data received from server.</param>
         /// <param name="username">Name of user joining the Scrum Team.</param>
+        /// <returns>Asynchronous operation.</returns>
         /// <remarks>This method overloads setup additional information after reconnecting to existing team.</remarks>
-        public void InitializeTeam(ReconnectTeamResult teamInfo, string username)
+        public async Task InitializeTeam(ReconnectTeamResult teamInfo, string username)
         {
             if (teamInfo == null)
             {
@@ -200,7 +216,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 throw new ArgumentNullException(nameof(username));
             }
 
-            InitializeTeam(teamInfo.ScrumTeam, username);
+            await InitializeTeam(teamInfo.ScrumTeam, username);
 
             LastMessageId = teamInfo.LastMessageId;
             _selectedEstimation = teamInfo.SelectedEstimation;
@@ -216,6 +232,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 await _planningPokerService.DisconnectTeam(TeamName, User.Name, CancellationToken.None);
                 IsConnected = false;
+                await _memberCredentialsStore.SetCredentialsAsync(null);
             }
         }
 

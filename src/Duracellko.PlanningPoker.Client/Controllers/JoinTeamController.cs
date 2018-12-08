@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Blazor.Services;
@@ -20,6 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IMessageBoxService _messageBoxService;
         private readonly IBusyIndicatorService _busyIndicatorService;
         private readonly IUriHelper _uriHelper;
+        private readonly IMemberCredentialsStore _memberCredentialsStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JoinTeamController"/> class.
@@ -29,18 +31,21 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="messageBoxService">Service to display message to user.</param>
         /// <param name="busyIndicatorService">Service to display that operation is in progress.</param>
         /// <param name="uriHelper">Service to navigate to specified URL.</param>
+        /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
         public JoinTeamController(
             IPlanningPokerClient planningPokerService,
             IPlanningPokerInitializer planningPokerInitializer,
             IMessageBoxService messageBoxService,
             IBusyIndicatorService busyIndicatorService,
-            IUriHelper uriHelper)
+            IUriHelper uriHelper,
+            IMemberCredentialsStore memberCredentialsStore)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _planningPokerInitializer = planningPokerInitializer ?? throw new ArgumentNullException(nameof(planningPokerInitializer));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
             _uriHelper = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper));
+            _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
         }
 
         /// <summary>
@@ -67,7 +72,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
                 if (team != null)
                 {
-                    _planningPokerInitializer.InitializeTeam(team, memberName);
+                    await _planningPokerInitializer.InitializeTeam(team, memberName);
                     ControllerHelper.OpenPlanningPokerPage(_uriHelper, team, memberName);
                     return true;
                 }
@@ -82,7 +87,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     message = $"{message}{Environment.NewLine}{Resources.JoinTeam_ReconnectMessage}";
                     if (await _messageBoxService.ShowMessage(message, Resources.JoinTeam_ReconnectTitle, Resources.JoinTeam_ReconnectButton))
                     {
-                        return await ReconnectTeam(teamName, memberName, CancellationToken.None);
+                        return await ReconnectTeam(teamName, memberName, false, CancellationToken.None);
                     }
                 }
                 else
@@ -95,7 +100,31 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             return false;
         }
 
-        private async Task<bool> ReconnectTeam(string teamName, string memberName, CancellationToken cancellationToken)
+        /// <summary>
+        /// Reconnects member to team, when credentials are stored.
+        /// </summary>
+        /// <param name="teamName">Name of team to reconnect to.</param>
+        /// <param name="memberName">Name of member to reconnect.</param>
+        /// <returns><c>True</c> if the operation was successful; otherwise <c>false</c>.</returns>
+        public async Task<bool> TryReconnectTeam(string teamName, string memberName)
+        {
+            if (string.IsNullOrEmpty(teamName) || string.IsNullOrEmpty(memberName))
+            {
+                return false;
+            }
+
+            var memberCredentials = await _memberCredentialsStore.GetCredentialsAsync();
+            if (memberCredentials != null &&
+                string.Equals(memberCredentials.TeamName, teamName, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(memberCredentials.MemberName, memberName, StringComparison.OrdinalIgnoreCase))
+            {
+                return await ReconnectTeam(teamName, memberName, true, CancellationToken.None);
+            }
+
+            return false;
+        }
+
+        private async Task<bool> ReconnectTeam(string teamName, string memberName, bool ignoreError, CancellationToken cancellationToken)
         {
             try
             {
@@ -107,15 +136,18 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
                 if (reconnectTeamResult != null)
                 {
-                    _planningPokerInitializer.InitializeTeam(reconnectTeamResult, memberName);
+                    await _planningPokerInitializer.InitializeTeam(reconnectTeamResult, memberName);
                     ControllerHelper.OpenPlanningPokerPage(_uriHelper, reconnectTeamResult.ScrumTeam, memberName);
                     return true;
                 }
             }
             catch (PlanningPokerException ex)
             {
-                var message = ControllerHelper.GetErrorMessage(ex);
-                await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                if (!ignoreError)
+                {
+                    var message = ControllerHelper.GetErrorMessage(ex);
+                    await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                }
             }
 
             return false;

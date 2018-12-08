@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Duracellko.PlanningPoker.Client.Controllers;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Blazor.Builder;
@@ -14,6 +15,7 @@ namespace Duracellko.PlanningPoker.Client
         {
             // Services are scoped, because on server-side scope is created for each client session.
             services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
+            services.AddScoped<IMemberCredentialsStore, MemberCredentialsStore>();
 
             services.AddScoped<MessageBoxService>();
             services.AddScoped<IMessageBoxService>(p => p.GetRequiredService<MessageBoxService>());
