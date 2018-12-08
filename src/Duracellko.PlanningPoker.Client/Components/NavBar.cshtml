@@ -31,16 +31,7 @@
 
 @functions
 {
-    public bool IsConnected => Controller.IsConnected;
-
-    public Task DisconnectCommand()
-    {
-        return TryRun(async () =>
-        {
-            await Controller.Disconnect();
-            UriHelper.NavigateTo("/");
-        });
-    }
+    private bool IsConnected => Controller.IsConnected;
 
     public void Dispose()
     {
@@ -51,6 +42,15 @@
     {
         base.OnInit();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private Task DisconnectCommand()
+    {
+        return TryRun(async () =>
+        {
+            await Controller.Disconnect();
+            UriHelper.NavigateTo("Index");
+        });
     }
 
     private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

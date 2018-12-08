@@ -47,11 +47,6 @@
 
 @functions
 {
-    public Task KickoffMemberCommand(string member)
-    {
-        return TryRun(() => Controller.DisconnectMember(member));
-    }
-
     public void Dispose()
     {
         Controller.PropertyChanged -= ControllerOnPropertyChanged;
@@ -61,6 +56,11 @@
     {
         base.OnInit();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private Task KickoffMemberCommand(string member)
+    {
+        return TryRun(() => Controller.DisconnectMember(member));
     }
 
     private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

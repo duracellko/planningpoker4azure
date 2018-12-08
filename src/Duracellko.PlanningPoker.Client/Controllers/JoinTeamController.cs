@@ -68,7 +68,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (team != null)
                 {
                     _planningPokerInitializer.InitializeTeam(team, memberName);
-                    _uriHelper.NavigateTo("PlanningPoker");
+                    ControllerHelper.OpenPlanningPokerPage(_uriHelper, team, memberName);
                     return true;
                 }
             }
@@ -108,7 +108,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (reconnectTeamResult != null)
                 {
                     _planningPokerInitializer.InitializeTeam(reconnectTeamResult, memberName);
-                    _uriHelper.NavigateTo("PlanningPoker");
+                    ControllerHelper.OpenPlanningPokerPage(_uriHelper, reconnectTeamResult.ScrumTeam, memberName);
                     return true;
                 }
             }

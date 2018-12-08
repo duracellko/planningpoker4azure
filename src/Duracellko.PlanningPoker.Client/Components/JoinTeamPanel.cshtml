@@ -40,17 +40,30 @@
 
 @functions
 {
-    public string TeamName { get; set; }
+    [Parameter]
+    private string TeamName { get; set; }
 
-    public string MemberName { get; set; }
+    [Parameter]
+    private string MemberName { get; set; }
 
-    public bool AsObserver { get; set; }
+    private bool AsObserver { get; set; }
 
     private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
     private bool IsMemberNameValid => MemberName == null || !string.IsNullOrWhiteSpace(MemberName);
 
-    public Task JoinTeamCommand()
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(MemberName))
+        {
+            // TODO: Reconnect to the team
+            MemberName = null;
+        }
+    }
+
+    private Task JoinTeamCommand()
     {
         if (TeamName == null)
         {

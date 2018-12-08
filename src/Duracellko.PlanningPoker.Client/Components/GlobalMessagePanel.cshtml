@@ -24,17 +24,28 @@
 
 @functions
 {
-    public ElementRef MessageBoxElement { get; set; }
-
     private TaskCompletionSource<bool> _showMessageTask;
 
-    public string Message { get; private set; }
+    private ElementRef MessageBoxElement { get; set; }
 
-    public string Title { get; private set; }
+    private string Message { get; set; }
 
-    public string PrimaryButtonText { get; private set; }
+    private string Title { get; set; }
 
-    public Task<bool> ShowMessage(string message, string title, string primaryButton)
+    private string PrimaryButtonText { get; set; }
+
+    public void Dispose()
+    {
+        _messageBoxService.SetMessageHandler(null);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        _messageBoxService.SetMessageHandler(ShowMessage);
+    }
+
+    private Task<bool> ShowMessage(string message, string title, string primaryButton)
     {
         Message = message;
         Title = title;
@@ -47,27 +58,16 @@
         return _showMessageTask.Task;
     }
 
-    public void CloseDialog()
+    private void CloseDialog()
     {
         EndShowMessageTask(false);
         HideDialog();
     }
 
-    public void PrimaryCommand()
+    private void PrimaryCommand()
     {
         EndShowMessageTask(true);
         HideDialog();
-    }
-
-    public void Dispose()
-    {
-        _messageBoxService.SetMessageHandler(null);
-    }
-
-    protected override void OnInit()
-    {
-        base.OnInit();
-        _messageBoxService.SetMessageHandler(ShowMessage);
     }
 
     private void EndShowMessageTask(bool result)

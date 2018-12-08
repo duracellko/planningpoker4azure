@@ -13,20 +13,7 @@
 
 @functions
 {
-    public ElementRef BusyIndicatorElement { get; set; }
-
-    public async void SetVisibility(bool visible)
-    {
-        StateHasChanged();
-        if (visible)
-        {
-            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", BusyIndicatorElement);
-        }
-        else
-        {
-            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", BusyIndicatorElement);
-        }
-    }
+    private ElementRef BusyIndicatorElement { get; set; }
 
     public void Dispose()
     {
@@ -37,5 +24,18 @@
     {
         base.OnInit();
         _busyIndicatorService.SetBusyIndicatorHandler(SetVisibility);
+    }
+
+    private async void SetVisibility(bool visible)
+    {
+        StateHasChanged();
+        if (visible)
+        {
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", BusyIndicatorElement);
+        }
+        else
+        {
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", BusyIndicatorElement);
+        }
     }
 }

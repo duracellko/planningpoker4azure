@@ -88,7 +88,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
 
-            uriHelper.Verify(o => o.NavigateTo("PlanningPoker"));
+            uriHelper.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer"));
         }
 
         [TestMethod]
@@ -244,7 +244,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
 
-            uriHelper.Verify(o => o.NavigateTo("PlanningPoker"));
+            uriHelper.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer"));
         }
 
         [TestMethod]

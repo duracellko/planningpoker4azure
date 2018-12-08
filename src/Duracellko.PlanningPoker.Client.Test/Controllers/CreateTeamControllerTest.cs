@@ -75,7 +75,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
 
-            uriHelper.Verify(o => o.NavigateTo("PlanningPoker"));
+            uriHelper.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20Scrum%20Master"));
         }
 
         [TestMethod]

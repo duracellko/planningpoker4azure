@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -105,6 +106,12 @@ namespace Duracellko.PlanningPoker.Web
             {
                 app.UseHsts();
             }
+
+            // PlanningPoker page should be routed on client side. Always return Index on server side.
+            var rewriteOptions = new RewriteOptions()
+                .AddRewrite("^Index", "Index", false)
+                .AddRewrite("^PlanningPoker", "Index", false);
+            app.UseRewriter(rewriteOptions);
 
             app.UseResponseCompression();
             app.UseMvc();

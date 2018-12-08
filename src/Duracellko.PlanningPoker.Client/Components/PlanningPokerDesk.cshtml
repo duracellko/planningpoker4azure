@@ -67,22 +67,7 @@
 
 @functions
 {
-    public bool HasEstimationResult => Controller.Estimations != null;
-
-    public Task SelectEstimationCommand(double? estimation)
-    {
-        return TryRun(() => Controller.SelectEstimation(estimation));
-    }
-
-    public Task StartEstimationCommand()
-    {
-        return TryRun(() => Controller.StartEstimation());
-    }
-
-    public Task CancelEstimationCommand()
-    {
-        return TryRun(() => Controller.CancelEstimation());
-    }
+    private bool HasEstimationResult => Controller.Estimations != null;
 
     public void Dispose()
     {
@@ -93,6 +78,21 @@
     {
         base.OnInit();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
+    }
+
+    private Task SelectEstimationCommand(double? estimation)
+    {
+        return TryRun(() => Controller.SelectEstimation(estimation));
+    }
+
+    private Task StartEstimationCommand()
+    {
+        return TryRun(() => Controller.StartEstimation());
+    }
+
+    private Task CancelEstimationCommand()
+    {
+        return TryRun(() => Controller.CancelEstimation());
     }
 
     private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

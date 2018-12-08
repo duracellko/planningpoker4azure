@@ -34,15 +34,15 @@
 
 @functions
 {
-    public string TeamName { get; set; }
+    private string TeamName { get; set; }
 
-    public string ScrumMasterName { get; set; }
+    private string ScrumMasterName { get; set; }
 
     private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
     private bool IsScrumMasterNameValid => ScrumMasterName == null || !string.IsNullOrWhiteSpace(ScrumMasterName);
 
-    public Task CreateTeamCommand()
+    private Task CreateTeamCommand()
     {
         if (TeamName == null)
         {
