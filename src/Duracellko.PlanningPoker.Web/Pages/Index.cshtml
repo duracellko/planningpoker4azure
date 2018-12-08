@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@page
+@model Duracellko.PlanningPoker.Web.Pages.IndexModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -15,6 +21,13 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="Scripts/PlanningPoker.js"></script>
-    <script src="_framework/blazor.webassembly.js"></script>
+    @if (Model.ClientConfiguration.UseServerSideBlazor)
+    {
+        <script src="_framework/blazor.server.js"></script>
+    }
+    else
+    {
+        <script src="_framework/blazor.webassembly.js"></script>
+    }
 </body>
 </html>

@@ -12,17 +12,18 @@ namespace Duracellko.PlanningPoker.Client
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Startup interface expected by Blazor.")]
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IPlanningPokerClient, PlanningPokerClient>();
+            // Services are scoped, because on server-side scope is created for each client session.
+            services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
 
-            services.AddSingleton<MessageBoxService>();
-            services.AddSingleton<IMessageBoxService>(p => p.GetRequiredService<MessageBoxService>());
-            services.AddSingleton<BusyIndicatorService>();
-            services.AddSingleton<IBusyIndicatorService>(p => p.GetRequiredService<BusyIndicatorService>());
-            services.AddSingleton<IPlanningPokerInitializer>(p => p.GetRequiredService<PlanningPokerController>());
+            services.AddScoped<MessageBoxService>();
+            services.AddScoped<IMessageBoxService>(p => p.GetRequiredService<MessageBoxService>());
+            services.AddScoped<BusyIndicatorService>();
+            services.AddScoped<IBusyIndicatorService>(p => p.GetRequiredService<BusyIndicatorService>());
+            services.AddScoped<IPlanningPokerInitializer>(p => p.GetRequiredService<PlanningPokerController>());
 
-            services.AddSingleton<PlanningPokerController>();
-            services.AddSingleton<CreateTeamController>();
-            services.AddSingleton<JoinTeamController>();
+            services.AddScoped<PlanningPokerController>();
+            services.AddScoped<CreateTeamController>();
+            services.AddScoped<JoinTeamController>();
             services.AddTransient<MessageReceiver>();
         }
 

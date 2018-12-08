@@ -52,6 +52,16 @@
 
     public Task JoinTeamCommand()
     {
+        if (TeamName == null)
+        {
+            TeamName = string.Empty;
+        }
+
+        if (MemberName == null)
+        {
+            MemberName = string.Empty;
+        }
+
         return TryRun(() => Controller.JoinTeam(TeamName, MemberName, AsObserver));
     }
 

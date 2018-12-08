@@ -44,6 +44,16 @@
 
     public Task CreateTeamCommand()
     {
+        if (TeamName == null)
+        {
+            TeamName = string.Empty;
+        }
+
+        if (ScrumMasterName == null)
+        {
+            ScrumMasterName = string.Empty;
+        }
+
         return TryRun(() => Controller.CreateTeam(TeamName, ScrumMasterName));
     }
 
