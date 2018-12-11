@@ -18,7 +18,7 @@
     {
         <div class="availableEstimations">
             <h3>Pick estimation</h3>
-            <ul data-bind="foreach: availableEstimations">
+            <ul>
                 @foreach (var estimation in Controller.AvailableEstimations)
                 {
                     <li><a onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
