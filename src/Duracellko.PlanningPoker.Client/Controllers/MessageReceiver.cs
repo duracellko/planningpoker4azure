@@ -60,14 +60,25 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             public async void StartReceiving()
             {
-                using (_cancellationTokenSource = new CancellationTokenSource())
+                try
                 {
-                    var cancellationToken = _cancellationTokenSource.Token;
-                    while (!cancellationToken.IsCancellationRequested)
+                    using (_cancellationTokenSource = new CancellationTokenSource())
                     {
-                        var success = await ReceiveMessages(cancellationToken);
-                        await Task.Delay(success ? 100 : 500, cancellationToken);
+                        var cancellationToken = _cancellationTokenSource.Token;
+                        while (!cancellationToken.IsCancellationRequested)
+                        {
+                            var success = await ReceiveMessages(cancellationToken);
+                            await Task.Delay(success ? 100 : 500, cancellationToken);
+                        }
                     }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Ignore excpetion. Job was stopped regularly.
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
                 }
             }
 
@@ -80,17 +91,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                         _planningPokerController.User.Name,
                         _planningPokerController.LastMessageId,
                         cancellationToken);
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return false;
-                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     _planningPokerController.ProcessMessages(messages);
                     return true;
                 }
-                catch (Exception ex)
+                catch (PlanningPokerException ex) when (ex.InnerException != null)
                 {
-                    Console.WriteLine(ex);
+                    // Network connection failed. Try again.
                     return false;
                 }
             }
