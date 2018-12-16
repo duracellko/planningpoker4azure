@@ -32,10 +32,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.AreEqual(38, frames.Count);
+            Assert.AreEqual(39, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 38);
+            AssertFrame.Element(frames[0], "div", 39);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
@@ -49,12 +49,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Text(frames[17], PlanningPokerData.ScrumMasterName);
 
             // Button to start estimation
-            AssertFrame.Element(frames[23], "div", 13);
-            AssertFrame.Element(frames[25], "p", 10);
-            AssertFrame.Element(frames[28], "a", 4);
-            AssertFrame.Attribute(frames[29], "onclick");
-            AssertFrame.Attribute(frames[30], "class", "btn btn-default");
-            AssertFrame.Markup(frames[31], "\n                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation\n                    ");
+            AssertFrame.Element(frames[23], "div", 14);
+            AssertFrame.Attribute(frames[24], "class", "actionsBar");
+            AssertFrame.Element(frames[26], "p", 10);
+            AssertFrame.Element(frames[29], "a", 4);
+            AssertFrame.Attribute(frames[30], "onclick");
+            AssertFrame.Attribute(frames[31], "class", "btn btn-default");
+            AssertFrame.Markup(frames[32], "\n                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation\n                    ");
         }
 
         [TestMethod]

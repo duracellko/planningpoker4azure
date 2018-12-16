@@ -6,7 +6,7 @@
         <h3 class="panel-title">Join team</h3>
     </div>
     <div class="panel-body">
-        <form action="." onsubmit="@JoinTeamCommand">
+        <form name="joinTeam" action="." onsubmit="@JoinTeamCommand">
             <div class="@GetFormGroupCss(IsTeamNameValid)">
                 <label for="joinTeam$teamName">Team name:</label>
                 <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
