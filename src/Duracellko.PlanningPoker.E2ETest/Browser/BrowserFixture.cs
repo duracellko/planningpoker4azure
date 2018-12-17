@@ -29,7 +29,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
             var options = CreateDriverOptions(browserType);
             var driver = new RemoteWebDriver(options);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
             Browser = driver;
         }
 

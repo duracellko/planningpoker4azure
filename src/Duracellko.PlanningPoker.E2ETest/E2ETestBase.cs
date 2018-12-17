@@ -18,6 +18,8 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected BrowserTestContext Context { get; set; }
 
+        protected ClientTest ClientTest { get; set; }
+
         protected ScreenshotCapture ScreenshotCapture { get; private set; }
 
         [TestInitialize]
@@ -32,6 +34,8 @@ namespace Duracellko.PlanningPoker.E2ETest
         public void TestCleanup()
         {
             ScreenshotCapture = null;
+            ClientTest = null;
+            Context = null;
 
             if (BrowserFixture != null)
             {

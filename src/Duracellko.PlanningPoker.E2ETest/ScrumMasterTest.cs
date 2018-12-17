@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.E2ETest.Browser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,13 +9,6 @@ namespace Duracellko.PlanningPoker.E2ETest
     [TestClass]
     public class ScrumMasterTest : E2ETestBase
     {
-        private IWebElement _appElement;
-        private IWebElement _planningPokerContainerElement;
-        private IWebElement _containerElement;
-        private IWebElement _createTeamForm;
-        private IWebElement _planningPokerDeskElement;
-        private IWebElement _membersPanelElement;
-
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
@@ -26,131 +20,106 @@ namespace Duracellko.PlanningPoker.E2ETest
                 browserType,
                 serverSide);
 
-            Server.UseServerSide = serverSide;
+            Server.UseServerSide = Context.ServerSide;
             await Server.Start();
-            await AssertServerSide(serverSide);
+            await AssertServerSide(Context.ServerSide);
 
             BrowserFixture.Initialize(Context.BrowserType);
+            ClientTest = new ClientTest(Browser, Server);
 
-            LoadApplication();
-            OpenIndexPage();
-            FillInCreateTeamForm();
-            SubmitCreateTeamForm();
-            AssertScrumMasterInTeam();
-            AssertTeamName();
-            StartEstimation();
-            await SelectEstimation();
-            Disconnect();
-        }
+            string team = "My team";
+            string scrumMaster = "Test ScrumMaster";
 
-        private void LoadApplication()
-        {
-            Browser.Navigate().GoToUrl(Server.Uri);
-            _appElement = Browser.FindElement(By.TagName("app"));
-            Assert.IsNotNull(_appElement);
+            ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
-        }
-
-        private void OpenIndexPage()
-        {
-            _planningPokerContainerElement = _appElement.FindElement(By.CssSelector("div.planningPokerContainer"));
-            _containerElement = _planningPokerContainerElement.FindElement(By.XPath("./div[@class='container']"));
+            ClientTest.AssertIndexPage();
             TakeScreenshot("02-Index");
-        }
-
-        private void FillInCreateTeamForm()
-        {
-            _createTeamForm = _containerElement.FindElement(By.CssSelector("form[name='createTeam']"));
-            var teamNameInput = _createTeamForm.FindElement(By.Id("createTeam$teamName"));
-            var scrumMasterNameInput = _createTeamForm.FindElement(By.Id("createTeam$scrumMasterName"));
-
-            teamNameInput.SendKeys("My team");
-            scrumMasterNameInput.SendKeys("Test ScrumMaster");
-
+            ClientTest.FillCreateTeamForm(team, scrumMaster);
             TakeScreenshot("03-CreateTeamForm");
-
-            Assert.AreEqual(0, teamNameInput.FindElements(By.XPath("../span")).Count);
-            Assert.AreEqual(0, scrumMasterNameInput.FindElements(By.XPath("../span")).Count);
-        }
-
-        private void SubmitCreateTeamForm()
-        {
-            var submitButton = _createTeamForm.FindElement(By.Id("createTeam$Submit"));
-            submitButton.Click();
-
-            _planningPokerDeskElement = _containerElement.FindElement(By.CssSelector("div.pokerDeskPanel"));
-            _membersPanelElement = _containerElement.FindElement(By.CssSelector("div.membersPanel"));
+            ClientTest.SubmitCreateTeamForm();
+            ClientTest.AssertPlanningPokerPage("My%20team", "Test%20ScrumMaster");
             TakeScreenshot("04-PlanningPoker");
-
-            Assert.AreEqual($"{Server.Uri}PlanningPoker/My%20team/Test%20ScrumMaster", Browser.Url);
-        }
-
-        private void AssertScrumMasterInTeam()
-        {
-            var scrumMasterElements = _membersPanelElement.FindElements(By.XPath("./div[1]/ul/li"));
-            Assert.AreEqual(1, scrumMasterElements.Count);
-            Assert.AreEqual("Test ScrumMaster", scrumMasterElements[0].Text);
-
-            var elements = _membersPanelElement.FindElements(By.XPath("./div[2]/ul/li"));
-            Assert.AreEqual(0, elements.Count);
-            elements = _membersPanelElement.FindElements(By.XPath("./div[3]/ul/li"));
-            Assert.AreEqual(0, elements.Count);
-        }
-
-        private void AssertTeamName()
-        {
-            var teamNameHeader = _planningPokerDeskElement.FindElement(By.CssSelector("div.team-title h2"));
-            Assert.AreEqual("My team", teamNameHeader.Text);
-            var userHeader = _planningPokerDeskElement.FindElement(By.CssSelector("div.team-title h3"));
-            Assert.AreEqual("Test ScrumMaster", userHeader.Text);
-        }
-
-        private void StartEstimation()
-        {
-            var button = _planningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
-            Assert.AreEqual("Start estimation", button.Text);
-
-            button.Click();
-
-            _planningPokerDeskElement.FindElement(By.CssSelector("div.availableEstimations"));
+            ClientTest.AssertTeamName(team, scrumMaster);
+            ClientTest.AssertScrumMasterInTeam(scrumMaster);
+            ClientTest.AssertMembersInTeam();
+            ClientTest.AssertObserversInTeam();
+            ClientTest.StartEstimation();
             TakeScreenshot("05-EstimationStarted");
-        }
-
-        private async Task SelectEstimation()
-        {
-            var availableEstimationElements = _planningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
-            Assert.AreEqual(13, availableEstimationElements.Count);
-            Assert.AreEqual("0", availableEstimationElements[0].Text);
-            Assert.AreEqual("\u00BD", availableEstimationElements[1].Text);
-            Assert.AreEqual("1", availableEstimationElements[2].Text);
-            Assert.AreEqual("2", availableEstimationElements[3].Text);
-            Assert.AreEqual("3", availableEstimationElements[4].Text);
-            Assert.AreEqual("5", availableEstimationElements[5].Text);
-            Assert.AreEqual("8", availableEstimationElements[6].Text);
-            Assert.AreEqual("13", availableEstimationElements[7].Text);
-            Assert.AreEqual("20", availableEstimationElements[8].Text);
-            Assert.AreEqual("40", availableEstimationElements[9].Text);
-            Assert.AreEqual("100", availableEstimationElements[10].Text);
-            Assert.AreEqual("\u221E", availableEstimationElements[11].Text);
-            Assert.AreEqual("?", availableEstimationElements[12].Text);
-
-            availableEstimationElements[2].Click();
-
+            ClientTest.SelectEstimation("1");
             await Task.Delay(500);
             TakeScreenshot("06-Estimated");
+            ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, "1"));
+            ClientTest.Disconnect();
+            TakeScreenshot("07-Disconnected");
         }
 
-        private void Disconnect()
+        [DataTestMethod]
+        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
+        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
+        public async Task Shows_Error_When_Creating_Empty_Team(bool serverSide, BrowserType browserType)
         {
-            var navbarPlanningPokerElement = _planningPokerContainerElement.FindElement(By.Id("navbarPlanningPoker"));
-            var disconnectElement = navbarPlanningPokerElement.FindElement(By.TagName("a"));
-            Assert.AreEqual("Disconnect", disconnectElement.Text);
+            Context = new BrowserTestContext(
+                nameof(ScrumMasterTest),
+                nameof(Shows_Error_When_Creating_Empty_Team),
+                browserType,
+                serverSide);
 
-            disconnectElement.Click();
+            Server.UseServerSide = Context.ServerSide;
+            await Server.Start();
+            await AssertServerSide(Context.ServerSide);
 
-            _createTeamForm = _containerElement.FindElement(By.CssSelector("form[name='createTeam']"));
-            TakeScreenshot("07-Disconnected");
-            Assert.AreEqual($"{Server.Uri}Index", Browser.Url);
+            BrowserFixture.Initialize(Context.BrowserType);
+            ClientTest = new ClientTest(Browser, Server);
+
+            ClientTest.OpenApplication();
+            TakeScreenshot("01-Loading");
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("02-Index");
+            ClientTest.SubmitCreateTeamForm();
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("03-RequiredError");
+
+            var input = ClientTest.CreateTeamForm.FindElement(By.Id("createTeam$teamName"));
+            var required = input.FindElement(By.XPath("../span"));
+            Assert.AreEqual("Required", required.Text);
+
+            input = ClientTest.CreateTeamForm.FindElement(By.Id("createTeam$scrumMasterName"));
+            required = input.FindElement(By.XPath("../span"));
+            Assert.AreEqual("Required", required.Text);
+        }
+
+        [DataTestMethod]
+        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
+        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
+        public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, BrowserType browserType)
+        {
+            Context = new BrowserTestContext(
+                nameof(ScrumMasterTest),
+                nameof(Shows_Error_When_Joining_Not_Existing_Team),
+                browserType,
+                serverSide);
+
+            Server.UseServerSide = Context.ServerSide;
+            await Server.Start();
+            await AssertServerSide(Context.ServerSide);
+
+            BrowserFixture.Initialize(Context.BrowserType);
+            ClientTest = new ClientTest(Browser, Server);
+
+            string team = "My team";
+            string member = "Test Member";
+
+            ClientTest.OpenApplication();
+            TakeScreenshot("01-Loading");
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("02-Index");
+            ClientTest.FillJoinTeamForm(team, member);
+            TakeScreenshot("03-JoinTeamForm");
+            ClientTest.SubmitJoinTeamForm();
+            await Task.Delay(500);
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("04-Error");
+            ClientTest.AssertMessageBox("Scrum Team \"My team\" does not exist.");
         }
     }
 }
