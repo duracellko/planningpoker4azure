@@ -151,13 +151,30 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             PlanningPokerDeskElement.FindElement(By.CssSelector("div.availableEstimations"));
         }
 
-        public void SelectEstimation(string estimation)
+        public void CancelEstimation()
+        {
+            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
+            Assert.AreEqual("Cancel estimation", button.Text);
+            button.Click();
+        }
+
+        public void AssertAvailableEstimations()
         {
             var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
             Assert.AreEqual(13, availableEstimationElements.Count);
             CollectionAssert.AreEqual(_availableEstimations, availableEstimationElements.Select(e => e.Text).ToList());
+        }
 
+        public void AssertNotAvailableEstimations()
+        {
+            var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations"));
+            Assert.AreEqual(0, availableEstimationElements.Count);
+        }
+
+        public void SelectEstimation(string estimation)
+        {
             int index = Array.IndexOf<string>(_availableEstimations, estimation);
+            var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
             availableEstimationElements[index].Click();
         }
 

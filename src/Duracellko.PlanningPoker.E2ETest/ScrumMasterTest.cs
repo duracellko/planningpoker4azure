@@ -14,18 +14,14 @@ namespace Duracellko.PlanningPoker.E2ETest
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
         public async Task ScrumMaster_Should_Be_Able_To_Estimate(bool serverSide, BrowserType browserType)
         {
-            Context = new BrowserTestContext(
+            Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(ScrumMaster_Should_Be_Able_To_Estimate),
                 browserType,
-                serverSide);
+                serverSide));
 
-            Server.UseServerSide = Context.ServerSide;
-            await Server.Start();
-            await AssertServerSide(Context.ServerSide);
-
-            BrowserFixture.Initialize(Context.BrowserType);
-            ClientTest = new ClientTest(Browser, Server);
+            await StartServer();
+            StartClients();
 
             string team = "My team";
             string scrumMaster = "Test ScrumMaster";
@@ -45,6 +41,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertObserversInTeam();
             ClientTest.StartEstimation();
             TakeScreenshot("05-EstimationStarted");
+            ClientTest.AssertAvailableEstimations();
             ClientTest.SelectEstimation("1");
             await Task.Delay(500);
             TakeScreenshot("06-Estimated");
@@ -58,18 +55,14 @@ namespace Duracellko.PlanningPoker.E2ETest
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
         public async Task Shows_Error_When_Creating_Empty_Team(bool serverSide, BrowserType browserType)
         {
-            Context = new BrowserTestContext(
+            Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(Shows_Error_When_Creating_Empty_Team),
                 browserType,
-                serverSide);
+                serverSide));
 
-            Server.UseServerSide = Context.ServerSide;
-            await Server.Start();
-            await AssertServerSide(Context.ServerSide);
-
-            BrowserFixture.Initialize(Context.BrowserType);
-            ClientTest = new ClientTest(Browser, Server);
+            await StartServer();
+            StartClients();
 
             ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
@@ -93,18 +86,14 @@ namespace Duracellko.PlanningPoker.E2ETest
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
         public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, BrowserType browserType)
         {
-            Context = new BrowserTestContext(
+            Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(Shows_Error_When_Joining_Not_Existing_Team),
                 browserType,
-                serverSide);
+                serverSide));
 
-            Server.UseServerSide = Context.ServerSide;
-            await Server.Start();
-            await AssertServerSide(Context.ServerSide);
-
-            BrowserFixture.Initialize(Context.BrowserType);
-            ClientTest = new ClientTest(Browser, Server);
+            await StartServer();
+            StartClients();
 
             string team = "My team";
             string member = "Test Member";
