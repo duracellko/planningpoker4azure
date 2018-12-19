@@ -7,7 +7,7 @@
     <NoWarn>CA1707</NoWarn>
   </PropertyGroup>
 
-  <Import Project="..\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj" />
-    <ProjectReference Include="..\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj" />
-    <ProjectReference Include="..\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
+    <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj" />
+    <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
   </ItemGroup>
 
 </Project>
