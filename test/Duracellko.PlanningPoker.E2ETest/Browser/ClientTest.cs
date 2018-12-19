@@ -74,11 +74,21 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
         public void FillJoinTeamForm(string team, string member)
         {
+            FillJoinTeamForm(team, member, false);
+        }
+
+        public void FillJoinTeamForm(string team, string member, bool asObserver)
+        {
             var teamNameInput = JoinTeamForm.FindElement(By.Id("joinTeam$teamName"));
             var memberNameInput = JoinTeamForm.FindElement(By.Id("joinTeam$memberName"));
+            var observerInput = JoinTeamForm.FindElement(By.Id("joinTeam$asObserver"));
 
             teamNameInput.SendKeys(team);
             memberNameInput.SendKeys(member);
+            if (asObserver)
+            {
+                observerInput.Click();
+            }
 
             Assert.AreEqual(0, teamNameInput.FindElements(By.XPath("../span")).Count);
             Assert.AreEqual(0, memberNameInput.FindElements(By.XPath("../span")).Count);
