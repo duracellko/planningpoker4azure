@@ -10,9 +10,7 @@ namespace Duracellko.PlanningPoker.E2ETest
     {
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(false, BrowserType.Firefox, DisplayName = "Client-side Firefox")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        [DataRow(true, BrowserType.Firefox, DisplayName = "Server-side Firefox")]
         public async Task Estimate_2_Rounds(bool serverSide, BrowserType browserType)
         {
             Contexts.Add(new BrowserTestContext(
@@ -145,9 +143,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(false, BrowserType.Firefox, DisplayName = "Client-side Firefox")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        [DataRow(true, BrowserType.Firefox, DisplayName = "Server-side Firefox")]
         public async Task Cancel_Estimation(bool serverSide, BrowserType browserType)
         {
             Contexts.Add(new BrowserTestContext(
@@ -279,9 +275,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(false, BrowserType.Firefox, DisplayName = "Client-side Firefox")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        [DataRow(true, BrowserType.Firefox, DisplayName = "Server-side Firefox")]
         public async Task Observer_Cannot_Estimate(bool serverSide, BrowserType browserType)
         {
             Contexts.Add(new BrowserTestContext(
@@ -423,9 +417,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, BrowserType.Firefox, DisplayName = "Client-side Chrome and Firefox")]
-        [DataRow(false, BrowserType.Firefox, BrowserType.Chrome, DisplayName = "Client-side Firefox and Chrome")]
         [DataRow(true, BrowserType.Chrome, BrowserType.Firefox, DisplayName = "Server-side Chrome and Firefox")]
-        [DataRow(true, BrowserType.Firefox, BrowserType.Chrome, DisplayName = "Server-side Firefox and Chrome")]
         public async Task Cannot_Estimate_When_Joining_After_Start(bool serverSide, BrowserType browserType1, BrowserType browserType2)
         {
             Contexts.Add(new BrowserTestContext(
