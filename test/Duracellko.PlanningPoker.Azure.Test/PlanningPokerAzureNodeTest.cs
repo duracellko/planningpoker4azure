@@ -649,7 +649,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, null);
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
@@ -712,7 +712,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = CreateSerializedBasicTeam() };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
@@ -744,7 +744,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName, "team 2" };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = CreateSerializedBasicTeam() };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
@@ -774,7 +774,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = TeamName };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
@@ -801,7 +801,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList);
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
             var teamList = new string[] { TeamName };
@@ -830,7 +830,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList) { SenderNodeId = "sender" };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage teamListMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamList)))
@@ -867,7 +867,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
             var teamLock = SetupPlanningPoker(planningPoker, CreateBasicTeam());
@@ -893,7 +893,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
@@ -925,7 +925,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
-            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>()));
+            serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
             NodeMessage initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
