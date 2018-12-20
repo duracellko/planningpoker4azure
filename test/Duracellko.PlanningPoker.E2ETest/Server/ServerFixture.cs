@@ -110,7 +110,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
         {
             return new string[]
             {
-                "--urls", "http://127.0.0.1:5000",
+                "--urls", "http://127.0.0.1:0",
                 "--PlanningPokerClient:UseServerSide", UseServerSide.ToString(CultureInfo.InvariantCulture)
             };
         }

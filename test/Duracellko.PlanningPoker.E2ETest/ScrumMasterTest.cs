@@ -28,7 +28,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string team = "My team";
             string scrumMaster = "Test ScrumMaster";
 
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-Index");
@@ -68,7 +68,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             await StartServer();
             StartClients();
 
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-Index");
@@ -104,7 +104,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string team = "My team";
             string member = "Test Member";
 
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-Index");

@@ -34,7 +34,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string member = "Bob";
 
             // Alice creates team
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-A-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-A-Index");
@@ -49,7 +49,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertObserversInTeam();
 
             // Bob joins team
-            ClientTests[1].OpenApplication();
+            await ClientTests[1].OpenApplication();
             TakeScreenshot(1, "05-B-Loading");
             ClientTests[1].AssertIndexPage();
             TakeScreenshot(1, "06-B-Index");
@@ -169,7 +169,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string member = "Bob";
 
             // Alice creates team
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-A-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-A-Index");
@@ -184,7 +184,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertObserversInTeam();
 
             // Bob joins team
-            ClientTests[1].OpenApplication();
+            await ClientTests[1].OpenApplication();
             TakeScreenshot(1, "05-B-Loading");
             ClientTests[1].AssertIndexPage();
             TakeScreenshot(1, "06-B-Index");
@@ -309,7 +309,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string observer = "Charlie";
 
             // Alice creates team
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-A-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-A-Index");
@@ -324,7 +324,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertObserversInTeam();
 
             // Bob joins team
-            ClientTests[1].OpenApplication();
+            await ClientTests[1].OpenApplication();
             TakeScreenshot(1, "05-B-Loading");
             ClientTests[1].AssertIndexPage();
             TakeScreenshot(1, "06-B-Index");
@@ -339,7 +339,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTests[1].AssertObserversInTeam();
 
             // Charlie joins team as observer
-            ClientTests[2].OpenApplication();
+            await ClientTests[2].OpenApplication();
             TakeScreenshot(2, "09-C-Loading");
             ClientTests[2].AssertIndexPage();
             TakeScreenshot(2, "10-C-Index");
@@ -453,7 +453,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             string member2 = "Charlie";
 
             // Alice creates team
-            ClientTest.OpenApplication();
+            await ClientTest.OpenApplication();
             TakeScreenshot("01-A-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-A-Index");
@@ -468,7 +468,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertObserversInTeam();
 
             // Bob joins team
-            ClientTests[1].OpenApplication();
+            await ClientTests[1].OpenApplication();
             TakeScreenshot(1, "05-B-Loading");
             ClientTests[1].AssertIndexPage();
             TakeScreenshot(1, "06-B-Index");
@@ -495,7 +495,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTests[1].AssertAvailableEstimations();
 
             // Charlie joins team
-            ClientTests[2].OpenApplication();
+            await ClientTests[2].OpenApplication();
             TakeScreenshot(2, "11-C-Loading");
             ClientTests[2].AssertIndexPage();
             TakeScreenshot(2, "12-C-Index");

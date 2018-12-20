@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.E2ETest.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 
-namespace Duracellko.PlanningPoker.E2ETest.Browser
+namespace Duracellko.PlanningPoker.E2ETest
 {
     public class ClientTest
     {
@@ -38,11 +39,12 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
         public IWebElement MembersPanelElement { get; private set; }
 
-        public void OpenApplication()
+        public Task OpenApplication()
         {
             Browser.Navigate().GoToUrl(Server.Uri);
             AppElement = Browser.FindElement(By.TagName("app"));
             Assert.IsNotNull(AppElement);
+            return Task.Delay(2000);
         }
 
         public void AssertIndexPage()

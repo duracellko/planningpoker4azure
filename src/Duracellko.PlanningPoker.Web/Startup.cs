@@ -90,6 +90,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 services.AddServerSideBlazor<Duracellko.PlanningPoker.Client.Startup>();
                 services.AddSingleton<HttpClient>();
+                services.AddTransient<IHostedService, HttpClientSetupService>();
             }
 
             return services.BuildServiceProvider();
@@ -119,33 +120,12 @@ namespace Duracellko.PlanningPoker.Web
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
             if (clientConfiguration.UseServerSideBlazor)
             {
-                ConfigureHttpClient(app);
                 app.UseServerSideBlazor<Duracellko.PlanningPoker.Client.Startup>();
             }
             else
             {
                 app.UseBlazor<Duracellko.PlanningPoker.Client.Startup>();
             }
-        }
-
-        private static void ConfigureHttpClient(IApplicationBuilder app)
-        {
-            var server = app.ApplicationServices.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>();
-            var serverAddresses = server.Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
-            var address = serverAddresses.Addresses.FirstOrDefault();
-            if (address == null)
-            {
-                // Default ASP.NET Core Kestrel endpoint
-                address = "http://localhost:5000";
-            }
-            else
-            {
-                address = address.Replace("*", "localhost", StringComparison.Ordinal);
-                address = address.Replace("+", "localhost", StringComparison.Ordinal);
-            }
-
-            var httpClient = app.ApplicationServices.GetRequiredService<HttpClient>();
-            httpClient.BaseAddress = new Uri(address);
         }
 
         private AzurePlanningPokerConfiguration GetPlanningPokerConfiguration()
