@@ -24,6 +24,10 @@ steps:
   inputs:
     versionSpec: 10.14.2
 
+- powershell: './scripts/UpdateVersion.ps1 -VersionNumber $(Build.BuildId)'
+  displayName: 'PowerShell UpdateVersion.ps1'
+  failOnStderr: true
+
 - task: Npm@1
   displayName: npm install
   inputs:

@@ -9,7 +9,8 @@
     <Import_RootNamespace>Duracellko.PlanningPoker.Shared</Import_RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <Company>Duracellko</Company>
     <Copyright>Copyright © Duracellko 2012</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
