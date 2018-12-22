@@ -2,9 +2,30 @@
 
 **Live** @ [http://planningpoker.duracellko.net/](http://planningpoker.duracellko.net/)
 
+- [Overview](#Overview)
+- [How to play Planning Poker](#How-to-play-Planning-Poker)
+- [Installation](#Installation)
+- [Architecture](#Architecture)
+- [Configuration](#Configuration)
+- [Buid and test](#Buid-and-test)
+- [Solution projects](#Solution-projects)
+
 ## Overview
 
 Planning Poker web application allows distributed teams to play [planning poker](https://en.wikipedia.org/wiki/Planning_poker) using just their web browser and is optimized for mobile. The application does not require any registration at all. Scrum Master simply creates a team and all other members connect to the team. Observer role is supported too. The observer can watch the game, but cannot estimate. This is ideal role for a product owner.
+
+## How to play Planning Poker
+
+This guide assumes that you already know what planning poker is about and how to play with real cards. If you need any information about planning poker see the [wikipedia page](https://en.wikipedia.org/wiki/Planning_poker). To play planning poker using this application is very simple. For distributed team a conference call is required as this is not provided by the application.
+
+1. At first Scrum Master creates new team by entering Team name and Scrum master name.
+2. Then all team members join the team by entering the same Team name and unique member name.
+3. Optionally product owner can join the team by entering the same Team name, unique member name and checking Observer checkbox.
+4. When all participants joined the team, the team can discuss first story.
+5. After discussion Scrum Master starts the estimation.
+6. Then all members pick estimates. Optionally Scrum Master can cancel estimation when any of the members requests that.
+7. After all members picked an estimate, the estimates are shown to all participants.
+8. If concensus is found then team can discuss another story and Scrum Master can start estimation again. Otherwise team discusses their estimates and then Scrum Master starts estimation again.
 
 ![Planning Poker screenshot](https://github.com/duracellko/planningpoker4azure/wiki/images/Screenshot.png)
 
