@@ -39,13 +39,14 @@ steps:
   inputs:
     command: restore
     projects: $(BuildProjects)
+    arguments: --verbosity normal
 
 - task: DotNetCoreCLI@2
   displayName: dotnet build
   inputs:
     command: build
     projects: $(BuildProjects)
-    arguments: --configuration $(BuildConfiguration)
+    arguments: --configuration $(BuildConfiguration) --verbosity normal
 
 - powershell: |
     $testFiles = [System.Collections.Generic.List[string]]::new()
@@ -82,7 +83,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: $(BuildProjects)
-    arguments: --configuration $(BuildConfiguration)
+    arguments: --configuration $(BuildConfiguration) --verbosity normal
 
 - task: PublishTestResults@2
   displayName: Publish test results
