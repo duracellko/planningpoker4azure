@@ -71,7 +71,7 @@ The application can be configured using default ASP.NET Core configuration sourc
 
 The application has following configuration settings:
 
-```json
+```javascript
 {
     "PlanningPokerClient": {
         "UseServerSide": false // boolean
