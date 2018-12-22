@@ -7,7 +7,7 @@
   <Import Project="..\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>
