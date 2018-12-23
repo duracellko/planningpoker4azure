@@ -1,0 +1,20 @@
+@inherits BlazorLayoutComponent
+
+<div class="pageContent">
+    <BusyIndicatorPanel />
+    <GlobalMessagePanel />
+
+    <div class="planningPokerContainer">
+        <NavBar />
+
+        <div class="container">
+            @Body
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Copyright (c) 2012 Duracellko.net. All rights reserved.</p>
+    </div>
+</footer>

@@ -1,0 +1,41 @@
+﻿@implements IDisposable
+@inject UI.BusyIndicatorService _busyIndicatorService
+
+<div ref="BusyIndicatorElement" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="modal-title">Processing...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions
+{
+    private ElementRef BusyIndicatorElement { get; set; }
+
+    public void Dispose()
+    {
+        _busyIndicatorService.SetBusyIndicatorHandler(null);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        _busyIndicatorService.SetBusyIndicatorHandler(SetVisibility);
+    }
+
+    private async void SetVisibility(bool visible)
+    {
+        StateHasChanged();
+        if (visible)
+        {
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", BusyIndicatorElement);
+        }
+        else
+        {
+            await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", BusyIndicatorElement);
+        }
+    }
+}

@@ -1,0 +1,22 @@
+﻿@page "/"
+@page "/Index"
+@page "/Index/{TeamName}/{MemberName}"
+
+<div class="row">
+    <div class="col-md-6">
+        <JoinTeamPanel TeamName="@TeamName" MemberName="@MemberName" />
+    </div>
+
+    <div class="col-md-6">
+        <CreateTeamPanel />
+    </div>
+</div>
+
+@functions
+{
+    [Parameter]
+    private string TeamName { get; set; }
+
+    [Parameter]
+    private string MemberName { get; set; }
+}

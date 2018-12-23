@@ -1,0 +1,91 @@
+﻿@implements IDisposable
+@inject UI.MessageBoxService _messageBoxService
+
+<div ref="MessageBoxElement" id="messageBox" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="@CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Message</p>
+            </div>
+            <div class="modal-footer">
+                @if (PrimaryButtonText != null)
+                {
+                    <button type="button" class="btn btn-primary" onclick="@PrimaryCommand">@PrimaryButtonText</button>
+                }
+                <button type="button" class="btn btn-default" onclick="@CloseDialog">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions
+{
+    private TaskCompletionSource<bool> _showMessageTask;
+
+    private ElementRef MessageBoxElement { get; set; }
+
+    private string Message { get; set; }
+
+    private string Title { get; set; }
+
+    private string PrimaryButtonText { get; set; }
+
+    public void Dispose()
+    {
+        _messageBoxService.SetMessageHandler(null);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        _messageBoxService.SetMessageHandler(ShowMessage);
+    }
+
+    private Task<bool> ShowMessage(string message, string title, string primaryButton)
+    {
+        Message = message;
+        Title = title;
+        PrimaryButtonText = primaryButton;
+
+        StateHasChanged();
+        ShowDialog();
+
+        _showMessageTask = new TaskCompletionSource<bool>();
+        return _showMessageTask.Task;
+    }
+
+    private void CloseDialog()
+    {
+        EndShowMessageTask(false);
+        HideDialog();
+    }
+
+    private void PrimaryCommand()
+    {
+        EndShowMessageTask(true);
+        HideDialog();
+    }
+
+    private void EndShowMessageTask(bool result)
+    {
+        if (_showMessageTask != null)
+        {
+            _showMessageTask.SetResult(result);
+            _showMessageTask = null;
+        }
+    }
+
+    private async void ShowDialog()
+    {
+        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", MessageBoxElement);
+    }
+
+    private async void HideDialog()
+    {
+        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", MessageBoxElement);
+    }
+}

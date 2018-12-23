@@ -1,0 +1,59 @@
+﻿@page "/PlanningPoker"
+@page "/PlanningPoker/{TeamName}/{MemberName}"
+@implements IDisposable
+@inject PlanningPokerController Controller
+@inject MessageReceiver MessageReceiver
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+@if (Controller.ScrumTeam != null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <MembersPanel />
+        </div>
+
+        <div class="col-md-8">
+            <PlanningPokerDesk />
+        </div>
+    </div>
+}
+
+@functions
+{
+    private IDisposable _messageController;
+
+    [Parameter]
+    private string TeamName { get; set; }
+
+    [Parameter]
+    private string MemberName { get; set; }
+
+    public void Dispose()
+    {
+        if (_messageController != null)
+        {
+            _messageController.Dispose();
+            _messageController = null;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Controller.ScrumTeam == null)
+        {
+            string uri = "Index";
+            if (!string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(MemberName))
+            {
+                uri = $"{uri}/{TeamName}/{MemberName}";
+            }
+
+            UriHelper.NavigateTo(uri);
+        }
+        else
+        {
+            _messageController = MessageReceiver.StartReceiving(Controller);
+        }
+    }
+}

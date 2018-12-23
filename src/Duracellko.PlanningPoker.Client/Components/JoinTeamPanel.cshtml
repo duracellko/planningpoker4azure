@@ -1,0 +1,90 @@
+﻿@inherits ViewComponentBase
+@inject JoinTeamController Controller
+
+<div class="panel panel-primary panel-collapse">
+    <div class="panel-heading">
+        <h3 class="panel-title">Join team</h3>
+    </div>
+    <div class="panel-body">
+        <form name="joinTeam" action="." onsubmit="@JoinTeamCommand">
+            <div class="@GetFormGroupCss(IsTeamNameValid)">
+                <label for="joinTeam$teamName">Team name:</label>
+                <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
+                    <input type="text" id="joinTeam$teamName" name="teamName" bind="@TeamName" class="form-control" maxlength="50" />
+                    @if (!IsTeamNameValid)
+                    {
+                        <span class="input-group-addon">Required</span>
+                    }
+                </div>
+            </div>
+            <div class="@GetFormGroupCss(IsMemberNameValid)">
+                <label for="joinTeam$memberName">Member name:</label>
+                <div class="@(IsMemberNameValid ? string.Empty : "input-group")">
+                    <input type="text" id="joinTeam$memberName" name="memberName" bind="@MemberName" class="form-control" maxlength="50" />
+                    @if (!IsMemberNameValid)
+                    {
+                        <span class="input-group-addon">Required</span>
+                    }
+                </div>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" bind="@AsObserver" />
+                    As observer only
+                </label>
+            </div>
+            <input type="submit" id="joinTeam$submit" class="btn btn-primary" value="Join team" />
+        </form>
+    </div>
+</div>
+
+@functions
+{
+    [Parameter]
+    private string TeamName { get; set; }
+
+    [Parameter]
+    private string MemberName { get; set; }
+
+    private bool AsObserver { get; set; }
+
+    private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
+
+    private bool IsMemberNameValid => MemberName == null || !string.IsNullOrWhiteSpace(MemberName);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(MemberName))
+        {
+            try
+            {
+                await Controller.TryReconnectTeam(TeamName, MemberName);
+            }
+            catch (Exception)
+            {
+                // Ignore error. User can connect manually.
+            }
+
+            MemberName = null;
+        }
+    }
+
+    private Task JoinTeamCommand()
+    {
+        if (TeamName == null)
+        {
+            TeamName = string.Empty;
+        }
+
+        if (MemberName == null)
+        {
+            MemberName = string.Empty;
+        }
+
+        return TryRun(() => Controller.JoinTeam(TeamName, MemberName, AsObserver));
+    }
+
+    private string GetFormGroupCss(bool valid) => valid ? "form-group" : "form-group has-error has-feedback";
+}

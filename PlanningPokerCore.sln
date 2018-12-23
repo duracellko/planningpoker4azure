@@ -1,0 +1,108 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Domain", "src\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj", "{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Duracellko.PlanningPoker.Shared", "src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.shproj", "{58EA5522-C08F-4A58-860C-32E1C52CF291}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Domain.Test", "test\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj", "{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker", "src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj", "{53DB6376-CAE2-461C-9C66-7B93006A363E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Test", "test\Duracellko.PlanningPoker.Test\Duracellko.PlanningPoker.Test.csproj", "{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Web", "src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj", "{E6A0A645-D69E-40DA-A778-E706FDA84E2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Azure", "src\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj", "{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Azure.Test", "test\Duracellko.PlanningPoker.Azure.Test\Duracellko.PlanningPoker.Azure.Test.csproj", "{5313B324-0F9C-48C2-A453-2363C104DE82}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Client", "src\Duracellko.PlanningPoker.Client\Duracellko.PlanningPoker.Client.csproj", "{4BD658E6-D2AB-4275-B954-5E600C43D3BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Service", "src\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj", "{02D40C8C-C33D-4310-9DD6-B620E475DE4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Client.Test", "test\Duracellko.PlanningPoker.Client.Test\Duracellko.PlanningPoker.Client.Test.csproj", "{04EBA544-0B81-463A-8949-542F28F031A5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.E2ETest", "test\Duracellko.PlanningPoker.E2ETest\Duracellko.PlanningPoker.E2ETest.csproj", "{108112D4-6A84-4A45-8D2F-BAD38C9D4D11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9BE135A3-3D75-40BD-BA92-5961167FD719}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6620FD4B-0154-46A5-A929-8326DB18769F}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{58ea5522-c08f-4a58-860c-32e1c52cf291}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DB6376-CAE2-461C-9C66-7B93006A363E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5313B324-0F9C-48C2-A453-2363C104DE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5313B324-0F9C-48C2-A453-2363C104DE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5313B324-0F9C-48C2-A453-2363C104DE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5313B324-0F9C-48C2-A453-2363C104DE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BD658E6-D2AB-4275-B954-5E600C43D3BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BD658E6-D2AB-4275-B954-5E600C43D3BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BD658E6-D2AB-4275-B954-5E600C43D3BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BD658E6-D2AB-4275-B954-5E600C43D3BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02D40C8C-C33D-4310-9DD6-B620E475DE4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02D40C8C-C33D-4310-9DD6-B620E475DE4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02D40C8C-C33D-4310-9DD6-B620E475DE4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02D40C8C-C33D-4310-9DD6-B620E475DE4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04EBA544-0B81-463A-8949-542F28F031A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04EBA544-0B81-463A-8949-542F28F031A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04EBA544-0B81-463A-8949-542F28F031A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04EBA544-0B81-463A-8949-542F28F031A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{65694878-9E06-4B0C-B4B8-FEB9EB98E64E} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{58EA5522-C08F-4A58-860C-32E1C52CF291} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{76CCA5BA-D53C-43DC-BD62-7E1CC7BF06AA} = {6620FD4B-0154-46A5-A929-8326DB18769F}
+		{53DB6376-CAE2-461C-9C66-7B93006A363E} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{46FBC82B-9956-42EB-AECD-8F5928B4DAFD} = {6620FD4B-0154-46A5-A929-8326DB18769F}
+		{E6A0A645-D69E-40DA-A778-E706FDA84E2B} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{6502FC2A-CCFF-4A38-93D3-16BB084BAAEA} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{5313B324-0F9C-48C2-A453-2363C104DE82} = {6620FD4B-0154-46A5-A929-8326DB18769F}
+		{4BD658E6-D2AB-4275-B954-5E600C43D3BF} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{02D40C8C-C33D-4310-9DD6-B620E475DE4E} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{04EBA544-0B81-463A-8949-542F28F031A5} = {6620FD4B-0154-46A5-A929-8326DB18769F}
+		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11} = {6620FD4B-0154-46A5-A929-8326DB18769F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C22E21A9-E10B-4324-BD51-350342EA8627}
+	EndGlobalSection
+EndGlobal

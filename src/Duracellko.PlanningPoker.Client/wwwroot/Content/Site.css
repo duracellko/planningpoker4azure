@@ -1,0 +1,125 @@
+/* Sticky footer styles */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 30px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 30px;
+  background-color: #f5f5f5;
+}
+
+.footer .container {
+    margin-top: 4px;
+}
+
+/* Poker desk */
+
+.pageContent {
+    padding-bottom: 30px;
+}
+
+.pageContent a {
+    cursor: pointer;
+}
+
+.planningPokerContainer > .container {
+    padding-top: 60px;
+}
+
+.pokerDeskPanel h2 {
+    color: #337ab7;
+    margin-top: 2px;
+}
+
+.pokerDeskPanel h3 {
+    color: #5cb85c;
+}
+
+.team-title {
+    margin: 2px 0px 10px 0px;
+}
+
+.team-title h2, .team-title h3 {
+    display: inline-block;
+    margin: 0px 18px 0px 0px;
+}
+
+.team-title .badge {
+    position: relative;
+    top: -3px;
+}
+
+/* Select estimation */
+
+.availableEstimations ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.availableEstimations li {
+    display: inline-block;
+    margin: 4px;
+    width: 74px;
+    height: 105px;
+    font-size: 32pt;
+    background: url(images/cardbg.png) no-repeat center center;
+}
+
+.availableEstimations a {
+    display: block;
+    width: 74px;
+    height: 105px;
+    padding-top: 24px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.availableEstimations a:hover {
+    text-decoration: none;
+}
+
+.availableEstimations a:active {
+    text-decoration: none;
+}
+
+/* Estimation result */
+
+.estimationResult ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.estimationResult li {
+    display: inline-block;
+    margin: 4px;
+    vertical-align: top;
+}
+
+.estimationResult .estimationItemValue {
+    display: block;
+    width: 74px;
+    height: 105px;
+    padding-top: 24px;
+    background: url(images/cardbg.png) no-repeat center center;
+    text-align: center;
+    font-size: 32pt;
+    color: #337ab7;
+}
+
+.estimationResult .estimationItemName {
+    display: block;
+    width: 74px;
+    padding: 3px 0 5px 0;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+}
