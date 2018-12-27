@@ -1,0 +1,20 @@
+# Build ASP.NET Core project on pull request
+
+variables:
+- name: BuildConfiguration
+  value: Release
+- name: BuildPlatform
+  value: Any CPU
+- name: BuildProjects
+  value: PlanningPokerCore.sln
+
+trigger: none
+
+pr:
+- master
+
+jobs:
+- template: azure-pipelines-build.yml
+  parameters:
+    RunEnd2EndTests: true
+    PublishArtifacts: false
