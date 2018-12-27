@@ -14,7 +14,7 @@ pr:
 - master
 
 jobs:
-- template: azure-pipelines-build.yml
+- template: azure-pipelines/azure-pipelines-build.yml
   parameters:
     RunEnd2EndTests: true
     PublishArtifacts: false

@@ -1,9 +1,8 @@
-# Build ASP.NET Core project and Docker image using Azure Pipelines
+# Build ASP.NET Core project using Azure Pipelines
 
 parameters:
   RunEnd2EndTests: true
   PublishArtifacts: true
-  BuildDockerImage: false
 
 jobs:
 - job: PlanningPokerApp
@@ -135,46 +134,3 @@ jobs:
       PathtoPublish: $(Build.Build.StagingDirectory)\screenshots
       ArtifactName: screenshots
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
-
-- job: PlanningPokerDocker
-  displayName: PlanningPoker Docker
-  dependsOn: PlanningPokerApp
-  condition: and(succeeded(), eq('${{ parameters.BuildDockerImage }}', 'true'))
-
-  pool:
-    vmImage: ubuntu-16.04
-
-  workspace:
-    clean: all
-
-  variables:
-    DockerImageTagPrefix: b
-
-  steps:
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download artifact: web'
-    inputs:
-      artifactName: web
-      downloadPath: $(System.BinariesDirectory)
-
-  - task: ExtractFiles@1
-    displayName: Extract web.zip
-    inputs:
-      archiveFilePatterns: $(System.BinariesDirectory)/web/web.zip
-      destinationFolder: $(System.DefaultWorkingDirectory)/docker/app
-
-  - task: Docker@1
-    displayName: Build Docker image
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
-      dockerFile: docker/Dockerfile
-      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'
-
-  - task: Docker@1
-    displayName: Push Docker image
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
-      command: push
-      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'

@@ -15,8 +15,9 @@ trigger:
 pr: none
 
 jobs:
-- template: azure-pipelines-build.yml
+- template: azure-pipelines/azure-pipelines-build.yml
   parameters:
     RunEnd2EndTests: true
     PublishArtifacts: true
-    BuildDockerImage: true
+
+- template: azure-pipelines/azure-pipelines-docker.yml
