@@ -69,6 +69,15 @@ try {
     if (!$?) {
         throw "dotnet publish failed"
     }
+
+    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\netcoreapp2.1\publish"
+    $dockerAppFolder = Join-Path -Path $scriptDir -ChildPath "docker\app"
+    if (!(Test-Path -Path $dockerAppFolder)) {
+        New-Item -Path $dockerAppFolder -ItemType Directory
+    }
+
+    Get-ChildItem -Path $dockerAppFolder | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $publishFolder | Copy-Item -Destination $dockerAppFolder -Recurse
 }
 catch {
     throw

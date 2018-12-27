@@ -1,127 +1,22 @@
-# Build ASP.NET Core project using Azure Pipelines
+# Build ASP.NET Core project and Docker image on every commit to master branch
 
 variables:
-  BuildConfiguration: Release
-  BuildPlatform: Any CPU
-  BuildProjects: PlanningPokerCore.sln
-  RunEnd2EndTests: true
-  TestAssemblies: ''
+- name: BuildConfiguration
+  value: Release
+- name: BuildPlatform
+  value: Any CPU
+- name: BuildProjects
+  value: PlanningPokerCore.sln
+- group: DockerSettings
 
-pool:
-  vmImage: vs2017-win2016
+trigger:
+- master
 
-workspace:
-  clean: all
+pr: none
 
-steps:
-- task: DotNetCoreInstaller@0
-  displayName: Install .NET Core SDK
-  inputs:
-    version: 2.1.502
-
-- task: NodeTool@0
-  displayName: Install Node.js
-  inputs:
-    versionSpec: 10.14.2
-
-- powershell: './scripts/UpdateVersion.ps1 -VersionNumber $(Build.BuildId)'
-  displayName: 'PowerShell UpdateVersion.ps1'
-  failOnStderr: true
-
-- task: Npm@1
-  displayName: npm install
-  inputs:
-    command: install
-  condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet restore
-  inputs:
-    command: restore
-    projects: $(BuildProjects)
-    arguments: --verbosity normal
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet build
-  inputs:
-    command: build
-    projects: $(BuildProjects)
-    arguments: --configuration $(BuildConfiguration) --verbosity normal
-
-- powershell: |
-    $testFiles = [System.Collections.Generic.List[string]]::new()
-    $testPath = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath "Build\bin\$env:BUILDCONFIGURATION\netcoreapp2.1"
-    Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add('"' + $_.FullName + '"') }
-    $testAssemblies = [string]::Join(' ', $testFiles)
-    Write-Host "##vso[task.setvariable variable=TestAssemblies]$testAssemblies" 
-  displayName: Find Test Assemblies
-  failOnStderr: true
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet vstest
-  inputs:
-    command: custom
-    custom: vstest
-    arguments: $(TestAssemblies) --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPoker.trx"
-
-- powershell: .\node_modules\.bin\selenium-standalone install
-  displayName: Install Selenium
-  workingDirectory: $(Build.SourcesDirectory)
-  condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet vstest Duracellko.PlanningPoker.E2ETest
-  inputs:
-    command: custom
-    custom: vstest
-    arguments: '"$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp2.1/Duracellko.PlanningPoker.E2ETest.dll" --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPokerE2E.trx"'
-  condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet publish
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: $(BuildProjects)
-    arguments: --configuration $(BuildConfiguration) --verbosity normal
-
-- task: PublishTestResults@2
-  displayName: Publish test results
-  inputs:
-    testResultsFormat: VSTest
-    testResultsFiles: '*.trx'
-    searchFolder: $(Build.BinariesDirectory)
-    testRunTitle: Planning Poker
-    configuration: $(BuildConfiguration)
-    platform: $(BuildPlatform)
-  condition: succeededOrFailed()
-
-- task: ArchiveFiles@2
-  displayName: Zip web
-  inputs:
-    archiveType: zip
-    archiveFile: $(Build.StagingDirectory)\web\web.zip
-    rootFolderOrFile: $(Build.SourcesDirectory)\Build\web\$(BuildConfiguration)\netcoreapp2.1\publish
-    includeRootFolder: false
-    replaceExistingArchive: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish artifact: web'
-  inputs:
-    PathtoPublish: $(Build.StagingDirectory)\web
-    ArtifactName: web
-
-- task: CopyFiles@2
-  displayName: Copy screenshots
-  inputs:
-    SourceFolder: $(Build.SourcesDirectory)\Build\bin\$(BuildConfiguration)\netcoreapp2.1\Screenshots
-    TargetFolder: $(Build.Build.StagingDirectory)\screenshots
-    CleanTargetFolder: true
-  condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish artifact: screenshots'
-  inputs:
-    PathtoPublish: $(Build.Build.StagingDirectory)\screenshots
-    ArtifactName: screenshots
-  condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
+jobs:
+- template: azure-pipelines-build.yml
+  parameters:
+    RunEnd2EndTests: true
+    PublishArtifacts: true
+    BuildDockerImage: true
