@@ -27,8 +27,4 @@
     <ProjectReference Include="..\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
   </ItemGroup>
   
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-  
 </Project>
