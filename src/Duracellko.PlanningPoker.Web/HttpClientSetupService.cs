@@ -33,6 +33,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 address = address.Replace("*", "localhost", StringComparison.Ordinal);
                 address = address.Replace("+", "localhost", StringComparison.Ordinal);
+                address = address.Replace("[::]", "localhost", StringComparison.Ordinal);
             }
 
             _httpClient.BaseAddress = new Uri(address);
