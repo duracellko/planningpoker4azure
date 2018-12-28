@@ -1,4 +1,4 @@
-# Build ASP.NET Core project and Docker image on every commit to master branch
+# Build ASP.NET Core project on pull request
 
 variables:
 - name: BuildConfiguration
@@ -7,17 +7,14 @@ variables:
   value: Any CPU
 - name: BuildProjects
   value: PlanningPokerCore.sln
-- group: DockerSettings
 
-trigger:
+trigger: none
+
+pr:
 - master
-
-pr: none
 
 jobs:
 - template: azure-pipelines/azure-pipelines-build.yml
   parameters:
     RunEnd2EndTests: true
-    PublishArtifacts: true
-
-- template: azure-pipelines/azure-pipelines-docker.yml
+    PublishArtifacts: false

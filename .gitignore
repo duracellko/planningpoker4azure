@@ -333,3 +333,6 @@ package-lock.json
 
 # LibMan restored files
 src/Duracellko.PlanningPoker.Client/wwwroot/dist
+
+# Docker published app
+[Dd]ocker/[Aa]pp

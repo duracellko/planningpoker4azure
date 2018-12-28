@@ -1,0 +1,44 @@
+# Build Docker image using Azure Pipelines
+
+jobs:
+- job: PlanningPokerDocker
+  displayName: PlanningPoker Docker
+  dependsOn: PlanningPokerApp
+
+  pool:
+    vmImage: ubuntu-16.04
+
+  workspace:
+    clean: all
+
+  variables:
+    DockerImageTagPrefix: b
+
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download artifact: web'
+    inputs:
+      artifactName: web
+      downloadPath: $(System.BinariesDirectory)
+
+  - task: ExtractFiles@1
+    displayName: Extract web.zip
+    inputs:
+      archiveFilePatterns: $(System.BinariesDirectory)/web/web.zip
+      destinationFolder: $(System.DefaultWorkingDirectory)/docker/app
+
+  - task: Docker@1
+    displayName: Build Docker image
+    inputs:
+      containerregistrytype: 'Container Registry'
+      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
+      dockerFile: docker/Dockerfile
+      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'
+
+  - task: Docker@1
+    displayName: Push Docker image
+    inputs:
+      containerregistrytype: 'Container Registry'
+      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
+      command: push
+      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'

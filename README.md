@@ -37,6 +37,15 @@ Requirements:
 
 Run: `dotnet Duracellko.PlanningPoker.Web.dll`
 
+### Docker
+
+It is also possible to install the application using Docker image from [duracellko/planningpoker](https://hub.docker.com/r/duracellko/planningpoker) repository.
+
+```
+docker pull duracellko/planningpoker
+docker run -p 80:80 duracellko/planningpoker
+```
+
 ## Architecture
 
 Application is implemented using [ASP.NET Core 2.1](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-2.1). Front-end is Single-Page Application implemented using [Blazor](https://blazor.net/). This technology allows deployment to different environments:
