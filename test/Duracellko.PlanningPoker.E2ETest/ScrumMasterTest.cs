@@ -11,9 +11,7 @@ namespace Duracellko.PlanningPoker.E2ETest
     {
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(false, BrowserType.Firefox, DisplayName = "Client-side Firefox")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        [DataRow(true, BrowserType.Firefox, DisplayName = "Server-side Firefox")]
         public async Task ScrumMaster_Should_Be_Able_To_Estimate(bool serverSide, BrowserType browserType)
         {
             Contexts.Add(new BrowserTestContext(
@@ -85,9 +83,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         [DataTestMethod]
         [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(false, BrowserType.Firefox, DisplayName = "Client-side Firefox")]
         [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        [DataRow(true, BrowserType.Firefox, DisplayName = "Server-side Firefox")]
         public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, BrowserType browserType)
         {
             Contexts.Add(new BrowserTestContext(

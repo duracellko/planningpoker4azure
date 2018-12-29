@@ -416,8 +416,8 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, BrowserType.Firefox, DisplayName = "Client-side Chrome and Firefox")]
-        [DataRow(true, BrowserType.Chrome, BrowserType.Firefox, DisplayName = "Server-side Chrome and Firefox")]
+        [DataRow(false, BrowserType.Chrome, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
+        [DataRow(true, BrowserType.Chrome, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
         public async Task Cannot_Estimate_When_Joining_After_Start(bool serverSide, BrowserType browserType1, BrowserType browserType2)
         {
             Contexts.Add(new BrowserTestContext(
