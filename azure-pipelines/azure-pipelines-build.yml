@@ -23,12 +23,12 @@ jobs:
   - task: DotNetCoreInstaller@0
     displayName: Install .NET Core SDK
     inputs:
-      version: 2.1.503
+      version: 2.1.504
 
   - task: NodeTool@0
     displayName: Install Node.js
     inputs:
-      versionSpec: 10.15.0
+      versionSpec: 10.15.1
 
   - powershell: './scripts/UpdateVersion.ps1 -VersionNumber $(Build.BuildId)'
     displayName: 'PowerShell UpdateVersion.ps1'
