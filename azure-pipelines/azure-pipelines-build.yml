@@ -23,7 +23,7 @@ jobs:
   - task: DotNetCoreInstaller@0
     displayName: Install .NET Core SDK
     inputs:
-      version: 2.1.505
+      version: 2.1.700
 
   - task: NodeTool@0
     displayName: Install Node.js
