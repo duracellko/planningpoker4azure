@@ -380,7 +380,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private Uri GetSubscriptionUri(string subcriptionName)
         {
             var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
-            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://");
+            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://", StringComparison.OrdinalIgnoreCase);
             uri = $"{uri}/{Uri.EscapeDataString(_topicName)}/subscriptions/{Uri.EscapeDataString(subcriptionName)}";
             return new Uri(uri);
         }
