@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.UI;
-using Microsoft.AspNetCore.Blazor.Components;
+using Microsoft.AspNetCore.Components;
 
 namespace Duracellko.PlanningPoker.Client.Components
 {
     /// <summary>
     /// Base component for application components.
     /// </summary>
-    public class ViewComponentBase : BlazorComponent
+    public class ViewComponentBase : ComponentBase
     {
         /// <summary>
         /// Gets or sets message box service that is ised to display error to user.

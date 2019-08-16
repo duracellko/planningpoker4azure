@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Encodings.Web;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Blazor.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {

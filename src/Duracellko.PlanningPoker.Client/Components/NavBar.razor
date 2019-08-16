@@ -1,7 +1,7 @@
 ﻿@inherits ViewComponentBase
 @implements IDisposable
 @inject PlanningPokerController Controller
-@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject Microsoft.AspNetCore.Components.IUriHelper UriHelper
 
 <nav class="navbar navbar-fixed-top navbar-inverse">
     <div class="container">
@@ -19,7 +19,7 @@
             {
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a onclick="@DisconnectCommand">
+                        <a @onclick="DisconnectCommand">
                             <span class="glyphicon glyphicon-log-out"></span> Disconnect
                         </a>
                     </li>
@@ -29,7 +29,7 @@
     </div>
 </nav>
 
-@functions
+@code
 {
     private bool IsConnected => Controller.IsConnected;
 
@@ -38,9 +38,9 @@
         Controller.PropertyChanged -= ControllerOnPropertyChanged;
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        base.OnInit();
+        base.OnInitialized();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
     }
 

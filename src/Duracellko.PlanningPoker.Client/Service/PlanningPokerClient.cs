@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
@@ -203,8 +204,8 @@ namespace Duracellko.PlanningPoker.Service
 
         private static void DeserializeMessages(List<Message> messages, string json)
         {
-            var memberMessages = Json.Deserialize<List<MemberMessage>>(json);
-            var estimationResultMessages = Json.Deserialize<List<EstimationResultMessage>>(json);
+            var memberMessages = JsonSerializer.Deserialize<List<MemberMessage>>(json);
+            var estimationResultMessages = JsonSerializer.Deserialize<List<EstimationResultMessage>>(json);
 
             for (int i = 0; i < messages.Count; i++)
             {
@@ -281,7 +282,7 @@ namespace Duracellko.PlanningPoker.Service
                         }
 
                         var responseContent = await response.Content.ReadAsStringAsync();
-                        var result = Json.Deserialize<T>(responseContent);
+                        var result = JsonSerializer.Deserialize<T>(responseContent);
                         if (result is List<Message> messages)
                         {
                             DeserializeMessages(messages, responseContent);

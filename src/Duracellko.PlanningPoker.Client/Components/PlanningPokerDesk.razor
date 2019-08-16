@@ -21,7 +21,7 @@
             <ul>
                 @foreach (var estimation in Controller.AvailableEstimations)
                 {
-                    <li><a onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
+                    <li><a @onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
                 }
             </ul>
         </div>
@@ -33,14 +33,14 @@
             <p>
                 @if (Controller.CanStartEstimation)
                 {
-                    <a onclick="@StartEstimationCommand" class="btn btn-default">
+                    <a @onclick="StartEstimationCommand" class="btn btn-default">
                         <span class="glyphicon glyphicon-play"></span> Start estimation
                     </a>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
-                    <a onclick="@CancelEstimationCommand" class="btn btn-default">
+                    <a @onclick="CancelEstimationCommand" class="btn btn-default">
                         <span class="glyphicon glyphicon-stop"></span> Cancel estimation
                     </a>
                 }
@@ -65,7 +65,7 @@
     }
 </div>
 
-@functions
+@code
 {
     private bool HasEstimationResult => Controller.Estimations != null;
 
@@ -74,9 +74,9 @@
         Controller.PropertyChanged -= ControllerOnPropertyChanged;
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        base.OnInit();
+        base.OnInitialized();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
     }
 

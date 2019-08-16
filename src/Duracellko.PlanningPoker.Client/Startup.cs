@@ -3,7 +3,7 @@ using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Blazor.Builder;
+using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client
@@ -30,7 +30,7 @@ namespace Duracellko.PlanningPoker.Client
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Startup interface expected by Blazor.")]
-        public void Configure(IBlazorApplicationBuilder app)
+        public void Configure(IComponentsApplicationBuilder app)
         {
             app.AddComponent<App>("app");
         }

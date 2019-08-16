@@ -6,11 +6,11 @@
         <h3 class="panel-title">Create team</h3>
     </div>
     <div class="panel-body">
-        <form name="createTeam" action="." onsubmit="@CreateTeamCommand">
+        <form name="createTeam" action="." @onsubmit="CreateTeamCommand">
             <div class="@GetFormGroupCss(IsTeamNameValid)">
                 <label for="createTeam$teamName">Team name:</label>
                 <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="createTeam$teamName" name="teamName" bind="@TeamName" class="form-control" maxlength="50" />
+                    <input type="text" id="createTeam$teamName" name="teamName" @bind="TeamName" class="form-control" maxlength="50" />
                     @if (!IsTeamNameValid)
                     {
                         <span class="input-group-addon">Required</span>
@@ -20,7 +20,7 @@
             <div class="@GetFormGroupCss(IsScrumMasterNameValid)">
                 <label for="createTeam$scrumMasterName">Scrum Master name:</label>
                 <div class="@(IsScrumMasterNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" bind="@ScrumMasterName" class="form-control" maxlength="50" />
+                    <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" @bind="ScrumMasterName" class="form-control" maxlength="50" />
                     @if (!IsScrumMasterNameValid)
                     {
                         <span class="input-group-addon">Required</span>
@@ -32,7 +32,7 @@
     </div>
 </div>
 
-@functions
+@code
 {
     private string TeamName { get; set; }
 

@@ -1,11 +1,12 @@
 ﻿@implements IDisposable
 @inject UI.MessageBoxService _messageBoxService
+@inject IJSRuntime _jsRuntime
 
-<div ref="MessageBoxElement" id="messageBox" class="modal fade" role="dialog" aria-hidden="true">
+<div @ref="messageBoxElement" @ref:suppressField id="messageBox" class="modal fade" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" onclick="@CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" @onclick="CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">@Title</h4>
             </div>
             <div class="modal-body">
@@ -14,19 +15,19 @@
             <div class="modal-footer">
                 @if (PrimaryButtonText != null)
                 {
-                    <button type="button" class="btn btn-primary" onclick="@PrimaryCommand">@PrimaryButtonText</button>
+                    <button type="button" class="btn btn-primary" @onclick="PrimaryCommand">@PrimaryButtonText</button>
                 }
-                <button type="button" class="btn btn-default" onclick="@CloseDialog">Close</button>
+                <button type="button" class="btn btn-default" @onclick="CloseDialog">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-@functions
+@code
 {
-    private TaskCompletionSource<bool> _showMessageTask;
+    private ElementReference messageBoxElement;
 
-    private ElementRef MessageBoxElement { get; set; }
+    private TaskCompletionSource<bool> _showMessageTask;
 
     private string Message { get; set; }
 
@@ -39,9 +40,9 @@
         _messageBoxService.SetMessageHandler(null);
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        base.OnInit();
+        base.OnInitialized();
         _messageBoxService.SetMessageHandler(ShowMessage);
     }
 
@@ -81,11 +82,11 @@
 
     private async void ShowDialog()
     {
-        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", MessageBoxElement);
+        await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", messageBoxElement);
     }
 
     private async void HideDialog()
     {
-        await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.hide", MessageBoxElement);
+        await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.hide", messageBoxElement);
     }
 }

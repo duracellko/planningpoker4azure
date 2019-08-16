@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
@@ -9,6 +10,17 @@ namespace Duracellko.PlanningPoker.Client.Service
     /// </summary>
     public class MemberCredentialsStore : IMemberCredentialsStore
     {
+        private readonly IJSRuntime _jsRuntime;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemberCredentialsStore"/> class.
+        /// </summary>
+        /// <param name="jsInterop">JavaScript runtime to execute JavaScript functions.</param>
+        public MemberCredentialsStore(IJSRuntime jsRuntime)
+        {
+            _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
+        }
+
         /// <summary>
         /// Loads member credentials from the store.
         /// </summary>
@@ -17,14 +29,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             try
             {
-                var credentialsString = await JSRuntime.Current.InvokeAsync<string>("Duracellko.PlanningPoker.getMemberCredentials");
+                var credentialsString = await _jsRuntime.InvokeAsync<string>("Duracellko.PlanningPoker.getMemberCredentials");
                 if (string.IsNullOrEmpty(credentialsString))
                 {
                     return null;
                 }
                 else
                 {
-                    return Json.Deserialize<MemberCredentials>(credentialsString);
+                    return JsonSerializer.Deserialize<MemberCredentials>(credentialsString);
                 }
             }
             catch (Exception)
@@ -43,8 +55,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             try
             {
-                var credentialsString = credentials != null ? Json.Serialize(credentials) : null;
-                await JSRuntime.Current.InvokeAsync<object>("Duracellko.PlanningPoker.setMemberCredentials", credentialsString);
+                var credentialsString = credentials != null ? JsonSerializer.Serialize(credentials) : null;
+                await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.setMemberCredentials", credentialsString);
             }
             catch (Exception)
             {

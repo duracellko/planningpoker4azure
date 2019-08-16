@@ -6,11 +6,11 @@
         <h3 class="panel-title">Join team</h3>
     </div>
     <div class="panel-body">
-        <form name="joinTeam" action="." onsubmit="@JoinTeamCommand">
+        <form name="joinTeam" action="." @onsubmit="JoinTeamCommand">
             <div class="@GetFormGroupCss(IsTeamNameValid)">
                 <label for="joinTeam$teamName">Team name:</label>
                 <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="joinTeam$teamName" name="teamName" bind="@TeamName" class="form-control" maxlength="50" />
+                    <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName" class="form-control" maxlength="50" />
                     @if (!IsTeamNameValid)
                     {
                         <span class="input-group-addon">Required</span>
@@ -20,7 +20,7 @@
             <div class="@GetFormGroupCss(IsMemberNameValid)">
                 <label for="joinTeam$memberName">Member name:</label>
                 <div class="@(IsMemberNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="joinTeam$memberName" name="memberName" bind="@MemberName" class="form-control" maxlength="50" />
+                    <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName" class="form-control" maxlength="50" />
                     @if (!IsMemberNameValid)
                     {
                         <span class="input-group-addon">Required</span>
@@ -29,7 +29,7 @@
             </div>
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" bind="@AsObserver" />
+                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" />
                     As observer only
                 </label>
             </div>
@@ -38,13 +38,13 @@
     </div>
 </div>
 
-@functions
+@code
 {
     [Parameter]
-    private string TeamName { get; set; }
+    public string TeamName { get; set; }
 
     [Parameter]
-    private string MemberName { get; set; }
+    public string MemberName { get; set; }
 
     private bool AsObserver { get; set; }
 
