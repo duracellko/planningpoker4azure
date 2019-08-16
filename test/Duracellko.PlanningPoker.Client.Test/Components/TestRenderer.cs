@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Components;
-using Microsoft.AspNetCore.Blazor.Rendering;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Duracellko.PlanningPoker.Client.Test.Components
 {
     public class TestRenderer : Renderer
     {
         public TestRenderer(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+            : base(serviceProvider, NullLoggerFactory.Instance)
         {
         }
 
         public List<CapturedBatch> Batches { get; } = new List<CapturedBatch>();
+
+        public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
 
         public new int AssignRootComponentId(IComponent component)
         {
@@ -26,21 +30,31 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             return (T)InstantiateComponent(typeof(T));
         }
 
-        public new void RenderRootComponent(int componetId)
+        public new Task RenderRootComponentAsync(int componetId)
         {
-            base.RenderRootComponent(componetId);
+            return Dispatcher.InvokeAsync(() => base.RenderRootComponentAsync(componetId));
         }
 
         protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
         {
             var capturedBatch = new CapturedBatch();
-            capturedBatch.UpdatedComponents.AddRange(renderBatch.UpdatedComponents);
-            capturedBatch.ReferenceFrames.AddRange(renderBatch.ReferenceFrames);
-            capturedBatch.DisposedComponentIDs.AddRange(renderBatch.DisposedComponentIDs);
-            capturedBatch.DisposedEventHandlerIDs.AddRange(renderBatch.DisposedEventHandlerIDs);
-
             Batches.Add(capturedBatch);
+
+            for (int i = 0; i < renderBatch.UpdatedComponents.Count; i++)
+            {
+                ref var renderTreeDiff = ref renderBatch.UpdatedComponents.Array[i];
+                capturedBatch.AddDiff(renderTreeDiff);
+            }
+
+            capturedBatch.ReferenceFrames = renderBatch.ReferenceFrames.AsEnumerable().ToArray();
+            capturedBatch.DisposedComponentIDs = renderBatch.DisposedComponentIDs.AsEnumerable().ToList();
+
             return Task.CompletedTask;
+        }
+
+        protected override void HandleException(Exception exception)
+        {
+            throw exception;
         }
     }
 }

@@ -7,7 +7,7 @@ using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.Test.Controllers;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Blazor.RenderTree;
+using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -28,7 +28,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
             var componentId = renderer.AssignRootComponentId(target);
-            renderer.RenderRootComponent(componentId);
+            await renderer.RenderRootComponentAsync(componentId);
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
@@ -40,11 +40,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\n            ");
+            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\n            ");
+            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ScrumMasterName);
 
@@ -55,7 +55,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[29], "a", 4);
             AssertFrame.Attribute(frames[30], "onclick");
             AssertFrame.Attribute(frames[31], "class", "btn btn-default");
-            AssertFrame.Markup(frames[32], "\n                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation\n                    ");
+            AssertFrame.Markup(frames[32], "\r\n                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation\r\n                    ");
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
             var componentId = renderer.AssignRootComponentId(target);
-            renderer.RenderRootComponent(componentId);
+            await renderer.RenderRootComponentAsync(componentId);
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
@@ -88,18 +88,18 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\n            ");
+            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\n            ");
+            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.MemberName);
 
             // Available estimations
             AssertFrame.Element(frames[22], "div", 86);
             AssertFrame.Attribute(frames[23], "class", "availableEstimations");
-            AssertFrame.Markup(frames[25], "<h3>Pick estimation</h3>\n            ");
+            AssertFrame.Markup(frames[25], "<h3>Pick estimation</h3>\r\n            ");
             AssertFrame.Element(frames[26], "ul", 81);
             AssertAvailableEstimation(frames, 29, "0");
             AssertAvailableEstimation(frames, 35, "½");
@@ -118,7 +118,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             // Members, who estimated already
             AssertFrame.Element(frames[112], "div", 20);
             AssertFrame.Attribute(frames[113], "class", "estimationResult");
-            AssertFrame.Markup(frames[115], "<h3>Selected estimates</h3>\n            ");
+            AssertFrame.Markup(frames[115], "<h3>Selected estimates</h3>\r\n            ");
             AssertFrame.Element(frames[116], "ul", 15);
             AssertSelectedEstimation(frames, 119, PlanningPokerData.ScrumMasterName, string.Empty);
         }
@@ -149,7 +149,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
             var componentId = renderer.AssignRootComponentId(target);
-            renderer.RenderRootComponent(componentId);
+            await renderer.RenderRootComponentAsync(componentId);
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
@@ -161,18 +161,18 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\n            ");
+            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\n            ");
+            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ObserverName);
 
             // Estimations
             AssertFrame.Element(frames[24], "div", 32);
             AssertFrame.Attribute(frames[25], "class", "estimationResult");
-            AssertFrame.Markup(frames[27], "<h3>Selected estimates</h3>\n            ");
+            AssertFrame.Markup(frames[27], "<h3>Selected estimates</h3>\r\n            ");
             AssertFrame.Element(frames[28], "ul", 27);
             AssertSelectedEstimation(frames, 31, PlanningPokerData.MemberName, "3");
             AssertSelectedEstimation(frames, 43, PlanningPokerData.ScrumMasterName, "8");
@@ -190,7 +190,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             return serviceCollection.BuildServiceProvider();
         }
 
-        private static void AssertAvailableEstimation(List<RenderTreeFrame> frames, int index, string estimationText)
+        private static void AssertAvailableEstimation(IList<RenderTreeFrame> frames, int index, string estimationText)
         {
             AssertFrame.Element(frames[index], "li", 4);
             AssertFrame.Element(frames[index + 1], "a", 3);
@@ -198,7 +198,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Text(frames[index + 3], estimationText);
         }
 
-        private static void AssertSelectedEstimation(List<RenderTreeFrame> frames, int index, string memberName, string estimationText)
+        private static void AssertSelectedEstimation(IList<RenderTreeFrame> frames, int index, string memberName, string estimationText)
         {
             AssertFrame.Element(frames[index], "li", 10);
             AssertFrame.Element(frames[index + 2], "span", 3);
