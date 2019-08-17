@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using RichardSzalay.MockHttp;
 namespace Duracellko.PlanningPoker.Client.Test.Service
 {
     [TestClass]
+    [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Mock object does not need to be disposed.")]
     public class PlanningPokerClientTest
     {
         internal const string BaseUrl = "http://planningpoker.duracellko.net/";

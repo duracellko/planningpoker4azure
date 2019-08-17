@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Controllers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -9,6 +10,11 @@ namespace Duracellko.PlanningPoker.Web
     {
         public void Apply(ApplicationModel application)
         {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
             // Remove PlanningPokerController, because it is not MVC controller.
             var planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(PlanningPokerController));
             if (planningPokerController != null)

@@ -1,6 +1,6 @@
 ﻿namespace Duracellko.PlanningPoker.Domain.Test
 {
-    public static class TestHelper
+    internal static class TestHelper
     {
         public static void ClearMessages(Observer observer)
         {

@@ -97,6 +97,7 @@ namespace Duracellko.PlanningPoker.Web
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "ASP.NET Core convention for Startup class.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "ASP.NET Core convention for Startup class.")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();

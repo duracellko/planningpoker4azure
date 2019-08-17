@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using OpenQA.Selenium;
 
 namespace Duracellko.PlanningPoker.E2ETest
 {
+    [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Disposable objects are disposed in TestCleanup.")]
     public abstract class E2ETestBase
     {
         protected ServerFixture Server { get; private set; }

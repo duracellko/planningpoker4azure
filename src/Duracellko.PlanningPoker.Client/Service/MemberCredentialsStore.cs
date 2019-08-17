@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
@@ -25,6 +26,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Loads member credentials from the store.
         /// </summary>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
         public async Task<MemberCredentials> GetCredentialsAsync()
         {
             try
@@ -51,6 +53,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="credentials"><see cref="MemberCredentials"/> object to be saved.</param>
         /// <returns>Asynchronous operation.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
         public async Task SetCredentialsAsync(MemberCredentials credentials)
         {
             try

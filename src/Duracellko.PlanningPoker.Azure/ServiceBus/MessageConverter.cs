@@ -30,6 +30,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <returns>Converted message of BrokeredMessage type.</returns>
         public Message ConvertToBrokeredMessage(NodeMessage message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             byte[] messageData;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
@@ -59,6 +64,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <returns>Converted message of NodeMessage type.</returns>
         public NodeMessage ConvertToNodeMessage(Message message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.UserProperties[MessageTypePropertyName]);
             var messageSubtype = message.UserProperties.ContainsKey(MessageSubtypePropertyName) ? (string)message.UserProperties[MessageSubtypePropertyName] : null;
 

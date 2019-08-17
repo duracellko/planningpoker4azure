@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
@@ -58,6 +59,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 }
             }
 
+            [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error, when application is closing.")]
             public async void StartReceiving()
             {
                 try

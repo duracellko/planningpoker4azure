@@ -151,6 +151,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Executed when a Scrum team is added to collection of teams.
         /// </summary>
         /// <param name="team">The Scrum team that was added.</param>
+        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "Null-check is in base method.")]
         protected override void OnTeamAdded(ScrumTeam team)
         {
             base.OnTeamAdded(team);
@@ -176,6 +177,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Executed when a Scrum team is removed from collection of teams.
         /// </summary>
         /// <param name="team">The Scrum team that was removed.</param>
+        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "Null-check is in base method.")]
         protected override void OnTeamRemoved(ScrumTeam team)
         {
             team.MessageReceived -= ScrumTeamOnMessageReceived;
