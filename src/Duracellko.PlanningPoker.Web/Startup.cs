@@ -89,34 +89,44 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
                 services.AddTransient<IHostedService, HttpClientSetupService>();
+
+                // Register services used by client on server-side.
+                var blazorStartup = new Duracellko.PlanningPoker.Client.Startup();
+                blazorStartup.ConfigureServices(services);
             }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "ASP.NET Core convention for Startup class.")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
+
             app.UseResponseCompression();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBlazorDebugging();
+
+                if (!clientConfiguration.UseServerSideBlazor)
+                {
+                    app.UseBlazorDebugging();
+                }
             }
 
             app.UseStaticFiles();
-
-            var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
-            if (!clientConfiguration.UseServerSideBlazor)
-            {
-                app.UseClientSideBlazorFiles<Duracellko.PlanningPoker.Client.Startup>();
-            }
+            app.UseClientSideBlazorFiles<Duracellko.PlanningPoker.Client.Startup>();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapFallbackToPage("/Index");
+                if (clientConfiguration.UseServerSideBlazor)
+                {
+                    endpoints.MapBlazorHub<Duracellko.PlanningPoker.Client.App>("app");
+                }
+
+                endpoints.MapFallbackToPage("/Home");
             });
         }
 
