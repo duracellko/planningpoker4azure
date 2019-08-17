@@ -108,7 +108,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             await Task.Delay(500);
             ClientTest.AssertIndexPage();
             TakeScreenshot("04-Error");
-            ClientTest.AssertMessageBox("Scrum Team \"My team\" does not exist.");
+            ClientTest.AssertMessageBox("Scrum Team \"My team\" does not exist. (Parameter 'teamName')");
         }
     }
 }

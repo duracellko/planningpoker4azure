@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Web;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Hosting;
 
 namespace Duracellko.PlanningPoker.E2ETest.Server
 {
@@ -21,7 +23,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
         public bool UseServerSide { get; set; }
 
-        public IWebHost WebHost { get; private set; }
+        public IHost WebHost { get; private set; }
 
         public Uri Uri
         {
@@ -34,7 +36,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
                 if (_uri == null)
                 {
-                    var address = WebHost.ServerFeatures.Get<IServerAddressesFeature>().Addresses.Single();
+                    var server = (IServer)WebHost.Services.GetService(typeof(IServer));
+                    var address = server.Features.Get<IServerAddressesFeature>().Addresses.Single();
                     _uri = new Uri(address);
                 }
 
@@ -61,7 +64,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             }
 
             var builder = Program.CreateHostBuilder(GetProgramArguments());
-            WebHost = (IWebHost)builder.Build();
+            WebHost = builder.Build();
             RunInBackgroundThread(WebHost.Start);
             return Task.CompletedTask;
         }

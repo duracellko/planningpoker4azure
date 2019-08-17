@@ -13,14 +13,31 @@ namespace Duracellko.PlanningPoker.Web
     {
         private readonly HttpClient _httpClient;
         private readonly IServer _server;
+        private readonly IHostApplicationLifetime _applicationLifetime;
 
-        public HttpClientSetupService(HttpClient httpClient, IServer server)
+        public HttpClientSetupService(HttpClient httpClient, IServer server, IHostApplicationLifetime applicationLifetime)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _server = server ?? throw new ArgumentNullException(nameof(server));
+            _applicationLifetime = applicationLifetime ?? throw new ArgumentNullException(nameof(applicationLifetime));
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            var applicationStartedToken = _applicationLifetime.ApplicationStarted;
+            if (applicationStartedToken.IsCancellationRequested)
+            {
+                ConfigureHttpClient();
+            }
+            else
+            {
+                applicationStartedToken.Register(ConfigureHttpClient);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private void ConfigureHttpClient()
         {
             var serverAddresses = _server.Features.Get<IServerAddressesFeature>();
             var address = serverAddresses.Addresses.FirstOrDefault();
@@ -37,8 +54,6 @@ namespace Duracellko.PlanningPoker.Web
             }
 
             _httpClient.BaseAddress = new Uri(address);
-
-            return Task.CompletedTask;
         }
     }
 }
