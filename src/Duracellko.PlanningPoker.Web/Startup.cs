@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -10,19 +11,16 @@ using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Blazor.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Duracellko.PlanningPoker.Web
 {
-    public class Startup : IStartup
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -33,18 +31,18 @@ namespace Duracellko.PlanningPoker.Web
 
         public bool UseServerSide => Configuration.GetSection("PlanningPokerClient").GetValue<bool?>("UseServerSide") ?? false;
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc()
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
-                .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
+                .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
+                .AddNewtonsoftJson();
 
             services.AddResponseCompression(options =>
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
                 {
-                    MediaTypeNames.Application.Octet,
-                    WasmMediaTypeNames.Application.Wasm
+                    MediaTypeNames.Application.Octet
                 });
             });
 
@@ -88,44 +86,38 @@ namespace Duracellko.PlanningPoker.Web
 
             if (clientConfiguration.UseServerSideBlazor)
             {
-                services.AddServerSideBlazor<Duracellko.PlanningPoker.Client.Startup>();
+                services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
                 services.AddTransient<IHostedService, HttpClientSetupService>();
             }
-
-            return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder app)
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "ASP.NET Core convention for Startup class.")]
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var env = app.ApplicationServices.GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
+                app.UseBlazorDebugging();
             }
 
-            // PlanningPoker page should be routed on client side. Always return Index on server side.
-            var rewriteOptions = new RewriteOptions()
-                .AddRewrite("^Index", "Index", false)
-                .AddRewrite("^PlanningPoker", "Index", false);
-            app.UseRewriter(rewriteOptions);
-
-            app.UseResponseCompression();
-            app.UseMvc();
+            app.UseStaticFiles();
 
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
-            if (clientConfiguration.UseServerSideBlazor)
+            if (!clientConfiguration.UseServerSideBlazor)
             {
-                app.UseServerSideBlazor<Duracellko.PlanningPoker.Client.Startup>();
+                app.UseClientSideBlazorFiles<Duracellko.PlanningPoker.Client.Startup>();
             }
-            else
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                app.UseBlazor<Duracellko.PlanningPoker.Client.Startup>();
-            }
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapFallbackToPage("/Index");
+            });
         }
 
         private AzurePlanningPokerConfiguration GetPlanningPokerConfiguration()
