@@ -243,6 +243,11 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="team">The Scrum team that was added.</param>
         protected virtual void OnTeamAdded(ScrumTeam team)
         {
+            if (team == null)
+            {
+                throw new ArgumentNullException(nameof(team));
+            }
+
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
             _logger?.LogDebug(Resources.Debug_ScrumTeamAdded, team.Name);
         }
@@ -253,6 +258,11 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="team">The Scrum team that was removed.</param>
         protected virtual void OnTeamRemoved(ScrumTeam team)
         {
+            if (team == null)
+            {
+                throw new ArgumentNullException(nameof(team));
+            }
+
             team.MessageReceived -= new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
             _logger?.LogDebug(Resources.Debug_ScrumTeamRemoved, team.Name);
         }

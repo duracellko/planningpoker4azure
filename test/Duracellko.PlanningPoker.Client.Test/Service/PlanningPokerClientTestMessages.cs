@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,6 +8,7 @@ using RichardSzalay.MockHttp;
 namespace Duracellko.PlanningPoker.Client.Test.Service
 {
     [TestClass]
+    [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Mock object does not need to be disposed.")]
     public class PlanningPokerClientTestMessages
     {
         [TestMethod]

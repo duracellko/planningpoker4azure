@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -56,6 +57,7 @@ namespace Duracellko.PlanningPoker.Web
             DeleteExpiredScrumTeams();
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
         private void DisconnectInactiveMembers()
         {
             try
@@ -68,6 +70,7 @@ namespace Duracellko.PlanningPoker.Web
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
         private void DeleteExpiredScrumTeams()
         {
             try

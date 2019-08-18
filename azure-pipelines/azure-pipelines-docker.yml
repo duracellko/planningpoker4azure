@@ -6,7 +6,7 @@ jobs:
   dependsOn: PlanningPokerApp
 
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
 
   workspace:
     clean: all
@@ -27,18 +27,10 @@ jobs:
       archiveFilePatterns: $(System.BinariesDirectory)/web/web.zip
       destinationFolder: $(System.DefaultWorkingDirectory)/docker/app
 
-  - task: Docker@1
+  - task: Docker@2
     displayName: Build Docker image
     inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
-      dockerFile: docker/Dockerfile
-      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'
-
-  - task: Docker@1
-    displayName: Push Docker image
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: $(DockerRegistryEndpointName)
-      command: push
-      imageName: '$(DockerRepositoryName):$(DockerImageTagPrefix)$(Build.BuildId)'
+      containerRegistry: $(DockerRegistryEndpointName)
+      Dockerfile: docker/Dockerfile
+      repository: $(DockerRepositoryName)
+      tags: '$(DockerImageTagPrefix)$(Build.BuildId)'

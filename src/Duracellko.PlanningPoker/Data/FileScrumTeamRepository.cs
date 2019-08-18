@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
@@ -186,6 +187,7 @@ namespace Duracellko.PlanningPoker.Data
         /// <summary>
         /// Deletes the expired Scrum teams, which were not used for period of expiration time.
         /// </summary>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "On error continue deleting other teams.")]
         public void DeleteExpiredScrumTeams()
         {
             _logger?.LogDebug(Resources.Repository_Debug_DeleteExpiredScrumTeams);
@@ -215,6 +217,7 @@ namespace Duracellko.PlanningPoker.Data
         /// <summary>
         /// Deletes all Scrum teams.
         /// </summary>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "On error continue deleting other teams.")]
         public void DeleteAll()
         {
             _logger?.LogDebug(Resources.Repository_Debug_DeleteAllScrumTeams);

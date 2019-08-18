@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -14,6 +15,7 @@ using Moq;
 namespace Duracellko.PlanningPoker.Azure.Test
 {
     [TestClass]
+    [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Mock objects do not need to be disposed.")]
     public class AzurePlanningPokerControllerTest
     {
         [TestMethod]

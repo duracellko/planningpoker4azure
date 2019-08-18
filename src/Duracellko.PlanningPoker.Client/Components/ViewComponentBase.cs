@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.UI;
-using Microsoft.AspNetCore.Blazor.Components;
+using Microsoft.AspNetCore.Components;
 
 namespace Duracellko.PlanningPoker.Client.Components
 {
     /// <summary>
     /// Base component for application components.
     /// </summary>
-    public class ViewComponentBase : BlazorComponent
+    public class ViewComponentBase : ComponentBase
     {
         /// <summary>
         /// Gets or sets message box service that is ised to display error to user.
@@ -21,6 +22,7 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// </summary>
         /// <param name="action">Action to execute.</param>
         /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Error is displayed to user.")]
         protected async Task TryRun(Func<Task> action)
         {
             if (action == null)
@@ -41,11 +43,16 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// <summary>
         /// Displays exception text to user.
         /// </summary>
-        /// <param name="ex">Exception with error to display.</param>
+        /// <param name="exception">Exception with error to display.</param>
         /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
-        protected Task ShowError(Exception ex)
+        protected Task ShowError(Exception exception)
         {
-            return MessageBox.ShowMessage(ex.Message, Resources.MessagePanel_Error);
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
+
+            return MessageBox.ShowMessage(exception.Message, Resources.MessagePanel_Error);
         }
     }
 }

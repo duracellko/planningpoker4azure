@@ -492,6 +492,7 @@ namespace Duracellko.PlanningPoker.Azure
             SendNodeMessage(teamListMessage);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Node will request teams again on failure.")]
         private void ProcessRequestTeamsMessage(NodeMessage message)
         {
             _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);

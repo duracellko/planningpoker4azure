@@ -9,7 +9,7 @@ jobs:
   displayName: PlanningPoker App
 
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-latest
 
   workspace:
     clean: all
@@ -20,17 +20,18 @@ jobs:
     TestAssemblies: ''
 
   steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
     displayName: Install .NET Core SDK
     inputs:
-      version: 2.1.700
+      version: 3.x
+      includePreviewVersions: true
 
   - task: NodeTool@0
     displayName: Install Node.js
     inputs:
-      versionSpec: 10.15.3
+      versionSpec: 10.16.x
 
-  - powershell: './scripts/UpdateVersion.ps1 -VersionNumber $(Build.BuildId)'
+  - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
     failOnStderr: true
 
@@ -54,9 +55,9 @@ jobs:
       projects: $(BuildProjects)
       arguments: --configuration $(BuildConfiguration) --verbosity normal
 
-  - powershell: |
+  - pwsh: |
       $testFiles = [System.Collections.Generic.List[string]]::new()
-      $testPath = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath "Build\bin\$env:BUILDCONFIGURATION\netcoreapp2.1"
+      $testPath = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath "Build\bin\$env:BUILDCONFIGURATION\netcoreapp3.0"
       Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add('"' + $_.FullName + '"') }
       $testAssemblies = [string]::Join(' ', $testFiles)
       Write-Host "##vso[task.setvariable variable=TestAssemblies]$testAssemblies" 
@@ -70,7 +71,7 @@ jobs:
       custom: vstest
       arguments: $(TestAssemblies) --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPoker.trx"
 
-  - powershell: .\node_modules\.bin\selenium-standalone install
+  - pwsh: .\node_modules\.bin\selenium-standalone install
     displayName: Install Selenium
     workingDirectory: $(Build.SourcesDirectory)
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
@@ -80,7 +81,7 @@ jobs:
     inputs:
       command: custom
       custom: vstest
-      arguments: '"$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp2.1/Duracellko.PlanningPoker.E2ETest.dll" --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPokerE2E.trx"'
+      arguments: '"$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp3.0/Duracellko.PlanningPoker.E2ETest.dll" --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPokerE2E.trx"'
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
   - task: DotNetCoreCLI@2
@@ -108,7 +109,7 @@ jobs:
     inputs:
       archiveType: zip
       archiveFile: $(Build.StagingDirectory)/web/web.zip
-      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/netcoreapp2.1/publish
+      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/netcoreapp3.0/publish
       includeRootFolder: false
       replaceExistingArchive: true
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
@@ -123,7 +124,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy screenshots
     inputs:
-      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp2.1/Screenshots
+      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp3.0/Screenshots
       TargetFolder: $(Build.Build.StagingDirectory)/screenshots
       CleanTargetFolder: true
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))

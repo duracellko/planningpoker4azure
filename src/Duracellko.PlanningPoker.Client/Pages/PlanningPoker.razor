@@ -3,7 +3,7 @@
 @implements IDisposable
 @inject PlanningPokerController Controller
 @inject MessageReceiver MessageReceiver
-@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject Microsoft.AspNetCore.Components.IUriHelper UriHelper
 
 @if (Controller.ScrumTeam != null)
 {
@@ -23,10 +23,10 @@
     private IDisposable _messageController;
 
     [Parameter]
-    private string TeamName { get; set; }
+    public string TeamName { get; set; }
 
     [Parameter]
-    private string MemberName { get; set; }
+    public string MemberName { get; set; }
 
     public void Dispose()
     {

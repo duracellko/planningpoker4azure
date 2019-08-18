@@ -18,7 +18,7 @@
                     <span>@member</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <a onclick="@(e => KickoffMemberCommand(member))" class="pull-right text-danger">
+                        <a @onclick="@(e => KickoffMemberCommand(member))" class="pull-right text-danger">
                             <span class="glyphicon glyphicon-remove"></span>
                             <span class="sr-only"></span>
                         </a>
@@ -36,7 +36,7 @@
                     <span>@observer</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <a onclick="@(e => KickoffMemberCommand(observer))" class="pull-right text-danger">
+                        <a @onclick="@(e => KickoffMemberCommand(observer))" class="pull-right text-danger">
                             <span class="glyphicon glyphicon-remove"></span>
                             <span class="sr-only"></span>
                         </a>
@@ -47,16 +47,16 @@
     </div>
 </div>
 
-@functions
+@code
 {
     public void Dispose()
     {
         Controller.PropertyChanged -= ControllerOnPropertyChanged;
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        base.OnInit();
+        base.OnInitialized();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
     }
 

@@ -81,6 +81,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
         public async Task SendMessage(NodeMessage message)
         {
             if (message == null)
@@ -244,6 +245,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error and try again.")]
         private async Task ReceiveMessage(Message message, CancellationToken cancellationToken)
         {
             if (message != null && _nodeId != null)
@@ -273,6 +275,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
         private async void SubscriptionsMaintenanceTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             try
@@ -380,7 +383,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private Uri GetSubscriptionUri(string subcriptionName)
         {
             var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
-            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://");
+            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://", StringComparison.OrdinalIgnoreCase);
             uri = $"{uri}/{Uri.EscapeDataString(_topicName)}/subscriptions/{Uri.EscapeDataString(subcriptionName)}";
             return new Uri(uri);
         }
