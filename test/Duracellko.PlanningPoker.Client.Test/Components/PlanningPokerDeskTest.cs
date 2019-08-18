@@ -17,6 +17,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
     [TestClass]
     public class PlanningPokerDeskTest
     {
+        private static readonly string _newLine = Environment.NewLine;
+
         [TestMethod]
         public async Task InitializedTeamWithScrumMaster_ShowStartEstimationButton()
         {
@@ -40,11 +42,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ScrumMasterName);
 
@@ -55,7 +57,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[29], "a", 4);
             AssertFrame.Attribute(frames[30], "onclick");
             AssertFrame.Attribute(frames[31], "class", "btn btn-default");
-            AssertFrame.Markup(frames[32], "\r\n                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation\r\n                    ");
+            AssertFrame.Markup(frames[32], $"{_newLine}                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation{_newLine}                    ");
         }
 
         [TestMethod]
@@ -88,18 +90,18 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.MemberName);
 
             // Available estimations
             AssertFrame.Element(frames[22], "div", 86);
             AssertFrame.Attribute(frames[23], "class", "availableEstimations");
-            AssertFrame.Markup(frames[25], "<h3>Pick estimation</h3>\r\n            ");
+            AssertFrame.Markup(frames[25], $"<h3>Pick estimation</h3>{_newLine}            ");
             AssertFrame.Element(frames[26], "ul", 81);
             AssertAvailableEstimation(frames, 29, "0");
             AssertAvailableEstimation(frames, 35, "½");
@@ -118,7 +120,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             // Members, who estimated already
             AssertFrame.Element(frames[112], "div", 20);
             AssertFrame.Attribute(frames[113], "class", "estimationResult");
-            AssertFrame.Markup(frames[115], "<h3>Selected estimates</h3>\r\n            ");
+            AssertFrame.Markup(frames[115], $"<h3>Selected estimates</h3>{_newLine}            ");
             AssertFrame.Element(frames[116], "ul", 15);
             AssertSelectedEstimation(frames, 119, PlanningPokerData.ScrumMasterName, string.Empty);
         }
@@ -161,18 +163,18 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], "<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], "<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>\r\n            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ObserverName);
 
             // Estimations
             AssertFrame.Element(frames[24], "div", 32);
             AssertFrame.Attribute(frames[25], "class", "estimationResult");
-            AssertFrame.Markup(frames[27], "<h3>Selected estimates</h3>\r\n            ");
+            AssertFrame.Markup(frames[27], $"<h3>Selected estimates</h3>{_newLine}            ");
             AssertFrame.Element(frames[28], "ul", 27);
             AssertSelectedEstimation(frames, 31, PlanningPokerData.MemberName, "3");
             AssertSelectedEstimation(frames, 43, PlanningPokerData.ScrumMasterName, "8");
