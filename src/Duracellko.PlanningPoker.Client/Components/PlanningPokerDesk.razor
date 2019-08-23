@@ -33,16 +33,16 @@
             <p>
                 @if (Controller.CanStartEstimation)
                 {
-                    <a @onclick="StartEstimationCommand" class="btn btn-default">
+                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary">
                         <span class="glyphicon glyphicon-play"></span> Start estimation
-                    </a>
+                    </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
-                    <a @onclick="CancelEstimationCommand" class="btn btn-default">
+                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary">
                         <span class="glyphicon glyphicon-stop"></span> Cancel estimation
-                    </a>
+                    </button>
                 }
             </p>
         </div>
