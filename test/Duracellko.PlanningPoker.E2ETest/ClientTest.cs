@@ -157,7 +157,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void StartEstimation()
         {
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
+            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
             Assert.AreEqual("Start estimation", button.Text);
 
             button.Click();
@@ -167,7 +167,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void CancelEstimation()
         {
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
+            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
             Assert.AreEqual("Cancel estimation", button.Text);
             button.Click();
         }

@@ -34,30 +34,31 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.AreEqual(39, frames.Count);
+            Assert.AreEqual(40, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 39);
+            AssertFrame.Element(frames[0], "div", 40);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ScrumMasterName);
 
             // Button to start estimation
-            AssertFrame.Element(frames[23], "div", 14);
+            AssertFrame.Element(frames[23], "div", 15);
             AssertFrame.Attribute(frames[24], "class", "actionsBar");
-            AssertFrame.Element(frames[26], "p", 10);
-            AssertFrame.Element(frames[29], "a", 4);
-            AssertFrame.Attribute(frames[30], "onclick");
-            AssertFrame.Attribute(frames[31], "class", "btn btn-default");
-            AssertFrame.Markup(frames[32], $"{_newLine}                        <span class=\"glyphicon glyphicon-play\"></span> Start estimation{_newLine}                    ");
+            AssertFrame.Element(frames[26], "p", 11);
+            AssertFrame.Element(frames[29], "button", 5);
+            AssertFrame.Attribute(frames[30], "type", "button");
+            AssertFrame.Attribute(frames[31], "onclick");
+            AssertFrame.Attribute(frames[32], "class", "btn btn-primary");
+            AssertFrame.Markup(frames[33], $"{_newLine}                        <span class=\"oi oi-media-play mr-1\" aria-hidden=\"true\"></span> Start estimation{_newLine}                    ");
         }
 
         [TestMethod]
@@ -90,11 +91,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.MemberName);
 
@@ -163,11 +164,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[3], "div", 17);
             AssertFrame.Attribute(frames[4], "class", "team-title");
             AssertFrame.Element(frames[6], "h2", 6);
-            AssertFrame.Markup(frames[8], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-tasks\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[8], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[9], "span", 2);
             AssertFrame.Text(frames[10], PlanningPokerData.TeamName);
             AssertFrame.Element(frames[13], "h3", 6);
-            AssertFrame.Markup(frames[15], $"<span class=\"badge\"><span class=\"glyphicon glyphicon-user\"></span></span>{_newLine}            ");
+            AssertFrame.Markup(frames[15], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
             AssertFrame.Element(frames[16], "span", 2);
             AssertFrame.Text(frames[17], PlanningPokerData.ObserverName);
 
