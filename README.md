@@ -27,7 +27,7 @@ This guide assumes that you already know what planning poker is about and how to
 7. After all members picked an estimate, the estimates are shown to all participants.
 8. If concensus is found then team can discuss another story and Scrum Master can start estimation again. Otherwise team discusses their estimates and then Scrum Master starts estimation again.
 
-![Planning Poker screenshot](https://github.com/duracellko/planningpoker4azure/wiki/images/Screenshot.png)
+![Planning Poker screenshot](docs/images/Screenshot.png)
 
 ## Installation
 
