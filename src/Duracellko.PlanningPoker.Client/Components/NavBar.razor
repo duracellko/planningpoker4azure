@@ -13,10 +13,10 @@
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             @if (IsConnected)
             {
-                <ul class="navbar-nav flex-grow-1">
+                <ul class="navbar-nav flex-grow-1 justify-content-end">
                     <li class="nav-item">
                         <a @onclick="DisconnectCommand">
-                            <span class="glyphicon glyphicon-log-out"></span> Disconnect
+                            <span class="oi oi-account-logout"></span> Disconnect
                         </a>
                     </li>
                 </ul>

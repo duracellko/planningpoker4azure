@@ -17,11 +17,11 @@ body {
 }
 
 /* Provide sufficient contrast against white background */
-a, a:not([href]):not([tabindex]) {
+main a, main a:not([href]):not([tabindex]) {
     color: #0366d6;
 }
 
-a:focus, a:hover, a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
+main a:focus, main a:hover, main a:not([href]):not([tabindex]):focus, main a:not([href]):not([tabindex]):hover {
     color: #23527c;
 }
 
