@@ -5,11 +5,11 @@
 <div class="pokerDeskPanel">
     <div class="team-title">
         <h2>
-            <span class="badge"><span class="glyphicon glyphicon-tasks"></span></span>
+            <span class="badge badge-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
             <span>@Controller.TeamName</span>
         </h2>
         <h3>
-            <span class="badge"><span class="glyphicon glyphicon-user"></span></span>
+            <span class="badge badge-secondary"><span class="oi oi-person" title="User" aria-hidden="true"></span></span>
             <span>@Controller.User?.Name</span>
         </h3>
     </div>
@@ -33,16 +33,16 @@
             <p>
                 @if (Controller.CanStartEstimation)
                 {
-                    <a @onclick="StartEstimationCommand" class="btn btn-default">
-                        <span class="glyphicon glyphicon-play"></span> Start estimation
-                    </a>
+                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary">
+                        <span class="oi oi-media-play mr-1" aria-hidden="true"></span> Start estimation
+                    </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
-                    <a @onclick="CancelEstimationCommand" class="btn btn-default">
-                        <span class="glyphicon glyphicon-stop"></span> Cancel estimation
-                    </a>
+                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary">
+                        <span class="oi oi-media-stop mr-1" aria-hidden="true"></span> Cancel estimation
+                    </button>
                 }
             </p>
         </div>

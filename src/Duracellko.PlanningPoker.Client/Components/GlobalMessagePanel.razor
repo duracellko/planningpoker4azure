@@ -2,12 +2,12 @@
 @inject UI.MessageBoxService _messageBoxService
 @inject IJSRuntime _jsRuntime
 
-<div @ref="messageBoxElement" @ref:suppressField id="messageBox" class="modal fade" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
+<div @ref="messageBoxElement" @ref:suppressField id="messageBox" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
                 <button type="button" class="close" @onclick="CloseDialog" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">@Title</h4>
             </div>
             <div class="modal-body">
                 <p>@Message</p>
@@ -17,7 +17,7 @@
                 {
                     <button type="button" class="btn btn-primary" @onclick="PrimaryCommand">@PrimaryButtonText</button>
                 }
-                <button type="button" class="btn btn-default" @onclick="CloseDialog">Close</button>
+                <button type="button" class="btn btn-secondary" @onclick="CloseDialog">Close</button>
             </div>
         </div>
     </div>

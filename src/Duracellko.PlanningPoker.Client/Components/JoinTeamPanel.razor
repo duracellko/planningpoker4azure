@@ -1,39 +1,35 @@
 ﻿@inherits ViewComponentBase
 @inject JoinTeamController Controller
 
-<div class="panel panel-primary panel-collapse">
-    <div class="panel-heading">
-        <h3 class="panel-title">Join team</h3>
-    </div>
-    <div class="panel-body">
+<div class="card">
+    <h5 class="card-header">Join team</h5>
+    <div class="card-body">
         <form name="joinTeam" action="." @onsubmit="JoinTeamCommand">
-            <div class="@GetFormGroupCss(IsTeamNameValid)">
+            <div class="form-group">
                 <label for="joinTeam$teamName">Team name:</label>
-                <div class="@(IsTeamNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName" class="form-control" maxlength="50" />
-                    @if (!IsTeamNameValid)
-                    {
-                        <span class="input-group-addon">Required</span>
-                    }
-                </div>
+                <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName"
+                       class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
+                @if (!IsTeamNameValid)
+                {
+                    <span class="invalid-feedback">Required</span>
+                }
             </div>
-            <div class="@GetFormGroupCss(IsMemberNameValid)">
+            <div class="form-group">
                 <label for="joinTeam$memberName">Member name:</label>
-                <div class="@(IsMemberNameValid ? string.Empty : "input-group")">
-                    <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName" class="form-control" maxlength="50" />
-                    @if (!IsMemberNameValid)
-                    {
-                        <span class="input-group-addon">Required</span>
-                    }
+                <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName"
+                       class="@GetFormControlCss(IsMemberNameValid)" maxlength="50" />
+                @if (!IsMemberNameValid)
+                {
+                    <span class="invalid-feedback">Required</span>
+                }
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" class="form-check-input" />
+                    <label for="joinTeam$asObserver" class="form-check-label">As observer only</label>
                 </div>
             </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" />
-                    As observer only
-                </label>
-            </div>
-            <input type="submit" id="joinTeam$submit" class="btn btn-primary" value="Join team" />
+            <button type="submit" id="joinTeam$submit" class="btn btn-primary">Join team</button>
         </form>
     </div>
 </div>
@@ -86,5 +82,5 @@
         return TryRun(() => Controller.JoinTeam(TeamName, MemberName, AsObserver));
     }
 
-    private string GetFormGroupCss(bool valid) => valid ? "form-group" : "form-group has-error has-feedback";
+    private string GetFormControlCss(bool valid) => valid ? "form-control" : "form-control is-invalid";
 }

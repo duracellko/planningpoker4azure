@@ -7,8 +7,23 @@
       "destination": "wwwroot/js"
     },
     {
-      "library": "twitter-bootstrap@3.4.1",
+      "library": "twitter-bootstrap@4.3.1",
       "destination": "wwwroot"
+    },
+    {
+      "library": "open-iconic@1.1.1",
+      "destination": "wwwroot",
+      "files": [
+        "font/css/open-iconic.css",
+        "font/css/open-iconic.min.css",
+        "font/css/open-iconic-bootstrap.css",
+        "font/css/open-iconic-bootstrap.min.css",
+        "font/fonts/open-iconic.eot",
+        "font/fonts/open-iconic.otf",
+        "font/fonts/open-iconic.svg",
+        "font/fonts/open-iconic.ttf",
+        "font/fonts/open-iconic.woff"
+      ]
     }
   ]
 }

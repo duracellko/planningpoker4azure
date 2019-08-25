@@ -73,7 +73,15 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
         {
             if (WebHost != null)
             {
-                await WebHost.StopAsync();
+                try
+                {
+                    await WebHost.StopAsync();
+                }
+                catch (TaskCanceledException)
+                {
+                    // Ignore time out error
+                }
+
                 WebHost = null;
                 _uri = null;
             }
@@ -87,7 +95,15 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
                 {
                     RunInBackgroundThread(() =>
                     {
-                        Stop().Wait();
+                        try
+                        {
+                            Stop().Wait();
+                        }
+                        catch (AggregateException ex)
+                            when (ex.InnerException != null && ex.InnerException is TaskCanceledException)
+                        {
+                            // Ignore time out error
+                        }
                     });
                 }
 

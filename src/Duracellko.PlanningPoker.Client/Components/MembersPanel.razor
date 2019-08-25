@@ -3,43 +3,39 @@
 @inject PlanningPokerController Controller
 
 <div class="membersPanel">
-    <div class="panel panel-default">
-        <div class="panel-heading">Scrum Master</div>
-        <ul class="list-group">
+    <div class="card">
+        <div class="card-header">Scrum Master</div>
+        <ul class="list-group list-group-flush">
             <li class="list-group-item">@Controller.ScrumMaster</li>
         </ul>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Members</div>
-        <ul class="list-group">
+
+        <div class="card-header">Members</div>
+        <ul class="list-group list-group-flush">
             @foreach (var member in Controller.Members)
             {
                 <li class="list-group-item">
                     <span>@member</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <a @onclick="@(e => KickoffMemberCommand(member))" class="pull-right text-danger">
-                            <span class="glyphicon glyphicon-remove"></span>
-                            <span class="sr-only"></span>
-                        </a>
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(member))" class="close text-danger float-right" aria-label="Remove">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     }
                 </li>
             }
         </ul>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Observers</div>
-        <ul class="list-group">
+
+        <div class="card-header">Observers</div>
+        <ul class="list-group list-group-flush">
             @foreach (var observer in Controller.Observers)
             {
                 <li class="list-group-item">
                     <span>@observer</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <a @onclick="@(e => KickoffMemberCommand(observer))" class="pull-right text-danger">
-                            <span class="glyphicon glyphicon-remove"></span>
-                            <span class="sr-only"></span>
-                        </a>
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(observer))" class="close text-danger float-right" aria-label="Remove">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     }
                 </li>
             }

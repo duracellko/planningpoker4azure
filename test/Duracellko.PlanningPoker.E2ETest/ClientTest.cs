@@ -122,14 +122,14 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertScrumMasterInTeam(string scrumMaster)
         {
-            var scrumMasterElements = MembersPanelElement.FindElements(By.XPath("./div[1]/ul/li"));
+            var scrumMasterElements = MembersPanelElement.FindElements(By.XPath("./div/ul[1]/li"));
             Assert.AreEqual(1, scrumMasterElements.Count);
             Assert.AreEqual(scrumMaster, scrumMasterElements[0].Text);
         }
 
         public void AssertMembersInTeam(params string[] members)
         {
-            var elements = MembersPanelElement.FindElements(By.XPath("./div[2]/ul/li"));
+            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span"));
             if (members == null)
             {
                 Assert.AreEqual(0, elements.Count);
@@ -143,7 +143,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertObserversInTeam(params string[] observers)
         {
-            var elements = MembersPanelElement.FindElements(By.XPath("./div[3]/ul/li"));
+            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[3]/li/span"));
             if (observers == null)
             {
                 Assert.AreEqual(0, elements.Count);
@@ -157,7 +157,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void StartEstimation()
         {
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
+            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
             Assert.AreEqual("Start estimation", button.Text);
 
             button.Click();
@@ -167,7 +167,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void CancelEstimation()
         {
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar a"));
+            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
             Assert.AreEqual("Cancel estimation", button.Text);
             button.Click();
         }
@@ -217,8 +217,8 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void Disconnect()
         {
-            var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.Id("navbarPlanningPoker"));
-            var disconnectElement = navbarPlanningPokerElement.FindElement(By.TagName("a"));
+            var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.TagName("nav"));
+            var disconnectElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul a"));
             Assert.AreEqual("Disconnect", disconnectElement.Text);
 
             disconnectElement.Click();
