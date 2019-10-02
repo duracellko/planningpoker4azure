@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Components;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {
@@ -16,7 +16,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IPlanningPokerInitializer _planningPokerInitializer;
         private readonly IMessageBoxService _messageBoxService;
         private readonly IBusyIndicatorService _busyIndicatorService;
-        private readonly IUriHelper _uriHelper;
+        private readonly INavigationManager _navigationManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateTeamController"/> class.
@@ -25,19 +25,19 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="planningPokerInitializer">Objects that initialize new Planning Poker game.</param>
         /// <param name="messageBoxService">Service to display message to user.</param>
         /// <param name="busyIndicatorService">Service to display that operation is in progress.</param>
-        /// <param name="uriHelper">Service to navigate to specified URL.</param>
+        /// <param name="navigationManager">Service to navigate to specified URL.</param>
         public CreateTeamController(
             IPlanningPokerClient planningPokerService,
             IPlanningPokerInitializer planningPokerInitializer,
             IMessageBoxService messageBoxService,
             IBusyIndicatorService busyIndicatorService,
-            IUriHelper uriHelper)
+            INavigationManager navigationManager)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _planningPokerInitializer = planningPokerInitializer ?? throw new ArgumentNullException(nameof(planningPokerInitializer));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
-            _uriHelper = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper));
+            _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (team != null)
                 {
                     await _planningPokerInitializer.InitializeTeam(team, scrumMasterName);
-                    ControllerHelper.OpenPlanningPokerPage(_uriHelper, team, scrumMasterName);
+                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, team, scrumMasterName);
                     return true;
                 }
             }

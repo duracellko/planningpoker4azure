@@ -3,7 +3,7 @@
 @implements IDisposable
 @inject PlanningPokerController Controller
 @inject MessageReceiver MessageReceiver
-@inject Microsoft.AspNetCore.Components.IUriHelper UriHelper
+@inject NavigationManager NavigationManager
 
 @if (Controller.ScrumTeam != null)
 {
@@ -49,7 +49,7 @@
                 uri = $"{uri}/{TeamName}/{MemberName}";
             }
 
-            UriHelper.NavigateTo(uri);
+            NavigationManager.NavigateTo(uri);
         }
         else
         {

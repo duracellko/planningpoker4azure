@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Client.Test.Components
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "Demonstration only.")]
     public static class AssertFrame
     {
         public static void Sequence(RenderTreeFrame frame, int? sequence = null)

@@ -14,7 +14,6 @@ namespace Duracellko.PlanningPoker.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseApplicationInsights();
                     webBuilder.UseStartup<Startup>();
                 });
     }

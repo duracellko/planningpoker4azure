@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Encodings.Web;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Components;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {
@@ -35,19 +35,19 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <summary>
         /// Opens PlanningPoker page with specified team name and member name.
         /// </summary>
-        /// <param name="uriHelper">Helper to navigate to URL.</param>
+        /// <param name="navigationManager">Helper to navigate to URL.</param>
         /// <param name="team">Scrum team name to include in URL.</param>
         /// <param name="member">Member name to include in URL.</param>
-        public static void OpenPlanningPokerPage(IUriHelper uriHelper, ScrumTeam team, string member)
+        public static void OpenPlanningPokerPage(INavigationManager navigationManager, ScrumTeam team, string member)
         {
-            if (uriHelper == null)
+            if (navigationManager == null)
             {
-                throw new ArgumentNullException(nameof(uriHelper));
+                throw new ArgumentNullException(nameof(navigationManager));
             }
 
             var urlEncoder = UrlEncoder.Default;
             var uri = $"PlanningPoker/{urlEncoder.Encode(team.Name)}/{urlEncoder.Encode(member)}";
-            uriHelper.NavigateTo(uri);
+            navigationManager.NavigateTo(uri);
         }
     }
 }
