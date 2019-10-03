@@ -125,7 +125,7 @@ namespace Duracellko.PlanningPoker.Web
                 endpoints.MapDefaultControllerRoute();
                 if (clientConfiguration.UseServerSideBlazor)
                 {
-                    endpoints.MapBlazorHub("app");
+                    endpoints.MapBlazorHub();
                 }
 
                 endpoints.MapFallbackToPage("/Home");
