@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Controllers;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Components;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -70,12 +70,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task CreateTeam_ServiceReturnsTeam_NavigatesToPlanningPoker()
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
-            var uriHelper = new Mock<IUriHelper>();
-            var target = CreateController(uriHelper: uriHelper.Object, scrumTeam: scrumTeam);
+            var navigationManager = new Mock<INavigationManager>();
+            var target = CreateController(navigationManager: navigationManager.Object, scrumTeam: scrumTeam);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
 
-            uriHelper.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20Scrum%20Master"));
+            navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20Scrum%20Master"));
         }
 
         [TestMethod]
@@ -103,13 +103,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [TestMethod]
         public async Task CreateTeam_ServiceThrowsException_DoesNotNavigateToPlanningPoker()
         {
-            var uriHelper = new Mock<IUriHelper>();
+            var navigationManager = new Mock<INavigationManager>();
 
-            var target = CreateController(uriHelper: uriHelper.Object, errorMessage: string.Empty);
+            var target = CreateController(navigationManager: navigationManager.Object, errorMessage: string.Empty);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
 
-            uriHelper.Verify(o => o.NavigateTo(It.IsAny<string>()), Times.Never());
+            navigationManager.Verify(o => o.NavigateTo(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -166,7 +166,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             IPlanningPokerClient planningPokerService = null,
             IMessageBoxService messageBoxService = null,
             IBusyIndicatorService busyIndicatorService = null,
-            IUriHelper uriHelper = null,
+            INavigationManager navigationManager = null,
             ScrumTeam scrumTeam = null,
             string errorMessage = null)
         {
@@ -204,13 +204,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 busyIndicatorService = busyIndicatorServiceMock.Object;
             }
 
-            if (uriHelper == null)
+            if (navigationManager == null)
             {
-                var uriHelperMock = new Mock<IUriHelper>();
-                uriHelper = uriHelperMock.Object;
+                var navigationManagerMock = new Mock<INavigationManager>();
+                navigationManager = navigationManagerMock.Object;
             }
 
-            return new CreateTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, uriHelper);
+            return new CreateTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, navigationManager);
         }
     }
 }

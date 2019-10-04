@@ -17,6 +17,7 @@ namespace Duracellko.PlanningPoker.Client
             services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
             services.AddScoped<IMemberCredentialsStore, MemberCredentialsStore>();
 
+            services.AddScoped<INavigationManager, AppNavigationManager>();
             services.AddScoped<MessageBoxService>();
             services.AddScoped<IMessageBoxService>(p => p.GetRequiredService<MessageBoxService>());
             services.AddScoped<BusyIndicatorService>();

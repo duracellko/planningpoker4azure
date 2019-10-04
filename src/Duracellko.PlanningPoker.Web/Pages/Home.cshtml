@@ -16,7 +16,16 @@
     <link href="Content/Site.css" rel="stylesheet" />
 </head>
 <body>
-    <app><span class="oi oi-loop-circular"></span> Loading...</app>
+    <app>
+        @if (Model.ClientConfiguration.UseServerSideBlazor)
+        {
+            @(await Html.RenderComponentAsync<Duracellko.PlanningPoker.Client.App>(RenderMode.Server))
+        }
+        else
+        {
+            <span class="oi oi-loop-circular"></span> <span>Loading...</span>
+        }
+    </app>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>

@@ -33,6 +33,7 @@ namespace Duracellko.PlanningPoker.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
             services.AddMvc()
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
@@ -59,7 +60,7 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<PlanningPokerAzureNode>();
                 services.AddSingleton<IServiceBus, AzureServiceBus>();
                 services.AddSingleton<IMessageConverter, MessageConverter>();
-                services.AddScoped<IHostedService, AzurePlanningPokerNodeService>();
+                services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
             }
             else
             {
@@ -76,7 +77,7 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IScrumTeamRepository, EmptyScrumTeamRepository>();
             }
 
-            services.AddScoped<IHostedService, PlanningPokerCleanupService>();
+            services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
 
             var clientConfiguration = new PlanningPokerClientConfiguration
             {
@@ -88,7 +89,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
-                services.AddTransient<IHostedService, HttpClientSetupService>();
+                services.AddSingleton<IHostedService, HttpClientSetupService>();
 
                 // Register services used by client on server-side.
                 var blazorStartup = new Duracellko.PlanningPoker.Client.Startup();
@@ -124,7 +125,7 @@ namespace Duracellko.PlanningPoker.Web
                 endpoints.MapDefaultControllerRoute();
                 if (clientConfiguration.UseServerSideBlazor)
                 {
-                    endpoints.MapBlazorHub<Duracellko.PlanningPoker.Client.App>("app");
+                    endpoints.MapBlazorHub();
                 }
 
                 endpoints.MapFallbackToPage("/Home");

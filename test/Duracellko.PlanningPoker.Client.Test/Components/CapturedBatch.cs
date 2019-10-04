@@ -17,6 +17,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Property is captured during rendering.")]
         public IList<RenderTreeFrame> ReferenceFrames { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "Demonstration only.")]
         internal void AddDiff(RenderTreeDiff diff)
         {
             var componentId = diff.ComponentId;
