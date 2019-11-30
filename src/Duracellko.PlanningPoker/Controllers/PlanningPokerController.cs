@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Configuration;
@@ -19,13 +18,14 @@ namespace Duracellko.PlanningPoker.Controllers
     public class PlanningPokerController : IPlanningPoker
     {
         private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+        private readonly TaskProvider _taskProvider;
         private readonly ILogger<PlanningPokerController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
         /// </summary>
         public PlanningPokerController()
-            : this(null, null, null, null)
+            : this(null, null, null, null, null)
         {
         }
 
@@ -35,12 +35,14 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
+        /// <param name="taskProvider">The system tasks provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository, ILogger<PlanningPokerController> logger)
+        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository, TaskProvider taskProvider, ILogger<PlanningPokerController> logger)
         {
             DateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
             Configuration = configuration ?? new PlanningPokerConfiguration();
             Repository = repository ?? new EmptyScrumTeamRepository();
+            _taskProvider = taskProvider ?? TaskProvider.Default;
             _logger = logger;
         }
 
@@ -204,47 +206,8 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             var scrumTeamLock = new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
-            var receiveMessagesTask = new ReceiveMessagesTask(scrumTeamLock, observer);
+            var receiveMessagesTask = new ReceiveMessagesTask(scrumTeamLock, observer, _taskProvider);
             return receiveMessagesTask.GetMessagesAsync(Configuration.WaitForMessageTimeout, cancellationToken);
-        }
-
-        /// <summary>
-        /// Calls specified callback when an observer receives new message or after configured timeout.
-        /// </summary>
-        /// <param name="observer">The observer to wait for message to receive.</param>
-        /// <param name="callback">The callback delegate to call when a message is received or after timeout. First parameter specifies if message was received or not
-        /// (the timeout occurs). Second parameter specifies observer, who received a message.</param>
-        public void GetMessagesAsync(Observer observer, Action<bool, Observer> callback)
-        {
-            if (observer == null)
-            {
-                throw new ArgumentNullException(nameof(observer));
-            }
-
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            if (observer.HasMessage)
-            {
-                _logger?.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, observer.Team.Name, true);
-                callback(true, observer);
-            }
-            else
-            {
-                // not nead to load from repository, because team was already obtained
-                Tuple<ScrumTeam, object> teamTuple;
-                if (!_scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
-                {
-                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, observer.Team.Name));
-                }
-
-                var messageReceivedObservable = Observable.FromEventPattern(h => observer.MessageReceived += h, h => observer.MessageReceived -= h);
-                messageReceivedObservable = messageReceivedObservable.Timeout(Configuration.WaitForMessageTimeout, Observable.Return<System.Reactive.EventPattern<object>>(null));
-                messageReceivedObservable = messageReceivedObservable.Take(1);
-                messageReceivedObservable.Subscribe(p => ExecuteGetMessagesAsyncCallback(callback, observer, teamTuple));
-            }
         }
 
         /// <summary>
@@ -320,16 +283,6 @@ namespace Duracellko.PlanningPoker.Controllers
         protected virtual void OnBeforeGetScrumTeam(string teamName)
         {
             // empty implementation by default
-        }
-
-        private void ExecuteGetMessagesAsyncCallback(Action<bool, Observer> callback, Observer observer, Tuple<ScrumTeam, object> teamTuple)
-        {
-            using (var teamLock = new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2))
-            {
-                teamLock.Lock();
-                _logger?.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, teamLock.Team.Name, observer.HasMessage);
-                callback(observer.HasMessage, observer.HasMessage ? observer : null);
-            }
         }
 
         private void ScrumTeamOnMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -486,6 +439,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             private readonly ScrumTeamLock _scrumTeamLock;
             private readonly Observer _observer;
+            private readonly TaskProvider _taskProvider;
 
             private volatile bool _isReceivedEventHandlerHooked;
 
@@ -494,10 +448,12 @@ namespace Duracellko.PlanningPoker.Controllers
             /// </summary>
             /// <param name="scrumTeamLock">Lock object that can obtain exclusive access to the Scrum team.</param>
             /// <param name="observer">Observer to obtain messages for.</param>
-            public ReceiveMessagesTask(ScrumTeamLock scrumTeamLock, Observer observer)
+            /// <param name="taskProvider">The system tasks provider.</param>
+            public ReceiveMessagesTask(ScrumTeamLock scrumTeamLock, Observer observer, TaskProvider taskProvider)
             {
                 _scrumTeamLock = scrumTeamLock;
                 _observer = observer;
+                _taskProvider = taskProvider;
             }
 
             /// <summary>
@@ -518,8 +474,10 @@ namespace Duracellko.PlanningPoker.Controllers
                             _isReceivedEventHandlerHooked = true;
 
                             var messagesReceivedTask = _taskCompletionSource.Task;
-                            var timeoutTask = Task.Delay(timeout, combinedCancellationTokenSource.Token);
+                            var timeoutTask = _taskProvider.Delay(timeout, combinedCancellationTokenSource.Token);
                             var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
+
+                            cancellationToken.ThrowIfCancellationRequested();
 
                             if (completedTask == messagesReceivedTask)
                             {
