@@ -1,7 +1,7 @@
 ﻿namespace Duracellko.PlanningPoker.Azure
 {
     /// <summary>
-    /// Type of Planning Poker Azure node message
+    /// Type of Planning Poker Azure node message.
     /// </summary>
     public enum NodeMessageType
     {

@@ -142,6 +142,9 @@ namespace Duracellko.PlanningPoker.Azure
             }
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="AzurePlanningPokerController"/> class.
+        /// </summary>
         ~AzurePlanningPokerController()
         {
             Dispose(false);
