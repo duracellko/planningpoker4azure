@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
@@ -170,6 +171,41 @@ namespace Duracellko.PlanningPoker.Controllers
 
             _logger?.LogDebug(Resources.Debug_ReadScrumTeam, teamTuple.Item1.Name);
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
+        }
+
+        /// <summary>
+        /// Gets messages for specified observer asynchronously. Messages are returned, when the observer receives any,
+        /// or empty collection is returned after configured timeout.
+        /// </summary>
+        /// <param name="observer">The observer to return received messages for.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel receiving of messages.</param>
+        /// <returns>
+        /// Asynchronous task that is finished, when observer receives a message or after configured timeout.
+        /// </returns>
+        public Task<IEnumerable<Message>> GetMessagesAsync(Observer observer, CancellationToken cancellationToken)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
+            if (observer.HasMessage)
+            {
+                _logger?.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, observer.Team.Name, true);
+                IEnumerable<Message> messages = observer.Messages.ToList();
+                return Task.FromResult(messages);
+            }
+
+            // not need to load from repository, because team was already obtained
+            Tuple<ScrumTeam, object> teamTuple;
+            if (!_scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, observer.Team.Name));
+            }
+
+            var scrumTeamLock = new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
+            var receiveMessagesTask = new ReceiveMessagesTask(scrumTeamLock, observer);
+            return receiveMessagesTask.GetMessagesAsync(Configuration.WaitForMessageTimeout, cancellationToken);
         }
 
         /// <summary>
@@ -437,6 +473,92 @@ namespace Duracellko.PlanningPoker.Controllers
                 if (_locked)
                 {
                     Monitor.Exit(_lockObject);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Asynchronous task of receiving messages by a team member.
+        /// </summary>
+        private sealed class ReceiveMessagesTask
+        {
+            private readonly TaskCompletionSource<IEnumerable<Message>> _taskCompletionSource = new TaskCompletionSource<IEnumerable<Message>>();
+
+            private readonly ScrumTeamLock _scrumTeamLock;
+            private readonly Observer _observer;
+
+            private volatile bool _isReceivedEventHandlerHooked;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ReceiveMessagesTask"/> class.
+            /// </summary>
+            /// <param name="scrumTeamLock">Lock object that can obtain exclusive access to the Scrum team.</param>
+            /// <param name="observer">Observer to obtain messages for.</param>
+            public ReceiveMessagesTask(ScrumTeamLock scrumTeamLock, Observer observer)
+            {
+                _scrumTeamLock = scrumTeamLock;
+                _observer = observer;
+            }
+
+            /// <summary>
+            /// Gets messages of the observer asynchronously, when a message is received.
+            /// </summary>
+            /// <param name="timeout">Timeout period to wait for messages.</param>
+            /// <param name="cancellationToken">Cancellation token to cancel waiting for the messages.</param>
+            /// <returns>Messages received by observer or empty collection if timeed out.</returns>
+            public async Task<IEnumerable<Message>> GetMessagesAsync(TimeSpan timeout, CancellationToken cancellationToken)
+            {
+                using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+                {
+                    using (var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token))
+                    {
+                        try
+                        {
+                            _observer.MessageReceived += ObserverOnMessageReceived;
+                            _isReceivedEventHandlerHooked = true;
+
+                            var messagesReceivedTask = _taskCompletionSource.Task;
+                            var timeoutTask = Task.Delay(timeout, combinedCancellationTokenSource.Token);
+                            var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
+
+                            if (completedTask == messagesReceivedTask)
+                            {
+                                return await messagesReceivedTask;
+                            }
+                            else
+                            {
+                                return Enumerable.Empty<Message>();
+                            }
+                        }
+                        finally
+                        {
+                            timeoutCancellationTokenSource.Cancel();
+
+                            if (_isReceivedEventHandlerHooked)
+                            {
+                                using (var teamLock = _scrumTeamLock)
+                                {
+                                    teamLock.Lock();
+                                    _observer.MessageReceived -= ObserverOnMessageReceived;
+                                    _isReceivedEventHandlerHooked = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            private void ObserverOnMessageReceived(object sender, EventArgs e)
+            {
+                using (var teamLock = _scrumTeamLock)
+                {
+                    teamLock.Lock();
+
+                    _observer.MessageReceived -= ObserverOnMessageReceived;
+                    _isReceivedEventHandlerHooked = false;
+
+                    IEnumerable<Message> messages = _observer.Messages.ToList();
+                    _taskCompletionSource.TrySetResult(messages);
                 }
             }
         }
