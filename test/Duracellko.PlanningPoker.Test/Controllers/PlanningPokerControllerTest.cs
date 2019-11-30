@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Duracellko.PlanningPoker.Controllers.Test
 {
@@ -268,20 +272,126 @@ namespace Duracellko.PlanningPoker.Controllers.Test
             var target = CreatePlanningPokerController();
 
             // Act
-            target.GetMessagesAsync(null, (f, o) => { });
+            target.GetMessagesAsync(null, default(CancellationToken));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void GetMessagesAsync_CallbackIsNull_ArgumentNullException()
+        public void GetMessagesAsync_ScrumMasterHas2Messages_Returns2Messages()
         {
+            IEnumerable<Message> result;
+
             // Arrange
             var target = CreatePlanningPokerController();
             using (var teamLock = target.CreateScrumTeam("team", "master"))
             {
+                teamLock.Lock();
+
+                teamLock.Team.Join("member", false);
+                teamLock.Team.ScrumMaster.StartEstimation();
+
                 // Act
-                target.GetMessagesAsync(teamLock.Team.ScrumMaster, null);
+                var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default(CancellationToken));
+                result = messagesTask.Result;
             }
+
+            // Verify
+            var messages = result.ToList();
+            Assert.AreEqual(2, messages.Count);
+            Assert.AreEqual(MessageType.MemberJoined, messages[0].MessageType);
+            Assert.AreEqual(MessageType.EstimationStarted, messages[1].MessageType);
+        }
+
+        [TestMethod]
+        public async Task GetMessagesAsync_MemberHasNoMessages_Returns1MessageAfterReceiving()
+        {
+            Task<IEnumerable<Message>> messagesTask;
+
+            // Arrange
+            var target = CreatePlanningPokerController();
+            using (var teamLock = target.CreateScrumTeam("team", "master"))
+            {
+                teamLock.Lock();
+                var member = teamLock.Team.Join("member", false);
+
+                // Act
+                messagesTask = target.GetMessagesAsync(member, default(CancellationToken));
+            }
+
+            Assert.IsFalse(messagesTask.IsCompleted);
+
+            using (var teamLock = target.GetScrumTeam("team"))
+            {
+                teamLock.Lock();
+                teamLock.Team.ScrumMaster.StartEstimation();
+            }
+
+            Assert.IsTrue(messagesTask.IsCompleted);
+
+            var result = await messagesTask;
+
+            // Verify
+            var messages = result.ToList();
+            Assert.AreEqual(1, messages.Count);
+            Assert.AreEqual(MessageType.EstimationStarted, messages[0].MessageType);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OperationCanceledException))]
+        public async Task GetMessagesAsync_TaskIsCancelled_ThrowsTaskCancelledException()
+        {
+            using (var cancellationToken = new CancellationTokenSource())
+            {
+                Task<IEnumerable<Message>> messagesTask;
+
+                // Arrange
+                var target = CreatePlanningPokerController();
+                using (var teamLock = target.CreateScrumTeam("team", "master"))
+                {
+                    teamLock.Lock();
+
+                    // Act
+                    messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, cancellationToken.Token);
+                }
+
+                cancellationToken.Cancel();
+                await messagesTask;
+            }
+        }
+
+        [TestMethod]
+        public async Task GetMessagesAsync_OperationTimesOut_ReturnsEmptyCollection()
+        {
+            Task<IEnumerable<Message>> messagesTask;
+
+            // Arrange
+            var waitForMessageTimeout = TimeSpan.FromSeconds(30);
+            var delayTask = new TaskCompletionSource<object>();
+            var taskProvider = new Mock<TaskProvider>(MockBehavior.Strict);
+            taskProvider.Setup(p => p.Delay(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
+                .Returns(delayTask.Task);
+            var configuration = new Mock<Configuration.IPlanningPokerConfiguration>(MockBehavior.Strict);
+            configuration.SetupGet(c => c.WaitForMessageTimeout).Returns(waitForMessageTimeout);
+
+            var target = CreatePlanningPokerController(configuration: configuration.Object, taskProvider: taskProvider.Object);
+
+            using (var teamLock = target.CreateScrumTeam("team", "master"))
+            {
+                teamLock.Lock();
+
+                // Act
+                messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default(CancellationToken));
+            }
+
+            Assert.IsFalse(messagesTask.IsCompleted);
+
+            delayTask.SetResult(null);
+
+            Assert.IsTrue(messagesTask.IsCompleted);
+
+            var result = await messagesTask;
+
+            // Verify
+            Assert.IsFalse(result.Any());
         }
 
         [TestMethod]
@@ -424,9 +534,10 @@ namespace Duracellko.PlanningPoker.Controllers.Test
             DateTimeProvider dateTimeProvider = null,
             Configuration.IPlanningPokerConfiguration configuration = null,
             Data.IScrumTeamRepository repository = null,
+            TaskProvider taskProvider = null,
             ILogger<PlanningPokerController> logger = null)
         {
-            return new PlanningPokerController(dateTimeProvider, configuration, repository, logger);
+            return new PlanningPokerController(dateTimeProvider, configuration, repository, taskProvider, logger);
         }
     }
 }

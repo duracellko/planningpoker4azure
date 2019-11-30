@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using D = Duracellko.PlanningPoker.Domain;
@@ -244,24 +245,39 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
         /// <returns>
-        /// The <see cref="T:System.IAsyncResult"/> object representing asynchronous operation.
+        /// Collection of received messages or empty collection, when no message was received in configured time.
         /// </returns>
         [HttpGet("GetMessages")]
-        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId)
+        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
         {
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
-            var getMessagesTask = new GetMessagesTask(PlanningPoker)
-            {
-                TeamName = teamName,
-                MemberName = memberName,
-                LastMessageId = lastMessageId,
-            };
-            getMessagesTask.Start();
+            Task<IEnumerable<D.Message>> receiveMessagesTask;
 
-            return await getMessagesTask.ProcessMessagesTask;
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName);
+
+                // Removes old messages, which the member has already read, from the member's message queue.
+                while (member.HasMessage && member.Messages.First().Id <= lastMessageId)
+                {
+                    member.PopMessage();
+                }
+
+                // Updates last activity on member to record time, when member checked for new messages.
+                // also notifies to save the team into repository
+                member.UpdateActivity();
+
+                receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
+            }
+
+            var messages = await receiveMessagesTask;
+            return messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
         }
 
         private static void ValidateTeamName(string teamName)
@@ -287,138 +303,6 @@ namespace Duracellko.PlanningPoker.Service
             if (memberName.Length > 50)
             {
                 throw new ArgumentException(Resources.Error_TeamNameTooLong, paramName);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronous task of receiving messages by a team member.
-        /// </summary>
-        private class GetMessagesTask
-        {
-            private TaskCompletionSource<List<Message>> _taskCompletionSource;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="GetMessagesTask"/> class.
-            /// </summary>
-            /// <param name="planningPoker">The planning poker controller.</param>
-            public GetMessagesTask(D.IPlanningPoker planningPoker)
-            {
-                PlanningPoker = planningPoker;
-            }
-
-            /// <summary>
-            /// Gets the planning poker controller.
-            /// </summary>
-            /// <value>
-            /// The planning poker controller.
-            /// </value>
-            public D.IPlanningPoker PlanningPoker { get; private set; }
-
-            /// <summary>
-            /// Gets or sets the name of the Scrum team.
-            /// </summary>
-            /// <value>
-            /// The name of the Scrum team.
-            /// </value>
-            public string TeamName { get; set; }
-
-            /// <summary>
-            /// Gets or sets the name of the member to receive message of.
-            /// </summary>
-            /// <value>
-            /// The name of the team member.
-            /// </value>
-            public string MemberName { get; set; }
-
-            /// <summary>
-            /// Gets or sets ID of last message received by the team member.
-            /// </summary>
-            /// <value>
-            /// The last message ID.
-            /// </value>
-            public long LastMessageId { get; set; }
-
-            /// <summary>
-            /// Gets the asynchronous operation of receiving messages for the team member.
-            /// </summary>
-            public Task<List<Message>> ProcessMessagesTask
-            {
-                get
-                {
-                    return _taskCompletionSource != null ? _taskCompletionSource.Task : null;
-                }
-            }
-
-            /// <summary>
-            /// Starts the asynchronous operation of receiving new messages.
-            /// </summary>
-            public void Start()
-            {
-                _taskCompletionSource = new TaskCompletionSource<List<Message>>();
-                SetProcessMessagesHandler();
-            }
-
-            private void ReturnResult(List<Message> result)
-            {
-                _taskCompletionSource.SetResult(result);
-            }
-
-            private void ThrowException(Exception ex)
-            {
-                _taskCompletionSource.SetException(ex);
-            }
-
-            [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exceptions must be set as asynchronous task result.")]
-            private void ProcessMessages(bool hasMessages, D.Observer member)
-            {
-                try
-                {
-                    List<Message> result;
-                    if (hasMessages)
-                    {
-                        result = member.Messages.Select(m => ServiceEntityMapper.Map<D.Message, Message>(m)).ToList();
-                    }
-                    else
-                    {
-                        result = new List<Message>();
-                    }
-
-                    ReturnResult(result);
-                }
-                catch (Exception ex)
-                {
-                    ThrowException(ex);
-                }
-            }
-
-            [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "All exceptions must be set as asynchronous task result.")]
-            private void SetProcessMessagesHandler()
-            {
-                try
-                {
-                    using (var teamLock = PlanningPoker.GetScrumTeam(TeamName))
-                    {
-                        teamLock.Lock();
-                        var team = teamLock.Team;
-                        var member = team.FindMemberOrObserver(MemberName);
-
-                        // Removes old messages, which the member has already read, from the member's message queue.
-                        while (member.HasMessage && member.Messages.First().Id <= LastMessageId)
-                        {
-                            member.PopMessage();
-                        }
-
-                        // Updates last activity on member to record time, when member checked for new messages.
-                        // also notifies to save the team into repository
-                        member.UpdateActivity();
-
-                        PlanningPoker.GetMessagesAsync(member, ProcessMessages);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ThrowException(ex);
-                }
             }
         }
     }

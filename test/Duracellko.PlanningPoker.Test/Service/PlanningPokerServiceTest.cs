@@ -1077,12 +1077,12 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<Action<bool, D.Observer>>()))
-                .Callback<D.Observer, Action<bool, D.Observer>>((o, c) => c(true, o)).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => team.ScrumMaster.Messages.ToList()).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0);
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
 
             // Verify
             planningPoker.Verify();
@@ -1112,12 +1112,12 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            planningPoker.Setup(p => p.GetMessagesAsync(master, It.IsAny<Action<bool, D.Observer>>()))
-                .Callback<D.Observer, Action<bool, D.Observer>>((o, c) => c(true, o)).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(master, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => master.Messages.ToList()).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 1);
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 1, default(CancellationToken));
 
             // Verify
             planningPoker.Verify();
@@ -1155,12 +1155,12 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<Action<bool, D.Observer>>()))
-                .Callback<D.Observer, Action<bool, D.Observer>>((o, c) => c(false, null)).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Enumerable.Empty<D.Message>()).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0);
+            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
 
             // Verify
             planningPoker.Verify();
@@ -1178,7 +1178,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(null, MemberName, 0);
+            await target.GetMessages(null, MemberName, 0, default(CancellationToken));
         }
 
         [TestMethod]
@@ -1190,7 +1190,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(TeamName, null, 0);
+            await target.GetMessages(TeamName, null, 0, default(CancellationToken));
         }
 
         [TestMethod]
@@ -1202,7 +1202,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(LongTeamName, MemberName, 0);
+            await target.GetMessages(LongTeamName, MemberName, 0, default(CancellationToken));
         }
 
         [TestMethod]
@@ -1214,7 +1214,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await target.GetMessages(TeamName, LongMemberName, 0);
+            await target.GetMessages(TeamName, LongMemberName, 0, default(CancellationToken));
         }
 
         private static D.ScrumTeam CreateBasicTeam()

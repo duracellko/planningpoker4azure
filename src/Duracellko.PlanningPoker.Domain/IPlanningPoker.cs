@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -36,14 +38,13 @@ namespace Duracellko.PlanningPoker.Domain
         IScrumTeamLock GetScrumTeam(string teamName);
 
         /// <summary>
-        /// Calls specified callback when an observer receives new message or after configured timeout.
+        /// Gets messages for specified observer asynchronously. Messages are returned, when the observer receives any,
+        /// or empty collection is returned after configured timeout.
         /// </summary>
-        /// <param name="observer">The observer to wait for message to receive.</param>
-        /// <param name="callback">
-        /// The callback delegate to call when a message is received or after timeout. First parameter specifies if message was received or not
-        /// (the timeout occurs). Second parameter specifies observer, who received a message.
-        /// </param>
-        void GetMessagesAsync(Observer observer, Action<bool, Observer> callback);
+        /// <param name="observer">The observer to return received messages for.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel receiving of messages.</param>
+        /// <returns>Asynchronous task that is finished, when observer receives a message or after configured timeout.</returns>
+        Task<IEnumerable<Message>> GetMessagesAsync(Observer observer, CancellationToken cancellationToken);
 
         /// <summary>
         /// Disconnects all observers, who did not checked for messages for configured period of time.

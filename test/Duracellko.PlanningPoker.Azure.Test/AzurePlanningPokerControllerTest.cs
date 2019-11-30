@@ -366,6 +366,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             DateTimeProvider dateTimeProvider = null,
             IAzurePlanningPokerConfiguration configuration = null,
             IScrumTeamRepository repository = null,
+            TaskProvider taskProvider = null,
             ILogger<Controllers.PlanningPokerController> logger = null)
         {
             if (logger == null)
@@ -373,7 +374,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 logger = Mock.Of<ILogger<Controllers.PlanningPokerController>>();
             }
 
-            return new AzurePlanningPokerController(dateTimeProvider, configuration, repository, logger);
+            return new AzurePlanningPokerController(dateTimeProvider, configuration, repository, taskProvider, logger);
         }
     }
 }
