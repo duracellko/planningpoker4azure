@@ -187,6 +187,9 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="AzureServiceBus"/> class.
+        /// </summary>
         ~AzureServiceBus()
         {
             Dispose(false);
