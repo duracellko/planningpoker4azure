@@ -33,7 +33,7 @@ This guide assumes that you already know what planning poker is about and how to
 
 Requirements:
 
-- .NET Core 3.0 runtime
+- .NET Core 3.1 runtime
 
 Run: `dotnet Duracellko.PlanningPoker.Web.dll`
 
@@ -48,7 +48,7 @@ docker run -p 80:80 duracellko/planningpoker
 
 ## Architecture
 
-Application is implemented using [ASP.NET Core 3.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-3.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
+Application is implemented using [ASP.NET Core 3.1](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-3.1). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
 
 - Locally on Windows or Linux
 - In Docker container
@@ -120,7 +120,7 @@ The application has following configuration settings:
 
 Requirements:
 
-- .NET Core SDK 3.0
+- .NET Core SDK 3.1
 - Java SE Development Kit version 8 or higher (for end-2-end tests only)
 - Node.js and NPM (for end-2-end tests only)
 
