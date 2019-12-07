@@ -23,7 +23,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             var result = exception.Message;
-            var newLineIndex = result.IndexOf('\n');
+            var newLineIndex = result.IndexOf('\n', StringComparison.Ordinal);
             if (newLineIndex >= 0)
             {
                 result = result.Substring(0, newLineIndex);
