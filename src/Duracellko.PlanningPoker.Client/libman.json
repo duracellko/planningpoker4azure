@@ -7,7 +7,7 @@
       "destination": "wwwroot/js"
     },
     {
-      "library": "twitter-bootstrap@4.3.1",
+      "library": "twitter-bootstrap@4.4.1",
       "destination": "wwwroot"
     },
     {
