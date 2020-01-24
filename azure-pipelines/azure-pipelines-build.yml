@@ -24,12 +24,11 @@ jobs:
     displayName: Install .NET Core SDK
     inputs:
       version: 3.1.x
-      includePreviewVersions: true
 
   - task: NodeTool@0
     displayName: Install Node.js
     inputs:
-      versionSpec: 13.3.x
+      versionSpec: 13.x
 
   - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
