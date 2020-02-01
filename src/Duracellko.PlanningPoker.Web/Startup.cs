@@ -40,6 +40,7 @@ namespace Duracellko.PlanningPoker.Web
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
                 .AddNewtonsoftJson();
+            services.AddSignalR();
 
             services.AddResponseCompression(options =>
             {
@@ -135,6 +136,7 @@ namespace Duracellko.PlanningPoker.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
+                endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
                 if (clientConfiguration.UseServerSideBlazor)
                 {
                     endpoints.MapBlazorHub();

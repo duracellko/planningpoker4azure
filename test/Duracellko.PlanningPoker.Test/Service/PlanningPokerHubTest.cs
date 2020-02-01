@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using D = Duracellko.PlanningPoker.Domain;
 
-namespace Duracellko.PlanningPoker.Service.Test
+namespace Duracellko.PlanningPoker.Test.Service
 {
     [TestClass]
     public class PlanningPokerHubTest
@@ -27,7 +28,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
 
             // Act
-            using (var result = new PlanningPokerHub(planningPoker.Object))
+            using (var result = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Verify
                 Assert.AreEqual<D.IPlanningPoker>(planningPoker.Object, result.PlanningPoker);
@@ -39,7 +40,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         public void Constructor_Null_ArgumentNullException()
         {
             // Act
-            using (var result = new PlanningPokerHub(null))
+            using (var result = new PlanningPokerHub(null, null))
             {
             }
         }
@@ -53,7 +54,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName)).Returns(teamLock.Object).Verifiable();
 
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.CreateTeam(TeamName, ScrumMasterName);
@@ -80,7 +81,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName)).Returns(teamLock.Object).Verifiable();
 
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.CreateTeam(TeamName, ScrumMasterName);
@@ -101,7 +102,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CreateTeam(null, ScrumMasterName);
@@ -114,7 +115,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CreateTeam(TeamName, null);
@@ -127,7 +128,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CreateTeam(LongTeamName, ScrumMasterName);
@@ -140,7 +141,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CreateTeam(TeamName, LongMemberName);
@@ -155,7 +156,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.JoinTeam(TeamName, MemberName, false);
@@ -185,7 +186,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(TeamName, MemberName, false);
@@ -205,7 +206,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(TeamName, MemberName, false);
@@ -224,7 +225,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.JoinTeam(TeamName, ObserverName, true);
@@ -254,7 +255,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(TeamName, ObserverName, true);
@@ -271,7 +272,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(null, MemberName, false);
@@ -284,7 +285,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(TeamName, null, false);
@@ -297,7 +298,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(LongTeamName, MemberName, false);
@@ -310,7 +311,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.JoinTeam(TeamName, LongMemberName, false);
@@ -325,7 +326,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, ScrumMasterName);
@@ -358,7 +359,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -391,7 +392,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, ObserverName);
@@ -429,7 +430,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.ReconnectTeam(TeamName, MemberName);
@@ -447,7 +448,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -476,7 +477,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -505,7 +506,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -536,7 +537,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -563,7 +564,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -588,7 +589,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -614,7 +615,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -642,7 +643,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 var result = target.ReconnectTeam(TeamName, MemberName);
@@ -664,7 +665,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.ReconnectTeam(null, MemberName);
@@ -677,7 +678,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.ReconnectTeam(TeamName, null);
@@ -690,7 +691,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.ReconnectTeam(LongTeamName, MemberName);
@@ -703,7 +704,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.ReconnectTeam(TeamName, LongMemberName);
@@ -718,7 +719,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(TeamName, ScrumMasterName);
@@ -742,7 +743,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(TeamName, MemberName);
@@ -766,7 +767,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(TeamName, ObserverName);
@@ -786,7 +787,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(null, MemberName);
@@ -799,7 +800,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(TeamName, null);
@@ -812,7 +813,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(LongTeamName, MemberName);
@@ -825,7 +826,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.DisconnectTeam(TeamName, LongMemberName);
@@ -840,7 +841,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.StartEstimation(TeamName);
@@ -860,7 +861,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.StartEstimation(null);
@@ -873,7 +874,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.StartEstimation(LongTeamName);
@@ -889,7 +890,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CancelEstimation(TeamName);
@@ -909,7 +910,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CancelEstimation(null);
@@ -922,7 +923,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.CancelEstimation(LongTeamName);
@@ -937,7 +938,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, ScrumMasterName, 2.0);
@@ -960,7 +961,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, ScrumMasterName, -1111111.0);
@@ -984,7 +985,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, MemberName, -1111100.0);
@@ -1008,7 +1009,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, MemberName, 8.0);
@@ -1032,7 +1033,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, MemberName, -1111100.0);
@@ -1056,7 +1057,7 @@ namespace Duracellko.PlanningPoker.Service.Test
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, MemberName, -1111111.0);
@@ -1077,7 +1078,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(null, MemberName, 0.0);
@@ -1090,7 +1091,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, null, 0.0);
@@ -1103,7 +1104,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(LongTeamName, MemberName, 1.0);
@@ -1116,7 +1117,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
                 target.SubmitEstimation(TeamName, LongMemberName, 1.0);
@@ -1124,7 +1125,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         }
 
         [TestMethod]
-        public async Task GetMessages_MemberJoinedTeam_ScrumMasterGetsMessage()
+        public void GetMessages_MemberJoinedTeam_ScrumMasterGetsMessage()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -1134,10 +1135,16 @@ namespace Duracellko.PlanningPoker.Service.Test
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => team.ScrumMaster.Messages.ToList()).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
                 // Act
-                var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+                target.GetMessages(TeamName, ScrumMasterName, 0);
 
                 // Verify
                 planningPoker.Verify();
@@ -1155,7 +1162,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         }
 
         [TestMethod]
-        public async Task GetMessages_EstimationEnded_ScrumMasterGetsMessages()
+        public void GetMessages_EstimationEnded_ScrumMasterGetsMessages()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -1170,10 +1177,16 @@ namespace Duracellko.PlanningPoker.Service.Test
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             planningPoker.Setup(p => p.GetMessagesAsync(master, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => master.Messages.ToList()).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
                 // Act
-                var result = await target.GetMessages(TeamName, ScrumMasterName, 1, default(CancellationToken));
+                target.GetMessages(TeamName, ScrumMasterName, 1);
 
                 // Verify
                 planningPoker.Verify();
@@ -1205,7 +1218,7 @@ namespace Duracellko.PlanningPoker.Service.Test
         }
 
         [TestMethod]
-        public async Task GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
+        public void GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -1214,10 +1227,16 @@ namespace Duracellko.PlanningPoker.Service.Test
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Empty<D.Message>()).Verifiable();
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
                 // Act
-                var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+                target.GetMessages(TeamName, ScrumMasterName, 0);
 
                 // Verify
                 planningPoker.Verify();
@@ -1229,54 +1248,81 @@ namespace Duracellko.PlanningPoker.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task GetMessages_TeamNameIsEmpty_ArgumentNullException()
+        public void GetMessages_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                await target.GetMessages(null, MemberName, 0, default(CancellationToken));
+                target.GetMessages(null, MemberName, 0);
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task GetMessages_MemberNameIsEmpty_ArgumentNullException()
+        public void GetMessages_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                await target.GetMessages(TeamName, null, 0, default(CancellationToken));
+                target.GetMessages(TeamName, null, 0);
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public async Task GetMessages_TeamNameTooLong_ArgumentException()
+        public void GetMessages_TeamNameTooLong_ArgumentException()
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                await target.GetMessages(LongTeamName, MemberName, 0, default(CancellationToken));
+                target.GetMessages(LongTeamName, MemberName, 0);
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public async Task GetMessages_MemberNameTooLong_ArgumentException()
+        public void GetMessages_MemberNameTooLong_ArgumentException()
         {
             // Arrange
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            using (var target = new PlanningPokerHub(planningPoker.Object))
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                await target.GetMessages(TeamName, LongMemberName, 0, default(CancellationToken));
+                target.GetMessages(TeamName, LongMemberName, 0);
             }
+        }
+
+        private static PlanningPokerHub CreatePlanningPokerHub(
+            D.IPlanningPoker planningPoker,
+            IPlanningPokerClient client = null,
+            string connectionId = null)
+        {
+            if (connectionId == null)
+            {
+                connectionId = Guid.NewGuid().ToString();
+            }
+
+            var clientContext = new Mock<IHubContext<PlanningPokerHub, IPlanningPokerClient>>(MockBehavior.Strict);
+            if (client != null)
+            {
+                var clients = new Mock<IHubClients<IPlanningPokerClient>>(MockBehavior.Strict);
+                clientContext.SetupGet(o => o.Clients).Returns(clients.Object);
+                clients.Setup(o => o.Client(connectionId)).Returns(client);
+            }
+
+            var result = new PlanningPokerHub(planningPoker, clientContext.Object);
+
+            var context = new HubCallerContextMock();
+            context.SetConnectionId(connectionId);
+            result.Context = context;
+
+            return result;
         }
 
         private static D.ScrumTeam CreateBasicTeam()

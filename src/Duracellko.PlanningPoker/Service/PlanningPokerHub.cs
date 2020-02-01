@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using D = Duracellko.PlanningPoker.Domain;
@@ -12,15 +11,18 @@ namespace Duracellko.PlanningPoker.Service
     /// <summary>
     /// SignalR hub providing operations for planning poker web clients.
     /// </summary>
-    public class PlanningPokerHub : Hub
+    public class PlanningPokerHub : Hub<IPlanningPokerClient>
     {
+        private readonly IHubContext<PlanningPokerHub, IPlanningPokerClient> _clientContext;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerHub"/> class.
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
-        public PlanningPokerHub(D.IPlanningPoker planningPoker)
+        public PlanningPokerHub(D.IPlanningPoker planningPoker, IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
+            _clientContext = clientContext ?? throw new ArgumentNullException(nameof(clientContext));
         }
 
         /// <summary>
@@ -234,11 +236,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
-        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
-        /// <returns>
-        /// Collection of received messages or empty collection, when no message was received in configured time.
-        /// </returns>
-        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        public void GetMessages(string teamName, string memberName, long lastMessageId)
         {
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
@@ -261,11 +259,10 @@ namespace Duracellko.PlanningPoker.Service
                 // also notifies to save the team into repository
                 member.UpdateActivity();
 
-                receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
+                receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, Context.ConnectionAborted);
             }
 
-            var messages = await receiveMessagesTask;
-            return messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+            OnMessageReceived(receiveMessagesTask, Context.ConnectionId);
         }
 
         private static void ValidateTeamName(string teamName)
@@ -291,6 +288,22 @@ namespace Duracellko.PlanningPoker.Service
             if (memberName.Length > 50)
             {
                 throw new ArgumentException(Resources.Error_TeamNameTooLong, paramName);
+            }
+        }
+
+        private async void OnMessageReceived(Task<IEnumerable<D.Message>> receiveMessagesTask, string connectionId)
+        {
+            var messages = await receiveMessagesTask;
+            var clientMessages = messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+
+            try
+            {
+                var client = _clientContext.Clients.Client(connectionId);
+                await client.Notify(clientMessages);
+            }
+            catch (HubException)
+            {
+                // Ignore error, when client has disconnected.
             }
         }
     }
