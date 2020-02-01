@@ -1,18 +1,18 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor.Hosting;
 
 namespace Duracellko.PlanningPoker.Client
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "Defined by Blazor template.")]
-        public static IWebAssemblyHostBuilder CreateHostBuilder(string[] args) =>
-            BlazorWebAssemblyHost.CreateDefaultBuilder()
-                .UseBlazorStartup<Startup>();
+            Startup.ConfigureServices(builder.Services);
+            builder.RootComponents.Add<App>("app");
+
+            await builder.Build().RunAsync();
+        }
     }
 }

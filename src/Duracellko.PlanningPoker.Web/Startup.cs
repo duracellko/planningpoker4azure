@@ -92,8 +92,7 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IHostedService, HttpClientSetupService>();
 
                 // Register services used by client on server-side.
-                var blazorStartup = new Duracellko.PlanningPoker.Client.Startup();
-                blazorStartup.ConfigureServices(services);
+                Client.Startup.ConfigureServices(services);
             }
         }
 
@@ -116,7 +115,7 @@ namespace Duracellko.PlanningPoker.Web
             }
 
             app.UseStaticFiles();
-            app.UseClientSideBlazorFiles<Duracellko.PlanningPoker.Client.Startup>();
+            app.UseClientSideBlazorFiles(typeof(Client.Program).Assembly.Location);
 
             app.UseRouting();
 
