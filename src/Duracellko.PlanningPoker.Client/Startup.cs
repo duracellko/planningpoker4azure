@@ -1,17 +1,14 @@
-using System.Diagnostics.CodeAnalysis;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client
 {
-    public class Startup
+    public static class Startup
     {
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Startup interface expected by Blazor.")]
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             // Services are scoped, because on server-side scope is created for each client session.
             services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
@@ -28,12 +25,6 @@ namespace Duracellko.PlanningPoker.Client
             services.AddScoped<CreateTeamController>();
             services.AddScoped<JoinTeamController>();
             services.AddTransient<MessageReceiver>();
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Startup interface expected by Blazor.")]
-        public void Configure(IComponentsApplicationBuilder app)
-        {
-            app.AddComponent<App>("app");
         }
     }
 }
