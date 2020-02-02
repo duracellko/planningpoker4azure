@@ -293,17 +293,17 @@ namespace Duracellko.PlanningPoker.Service
 
         private async void OnMessageReceived(Task<IEnumerable<D.Message>> receiveMessagesTask, string connectionId)
         {
-            var messages = await receiveMessagesTask;
-            var clientMessages = messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
-
             try
             {
+                var messages = await receiveMessagesTask;
+                var clientMessages = messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+
                 var client = _clientContext.Clients.Client(connectionId);
                 await client.Notify(clientMessages);
             }
-            catch (HubException)
+            catch (OperationCanceledException)
             {
-                // Ignore error, when client has disconnected.
+                // Operation is canceled, because client has disconnected.
             }
         }
     }

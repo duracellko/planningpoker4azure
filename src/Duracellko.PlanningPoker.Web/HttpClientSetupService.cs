@@ -12,12 +12,18 @@ namespace Duracellko.PlanningPoker.Web
     public class HttpClientSetupService : BackgroundService
     {
         private readonly HttpClient _httpClient;
+        private readonly PlanningPokerServerUriProvider _uriProvider;
         private readonly IServer _server;
         private readonly IHostApplicationLifetime _applicationLifetime;
 
-        public HttpClientSetupService(HttpClient httpClient, IServer server, IHostApplicationLifetime applicationLifetime)
+        public HttpClientSetupService(
+            HttpClient httpClient,
+            PlanningPokerServerUriProvider uriProvider,
+            IServer server,
+            IHostApplicationLifetime applicationLifetime)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _uriProvider = uriProvider ?? throw new ArgumentNullException(nameof(uriProvider));
             _server = server ?? throw new ArgumentNullException(nameof(server));
             _applicationLifetime = applicationLifetime ?? throw new ArgumentNullException(nameof(applicationLifetime));
         }
@@ -53,7 +59,9 @@ namespace Duracellko.PlanningPoker.Web
                 address = address.Replace("[::]", "localhost", StringComparison.Ordinal);
             }
 
-            _httpClient.BaseAddress = new Uri(address);
+            var baseUri = new Uri(address);
+            _httpClient.BaseAddress = baseUri;
+            _uriProvider.InitializeBaseUri(baseUri);
         }
     }
 }

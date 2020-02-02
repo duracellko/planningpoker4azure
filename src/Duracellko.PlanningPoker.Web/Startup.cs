@@ -40,7 +40,8 @@ namespace Duracellko.PlanningPoker.Web
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
                 .AddNewtonsoftJson();
-            services.AddSignalR();
+            services.AddSignalR()
+                .AddNewtonsoftJsonProtocol();
 
             services.AddResponseCompression(options =>
             {
@@ -103,10 +104,12 @@ namespace Duracellko.PlanningPoker.Web
             {
                 services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
+                services.AddSingleton<PlanningPokerServerUriProvider>();
+                services.AddSingleton<Client.Service.IPlanningPokerUriProvider>(sp => sp.GetRequiredService<PlanningPokerServerUriProvider>());
                 services.AddSingleton<IHostedService, HttpClientSetupService>();
 
                 // Register services used by client on server-side.
-                Client.Startup.ConfigureServices(services);
+                Client.Startup.ConfigureServices(services, true);
             }
         }
 
