@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.JSInterop;
+using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Service
 {
@@ -18,11 +17,6 @@ namespace Duracellko.PlanningPoker.Service
     public class PlanningPokerClient : IPlanningPokerClient
     {
         private const string BaseUri = "api/PlanningPokerService/";
-
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
 
         private readonly HttpClient _client;
         private readonly UrlEncoder _urlEncoder = UrlEncoder.Default;
@@ -205,31 +199,10 @@ namespace Duracellko.PlanningPoker.Service
             var encodedLastMessageId = _urlEncoder.Encode(lastMessageId.ToString(CultureInfo.InvariantCulture));
             var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&lastMessageId={encodedLastMessageId}";
 
-            return await GetJsonAsync<List<Message>>(uri, cancellationToken);
-        }
+            var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
 
-        private static void DeserializeMessages(List<Message> messages, string json)
-        {
-            var memberMessages = JsonSerializer.Deserialize<List<MemberMessage>>(json, _jsonSerializerOptions);
-            var estimationResultMessages = JsonSerializer.Deserialize<List<EstimationResultMessage>>(json, _jsonSerializerOptions);
-
-            for (int i = 0; i < messages.Count; i++)
-            {
-                var message = messages[i];
-                switch (message.Type)
-                {
-                    case MessageType.MemberJoined:
-                    case MessageType.MemberDisconnected:
-                    case MessageType.MemberEstimated:
-                        messages[i] = memberMessages[i];
-                        break;
-                    case MessageType.EstimationEnded:
-                        var estimationResultMessage = estimationResultMessages[i];
-                        ConvertEstimations(estimationResultMessage.EstimationResult);
-                        messages[i] = estimationResultMessage;
-                        break;
-                }
-            }
+            ConvertMessages(result);
+            return result;
         }
 
         private static void ConvertScrumTeam(ScrumTeam scrumTeam)
@@ -269,6 +242,18 @@ namespace Duracellko.PlanningPoker.Service
             }
         }
 
+        private static void ConvertMessages(IList<Message> messages)
+        {
+            foreach (var message in messages)
+            {
+                if (message.Type == MessageType.EstimationEnded)
+                {
+                    var estimationResultMessage = (EstimationResultMessage)message;
+                    ConvertEstimations(estimationResultMessage.EstimationResult);
+                }
+            }
+        }
+
         private async Task<T> GetJsonAsync<T>(string requestUri, CancellationToken cancellationToken)
         {
             try
@@ -287,14 +272,17 @@ namespace Duracellko.PlanningPoker.Service
                             throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                         }
 
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        var result = JsonSerializer.Deserialize<T>(responseContent, _jsonSerializerOptions);
-                        if (result is List<Message> messages)
+                        using (var contentStream = await response.Content.ReadAsStreamAsync())
                         {
-                            DeserializeMessages(messages, responseContent);
+                            using (var textReader = new StreamReader(contentStream))
+                            {
+                                using (var jsonReader = new JsonTextReader(textReader))
+                                {
+                                    var serializer = JsonSerializer.CreateDefault();
+                                    return serializer.Deserialize<T>(jsonReader);
+                                }
+                            }
                         }
-
-                        return result;
                     }
                 }
             }

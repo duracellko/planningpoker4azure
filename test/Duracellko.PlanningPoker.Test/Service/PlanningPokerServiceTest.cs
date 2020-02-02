@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using D = Duracellko.PlanningPoker.Domain;
 
-namespace Duracellko.PlanningPoker.Service.Test
+namespace Duracellko.PlanningPoker.Test.Service
 {
     [TestClass]
     public class PlanningPokerServiceTest

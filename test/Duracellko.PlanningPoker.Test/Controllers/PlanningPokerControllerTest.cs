@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Domain;
-using Duracellko.PlanningPoker.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Duracellko.PlanningPoker.Controllers.Test
+namespace Duracellko.PlanningPoker.Test.Controllers
 {
     [TestClass]
     public class PlanningPokerControllerTest
