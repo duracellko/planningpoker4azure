@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Duracellko.PlanningPoker.Service
+﻿namespace Duracellko.PlanningPoker.Service
 {
     /// <summary>
     /// Type of message that can be sent to Scrum team members or observers.
     /// </summary>
-    [Serializable]
     public enum MessageType
     {
         /// <summary>

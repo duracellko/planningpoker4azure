@@ -1,12 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace Duracellko.PlanningPoker.Service
+﻿namespace Duracellko.PlanningPoker.Service
 {
     /// <summary>
     /// Status of participant in estimation.
     /// </summary>
-    [Serializable]
     public class EstimationParticipantStatus
     {
         /// <summary>
@@ -15,7 +11,6 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// The name of the member.
         /// </value>
-        [JsonProperty("memberName")]
         public string MemberName { get; set; }
 
         /// <summary>
@@ -24,7 +19,6 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// <c>True</c> if participant estimated; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty("estimated")]
         public bool Estimated { get; set; }
     }
 }

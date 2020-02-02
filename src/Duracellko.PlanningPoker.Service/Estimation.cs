@@ -1,12 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace Duracellko.PlanningPoker.Service
+﻿namespace Duracellko.PlanningPoker.Service
 {
     /// <summary>
     /// Estimation value of a planning poker card.
     /// </summary>
-    [Serializable]
     public class Estimation
     {
         /// <summary>
@@ -19,7 +15,6 @@ namespace Duracellko.PlanningPoker.Service
         /// positive infinity or null representing unknown estimation.
         /// </summary>
         /// <value>The estimation value.</value>
-        [JsonProperty("value")]
         public double? Value { get; set; }
     }
 }

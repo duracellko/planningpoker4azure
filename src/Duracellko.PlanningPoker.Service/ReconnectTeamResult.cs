@@ -1,12 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace Duracellko.PlanningPoker.Service
+﻿namespace Duracellko.PlanningPoker.Service
 {
     /// <summary>
     /// Result data of reconnect operation.
     /// </summary>
-    [Serializable]
     public class ReconnectTeamResult
     {
         /// <summary>
@@ -15,7 +11,6 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// The Scrum team.
         /// </value>
-        [JsonProperty("scrumTeam")]
         public ScrumTeam ScrumTeam { get; set; }
 
         /// <summary>
@@ -24,7 +19,6 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// The last message ID.
         /// </value>
-        [JsonProperty("lastMessageId")]
         public long LastMessageId { get; set; }
 
         /// <summary>
@@ -33,7 +27,6 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// The selected estimation.
         /// </value>
-        [JsonProperty("selectedEstimation")]
         public Estimation SelectedEstimation { get; set; }
     }
 }
