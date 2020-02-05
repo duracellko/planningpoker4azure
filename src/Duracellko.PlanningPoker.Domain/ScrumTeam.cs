@@ -60,7 +60,7 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentNullException(nameof(name));
             }
 
-            _dateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
+            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = name;
         }
 
