@@ -19,6 +19,15 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="EstimationResultMessage"/> class.
+        /// </summary>
+        /// <param name="messageData">Message serialization data.</param>
+        internal EstimationResultMessage(Serialization.MessageData messageData)
+            : base(messageData)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the estimation result associated to the message.
         /// </summary>
         /// <value>

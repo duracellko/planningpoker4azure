@@ -18,6 +18,15 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MemberMessage"/> class.
+        /// </summary>
+        /// <param name="messageData">Message serialization data.</param>
+        internal MemberMessage(Serialization.MessageData messageData)
+            : base(messageData)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the Scrum team member, who joined or disconnected.
         /// </summary>
         /// <value>

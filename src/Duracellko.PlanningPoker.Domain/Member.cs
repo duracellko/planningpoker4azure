@@ -12,6 +12,8 @@ namespace Duracellko.PlanningPoker.Domain
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Fields are placed near properties.")]
     public class Member : Observer
     {
+        private Estimation _estimation;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Member"/> class.
         /// </summary>
@@ -22,7 +24,16 @@ namespace Duracellko.PlanningPoker.Domain
         {
         }
 
-        private Estimation _estimation;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Member"/> class.
+        /// </summary>
+        /// <param name="team">The Scrum team the observer is joining.</param>
+        /// <param name="memberData">The member serialization data.</param>
+        internal Member(ScrumTeam team, Serialization.MemberData memberData)
+            : base(team, memberData)
+        {
+            _estimation = memberData.Estimation;
+        }
 
         /// <summary>
         /// Gets or sets the estimation, the member is picking in planning poker.

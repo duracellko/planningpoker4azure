@@ -36,6 +36,24 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Observer"/> class.
+        /// </summary>
+        /// <param name="team">The Scrum team the observer is joining.</param>
+        /// <param name="memberData">The member serialization data.</param>
+        internal Observer(ScrumTeam team, Serialization.MemberData memberData)
+        {
+            if (string.IsNullOrEmpty(memberData.Name))
+            {
+                throw new ArgumentException("Member name cannot be empty.", nameof(memberData));
+            }
+
+            Team = team;
+            Name = memberData.Name;
+            LastActivity = DateTime.SpecifyKind(memberData.LastActivity, DateTimeKind.Utc);
+            _lastMessageId = memberData.LastMessageId;
+        }
+
+        /// <summary>
         /// Occurs when a new message is received.
         /// </summary>
         [field: NonSerialized]
@@ -129,6 +147,21 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Deserialize messages of member from serialized data.
+        /// </summary>
+        /// <param name="memberData">Serialized member data.</param>
+        internal void DeserializeMessages(Serialization.MemberData memberData)
+        {
+            if (memberData.Messages != null)
+            {
+                foreach (var messageData in memberData.Messages)
+                {
+                    _messages.Enqueue(CreateMessage(messageData));
+                }
+            }
+        }
+
+        /// <summary>
         /// Raises the <see cref="E:MessageReceived"/> event.
         /// </summary>
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
@@ -137,6 +170,39 @@ namespace Duracellko.PlanningPoker.Domain
             if (MessageReceived != null)
             {
                 MessageReceived(this, e);
+            }
+        }
+
+        private Message CreateMessage(Serialization.MessageData messageData)
+        {
+            switch (messageData.MessageType)
+            {
+                case MessageType.Empty:
+                case MessageType.EstimationStarted:
+                case MessageType.EstimationCanceled:
+                    return new Message(messageData);
+                case MessageType.MemberJoined:
+                case MessageType.MemberDisconnected:
+                case MessageType.MemberEstimated:
+                    var member = Team.FindMemberOrObserver(messageData.MemberName);
+                    if (member == null)
+                    {
+                        member = new Member(Team, messageData.MemberName);
+                    }
+
+                    return new MemberMessage(messageData)
+                    {
+                        Member = member
+                    };
+                case MessageType.EstimationEnded:
+                    var estimationResult = new EstimationResult(Team, messageData.EstimationResult);
+                    estimationResult.SetReadOnly();
+                    return new EstimationResultMessage(messageData)
+                    {
+                        EstimationResult = estimationResult
+                    };
+                default:
+                    throw new ArgumentException($"Invalid message type {messageData.MessageType}.", nameof(messageData));
             }
         }
     }

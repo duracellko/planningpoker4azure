@@ -33,6 +33,26 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="EstimationResult"/> class.
+        /// </summary>
+        /// <param name="team">Scrum Team owning the estimation result.</param>
+        /// <param name="estimationResult">Estimation result serialization data.</param>
+        internal EstimationResult(ScrumTeam team, IDictionary<string, Estimation> estimationResult)
+        {
+            foreach (var estimationResultItem in estimationResult)
+            {
+                var memberName = estimationResultItem.Key;
+                var member = team.FindMemberOrObserver(memberName) as Member;
+                if (member == null)
+                {
+                    member = new Member(team, memberName);
+                }
+
+                _estimations.Add(member, estimationResultItem.Value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="Duracellko.PlanningPoker.Domain.Estimation"/> for the specified member.
         /// </summary>
         /// <param name="member">The member to get or set estimation for.</param>

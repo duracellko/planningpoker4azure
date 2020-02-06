@@ -18,6 +18,16 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="messageData">Message serialization data.</param>
+        internal Message(Serialization.MessageData messageData)
+        {
+            MessageType = messageData.MessageType;
+            Id = messageData.Id;
+        }
+
+        /// <summary>
         /// Gets the type of the message.
         /// </summary>
         /// <value>
