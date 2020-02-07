@@ -372,6 +372,23 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        public virtual Serialization.ScrumTeamData GetData()
+        {
+            var result = new Serialization.ScrumTeamData
+            {
+                Name = Name,
+                State = State,
+            };
+
+            result.Members = Observers.Concat(Members).Select(m => m.GetData()).ToList();
+            result.EstimationResult = _estimationResult?.GetData();
+            return result;
+        }
+
+        /// <summary>
         /// Starts new estimation.
         /// </summary>
         internal void StartEstimation()
@@ -515,7 +532,7 @@ namespace Duracellko.PlanningPoker.Domain
             }
 
             var scrumMasterData = scrumTeamData.Members.SingleOrDefault(m => m.MemberType == Serialization.MemberType.ScrumMaster);
-            if (scrumTeamData != null)
+            if (scrumMasterData != null)
             {
                 _members.Add(new ScrumMaster(this, scrumMasterData));
             }

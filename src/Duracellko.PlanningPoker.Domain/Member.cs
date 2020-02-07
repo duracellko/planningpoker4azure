@@ -73,5 +73,17 @@ namespace Duracellko.PlanningPoker.Domain
         {
             _estimation = null;
         }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        protected internal override Serialization.MemberData GetData()
+        {
+            var result = base.GetData();
+            result.MemberType = Serialization.MemberType.Member;
+            result.Estimation = Estimation;
+            return result;
+        }
     }
 }

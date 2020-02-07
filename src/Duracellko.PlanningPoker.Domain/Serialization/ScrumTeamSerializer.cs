@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Duracellko.PlanningPoker.Domain.Serialization
 {
@@ -8,7 +11,8 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
     /// </summary>
     public class ScrumTeamSerializer
     {
-        private DateTimeProvider _dateTimeProvider;
+        private static readonly IContractResolver _contractResolver = new ScrumTeamContractResolver();
+        private readonly DateTimeProvider _dateTimeProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamSerializer"/> class.
@@ -24,9 +28,23 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// </summary>
         /// <param name="writer">Text writer to serialize the Scrum Team into.</param>
         /// <param name="scrumTeam">The Scrum Team to serialize.</param>
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Object should be injected.")]
         public void Serialize(TextWriter writer, ScrumTeam scrumTeam)
         {
-            throw new NotImplementedException();
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            if (scrumTeam == null)
+            {
+                throw new ArgumentNullException(nameof(scrumTeam));
+            }
+
+            var data = scrumTeam.GetData();
+            var serializer = JsonSerializer.Create();
+            serializer.ContractResolver = _contractResolver;
+            serializer.Serialize(writer, data);
         }
 
         /// <summary>
@@ -36,7 +54,18 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// <returns>Deserialized ScrumTeam object.</returns>
         public ScrumTeam Deserialize(TextReader reader)
         {
-            throw new NotImplementedException();
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            using (var jsonReader = new JsonTextReader(reader))
+            {
+                var serializer = JsonSerializer.Create();
+                serializer.ContractResolver = _contractResolver;
+                var data = serializer.Deserialize<ScrumTeamData>(jsonReader);
+                return new ScrumTeam(data, _dateTimeProvider);
+            }
         }
     }
 }

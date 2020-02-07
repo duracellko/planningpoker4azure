@@ -33,5 +33,16 @@ namespace Duracellko.PlanningPoker.Domain
         /// The team member.
         /// </value>
         public Observer Member { get; set; }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        protected internal override Serialization.MessageData GetData()
+        {
+            var result = base.GetData();
+            result.MemberName = Member.Name;
+            return result;
+        }
     }
 }

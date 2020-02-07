@@ -51,5 +51,16 @@ namespace Duracellko.PlanningPoker.Domain
                 Team.CancelEstimation();
             }
         }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        protected internal override Serialization.MemberData GetData()
+        {
+            var result = base.GetData();
+            result.MemberType = Serialization.MemberType.ScrumMaster;
+            return result;
+        }
     }
 }

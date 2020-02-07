@@ -146,43 +146,6 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         }
 
         [TestMethod]
-        public void SerializeAndDeserialize_TeamMessageReceivedEventHandler_NoMessageReceivedEventHandler()
-        {
-            // Arrange
-            var team = new ScrumTeam("test");
-            var master = team.SetScrumMaster("master");
-
-            // Act
-            var json = SerializeTeam(team);
-            var result = DeserializeTeam(json);
-
-            // Verify
-            int eventsCount = 0;
-            result.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventsCount++);
-            result.ScrumMaster.StartEstimation();
-            Assert.AreEqual<int>(0, eventsCount);
-        }
-
-        [TestMethod]
-        public void SerializeAndDeserialize_MemberMessageReceivedEventHandler_NoMessageReceivedEventHandler()
-        {
-            // Arrange
-            var team = new ScrumTeam("test");
-            team.SetScrumMaster("master");
-
-            // Act
-            var json = SerializeTeam(team);
-            var result = DeserializeTeam(json);
-
-            // Verify
-            var master = result.ScrumMaster;
-            int eventsCount = 0;
-            master.MessageReceived += new EventHandler((s, e) => eventsCount++);
-            master.StartEstimation();
-            Assert.AreEqual<int>(0, eventsCount);
-        }
-
-        [TestMethod]
         public void SerializeAndDeserialize_DateTimeProvider_DateTimeProviderIsSet()
         {
             // Arrange
@@ -198,11 +161,61 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             Assert.AreEqual<DateTimeProvider>(dateTimeProvider, result.DateTimeProvider);
         }
 
-        private static void VerifySerialization(ScrumTeam scrumTeam)
+        [TestMethod]
+        public void SerializeAndDeserialize_MemberDisconnected_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            var observer = team.Join("observer", true);
+            master.StartEstimation();
+            team.Join("Bob", true);
+            team.Join("Alice", false);
+            member.Estimation = team.AvailableEstimations.Single(e => e.Value == 0.5);
+            master.Estimation = team.AvailableEstimations.Single(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value));
+            team.Disconnect(observer.Name);
+            team.Disconnect(member.Name);
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_ReceivedMessages_MessageHasNextId()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            team.Join("observer", true);
+            master.StartEstimation();
+
+            var lastMessage = master.PopMessage();
+            while (master.HasMessage)
+            {
+                lastMessage = master.PopMessage();
+            }
+
+            // Act
+            var result = VerifySerialization(team);
+
+            // Verify
+            var member = (Member)result.FindMemberOrObserver("member");
+            member.Estimation = result.AvailableEstimations.First(e => e.Value == 5);
+
+            Assert.IsTrue(result.ScrumMaster.HasMessage);
+            var message = result.ScrumMaster.PopMessage();
+            Assert.AreEqual(lastMessage.Id + 1, message.Id);
+        }
+
+        private static ScrumTeam VerifySerialization(ScrumTeam scrumTeam)
         {
             var json = SerializeTeam(scrumTeam);
             var result = DeserializeTeam(json);
             AssertScrumTeamsAreEqual(scrumTeam, result);
+            return result;
         }
 
         private static string SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider dateTimeProvider = null)
@@ -256,7 +269,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             CollectionAssert.AreEqual(expected.ToList(), actual.ToList());
         }
 
-        private static void AssertObserversAreEqual(Observer expected, Observer actual)
+        private static void AssertObserversAreEqual(Observer expected, Observer actual, bool basicPropertiesOnly = false)
         {
             if (expected == null)
             {
@@ -265,23 +278,34 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             else
             {
                 Assert.IsNotNull(actual);
-                Assert.AreEqual(expected.GetType(), actual.GetType());
                 Assert.AreEqual(expected.Name, actual.Name);
-                Assert.AreEqual(expected.LastActivity, actual.LastActivity);
 
-                Assert.AreEqual(expected.HasMessage, actual.HasMessage);
-                var expectedMessages = expected.Messages.ToList();
-                var actualMessages = actual.Messages.ToList();
-                Assert.AreEqual(expectedMessages.Count, actualMessages.Count);
+                var team = expected.Team;
+                var isConnected = team.Members.Concat(team.Observers).Contains(expected);
 
-                for (int i = 0; i < expectedMessages.Count; i++)
+                // Verify extended properties only, when member is connected. Otherwise only member's name is recovered.
+                if (isConnected)
                 {
-                    AssertMessagesAreEqual(expectedMessages[i], actualMessages[i]);
-                }
+                    Assert.AreEqual(expected.GetType(), actual.GetType());
+                    Assert.AreEqual(expected.LastActivity, actual.LastActivity);
 
-                if (expected is Member expectedMember)
-                {
-                    AssertMembersAreEqual(expectedMember, (Member)actual);
+                    if (!basicPropertiesOnly)
+                    {
+                        Assert.AreEqual(expected.HasMessage, actual.HasMessage);
+                        var expectedMessages = expected.Messages.ToList();
+                        var actualMessages = actual.Messages.ToList();
+                        Assert.AreEqual(expectedMessages.Count, actualMessages.Count);
+
+                        for (int i = 0; i < expectedMessages.Count; i++)
+                        {
+                            AssertMessagesAreEqual(expectedMessages[i], actualMessages[i]);
+                        }
+
+                        if (expected is Member expectedMember)
+                        {
+                            AssertMembersAreEqual(expectedMember, (Member)actual);
+                        }
+                    }
                 }
             }
         }
@@ -310,7 +334,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
         private static void AssertMemberMessagesAreEqual(MemberMessage expected, MemberMessage actual)
         {
-            AssertObserversAreEqual(expected.Member, actual.Member);
+            AssertObserversAreEqual(expected.Member, actual.Member, true);
         }
 
         private static void AssertEstimationResultMessagesAreEqual(EstimationResultMessage expected, EstimationResultMessage actual)
@@ -320,23 +344,37 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
         private static void AssertEsimationParticipantsAreEqual(IEnumerable<EstimationParticipantStatus> expected, IEnumerable<EstimationParticipantStatus> actual)
         {
-            Assert.AreEqual(expected.Count(), actual.Count());
-            foreach (var expectedItem in expected)
+            if (expected == null)
             {
-                var actualItem = actual.Single(i => i.MemberName == expectedItem.MemberName);
-                Assert.AreEqual(expectedItem.MemberName, actualItem.MemberName);
-                Assert.AreEqual(expectedItem.Estimated, actualItem.Estimated);
+                Assert.IsNull(actual);
+            }
+            else
+            {
+                Assert.AreEqual(expected.Count(), actual.Count());
+                foreach (var expectedItem in expected)
+                {
+                    var actualItem = actual.Single(i => i.MemberName == expectedItem.MemberName);
+                    Assert.AreEqual(expectedItem.MemberName, actualItem.MemberName);
+                    Assert.AreEqual(expectedItem.Estimated, actualItem.Estimated);
+                }
             }
         }
 
         private static void AssertEstimationResultsAreEqual(EstimationResult expected, EstimationResult actual)
         {
-            Assert.AreEqual(expected.Count, actual.Count);
-            foreach (var expectedItem in expected)
+            if (expected == null)
             {
-                var actualItem = actual.Single(i => i.Key.Name == expectedItem.Key.Name);
-                AssertObserversAreEqual(expectedItem.Key, actualItem.Key);
-                Assert.AreEqual(expectedItem.Value, actualItem.Value);
+                Assert.IsNull(actual);
+            }
+            else
+            {
+                Assert.AreEqual(expected.Count, actual.Count);
+                foreach (var expectedItem in expected)
+                {
+                    var actualItem = actual.Single(i => i.Key.Name == expectedItem.Key.Name);
+                    AssertObserversAreEqual(expectedItem.Key, actualItem.Key, true);
+                    Assert.AreEqual(expectedItem.Value, actualItem.Value);
+                }
             }
         }
     }

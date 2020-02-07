@@ -165,5 +165,21 @@ namespace Duracellko.PlanningPoker.Domain
         {
             throw new NotSupportedException();
         }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        internal IDictionary<string, Estimation> GetData()
+        {
+            var result = new Dictionary<string, Estimation>();
+
+            foreach (var estimation in _estimations)
+            {
+                result.Add(estimation.Key.Name, estimation.Value);
+            }
+
+            return result;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -159,6 +160,24 @@ namespace Duracellko.PlanningPoker.Domain
                     _messages.Enqueue(CreateMessage(messageData));
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        protected internal virtual Serialization.MemberData GetData()
+        {
+            var result = new Serialization.MemberData
+            {
+                Name = Name,
+                MemberType = Serialization.MemberType.Observer,
+                LastActivity = LastActivity,
+                LastMessageId = _lastMessageId,
+            };
+
+            result.Messages = Messages.Select(m => m.GetData()).ToList();
+            return result;
         }
 
         /// <summary>
