@@ -193,5 +193,32 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Act
             Assert.ThrowsException<InvalidOperationException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
         }
+
+        [TestMethod]
+        public void ScrumTeam_InvalidMessage_ArgumentException()
+        {
+            // Arrange
+            var scrumTeamData = new ScrumTeamData
+            {
+                Name = "The Team",
+                State = TeamState.Initial,
+                Members = new List<MemberData>
+                {
+                    new MemberData
+                    {
+                        MemberType = MemberType.ScrumMaster,
+                        Name = "Master",
+                        LastMessageId = 1,
+                        Messages = new List<MessageData>
+                        {
+                            new MessageData { Id = 1, MessageType = MessageType.MemberActivity }
+                        }
+                    }
+                }
+            };
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+        }
     }
 }
