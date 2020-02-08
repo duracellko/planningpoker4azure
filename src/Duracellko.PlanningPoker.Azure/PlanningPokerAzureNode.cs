@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -17,7 +20,10 @@ namespace Duracellko.PlanningPoker.Azure
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Destructor is placed together with Dispose.")]
     public class PlanningPokerAzureNode : IDisposable
     {
+        private const string DeletedTeamPrefix = "Deleted:";
+
         private readonly InitializationList _teamsToInitialize = new InitializationList();
+        private readonly ScrumTeamSerializer _scrumTeamSerializer;
         private readonly ILogger<PlanningPokerAzureNode> _logger;
 
         private IDisposable _sendNodeMessageSubscription;
@@ -34,12 +40,19 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="planningPoker">The planning poker teams controller instance.</param>
         /// <param name="serviceBus">The service bus used to send messages between nodes.</param>
         /// <param name="configuration">The configuration of planning poker for Azure platform.</param>
+        /// <param name="scrumTeamSerializer">The serializer that provides serialization and desserialization of Scrum Team.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public PlanningPokerAzureNode(IAzurePlanningPoker planningPoker, IServiceBus serviceBus, IAzurePlanningPokerConfiguration configuration, ILogger<PlanningPokerAzureNode> logger)
+        public PlanningPokerAzureNode(
+            IAzurePlanningPoker planningPoker,
+            IServiceBus serviceBus,
+            IAzurePlanningPokerConfiguration configuration,
+            ScrumTeamSerializer scrumTeamSerializer,
+            ILogger<PlanningPokerAzureNode> logger)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             ServiceBus = serviceBus ?? throw new ArgumentNullException(nameof(serviceBus));
             Configuration = configuration ?? new AzurePlanningPokerConfiguration();
+            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(PlanningPoker.DateTimeProvider);
             _logger = logger;
             NodeId = Guid.NewGuid().ToString();
         }
@@ -182,7 +195,7 @@ namespace Duracellko.PlanningPoker.Azure
                 var team = teamLock.Team;
                 return new NodeMessage(NodeMessageType.TeamCreated)
                 {
-                    Data = ScrumTeamHelper.SerializeScrumTeam(team)
+                    Data = SerializeScrumTeam(team)
                 };
             }
         }
@@ -197,8 +210,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void OnScrumTeamCreated(NodeMessage message)
         {
-            var scrumTeamData = (byte[])message.Data;
-            var scrumTeam = ScrumTeamHelper.DeserializeScrumTeam(scrumTeamData, PlanningPoker.DateTimeProvider);
+            var scrumTeam = DeserializeScrumTeam((string)message.Data);
             _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
 
             if (!_teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
@@ -446,19 +458,20 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessInitializeTeamMessage(NodeMessage message)
         {
-            var scrumTeamData = message.Data as byte[];
-            if (scrumTeamData != null)
+            var scrumTeamData = (string)message.Data;
+            if (scrumTeamData.StartsWith(DeletedTeamPrefix, StringComparison.Ordinal))
             {
-                var scrumTeam = ScrumTeamHelper.DeserializeScrumTeam(scrumTeamData, PlanningPoker.DateTimeProvider);
+                // team does not exist anymore
+                var teamName = scrumTeamData.Substring(DeletedTeamPrefix.Length);
+                _teamsToInitialize.Remove(teamName);
+            }
+            else
+            {
+                var scrumTeam = DeserializeScrumTeam(scrumTeamData);
                 _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
 
                 _teamsToInitialize.Remove(scrumTeam.Name);
                 PlanningPoker.InitializeScrumTeam(scrumTeam);
-            }
-            else
-            {
-                // team does not exist anymore
-                _teamsToInitialize.Remove((string)message.Data);
             }
 
             if (_teamsToInitialize.IsEmpty)
@@ -505,13 +518,13 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 try
                 {
-                    byte[] scrumTeamData = null;
+                    string scrumTeamData = null;
                     try
                     {
                         using (var teamLock = PlanningPoker.GetScrumTeam(scrumTeamName))
                         {
                             teamLock.Lock();
-                            scrumTeamData = ScrumTeamHelper.SerializeScrumTeam(teamLock.Team);
+                            scrumTeamData = SerializeScrumTeam(teamLock.Team);
                         }
                     }
                     catch (Exception)
@@ -522,13 +535,32 @@ namespace Duracellko.PlanningPoker.Azure
                     var initializeTeamMessage = new NodeMessage(NodeMessageType.InitializeTeam)
                     {
                         RecipientNodeId = message.SenderNodeId,
-                        Data = scrumTeamData != null ? (object)scrumTeamData : (object)scrumTeamName
+                        Data = scrumTeamData != null ? scrumTeamData : (DeletedTeamPrefix + scrumTeamName)
                     };
                     SendNodeMessage(initializeTeamMessage);
                 }
                 catch (Exception)
                 {
                 }
+            }
+        }
+
+        private string SerializeScrumTeam(ScrumTeam scrumTeam)
+        {
+            var result = new StringBuilder();
+            using (var writer = new StringWriter(result))
+            {
+                _scrumTeamSerializer.Serialize(writer, scrumTeam);
+            }
+
+            return result.ToString();
+        }
+
+        private ScrumTeam DeserializeScrumTeam(string json)
+        {
+            using (var reader = new StringReader(json))
+            {
+                return _scrumTeamSerializer.Deserialize(reader);
             }
         }
     }

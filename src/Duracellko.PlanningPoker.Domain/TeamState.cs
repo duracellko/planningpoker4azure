@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Duracellko.PlanningPoker.Domain
+﻿namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Specifies status if Scrum team.
     /// </summary>
-    [Serializable]
     public enum TeamState
     {
         /// <summary>

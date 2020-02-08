@@ -1,12 +1,10 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Message sent to all members and observers after all members picked an estimation. The message contains <see cref="EstimationResult"/>.
     /// </summary>
-    [Serializable]
     public class EstimationResultMessage : Message
     {
         /// <summary>

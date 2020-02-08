@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Azure.Test
 {
@@ -125,7 +125,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.AreEqual<NodeMessageType>(NodeMessageType.TeamCreated, nodeMessage.MessageType);
             Assert.AreEqual<string>(target.NodeId, nodeMessage.SenderNodeId);
             Assert.IsNotNull(nodeMessage.Data);
-            Assert.IsInstanceOfType(nodeMessage.Data, typeof(byte[]));
+            Assert.IsInstanceOfType(nodeMessage.Data, typeof(string));
+            var expectedData = JsonConvert.SerializeObject(team.GetData());
+            Assert.AreEqual(expectedData, (string)nodeMessage.Data);
         }
 
         [TestMethod]
@@ -590,16 +592,15 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
-            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+            var dateTimeProvider = new DateTimeProviderMock();
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion(), dateTimeProvider: dateTimeProvider);
 
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
-            var dateTimeProvider = new DateTimeProviderMock();
             ScrumTeam team = null;
             planningPoker.Setup(p => p.AttachScrumTeam(It.IsAny<ScrumTeam>()))
                 .Callback<ScrumTeam>(t => team = t).Returns(default(IScrumTeamLock)).Verifiable();
-            planningPoker.Setup(p => p.DateTimeProvider).Returns(dateTimeProvider).Verifiable();
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -775,7 +776,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
-            var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = TeamName };
+            var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = "Deleted:" + TeamName };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
 
@@ -901,7 +902,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
                 .Callback<NodeMessage>(m => initializeTeamMessage = m).Returns(Task.CompletedTask).Verifiable();
 
-            SetupPlanningPoker(planningPoker, CreateBasicTeam());
+            var team = CreateBasicTeam();
+            SetupPlanningPoker(planningPoker, team);
 
             // Act
             await target.Start();
@@ -913,7 +915,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             Assert.IsNotNull(initializeTeamMessage);
             Assert.IsNotNull(initializeTeamMessage.Data);
-            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
+            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
+            var expectedData = JsonConvert.SerializeObject(team.GetData());
+            Assert.AreEqual(expectedData, (string)initializeTeamMessage.Data);
             Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
@@ -949,7 +953,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(initializeTeamMessage);
             Assert.IsNotNull(initializeTeamMessage.Data);
             Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
-            Assert.AreEqual<string>(TeamName, (string)initializeTeamMessage.Data);
+            Assert.AreEqual<string>("Deleted:" + TeamName, (string)initializeTeamMessage.Data);
             Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
@@ -957,14 +961,17 @@ namespace Duracellko.PlanningPoker.Azure.Test
             IAzurePlanningPoker planningPoker = null,
             IServiceBus serviceBus = null,
             IAzurePlanningPokerConfiguration configuration = null,
-            ILogger<PlanningPokerAzureNode> logger = null)
+            ILogger<PlanningPokerAzureNode> logger = null,
+            DateTimeProvider dateTimeProvider = null)
         {
             if (logger == null)
             {
                 logger = Mock.Of<ILogger<PlanningPokerAzureNode>>();
             }
 
-            return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, logger);
+            var serializer = new ScrumTeamSerializer(dateTimeProvider ?? new DateTimeProviderMock());
+
+            return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, serializer, logger);
         }
 
         private static ScrumTeam CreateBasicTeam()
@@ -1059,15 +1066,10 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 });
         }
 
-        private static byte[] CreateSerializedBasicTeam()
+        private static string CreateSerializedBasicTeam()
         {
             var team = CreateBasicTeam();
-            var formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, team);
-                return stream.ToArray();
-            }
+            return JsonConvert.SerializeObject(team.GetData());
         }
 
         private static AzurePlanningPokerConfiguration CreateConfigutartion()

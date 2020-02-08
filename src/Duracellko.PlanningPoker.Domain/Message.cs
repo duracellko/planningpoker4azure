@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Duracellko.PlanningPoker.Domain
+﻿namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Generic message that can be sent to Scrum team members or observers.
     /// </summary>
-    [Serializable]
     public class Message
     {
         /// <summary>

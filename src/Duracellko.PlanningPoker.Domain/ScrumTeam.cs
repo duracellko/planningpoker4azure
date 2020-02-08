@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Scrum team is a group of members, who play planning poker, and observers, who watch the game.
     /// </summary>
-    [Serializable]
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Events are placed together with protected methods.")]
     public class ScrumTeam
     {
@@ -36,7 +34,6 @@ namespace Duracellko.PlanningPoker.Domain
 
         private EstimationResult _estimationResult;
 
-        [NonSerialized]
         private DateTimeProvider _dateTimeProvider;
 
         /// <summary>
@@ -441,7 +438,6 @@ namespace Duracellko.PlanningPoker.Domain
         /// <summary>
         /// Occurs when a new message is received.
         /// </summary>
-        [field: NonSerialized]
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         /// <summary>
@@ -513,13 +509,6 @@ namespace Duracellko.PlanningPoker.Domain
                 var recipients = UnionMembersAndObservers();
                 SendMessage(recipients, () => new EstimationResultMessage(MessageType.EstimationEnded) { EstimationResult = _estimationResult });
             }
-        }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            var dateTimeProvider = context.Context as DateTimeProvider;
-            _dateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
         }
 
         private void DeserializeMembers(Serialization.ScrumTeamData scrumTeamData)

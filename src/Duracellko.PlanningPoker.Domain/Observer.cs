@@ -8,7 +8,6 @@ namespace Duracellko.PlanningPoker.Domain
     /// Observer is not involved in estimations and cannot vote for estimation. However, he/she can watch planning poker and see estimations results.
     /// Usually product owner connects as an observer.
     /// </summary>
-    [Serializable]
     public class Observer
     {
         private readonly Queue<Message> _messages = new Queue<Message>();
@@ -57,7 +56,6 @@ namespace Duracellko.PlanningPoker.Domain
         /// <summary>
         /// Occurs when a new message is received.
         /// </summary>
-        [field: NonSerialized]
         public event EventHandler MessageReceived;
 
         /// <summary>

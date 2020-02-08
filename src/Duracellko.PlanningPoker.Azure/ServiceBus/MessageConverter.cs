@@ -35,17 +35,17 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 throw new ArgumentNullException(nameof(message));
             }
 
-            byte[] messageData;
+            string messageData;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
-                messageData = (byte[])message.Data;
+                messageData = (string)message.Data;
             }
             else
             {
-                messageData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message.Data));
+                messageData = JsonConvert.SerializeObject(message.Data);
             }
 
-            var result = new Message(messageData);
+            var result = new Message(Encoding.UTF8.GetBytes(messageData));
             result.UserProperties[MessageTypePropertyName] = message.MessageType.ToString();
             if (message.Data != null)
             {
@@ -76,11 +76,10 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             result.SenderNodeId = (string)message.UserProperties[SenderIdPropertyName];
             result.RecipientNodeId = (string)message.UserProperties[RecipientIdPropertyName];
 
-            string messageJson;
+            var messageJson = message.Body != null ? Encoding.UTF8.GetString(message.Body) : null;
             switch (result.MessageType)
             {
                 case NodeMessageType.ScrumTeamMessage:
-                    messageJson = Encoding.UTF8.GetString(message.Body);
                     if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
                         result.Data = JsonConvert.DeserializeObject<ScrumTeamMemberMessage>(messageJson);
@@ -97,11 +96,10 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                     break;
                 case NodeMessageType.TeamCreated:
                 case NodeMessageType.InitializeTeam:
-                    result.Data = message.Body;
+                    result.Data = messageJson;
                     break;
                 case NodeMessageType.TeamList:
                 case NodeMessageType.RequestTeams:
-                    messageJson = Encoding.UTF8.GetString(message.Body);
                     result.Data = JsonConvert.DeserializeObject<string[]>(messageJson);
                     break;
             }
