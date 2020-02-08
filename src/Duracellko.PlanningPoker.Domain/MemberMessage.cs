@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace Duracellko.PlanningPoker.Domain
+﻿namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Message sent to other members of Scrum team, when a new member joins the team or someone disconnects the planning poker.
     /// </summary>
-    [Serializable]
     public class MemberMessage : Message
     {
         /// <summary>

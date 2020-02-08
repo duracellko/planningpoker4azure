@@ -7,7 +7,6 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Collection of estimations of all members involved in planning poker.
     /// </summary>
-    [Serializable]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "EstimationResult is more than just a collection.")]
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Interface implemetnation members are grouped together.")]
     public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimation>>

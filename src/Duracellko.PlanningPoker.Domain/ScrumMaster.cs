@@ -5,7 +5,6 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Scrum master can additionally to member start and cancel estimation planning poker.
     /// </summary>
-    [Serializable]
     public class ScrumMaster : Member
     {
         /// <summary>

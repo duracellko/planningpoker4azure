@@ -5,7 +5,6 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Estimation value of a planning poker card.
     /// </summary>
-    [Serializable]
     public class Estimation : IEquatable<Estimation>
     {
         /// <summary>

@@ -8,7 +8,6 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Represents member of a Scrum team. Member can vote in planning poker and can receive messages about planning poker game.
     /// </summary>
-    [Serializable]
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Fields are placed near properties.")]
     public class Member : Observer
     {
