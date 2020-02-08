@@ -263,7 +263,7 @@ namespace Duracellko.PlanningPoker.Data
                 {
                     if (c == SpecialCharacter)
                     {
-                        if (name.Length <= i + 5)
+                        if (name.Length <= i + 4)
                         {
                             return null;
                         }

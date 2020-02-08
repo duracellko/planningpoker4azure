@@ -533,7 +533,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         private static PlanningPokerController CreatePlanningPokerController(
             DateTimeProvider dateTimeProvider = null,
             Configuration.IPlanningPokerConfiguration configuration = null,
-            Data.IScrumTeamRepository repository = null,
+            PlanningPoker.Data.IScrumTeamRepository repository = null,
             TaskProvider taskProvider = null,
             ILogger<PlanningPokerController> logger = null)
         {
