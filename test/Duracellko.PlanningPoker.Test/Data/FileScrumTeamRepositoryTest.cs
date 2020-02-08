@@ -66,7 +66,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         }
 
         [TestMethod]
-        public void ScrumTeamNames_FileWithInvalidEscape_ReturnsScrumTeam()
+        public void ScrumTeamNames_FileWithInvalidEscape_EmptyCollection()
         {
             CreateTextFile("My Team%0025 %002.json");
             var target = CreateFileScrumTeamRepository();

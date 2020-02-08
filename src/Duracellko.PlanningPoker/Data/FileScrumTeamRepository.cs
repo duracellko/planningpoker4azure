@@ -33,6 +33,7 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         /// <param name="settings">The repository settings.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
+        /// <param name="scrumTeamSerializer">The serializer that provides serialization and desserialization of Scrum Team.</param>
         /// <param name="dateTimeProvider">The date-time provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public FileScrumTeamRepository(
