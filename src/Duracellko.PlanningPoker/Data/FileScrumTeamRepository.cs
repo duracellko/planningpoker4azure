@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Data
 {
@@ -18,10 +18,11 @@ namespace Duracellko.PlanningPoker.Data
     public class FileScrumTeamRepository : IScrumTeamRepository
     {
         private const char SpecialCharacter = '%';
-        private const string FileExtension = ".team";
+        private const string FileExtension = ".json";
 
         private readonly IFileScrumTeamRepositorySettings _settings;
         private readonly IPlanningPokerConfiguration _configuration;
+        private readonly ScrumTeamSerializer _scrumTeamSerializer;
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly Lazy<string> _folder;
         private readonly Lazy<char[]> _invalidCharacters;
@@ -34,11 +35,17 @@ namespace Duracellko.PlanningPoker.Data
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="dateTimeProvider">The date-time provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public FileScrumTeamRepository(IFileScrumTeamRepositorySettings settings, IPlanningPokerConfiguration configuration, DateTimeProvider dateTimeProvider, ILogger<FileScrumTeamRepository> logger)
+        public FileScrumTeamRepository(
+            IFileScrumTeamRepositorySettings settings,
+            IPlanningPokerConfiguration configuration,
+            ScrumTeamSerializer scrumTeamSerializer,
+            DateTimeProvider dateTimeProvider,
+            ILogger<FileScrumTeamRepository> logger)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = configuration ?? new PlanningPokerConfiguration();
-            _dateTimeProvider = dateTimeProvider ?? new DateTimeProvider();
+            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider);
+            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _folder = new Lazy<string>(GetFolder);
             _invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);
             _logger = logger;
@@ -107,9 +114,9 @@ namespace Duracellko.PlanningPoker.Data
             {
                 try
                 {
-                    using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var reader = File.OpenText(file))
                     {
-                        result = DeserializeScrumTeam(stream);
+                        result = _scrumTeamSerializer.Deserialize(reader);
                     }
                 }
                 catch (IOException)
@@ -117,7 +124,7 @@ namespace Duracellko.PlanningPoker.Data
                     // file is not accessible
                     result = null;
                 }
-                catch (SerializationException)
+                catch (JsonReaderException)
                 {
                     // file is currupted
                     result = null;
@@ -148,9 +155,9 @@ namespace Duracellko.PlanningPoker.Data
             string file = GetFileName(team.Name);
             file = Path.Combine(Folder, file);
 
-            using (var stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var writer = File.CreateText(file))
             {
-                SerializeScrumTeam(team, stream);
+                _scrumTeamSerializer.Serialize(writer, team);
             }
 
             _logger?.LogDebug(Resources.Repository_Debug_SaveScrumTeam, team.Name);
@@ -294,12 +301,6 @@ namespace Duracellko.PlanningPoker.Data
             return result.ToString();
         }
 
-        private static void SerializeScrumTeam(ScrumTeam team, Stream stream)
-        {
-            var formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-            formatter.Serialize(stream, team);
-        }
-
         private string GetFolder()
         {
             return _settings.Folder;
@@ -336,14 +337,6 @@ namespace Duracellko.PlanningPoker.Data
 
             result.Append(FileExtension);
             return result.ToString();
-        }
-
-        private ScrumTeam DeserializeScrumTeam(Stream stream)
-        {
-            var formatter = _dateTimeProvider != null ?
-                new BinaryFormatter(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence, _dateTimeProvider)) :
-                new BinaryFormatter();
-            return (ScrumTeam)formatter.Deserialize(stream);
         }
     }
 }

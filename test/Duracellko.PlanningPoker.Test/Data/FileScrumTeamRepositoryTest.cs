@@ -4,6 +4,7 @@ using System.Linq;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -42,8 +43,8 @@ namespace Duracellko.PlanningPoker.Test.Data
         [TestMethod]
         public void ScrumTeamNames_2Files_2ScrumTeams()
         {
-            CreateTextFile("The Team.team");
-            CreateTextFile("Team 2.team");
+            CreateTextFile("The Team.json");
+            CreateTextFile("Team 2.json");
             var target = CreateFileScrumTeamRepository();
 
             var result = target.ScrumTeamNames.ToList();
@@ -55,7 +56,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         [TestMethod]
         public void ScrumTeamNames_FileWithSpecialCharacters_ReturnsScrumTeam()
         {
-            CreateTextFile("My %005C%003F.%002F Team%0025 😎 %002A.team");
+            CreateTextFile("My %005C%003F.%002F Team%0025 😎 %002A.json");
             var target = CreateFileScrumTeamRepository();
 
             var result = target.ScrumTeamNames.ToList();
@@ -67,7 +68,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         [TestMethod]
         public void ScrumTeamNames_FileWithInvalidEscape_ReturnsScrumTeam()
         {
-            CreateTextFile("My Team%0025 %002.team");
+            CreateTextFile("My Team%0025 %002.json");
             var target = CreateFileScrumTeamRepository();
 
             var result = target.ScrumTeamNames.ToList();
@@ -79,7 +80,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         public void ScrumTeamNames_TxtFile_ReturnsScrumTeam()
         {
             CreateTextFile("The Team.txt");
-            CreateTextFile("Team 2.team");
+            CreateTextFile("Team 2.json");
             var target = CreateFileScrumTeamRepository();
 
             var result = target.ScrumTeamNames.ToList();
@@ -108,7 +109,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("The team.team", files[0].Name);
+            Assert.AreEqual("The team.json", files[0].Name);
         }
 
         [TestMethod]
@@ -126,7 +127,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("The team.team", files[0].Name);
+            Assert.AreEqual("The team.json", files[0].Name);
         }
 
         [TestMethod]
@@ -141,7 +142,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             target.SaveScrumTeam(team2);
 
             var fileNames = _rootFolder.GetFiles().Select(f => f.Name).ToList();
-            var expectedFileNames = new[] { "The team.team", "Team2.team" };
+            var expectedFileNames = new[] { "The team.json", "Team2.json" };
         }
 
         [TestMethod]
@@ -159,7 +160,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.team", files[0].Name);
+            Assert.AreEqual("My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json", files[0].Name);
         }
 
         [TestMethod]
@@ -202,7 +203,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         [TestMethod]
         public void LoadScrumTeam_InvalidFile_ReturnNull()
         {
-            CreateTextFile("Team 2.team");
+            CreateTextFile("Team 2.json");
             var target = CreateFileScrumTeamRepository();
 
             var result = target.LoadScrumTeam("Team 2");
@@ -250,7 +251,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("The team.team", files[0].Name);
+            Assert.AreEqual("The team.json", files[0].Name);
         }
 
         [TestMethod]
@@ -265,7 +266,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("The team.team", files[0].Name);
+            Assert.AreEqual("The team.json", files[0].Name);
         }
 
         [TestMethod]
@@ -299,7 +300,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         public void DeleteAll_TxtFile_TxtFileIsNotDeleted()
         {
             CreateTextFile("Team 1.txt");
-            CreateTextFile("Team 2.team");
+            CreateTextFile("Team 2.json");
 
             var target = CreateFileScrumTeamRepository();
             target.DeleteAll();
@@ -327,9 +328,11 @@ namespace Duracellko.PlanningPoker.Test.Data
             var configuration = new Mock<IPlanningPokerConfiguration>();
             configuration.SetupGet(o => o.RepositoryTeamExpiration).Returns(TimeSpan.FromMinutes(1));
 
+            var serializer = new ScrumTeamSerializer(DateTimeProvider.Default);
+
             var logger = new Mock<Microsoft.Extensions.Logging.ILogger<FileScrumTeamRepository>>();
 
-            return new FileScrumTeamRepository(settings.Object, configuration.Object, DateTimeProvider.Default, logger.Object);
+            return new FileScrumTeamRepository(settings.Object, configuration.Object, serializer, DateTimeProvider.Default, logger.Object);
         }
 
         private FileInfo CreateTextFile(string name)
