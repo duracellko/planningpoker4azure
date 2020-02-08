@@ -16,6 +16,10 @@ namespace Duracellko.PlanningPoker.Test.Data
     {
         private DirectoryInfo _rootFolder;
 
+        // This property checks if '\' is invalid character and that is more important.
+        // '\' is invalid on Windows and IsWindows seems more readable than IsBackslashInvalid.
+        private static bool IsWindows => Path.GetInvalidFileNameChars().Contains('\\');
+
         [TestInitialize]
         public void Initialize()
         {
@@ -160,7 +164,10 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var files = _rootFolder.GetFiles();
             Assert.AreEqual(1, files.Length);
-            Assert.AreEqual("My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json", files[0].Name);
+            var expectedFileName = IsWindows ?
+                "My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json" :
+                "My \\?.%002F Team%0025 \ud83d\ude0e *.json";
+            Assert.AreEqual(expectedFileName, files[0].Name);
         }
 
         [TestMethod]
