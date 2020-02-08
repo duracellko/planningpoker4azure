@@ -33,6 +33,26 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="EstimationResult"/> class.
+        /// </summary>
+        /// <param name="team">Scrum Team owning the estimation result.</param>
+        /// <param name="estimationResult">Estimation result serialization data.</param>
+        internal EstimationResult(ScrumTeam team, IDictionary<string, Estimation> estimationResult)
+        {
+            foreach (var estimationResultItem in estimationResult)
+            {
+                var memberName = estimationResultItem.Key;
+                var member = team.FindMemberOrObserver(memberName) as Member;
+                if (member == null)
+                {
+                    member = new Member(team, memberName);
+                }
+
+                _estimations.Add(member, estimationResultItem.Value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="Duracellko.PlanningPoker.Domain.Estimation"/> for the specified member.
         /// </summary>
         /// <param name="member">The member to get or set estimation for.</param>
@@ -144,6 +164,22 @@ namespace Duracellko.PlanningPoker.Domain
         bool ICollection<KeyValuePair<Member, Estimation>>.Remove(KeyValuePair<Member, Estimation> item)
         {
             throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        internal IDictionary<string, Estimation> GetData()
+        {
+            var result = new Dictionary<string, Estimation>();
+
+            foreach (var estimation in _estimations)
+            {
+                result.Add(estimation.Key.Name, estimation.Value);
+            }
+
+            return result;
         }
     }
 }

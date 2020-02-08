@@ -19,6 +19,16 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ScrumMaster"/> class.
+        /// </summary>
+        /// <param name="team">The Scrum team the observer is joining.</param>
+        /// <param name="memberData">The member serialization data.</param>
+        internal ScrumMaster(ScrumTeam team, Serialization.MemberData memberData)
+            : base(team, memberData)
+        {
+        }
+
+        /// <summary>
         /// Starts new estimation.
         /// </summary>
         public void StartEstimation()
@@ -40,6 +50,17 @@ namespace Duracellko.PlanningPoker.Domain
             {
                 Team.CancelEstimation();
             }
+        }
+
+        /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        protected internal override Serialization.MemberData GetData()
+        {
+            var result = base.GetData();
+            result.MemberType = Serialization.MemberType.ScrumMaster;
+            return result;
         }
     }
 }

@@ -60,8 +60,46 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentNullException(nameof(name));
             }
 
-            _dateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
+            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = name;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScrumTeam"/> class.
+        /// </summary>
+        /// <param name="scrumTeamData">Scrum Team serialization data.</param>
+        /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
+        public ScrumTeam(Serialization.ScrumTeamData scrumTeamData, DateTimeProvider dateTimeProvider)
+        {
+            if (scrumTeamData == null)
+            {
+                throw new ArgumentNullException(nameof(scrumTeamData));
+            }
+
+            if (string.IsNullOrEmpty(scrumTeamData.Name))
+            {
+                throw new ArgumentException("Scrum Team name cannot be empty.", nameof(scrumTeamData));
+            }
+
+            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            Name = scrumTeamData.Name;
+            State = scrumTeamData.State;
+
+            if (scrumTeamData.Members != null)
+            {
+                DeserializeMembers(scrumTeamData);
+            }
+
+            DeserializeEstimationResult(scrumTeamData);
+
+            if (scrumTeamData.Members != null)
+            {
+                foreach (var memberData in scrumTeamData.Members)
+                {
+                    var member = FindMemberOrObserver(memberData.Name);
+                    member.DeserializeMessages(memberData);
+                }
+            }
         }
 
         /// <summary>
@@ -334,6 +372,23 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Gets serialization data of the object.
+        /// </summary>
+        /// <returns>The serialization data.</returns>
+        public virtual Serialization.ScrumTeamData GetData()
+        {
+            var result = new Serialization.ScrumTeamData
+            {
+                Name = Name,
+                State = State,
+            };
+
+            result.Members = Observers.Concat(Members).Select(m => m.GetData()).ToList();
+            result.EstimationResult = _estimationResult?.GetData();
+            return result;
+        }
+
+        /// <summary>
         /// Starts new estimation.
         /// </summary>
         internal void StartEstimation()
@@ -465,6 +520,45 @@ namespace Duracellko.PlanningPoker.Domain
         {
             var dateTimeProvider = context.Context as DateTimeProvider;
             _dateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
+        }
+
+        private void DeserializeMembers(Serialization.ScrumTeamData scrumTeamData)
+        {
+            var hasDuplicates = scrumTeamData.Members.GroupBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+                .Any(g => g.Count() > 1);
+            if (hasDuplicates)
+            {
+                throw new ArgumentException("Scrum Team member names must be unique.", nameof(scrumTeamData));
+            }
+
+            var scrumMasterData = scrumTeamData.Members.SingleOrDefault(m => m.MemberType == Serialization.MemberType.ScrumMaster);
+            if (scrumMasterData != null)
+            {
+                _members.Add(new ScrumMaster(this, scrumMasterData));
+            }
+
+            foreach (var memberData in scrumTeamData.Members.Where(m => m.MemberType == Serialization.MemberType.Member))
+            {
+                _members.Add(new Member(this, memberData));
+            }
+
+            foreach (var observerData in scrumTeamData.Members.Where(m => m.MemberType == Serialization.MemberType.Observer))
+            {
+                _observers.Add(new Observer(this, observerData));
+            }
+        }
+
+        private void DeserializeEstimationResult(Serialization.ScrumTeamData scrumTeamData)
+        {
+            if (scrumTeamData.EstimationResult != null)
+            {
+                _estimationResult = new EstimationResult(this, scrumTeamData.EstimationResult);
+
+                if (State == TeamState.EstimationFinished)
+                {
+                    _estimationResult.SetReadOnly();
+                }
+            }
         }
     }
 }
