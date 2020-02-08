@@ -10,6 +10,7 @@ using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Web
 {
@@ -51,11 +53,17 @@ namespace Duracellko.PlanningPoker.Web
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
 
             services.AddSingleton<DateTimeProvider>();
+            services.AddSingleton<ScrumTeamSerializer>();
             services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
             if (isAzure)
             {
                 services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
-                services.AddSingleton<IAzurePlanningPoker, AzurePlanningPokerController>();
+                services.AddSingleton<IAzurePlanningPoker>(sp => new AzurePlanningPokerController(
+                    sp.GetService<DateTimeProvider>(),
+                    sp.GetService<IAzurePlanningPokerConfiguration>(),
+                    sp.GetService<IScrumTeamRepository>(),
+                    sp.GetService<TaskProvider>(),
+                    sp.GetRequiredService<ILogger<PlanningPokerController>>()));
                 services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<IAzurePlanningPoker>());
                 services.AddSingleton<PlanningPokerAzureNode>();
                 services.AddSingleton<IServiceBus, AzureServiceBus>();
@@ -64,7 +72,12 @@ namespace Duracellko.PlanningPoker.Web
             }
             else
             {
-                services.AddSingleton<IPlanningPoker, PlanningPokerController>();
+                services.AddSingleton<IPlanningPoker>(sp => new PlanningPokerController(
+                    sp.GetService<DateTimeProvider>(),
+                    sp.GetService<IPlanningPokerConfiguration>(),
+                    sp.GetService<IScrumTeamRepository>(),
+                    sp.GetService<TaskProvider>(),
+                    sp.GetRequiredService<ILogger<PlanningPokerController>>()));
             }
 
             if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
