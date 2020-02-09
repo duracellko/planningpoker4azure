@@ -19,6 +19,7 @@ namespace Duracellko.PlanningPoker.Service
         /// Initializes a new instance of the <see cref="PlanningPokerHub"/> class.
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
+        /// <param name="clientContext">Interface to send messages to client.</param>
         public PlanningPokerHub(D.IPlanningPoker planningPoker, IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));

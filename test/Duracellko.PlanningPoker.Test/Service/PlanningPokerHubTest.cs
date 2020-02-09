@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1139,7 +1140,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             IList<Message> result = null;
             var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
             clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
-                .Callback<IList<Message>>(m => result = m);
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
 
             using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
@@ -1149,6 +1151,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 // Verify
                 planningPoker.Verify();
                 teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual<int>(1, result.Count);
@@ -1181,7 +1184,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             IList<Message> result = null;
             var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
             clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
-                .Callback<IList<Message>>(m => result = m);
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
 
             using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
@@ -1191,6 +1195,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 // Verify
                 planningPoker.Verify();
                 teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual<int>(4, result.Count);
@@ -1231,7 +1236,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             IList<Message> result = null;
             var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
             clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
-                .Callback<IList<Message>>(m => result = m);
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
 
             using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
             {
@@ -1240,6 +1246,7 @@ namespace Duracellko.PlanningPoker.Test.Service
 
                 // Verify
                 planningPoker.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual<int>(0, result.Count);
