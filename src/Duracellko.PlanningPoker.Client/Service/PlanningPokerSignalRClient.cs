@@ -266,6 +266,10 @@ namespace Duracellko.PlanningPoker.Client.Service
             {
                 throw;
             }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+            }
             catch (Exception ex)
             {
                 // WASM .NET reports JSException when connection / negotiation fails.
@@ -297,6 +301,10 @@ namespace Duracellko.PlanningPoker.Client.Service
             catch (OperationCanceledException)
             {
                 throw;
+            }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
             }
             catch (Exception ex)
             {
