@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Service;
 
-namespace Duracellko.PlanningPoker.Service
+namespace Duracellko.PlanningPoker.Client.Service
 {
     /// <summary>
     /// Objects provides operations of Planning Poker service.

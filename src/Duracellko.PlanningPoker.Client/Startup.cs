@@ -1,7 +1,6 @@
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
-using Duracellko.PlanningPoker.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client
