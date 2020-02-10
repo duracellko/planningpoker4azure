@@ -48,7 +48,7 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
 
-            ConvertScrumTeam(result);
+            ScrumTeamMapper.ConvertScrumTeam(result);
             return result;
         }
 
@@ -71,7 +71,7 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
 
-            ConvertScrumTeam(result);
+            ScrumTeamMapper.ConvertScrumTeam(result);
             return result;
         }
 
@@ -95,8 +95,8 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             var result = await GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
 
-            ConvertScrumTeam(result.ScrumTeam);
-            ConvertEstimation(result.SelectedEstimation);
+            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
+            ScrumTeamMapper.ConvertEstimation(result.SelectedEstimation);
             return result;
         }
 
@@ -202,57 +202,8 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
 
-            ConvertMessages(result);
+            ScrumTeamMapper.ConvertMessages(result);
             return result;
-        }
-
-        private static void ConvertScrumTeam(ScrumTeam scrumTeam)
-        {
-            if (scrumTeam.AvailableEstimations != null)
-            {
-                ConvertEstimations(scrumTeam.AvailableEstimations);
-            }
-
-            if (scrumTeam.EstimationResult != null)
-            {
-                ConvertEstimations(scrumTeam.EstimationResult);
-            }
-        }
-
-        private static void ConvertEstimations(IEnumerable<Estimation> estimations)
-        {
-            foreach (var estimation in estimations)
-            {
-                ConvertEstimation(estimation);
-            }
-        }
-
-        private static void ConvertEstimations(IEnumerable<EstimationResultItem> estimationResultItems)
-        {
-            foreach (var estimationResultItem in estimationResultItems)
-            {
-                ConvertEstimation(estimationResultItem.Estimation);
-            }
-        }
-
-        private static void ConvertEstimation(Estimation estimation)
-        {
-            if (estimation != null && estimation.Value == Estimation.PositiveInfinity)
-            {
-                estimation.Value = double.PositiveInfinity;
-            }
-        }
-
-        private static void ConvertMessages(IList<Message> messages)
-        {
-            foreach (var message in messages)
-            {
-                if (message.Type == MessageType.EstimationEnded)
-                {
-                    var estimationResultMessage = (EstimationResultMessage)message;
-                    ConvertEstimations(estimationResultMessage.EstimationResult);
-                }
-            }
         }
 
         private async Task<T> GetJsonAsync<T>(string requestUri, CancellationToken cancellationToken)
