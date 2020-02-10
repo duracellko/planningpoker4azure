@@ -7,9 +7,10 @@ using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Service;
 using Newtonsoft.Json;
 
-namespace Duracellko.PlanningPoker.Service
+namespace Duracellko.PlanningPoker.Client.Service
 {
     /// <summary>
     /// Objects provides operations of Planning Poker service.

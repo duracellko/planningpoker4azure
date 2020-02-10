@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Duracellko.PlanningPoker.Service
+namespace Duracellko.PlanningPoker.Client.Service
 {
     /// <summary>
     /// Represents error returned by Planning Poker service.
