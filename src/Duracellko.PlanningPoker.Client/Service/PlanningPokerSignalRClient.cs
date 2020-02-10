@@ -31,6 +31,7 @@ namespace Duracellko.PlanningPoker.Client.Service
 
         private HubConnection _hubConnection;
         private bool _disposed;
+        private bool _disposeInProgress;
 
         private object _reconnectingLock = new object();
         private TaskCompletionSource<bool> _reconnectingTask;
@@ -63,7 +64,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                 await EnsureConnected(cancellationToken);
                 var result = await _hubConnection.InvokeAsync<ScrumTeam>("CreateTeam", teamName, scrumMasterName, cancellationToken);
 
-                ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result);
                 return result;
             });
         }
@@ -85,7 +86,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                 await EnsureConnected(cancellationToken);
                 var result = await _hubConnection.InvokeAsync<ScrumTeam>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
 
-                ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result);
                 return result;
             });
         }
@@ -109,8 +110,8 @@ namespace Duracellko.PlanningPoker.Client.Service
                 await EnsureConnected(cancellationToken);
                 var result = await _hubConnection.InvokeAsync<ReconnectTeamResult>("ReconnectTeam", teamName, memberName, cancellationToken);
 
-                ConvertScrumTeam(result.ScrumTeam);
-                ConvertEstimation(result.SelectedEstimation);
+                ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
+                ScrumTeamMapper.ConvertEstimation(result.SelectedEstimation);
                 return result;
             });
         }
@@ -226,7 +227,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                     await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, lastMessageId, cancellationToken);
 
                     var result = await getMessagesTask;
-                    ConvertMessages(result);
+                    ScrumTeamMapper.ConvertMessages(result);
                     return result;
                 }
                 finally
@@ -320,60 +321,6 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
         }
 
-        private static void ConvertScrumTeam(ScrumTeam scrumTeam)
-        {
-            if (scrumTeam.AvailableEstimations != null)
-            {
-                ConvertEstimations(scrumTeam.AvailableEstimations);
-            }
-
-            if (scrumTeam.EstimationResult != null)
-            {
-                ConvertEstimations(scrumTeam.EstimationResult);
-            }
-        }
-
-        private static void ConvertEstimations(IEnumerable<Estimation> estimations)
-        {
-            foreach (var estimation in estimations)
-            {
-                ConvertEstimation(estimation);
-            }
-        }
-
-        private static void ConvertEstimations(IEnumerable<EstimationResultItem> estimationResultItems)
-        {
-            foreach (var estimationResultItem in estimationResultItems)
-            {
-                ConvertEstimation(estimationResultItem.Estimation);
-            }
-        }
-
-        private static void ConvertEstimation(Estimation estimation)
-        {
-            if (estimation != null && estimation.Value == Estimation.PositiveInfinity)
-            {
-                estimation.Value = double.PositiveInfinity;
-            }
-        }
-
-        private static void ConvertMessages(IEnumerable<Message> messages)
-        {
-            foreach (var message in messages)
-            {
-                ConvertMessage(message);
-            }
-        }
-
-        private static void ConvertMessage(Message message)
-        {
-            if (message.Type == MessageType.EstimationEnded)
-            {
-                var estimationResultMessage = (EstimationResultMessage)message;
-                ConvertEstimations(estimationResultMessage.EstimationResult);
-            }
-        }
-
         private void OnNotify(IList<Message> messages)
         {
             lock (_getMessagesLock)
@@ -432,7 +379,7 @@ namespace Duracellko.PlanningPoker.Client.Service
 
         private void CheckDisposed()
         {
-            if (_disposed)
+            if (_disposed || _disposeInProgress)
             {
                 throw new ObjectDisposedException(nameof(PlanningPokerSignalRClient));
             }
@@ -444,9 +391,15 @@ namespace Duracellko.PlanningPoker.Client.Service
             {
                 if (disposing)
                 {
+                    _disposeInProgress = true;
+
                     if (_hubConnection != null)
                     {
                         _hubConnection.DisposeAsync().Wait();
+
+                        _hubConnection.Closed -= HubConnectionOnClosed;
+                        _hubConnection.Reconnecting -= HubConnectionOnReconnecting;
+                        _hubConnection.Reconnected -= HubConnectionOnReconnected;
                         _hubConnection = null;
                     }
                 }
