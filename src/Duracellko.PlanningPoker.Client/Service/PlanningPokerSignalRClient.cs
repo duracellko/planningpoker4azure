@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client.Service
 {
@@ -14,20 +13,7 @@ namespace Duracellko.PlanningPoker.Client.Service
     /// </summary>
     public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposable
     {
-        private const string ServiceUri = "signalr/PlanningPoker";
-
-        private static TimeSpan[] _reconnectDelays = new[]
-        {
-            TimeSpan.FromSeconds(0),
-            TimeSpan.FromSeconds(0.5),
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromSeconds(2),
-            TimeSpan.FromSeconds(5),
-            TimeSpan.FromSeconds(5),
-            TimeSpan.FromSeconds(5)
-        };
-
-        private readonly IPlanningPokerUriProvider _uriProvider;
+        private readonly IHubConnectionBuilder _hubConnectionBuilder;
 
         private HubConnection _hubConnection;
         private bool _disposed;
@@ -42,10 +28,10 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerSignalRClient"/> class.
         /// </summary>
-        /// <param name="uriProvider">URI provider that provides URI of Planning Poker service.</param>
-        public PlanningPokerSignalRClient(IPlanningPokerUriProvider uriProvider)
+        /// <param name="hubConnectionBuilder">A builder to create new HubConection.</param>
+        public PlanningPokerSignalRClient(IHubConnectionBuilder hubConnectionBuilder)
         {
-            _uriProvider = uriProvider ?? throw new ArgumentNullException(nameof(uriProvider));
+            _hubConnectionBuilder = hubConnectionBuilder ?? throw new ArgumentNullException(nameof(hubConnectionBuilder));
         }
 
         /// <summary>
@@ -329,22 +315,13 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
         }
 
-        private HubConnection CreateHubConnection()
-        {
-            return new HubConnectionBuilder()
-                .WithUrl(new Uri(_uriProvider.BaseUri, ServiceUri))
-                .AddNewtonsoftJsonProtocol()
-                .WithAutomaticReconnect(_reconnectDelays)
-                .Build();
-        }
-
         private async Task EnsureConnected(CancellationToken cancellationToken)
         {
             CheckDisposed();
 
             if (_hubConnection == null)
             {
-                _hubConnection = CreateHubConnection();
+                _hubConnection = _hubConnectionBuilder.Build();
                 _hubConnection.Closed += HubConnectionOnClosed;
                 _hubConnection.Reconnecting += HubConnectionOnReconnecting;
                 _hubConnection.Reconnected += HubConnectionOnReconnected;
