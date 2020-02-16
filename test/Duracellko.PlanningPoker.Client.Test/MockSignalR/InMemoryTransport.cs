@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR.Protocol;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    internal sealed class QueueTransport : IDuplexPipe, IDisposable
+    internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
     {
         private readonly Pipe _receivePipe = new Pipe();
         private readonly Pipe _sendPipe = new Pipe();
@@ -16,8 +16,9 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         private readonly CancellationTokenSource _closeCancellationToken = new CancellationTokenSource();
 
         private IDisposable _sentMessagesSubscription;
+        private bool _messageReadingStarted;
 
-        public QueueTransport(HubMessageStore messageStore)
+        public InMemoryTransport(HubMessageStore messageStore)
         {
             _messageStore = messageStore;
             _sentMessagesObservable = new SentMessagesObservable(_sendPipe.Reader, messageStore);
@@ -34,6 +35,13 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         public void Dispose()
         {
             _closeCancellationToken.Cancel();
+
+            // When reading of messages is started then wait until it is completed (cancelled by the token).
+            // Otherwise subscription to sent messages can be closed immediately.
+            if (!_messageReadingStarted)
+            {
+                DisposeSubscription();
+            }
         }
 
         internal async Task ReceiveMessage(HubMessage message, CancellationToken cancellationToken)
@@ -64,6 +72,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
                 if (!cancellationToken.IsCancellationRequested)
                 {
+                    _messageReadingStarted = true;
                     await _sentMessagesObservable.ReadMessages(cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -112,11 +121,17 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             }
         }
 
+        private void DisposeSubscription()
+        {
+            _closeCancellationToken.Dispose();
+            _sentMessagesSubscription.Dispose();
+        }
+
         private class HubMessageHandler : IObserver<HubMessage>
         {
-            private readonly QueueTransport _parent;
+            private readonly InMemoryTransport _parent;
 
-            public HubMessageHandler(QueueTransport parent)
+            public HubMessageHandler(InMemoryTransport parent)
             {
                 _parent = parent;
             }
@@ -127,12 +142,12 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
             public void OnCompleted()
             {
-                _parent._closeCancellationToken.Dispose();
-                _parent._sentMessagesSubscription.Dispose();
+                _parent.DisposeSubscription();
             }
 
             public void OnError(Exception error)
             {
+                _parent.DisposeSubscription();
             }
         }
     }

@@ -63,7 +63,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             messageIdBuffer.CopyTo(messageIdBytes);
 
             long messageId = BitConverter.ToInt64(messageIdBytes);
-            _messageStore.TryGetMessage(messageId, out message);
+            message = _messageStore[messageId];
             _messageStore.TryRemove(messageId);
 
             input = input.Slice(8);

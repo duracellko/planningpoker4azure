@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
         private readonly IObservable<HubMessage> _messages;
         private IDisposable _subscription;
-        private volatile TaskCompletionSource<bool> _receiveMessageTask = new TaskCompletionSource<bool>();
+        private volatile TaskCompletionSource<(bool, Exception)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception)>();
 
         public HubMessageQueue(IObservable<HubMessage> messages)
         {
@@ -26,6 +26,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public async Task<HubMessage> GetNextAsync()
         {
+            bool moreMessages = true;
+            Exception error = null;
             while (true)
             {
                 var receiveMessageTask = _receiveMessageTask.Task;
@@ -34,12 +36,21 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
                     return message;
                 }
 
-                var moreMessages = await receiveMessageTask.ConfigureAwait(false);
-
-                if (!moreMessages)
+                if (moreMessages)
                 {
-                    // Observable is completed and there will be no mor messages.
-                    return null;
+                    (moreMessages, error) = await receiveMessageTask.ConfigureAwait(false);
+                }
+                else
+                {
+                    // Observable is completed and there will be no more messages.
+                    if (error != null)
+                    {
+                        throw error;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
         }
@@ -68,11 +79,15 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             }
         }
 
-        private void NotifyMessageReceived(bool moreMessages)
+        private void NotifyMessageReceived(bool moreMessages, Exception error)
         {
-            var receiveMessageTask = _receiveMessageTask;
-            _receiveMessageTask = new TaskCompletionSource<bool>();
-            receiveMessageTask.SetResult(moreMessages);
+            _receiveMessageTask.SetResult((moreMessages, error));
+
+            if (moreMessages)
+            {
+                // If there are more messages then create new TaskCompletionSource for next message.
+                _receiveMessageTask = new TaskCompletionSource<(bool, Exception)>();
+            }
         }
 
         private class HubMessageHandler : IObserver<HubMessage>
@@ -89,17 +104,18 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
                 if (!(value is PingMessage))
                 {
                     _parent._queue.Enqueue(value);
-                    _parent.NotifyMessageReceived(true);
+                    _parent.NotifyMessageReceived(true, null);
                 }
             }
 
             public void OnCompleted()
             {
-                _parent.NotifyMessageReceived(false);
+                _parent.NotifyMessageReceived(false, null);
             }
 
             public void OnError(Exception error)
             {
+                _parent.NotifyMessageReceived(false, error);
             }
         }
     }

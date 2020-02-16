@@ -7,9 +7,9 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
     internal class MockConnectionFactory : IConnectionFactory
     {
-        private readonly QueueTransport _transport;
+        private readonly InMemoryTransport _transport;
 
-        public MockConnectionFactory(QueueTransport transport)
+        public MockConnectionFactory(InMemoryTransport transport)
         {
             _transport = transport;
         }

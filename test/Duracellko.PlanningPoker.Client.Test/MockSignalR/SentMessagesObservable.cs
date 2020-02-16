@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,29 +32,44 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             return new Subscriber(this, observer);
         }
 
-        public async Task ReadMessages(CancellationToken cancellationToken)
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions are sent to observers.")]
+        internal async Task ReadMessages(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            bool completed = false;
+            try
             {
-                var result = await _reader.ReadAsync(cancellationToken).ConfigureAwait(false);
-
-                if (cancellationToken.IsCancellationRequested)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    break;
-                }
+                    var result = await _reader.ReadAsync(cancellationToken).ConfigureAwait(false);
 
-                var buffer = result.Buffer;
-                ReadMessages(ref buffer);
-                _reader.AdvanceTo(buffer.Start, buffer.End);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
-                if (result.IsCompleted)
-                {
-                    break;
+                    var buffer = result.Buffer;
+                    ReadMessages(ref buffer);
+                    _reader.AdvanceTo(buffer.Start, buffer.End);
+
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
                 }
             }
-
-            await _reader.CompleteAsync().ConfigureAwait(false);
-            Complete();
+            catch (Exception ex)
+            {
+                SetError(ex);
+                completed = true;
+            }
+            finally
+            {
+                await _reader.CompleteAsync().ConfigureAwait(false);
+                if (!completed)
+                {
+                    Complete();
+                }
+            }
         }
 
         private void ReadMessages(ref ReadOnlySequence<byte> buffer)
@@ -73,15 +89,13 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         private void ReadMessage(long messageId)
         {
-            if (_messageStore.TryGetMessage(messageId, out var message))
+            var message = _messageStore[messageId];
+            foreach (var observer in _observers)
             {
-                foreach (var observer in _observers)
-                {
-                    observer.OnNext(message);
-                }
-
-                _messageStore.TryRemove(messageId);
+                observer.OnNext(message);
             }
+
+            _messageStore.TryRemove(messageId);
         }
 
         private void Complete()
@@ -89,6 +103,14 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             foreach (var observer in _observers)
             {
                 observer.OnCompleted();
+            }
+        }
+
+        private void SetError(Exception error)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnError(error);
             }
         }
 
