@@ -255,6 +255,231 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.AreEqual("Team 'Test team' does not exist.", exception.Message);
         }
 
+        [TestMethod]
+        public async Task ReconnectTeam_TeamNameAndMemberName_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("ReconnectTeam", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeam()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(reconnectResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsNull(reconnectResult.SelectedEstimation);
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeamAndLastMessageId()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: 1, memberEstimation: 1);
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 123);
+            var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(reconnectResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsNull(reconnectResult.SelectedEstimation);
+            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[1].Estimation.Value);
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeamWithEstimationFinished()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: null, memberEstimation: Estimation.PositiveInfinity);
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 123, selectedEstimation: Estimation.PositiveInfinity);
+            var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(reconnectResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsNotNull(result.SelectedEstimation);
+            Assert.IsTrue(double.IsPositiveInfinity(result.SelectedEstimation.Value.Value));
+            Assert.IsNull(result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[1].Estimation.Value.Value));
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeamWithEstimationFinishedAndEstimationIsNull()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: 8, memberEstimation: double.NaN);
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 2157483849, selectedEstimation: 8);
+            var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(reconnectResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsNotNull(result.SelectedEstimation);
+            Assert.AreEqual(8.0, result.SelectedEstimation.Value);
+            Assert.AreEqual(8.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation);
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeamWithEstimationInProgress()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var estimationParticipants = PlanningPokerData.GetEstimationParticipants(scrumMaster: false, member: true);
+            var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationInProgress, estimationParticipants: estimationParticipants);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 1, selectedEstimation: null);
+            var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(reconnectResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsNotNull(result.SelectedEstimation);
+            Assert.IsNull(result.SelectedEstimation.Value);
+        }
+
+        [TestMethod]
+        public async Task DisconnectTeam_TeamNameAndMemberName_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.DisconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("DisconnectTeam", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task StartEstimation_TeamName_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.StartEstimation(PlanningPokerData.TeamName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("StartEstimation", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task CancelEstimation_TeamName_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.CancelEstimation(PlanningPokerData.TeamName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("CancelEstimation", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [DataTestMethod]
+        [DataRow(PlanningPokerData.MemberName, 3.0, 3.0)]
+        [DataRow(PlanningPokerData.ScrumMasterName, 0.0, 0.0)]
+        [DataRow(PlanningPokerData.MemberName, 100.0, 100.0)]
+        [DataRow(PlanningPokerData.MemberName, double.PositiveInfinity, Estimation.PositiveInfinity)]
+        [DataRow(PlanningPokerData.MemberName, null, -1111111.0)]
+        public async Task SubmitEstimation_EstimationValue_InvocationMessageIsSent(string memberName, double? estimation, double expectedSentValue)
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.SubmitEstimation(PlanningPokerData.TeamName, memberName, estimation, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("SubmitEstimation", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, memberName, expectedSentValue };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
         private static string GetInvocationId(HubMessage message)
         {
             var invocationMessage = AssertIsInvocationMessage(message);

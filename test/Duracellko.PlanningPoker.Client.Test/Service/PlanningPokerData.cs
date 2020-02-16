@@ -63,18 +63,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
         public static IList<EstimationResultItem> GetEstimationResult(double? scrumMasterEstimation = 5, double? memberEstimation = 20)
         {
-            Estimation GetEstimation(double? estimation)
-            {
-                if (estimation.HasValue)
-                {
-                    return double.IsNaN(estimation.Value) ? null : new Estimation { Value = estimation };
-                }
-                else
-                {
-                    return new Estimation();
-                }
-            }
-
             return new List<EstimationResultItem>
             {
                 new EstimationResultItem
@@ -97,6 +85,28 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 new EstimationParticipantStatus { MemberName = ScrumMasterName, Estimated = scrumMaster },
                 new EstimationParticipantStatus { MemberName = MemberName, Estimated = member }
             };
+        }
+
+        public static ReconnectTeamResult GetReconnectTeamResultJson(ScrumTeam scrumTeam, long lastMessageId = 0, double? selectedEstimation = double.NaN)
+        {
+            return new ReconnectTeamResult
+            {
+                ScrumTeam = scrumTeam,
+                LastMessageId = lastMessageId,
+                SelectedEstimation = GetEstimation(selectedEstimation)
+            };
+        }
+
+        private static Estimation GetEstimation(double? estimation)
+        {
+            if (estimation.HasValue)
+            {
+                return double.IsNaN(estimation.Value) ? null : new Estimation { Value = estimation };
+            }
+            else
+            {
+                return new Estimation();
+            }
         }
     }
 }
