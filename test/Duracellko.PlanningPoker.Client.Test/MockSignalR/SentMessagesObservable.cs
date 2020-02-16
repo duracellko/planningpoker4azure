@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Protocol;
@@ -13,7 +15,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
     {
         private readonly PipeReader _reader;
         private readonly HubMessageStore _messageStore;
-        private readonly List<IObserver<HubMessage>> _observers = new List<IObserver<HubMessage>>();
+        private readonly ConcurrentDictionary<long, IObserver<HubMessage>> _observers = new ConcurrentDictionary<long, IObserver<HubMessage>>();
+        private long _nextId;
 
         internal SentMessagesObservable(PipeReader reader, HubMessageStore messageStore)
         {
@@ -28,8 +31,13 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
                 throw new ArgumentNullException(nameof(observer));
             }
 
-            _observers.Add(observer);
-            return new Subscriber(this, observer);
+            long observerId = Interlocked.Increment(ref _nextId);
+            if (!_observers.TryAdd(observerId, observer))
+            {
+                throw new InvalidOperationException("Observer ID should be unique.");
+            }
+
+            return new Subscriber(this, observerId);
         }
 
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions are sent to observers.")]
@@ -90,7 +98,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         private void ReadMessage(long messageId)
         {
             var message = _messageStore[messageId];
-            foreach (var observer in _observers)
+            foreach (var observer in GetObservers())
             {
                 observer.OnNext(message);
             }
@@ -100,7 +108,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         private void Complete()
         {
-            foreach (var observer in _observers)
+            foreach (var observer in GetObservers())
             {
                 observer.OnCompleted();
             }
@@ -108,26 +116,31 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         private void SetError(Exception error)
         {
-            foreach (var observer in _observers)
+            foreach (var observer in GetObservers())
             {
                 observer.OnError(error);
             }
         }
 
+        private IEnumerable<IObserver<HubMessage>> GetObservers()
+        {
+            return _observers.ToArray().Select(p => p.Value);
+        }
+
         private sealed class Subscriber : IDisposable
         {
             private readonly SentMessagesObservable _parent;
-            private readonly IObserver<HubMessage> _observer;
+            private readonly long _observerId;
 
-            public Subscriber(SentMessagesObservable parent, IObserver<HubMessage> observer)
+            public Subscriber(SentMessagesObservable parent, long observerId)
             {
                 _parent = parent;
-                _observer = observer;
+                _observerId = observerId;
             }
 
             public void Dispose()
             {
-                _parent._observers.Remove(_observer);
+                _parent._observers.TryRemove(_observerId, out _);
             }
         }
     }

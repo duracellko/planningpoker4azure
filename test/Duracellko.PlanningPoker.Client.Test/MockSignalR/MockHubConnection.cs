@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    public sealed class MockHubConnection : IDisposable
+    public sealed class MockHubConnection : IDisposable, IAsyncDisposable
     {
         private readonly HubMessageStore _messageStore = new HubMessageStore();
         private readonly InMemoryTransport _transport;
@@ -40,16 +40,25 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             return _transport.ReceiveMessage(message, cancellationToken);
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             if (_hubConnection.IsValueCreated)
             {
-                _hubConnection.Value.DisposeAsync().Wait();
+                await _hubConnection.Value.DisposeAsync().ConfigureAwait(false);
             }
 
             _transport.Dispose();
             _loggerFactory?.Dispose();
             (_serviceProvider as IDisposable)?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            var disposeTask = DisposeAsync();
+            if (!disposeTask.IsCompleted)
+            {
+                disposeTask.AsTask().Wait();
+            }
         }
 
         private HubConnection CreateHubConnection()
