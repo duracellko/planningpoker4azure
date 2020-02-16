@@ -13,7 +13,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
     {
         private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(1);
 
-        private readonly CancellationTokenSource _timeoutCancellationToken = new CancellationTokenSource(_timeout);
+        private readonly CancellationTokenSource _timeoutCancellationToken;
         private bool _disposed;
 
         public PlanningPokerSignalRClientFixture()
@@ -21,6 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Mock = new MockHubConnection();
             SentMessages = new HubMessageQueue(Mock.SentMessages);
             Target = new PlanningPokerSignalRClient(Mock.HubConnectionBuilder);
+            _timeoutCancellationToken = System.Diagnostics.Debugger.IsAttached ? new CancellationTokenSource() : new CancellationTokenSource(_timeout);
         }
 
         public MockHubConnection Mock { get; }
