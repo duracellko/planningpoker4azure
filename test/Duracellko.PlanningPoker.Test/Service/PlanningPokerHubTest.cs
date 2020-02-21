@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using D = Duracellko.PlanningPoker.Domain;
@@ -12,7 +13,7 @@ using D = Duracellko.PlanningPoker.Domain;
 namespace Duracellko.PlanningPoker.Test.Service
 {
     [TestClass]
-    public class PlanningPokerHubTest
+    public sealed class PlanningPokerHubTest : IDisposable
     {
         private const string TeamName = "test team";
         private const string ScrumMasterName = "master";
@@ -21,6 +22,8 @@ namespace Duracellko.PlanningPoker.Test.Service
 
         private const string LongTeamName = "ttttttttttttttttttttttttttttttttttttttttttttttttttt";
         private const string LongMemberName = "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
+
+        private readonly ILoggerFactory _loggerFactory = new LoggerFactory();
 
         [TestMethod]
         public void Constructor_PlanningPoker_PlanningPokerPropertyIsSet()
@@ -41,7 +44,8 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void Constructor_Null_ArgumentNullException()
         {
             // Act
-            using (var result = new PlanningPokerHub(null, null))
+            var logger = new Logger<PlanningPokerHub>(_loggerFactory);
+            using (var result = new PlanningPokerHub(null, null, logger))
             {
             }
         }
@@ -1305,7 +1309,28 @@ namespace Duracellko.PlanningPoker.Test.Service
             }
         }
 
-        private static PlanningPokerHub CreatePlanningPokerHub(
+        public void Dispose()
+        {
+            _loggerFactory.Dispose();
+        }
+
+        private static D.ScrumTeam CreateBasicTeam()
+        {
+            var result = new D.ScrumTeam(TeamName);
+            result.SetScrumMaster(ScrumMasterName);
+            return result;
+        }
+
+        private static Mock<D.IScrumTeamLock> CreateTeamLock(D.ScrumTeam scrumTeam)
+        {
+            var result = new Mock<D.IScrumTeamLock>(MockBehavior.Strict);
+            result.Setup(l => l.Team).Returns(scrumTeam);
+            result.Setup(l => l.Lock()).Verifiable();
+            result.Setup(l => l.Dispose()).Verifiable();
+            return result;
+        }
+
+        private PlanningPokerHub CreatePlanningPokerHub(
             D.IPlanningPoker planningPoker,
             IPlanningPokerClient client = null,
             string connectionId = null)
@@ -1323,28 +1348,14 @@ namespace Duracellko.PlanningPoker.Test.Service
                 clients.Setup(o => o.Client(connectionId)).Returns(client);
             }
 
-            var result = new PlanningPokerHub(planningPoker, clientContext.Object);
+            var logger = new Logger<PlanningPokerHub>(_loggerFactory);
+
+            var result = new PlanningPokerHub(planningPoker, clientContext.Object, logger);
 
             var context = new HubCallerContextMock();
             context.SetConnectionId(connectionId);
             result.Context = context;
 
-            return result;
-        }
-
-        private static D.ScrumTeam CreateBasicTeam()
-        {
-            var result = new D.ScrumTeam(TeamName);
-            result.SetScrumMaster(ScrumMasterName);
-            return result;
-        }
-
-        private static Mock<D.IScrumTeamLock> CreateTeamLock(D.ScrumTeam scrumTeam)
-        {
-            var result = new Mock<D.IScrumTeamLock>(MockBehavior.Strict);
-            result.Setup(l => l.Team).Returns(scrumTeam);
-            result.Setup(l => l.Lock()).Verifiable();
-            result.Setup(l => l.Dispose()).Verifiable();
             return result;
         }
     }
