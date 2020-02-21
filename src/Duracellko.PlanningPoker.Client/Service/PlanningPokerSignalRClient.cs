@@ -168,14 +168,13 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                double encodedEstimation = estimation ?? -1111111;
-                if (double.IsPositiveInfinity(encodedEstimation))
+                if (estimation.HasValue && double.IsPositiveInfinity(estimation.Value))
                 {
-                    encodedEstimation = -1111100;
+                    estimation = Estimation.PositiveInfinity;
                 }
 
                 await EnsureConnected(cancellationToken);
-                await _hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, encodedEstimation, cancellationToken);
+                await _hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, estimation, cancellationToken);
             });
         }
 

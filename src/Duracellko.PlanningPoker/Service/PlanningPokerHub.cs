@@ -210,24 +210,15 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
         /// <param name="estimation">The estimation the member is submitting.</param>
-        public void SubmitEstimation(string teamName, string memberName, double estimation)
+        public void SubmitEstimation(string teamName, string memberName, double? estimation)
         {
             _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {estimation})", nameof(SubmitEstimation), teamName, memberName, estimation);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
-            double? domainEstimation;
-            if (estimation == -1111111.0)
+            if (estimation == Estimation.PositiveInfinity)
             {
-                domainEstimation = null;
-            }
-            else if (estimation == Estimation.PositiveInfinity)
-            {
-                domainEstimation = double.PositiveInfinity;
-            }
-            else
-            {
-                domainEstimation = estimation;
+                estimation = double.PositiveInfinity;
             }
 
             using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
@@ -237,7 +228,7 @@ namespace Duracellko.PlanningPoker.Service
                 var member = team.FindMemberOrObserver(memberName) as D.Member;
                 if (member != null)
                 {
-                    member.Estimation = new D.Estimation(domainEstimation);
+                    member.Estimation = new D.Estimation(estimation);
                 }
             }
         }

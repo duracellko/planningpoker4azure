@@ -959,7 +959,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        public void SubmitEstimation_TeamNameAndScrumMasterNameAndMinus1111111_EstimationIsSetToNull()
+        public void SubmitEstimation_TeamNameAndScrumMasterNameAndNull_EstimationIsSetToNull()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -969,7 +969,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(TeamName, ScrumMasterName, -1111111.0);
+                target.SubmitEstimation(TeamName, ScrumMasterName, null);
 
                 // Verify
                 planningPoker.Verify();
@@ -1054,7 +1054,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        public void SubmitEstimation_TeamNameAndMemberNameAndMinus1111111_EstimationIsSetToNull()
+        public void SubmitEstimation_TeamNameAndMemberNameAndNull_EstimationIsSetToNull()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -1065,7 +1065,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(TeamName, MemberName, -1111111.0);
+                target.SubmitEstimation(TeamName, MemberName, null);
 
                 // Verify
                 planningPoker.Verify();
