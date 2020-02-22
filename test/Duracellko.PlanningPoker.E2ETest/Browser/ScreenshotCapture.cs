@@ -50,7 +50,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
         {
             var browserName = context.BrowserType.ToString();
             var serverSide = context.ServerSide ? "Server" : "Client";
-            var path = Path.Combine(BasePath, browserName, serverSide, context.ClassName, context.TestName);
+            var connectionType = context.UseHttpClient ? "HttpClient" : "SignalR";
+            var path = Path.Combine(BasePath, browserName, serverSide, connectionType, context.ClassName, context.TestName);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

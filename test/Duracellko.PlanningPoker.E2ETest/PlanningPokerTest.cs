@@ -9,20 +9,21 @@ namespace Duracellko.PlanningPoker.E2ETest
     public class PlanningPokerTest : E2ETestBase
     {
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Estimate_2_Rounds(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task Estimate_2_Rounds(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Estimate_2_Rounds),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Estimate_2_Rounds),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();
@@ -142,20 +143,21 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Cancel_Estimation(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task Cancel_Estimation(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Cancel_Estimation),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Cancel_Estimation),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();
@@ -274,25 +276,27 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Observer_Cannot_Estimate(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task Observer_Cannot_Estimate(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Observer_Cannot_Estimate),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Observer_Cannot_Estimate),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Observer_Cannot_Estimate),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();
@@ -416,25 +420,27 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Cannot_Estimate_When_Joining_After_Start(bool serverSide, BrowserType browserType1, BrowserType browserType2)
+        [EnvironmentDataSource]
+        public async Task Cannot_Estimate_When_Joining_After_Start(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Cannot_Estimate_When_Joining_After_Start),
-                browserType1,
-                serverSide));
+                browserType,
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Cannot_Estimate_When_Joining_After_Start),
-                browserType2,
-                serverSide));
+                browserType,
+                serverSide,
+                useHttpClient));
             Contexts.Add(new BrowserTestContext(
                 nameof(PlanningPokerTest),
                 nameof(Cannot_Estimate_When_Joining_After_Start),
-                browserType1,
-                serverSide));
+                browserType,
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();

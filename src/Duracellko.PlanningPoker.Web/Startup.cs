@@ -95,7 +95,7 @@ namespace Duracellko.PlanningPoker.Web
             var clientConfiguration = GetPlanningPokerClientConfiguration();
             services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
 
-            if (clientConfiguration.UseServerSideBlazor)
+            if (clientConfiguration.UseServerSide)
             {
                 services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
@@ -120,7 +120,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 app.UseDeveloperExceptionPage();
 
-                if (!clientConfiguration.UseServerSideBlazor)
+                if (!clientConfiguration.UseServerSide)
                 {
                     app.UseBlazorDebugging();
                 }
@@ -135,7 +135,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
-                if (clientConfiguration.UseServerSideBlazor)
+                if (clientConfiguration.UseServerSide)
                 {
                     endpoints.MapBlazorHub();
                 }

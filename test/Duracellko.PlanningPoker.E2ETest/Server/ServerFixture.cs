@@ -23,6 +23,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
         public bool UseServerSide { get; set; }
 
+        public bool UseHttpClient { get; set; }
+
         public IHost WebHost { get; private set; }
 
         public Uri Uri
@@ -130,7 +132,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             return new string[]
             {
                 "--urls", "http://127.0.0.1:0",
-                "--PlanningPokerClient:UseServerSide", UseServerSide.ToString(CultureInfo.InvariantCulture)
+                "--PlanningPokerClient:UseServerSide", UseServerSide.ToString(CultureInfo.InvariantCulture),
+                "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
             };
         }
     }
