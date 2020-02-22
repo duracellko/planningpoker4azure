@@ -59,7 +59,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var sentMessage = await fixture.GetSentMessage();
             var invocationId = GetInvocationId(sentMessage);
 
-            var returnMessage = new CompletionMessage(invocationId, "Team 'Test team' already exists.", null, false);
+            var returnMessage = new CompletionMessage(invocationId, "An unexpected error occured. HubException: Team 'Test team' already exists.", null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
@@ -253,6 +253,24 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
 
             Assert.AreEqual("Team 'Test team' does not exist.", exception.Message);
+        }
+
+        [TestMethod]
+        public async Task JoinTeam_ReturnsEmptyErrorMessage_PlanningPokerException()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var returnMessage = new CompletionMessage(invocationId, "An unexpected error occured. HubException: ", null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
+
+            Assert.AreEqual(string.Empty, exception.Message);
         }
 
         [TestMethod]
