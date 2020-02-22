@@ -461,8 +461,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [DataRow(PlanningPokerData.ScrumMasterName, 0.0, 0.0)]
         [DataRow(PlanningPokerData.MemberName, 100.0, 100.0)]
         [DataRow(PlanningPokerData.MemberName, double.PositiveInfinity, Estimation.PositiveInfinity)]
-        [DataRow(PlanningPokerData.MemberName, null, -1111111.0)]
-        public async Task SubmitEstimation_EstimationValue_InvocationMessageIsSent(string memberName, double? estimation, double expectedSentValue)
+        [DataRow(PlanningPokerData.MemberName, null, null)]
+        public async Task SubmitEstimation_EstimationValue_InvocationMessageIsSent(string memberName, double? estimation, double? expectedSentValue)
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
