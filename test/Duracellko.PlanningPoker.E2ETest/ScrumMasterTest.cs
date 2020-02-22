@@ -10,15 +10,15 @@ namespace Duracellko.PlanningPoker.E2ETest
     public class ScrumMasterTest : E2ETestBase
     {
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task ScrumMaster_Should_Be_Able_To_Estimate(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task ScrumMaster_Should_Be_Able_To_Estimate(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(ScrumMaster_Should_Be_Able_To_Estimate),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();
@@ -51,15 +51,15 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Shows_Error_When_Creating_Empty_Team(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task Shows_Error_When_Creating_Empty_Team(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(Shows_Error_When_Creating_Empty_Team),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();
@@ -82,15 +82,15 @@ namespace Duracellko.PlanningPoker.E2ETest
         }
 
         [DataTestMethod]
-        [DataRow(false, BrowserType.Chrome, DisplayName = "Client-side Chrome")]
-        [DataRow(true, BrowserType.Chrome, DisplayName = "Server-side Chrome")]
-        public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, BrowserType browserType)
+        [EnvironmentDataSource]
+        public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, BrowserType browserType, bool useHttpClient)
         {
             Contexts.Add(new BrowserTestContext(
                 nameof(ScrumMasterTest),
                 nameof(Shows_Error_When_Joining_Not_Existing_Team),
                 browserType,
-                serverSide));
+                serverSide,
+                useHttpClient));
 
             await StartServer();
             StartClients();

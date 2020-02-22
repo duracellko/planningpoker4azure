@@ -1,4 +1,5 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model Duracellko.PlanningPoker.Web.Model.HomeModel
 @{
     Layout = null;
@@ -17,7 +18,7 @@
 </head>
 <body>
     <app>
-        @if (Model.ClientConfiguration.UseServerSideBlazor)
+        @if (Model.ClientConfiguration.UseServerSide)
         {
             @(await Html.RenderComponentAsync<Duracellko.PlanningPoker.Client.App>(RenderMode.Server))
         }
@@ -27,6 +28,21 @@
         }
     </app>
 
+    <div id="blazor-error-ui" class="alert alert-warning alert-dismissible" role="alert">
+        <p>
+            <environment include="Staging,Production">
+                An error has occurred. This application may no longer respond until reloaded.
+            </environment>
+            <environment include="Development">
+                An unhandled exception has occurred. See browser dev tools for details.
+            </environment>
+        </p>
+        <button type="button" class="reload btn btn-warning">Reload</button>
+        <button type="button" class="dismiss close" aria-label="Dismiss">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
 
@@ -34,8 +50,8 @@
     <script>window.jQuery.fn.modal || document.write('<script src="js/bootstrap.bundle.min.js"><\/script>')</script>
 
     <script>
-        (function($) {
-            $(function() {
+        (function ($) {
+            $(function () {
                 if ($('body').css('color') !== 'rgb(33, 37, 41)') {
                     $('head').prepend('<link href="css/bootstrap.min.css" rel="stylesheet" />');
                 }
@@ -47,7 +63,7 @@
     </script>
 
     <script src="Scripts/PlanningPoker.js"></script>
-    @if (Model.ClientConfiguration.UseServerSideBlazor)
+    @if (Model.ClientConfiguration.UseServerSide)
     {
         <script src="_framework/blazor.server.js"></script>
     }

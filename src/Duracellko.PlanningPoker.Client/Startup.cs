@@ -7,7 +7,7 @@ namespace Duracellko.PlanningPoker.Client
 {
     public static class Startup
     {
-        public static void ConfigureServices(IServiceCollection services, bool serverSide = false)
+        public static void ConfigureServices(IServiceCollection services, bool serverSide = false, bool useHttpClient = false)
         {
             // Services are scoped, because on server-side scope is created for each client session.
             if (!serverSide)
@@ -15,7 +15,15 @@ namespace Duracellko.PlanningPoker.Client
                 services.AddScoped<IPlanningPokerUriProvider, PlanningPokerUriProvider>();
             }
 
-            services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
+            if (useHttpClient)
+            {
+                services.AddScoped<IPlanningPokerClient, PlanningPokerClient>();
+            }
+            else
+            {
+                services.AddScoped<IPlanningPokerClient, PlanningPokerSignalRClient>();
+            }
+
             services.AddScoped<IMemberCredentialsStore, MemberCredentialsStore>();
             services.AddScoped<Microsoft.AspNetCore.SignalR.Client.IHubConnectionBuilder, PlanningPokerHubConnectionBuilder>();
 

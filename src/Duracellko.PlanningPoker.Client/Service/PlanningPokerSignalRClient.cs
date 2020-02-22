@@ -242,7 +242,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (HubException ex)
             {
-                throw new PlanningPokerException(ex.Message, ex);
+                throw new PlanningPokerException(GetHubExceptionMessage(ex), ex);
             }
             catch (TaskCanceledException)
             {
@@ -278,7 +278,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (HubException ex)
             {
-                throw new PlanningPokerException(ex.Message, ex);
+                throw new PlanningPokerException(GetHubExceptionMessage(ex), ex);
             }
             catch (TaskCanceledException)
             {
@@ -304,6 +304,19 @@ namespace Duracellko.PlanningPoker.Client.Service
                     throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError, ex);
                 }
             }
+        }
+
+        private static string GetHubExceptionMessage(HubException exception)
+        {
+            var exceptionMessage = exception.Message;
+            if (string.IsNullOrEmpty(exceptionMessage))
+            {
+                return exceptionMessage;
+            }
+
+            var messagePrefix = "HubException: ";
+            var index = exceptionMessage.IndexOf(messagePrefix, StringComparison.OrdinalIgnoreCase);
+            return index < 0 ? exceptionMessage : exceptionMessage.Substring(index + messagePrefix.Length);
         }
 
         private void OnNotify(IList<Message> messages)

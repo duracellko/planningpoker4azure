@@ -69,8 +69,10 @@ namespace Duracellko.PlanningPoker.E2ETest
         protected async Task StartServer()
         {
             Server.UseServerSide = Context.ServerSide;
+            Server.UseHttpClient = Context.UseHttpClient;
             await Server.Start();
             await AssertServerSide(Context.ServerSide);
+            await AssertClientConnectionType(Context.UseHttpClient);
         }
 
         protected void StartClients()
@@ -104,6 +106,17 @@ namespace Duracellko.PlanningPoker.E2ETest
             expected = @"<script src=""_framework/blazor." + expected + @".js""></script>";
             Assert.IsNotNull(response);
             Assert.IsTrue(response.Contains(expected, StringComparison.Ordinal));
+        }
+
+        protected async Task AssertClientConnectionType(bool useHttpClient)
+        {
+            var client = new HttpClient();
+            client.BaseAddress = Server.Uri;
+            var response = await client.GetStringAsync(new Uri("configuration", UriKind.Relative));
+
+            var expected = useHttpClient ? "HttpClient" : string.Empty;
+            Assert.IsNotNull(response);
+            Assert.AreEqual(expected, response);
         }
 
         protected string TakeScreenshot(string name)

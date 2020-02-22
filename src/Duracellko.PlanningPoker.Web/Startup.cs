@@ -31,8 +31,6 @@ namespace Duracellko.PlanningPoker.Web
 
         public IConfiguration Configuration { get; }
 
-        public bool UseServerSide => Configuration.GetSection("PlanningPokerClient").GetValue<bool?>("UseServerSide") ?? false;
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetry();
@@ -94,13 +92,10 @@ namespace Duracellko.PlanningPoker.Web
 
             services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
 
-            var clientConfiguration = new PlanningPokerClientConfiguration
-            {
-                UseServerSideBlazor = UseServerSide
-            };
+            var clientConfiguration = GetPlanningPokerClientConfiguration();
             services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
 
-            if (clientConfiguration.UseServerSideBlazor)
+            if (clientConfiguration.UseServerSide)
             {
                 services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
@@ -109,7 +104,7 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IHostedService, HttpClientSetupService>();
 
                 // Register services used by client on server-side.
-                Client.Startup.ConfigureServices(services, true);
+                Client.Startup.ConfigureServices(services, true, clientConfiguration.UseHttpClient);
             }
         }
 
@@ -125,7 +120,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 app.UseDeveloperExceptionPage();
 
-                if (!clientConfiguration.UseServerSideBlazor)
+                if (!clientConfiguration.UseServerSide)
                 {
                     app.UseBlazorDebugging();
                 }
@@ -140,7 +135,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
-                if (clientConfiguration.UseServerSideBlazor)
+                if (clientConfiguration.UseServerSide)
                 {
                     endpoints.MapBlazorHub();
                 }
@@ -152,6 +147,11 @@ namespace Duracellko.PlanningPoker.Web
         private AzurePlanningPokerConfiguration GetPlanningPokerConfiguration()
         {
             return Configuration.GetSection("PlanningPoker").Get<AzurePlanningPokerConfiguration>() ?? new AzurePlanningPokerConfiguration();
+        }
+
+        private PlanningPokerClientConfiguration GetPlanningPokerClientConfiguration()
+        {
+            return Configuration.GetSection("PlanningPokerClient").Get<PlanningPokerClientConfiguration>() ?? new PlanningPokerClientConfiguration();
         }
     }
 }
