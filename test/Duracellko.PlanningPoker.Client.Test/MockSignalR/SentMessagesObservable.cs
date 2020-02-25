@@ -82,12 +82,11 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         private void ReadMessages(ref ReadOnlySequence<byte> buffer)
         {
+            Span<byte> messageIdBytes = stackalloc byte[8];
             while (buffer.Length >= 8)
             {
                 var messageIdBuffer = buffer.Slice(0, 8);
-                Span<byte> messageIdBytes = stackalloc byte[8];
                 messageIdBuffer.CopyTo(messageIdBytes);
-
                 long messageId = BitConverter.ToInt64(messageIdBytes);
                 ReadMessage(messageId);
 
