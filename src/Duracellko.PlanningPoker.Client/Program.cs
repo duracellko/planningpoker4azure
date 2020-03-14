@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor.Hosting;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client
@@ -12,6 +12,7 @@ namespace Duracellko.PlanningPoker.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.Services.AddBaseAddressHttpClient();
 
             var serviceProvider = builder.Services.BuildServiceProvider();
             var useHttpClient = await GetClientConfiguration(serviceProvider);

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Net.Mime;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -14,7 +11,6 @@ using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,14 +36,6 @@ namespace Duracellko.PlanningPoker.Web
                 .AddNewtonsoftJson();
             services.AddSignalR()
                 .AddNewtonsoftJsonProtocol();
-
-            services.AddResponseCompression(options =>
-            {
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
-                {
-                    MediaTypeNames.Application.Octet
-                });
-            });
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration();
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
@@ -114,26 +102,24 @@ namespace Duracellko.PlanningPoker.Web
         {
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
 
-            app.UseResponseCompression();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
 
                 if (!clientConfiguration.UseServerSide)
                 {
-                    app.UseBlazorDebugging();
+                    app.UseWebAssemblyDebugging();
                 }
             }
 
             app.UseStaticFiles();
-            app.UseClientSideBlazorFiles(typeof(Client.Program).Assembly.Location);
+            app.UseBlazorFrameworkFiles();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
                 endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
                 if (clientConfiguration.UseServerSide)
                 {
