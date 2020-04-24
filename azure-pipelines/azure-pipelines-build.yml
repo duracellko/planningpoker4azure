@@ -28,7 +28,7 @@ jobs:
   - task: NodeTool@0
     displayName: Install Node.js
     inputs:
-      versionSpec: 13.x
+      versionSpec: 14.x
 
   - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
