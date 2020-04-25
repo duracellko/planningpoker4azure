@@ -113,10 +113,13 @@ namespace Duracellko.PlanningPoker.E2ETest
             var client = new HttpClient();
             client.BaseAddress = Server.Uri;
             var response = await client.GetStringAsync(new Uri("configuration", UriKind.Relative));
-
-            var expected = useHttpClient ? "HttpClient" : string.Empty;
             Assert.IsNotNull(response);
-            Assert.AreEqual(expected, response);
+
+            var configuration = System.Text.Json.JsonDocument.Parse(response);
+            var property = configuration.RootElement.GetProperty("useHttpClient");
+            Assert.IsNotNull(property);
+
+            Assert.AreEqual(useHttpClient, property.GetBoolean());
         }
 
         protected string TakeScreenshot(string name)

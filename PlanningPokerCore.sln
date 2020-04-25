@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Domain", "src\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj", "{65694878-9E06-4B0C-B4B8-FEB9EB98E64E}"
 EndProject
@@ -33,7 +33,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6620FD4B-0
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{02d40c8c-c33d-4310-9dd6-b620e475de4e}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{04eba544-0b81-463a-8949-542f28f031a5}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{108112d4-6a84-4a45-8d2f-bad38c9d4d11}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{46fbc82b-9956-42eb-aecd-8f5928b4dafd}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{4bd658e6-d2ab-4275-b954-5e600c43d3bf}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{5313b324-0f9c-48c2-a453-2363c104de82}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{53db6376-cae2-461c-9c66-7b93006a363e}*SharedItemsImports = 5
 		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{58ea5522-c08f-4a58-860c-32e1c52cf291}*SharedItemsImports = 13
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{6502fc2a-ccff-4a38-93d3-16bb084baaea}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{65694878-9e06-4b0c-b4b8-feb9eb98e64e}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{76cca5ba-d53c-43dc-bd62-7e1cc7bf06aa}*SharedItemsImports = 5
+		src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems*{e6a0a645-d69e-40da-a778-e706fda84e2b}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

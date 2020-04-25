@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Web.Controllers
         [HttpGet]
         public ActionResult GetConfiguration()
         {
-            return Ok(ClientConfiguration.UseHttpClient ? "HttpClient" : string.Empty);
+            return Ok(ClientConfiguration);
         }
     }
 }
