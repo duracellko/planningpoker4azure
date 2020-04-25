@@ -91,7 +91,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateScrumTeam_TeamInRepository_DoesNotCreateNewTeam()
         {
             // Arrange
@@ -111,7 +110,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            target.CreateScrumTeam("team", "master");
+            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master"));
         }
 
         [TestMethod]
@@ -225,7 +224,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateScrumTeam_TeamCreatedWhileLoading_DoesNotCreateNewTeam()
         {
             // Arrange
@@ -277,7 +275,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            target.CreateScrumTeam("team", "master");
+            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master"));
         }
 
         [TestMethod]
@@ -300,7 +298,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void AttachScrumTeam_TeamInRepository_DoesNotCreateNewTeam()
         {
             // Arrange
@@ -322,7 +319,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var inputTeam = new ScrumTeam("team");
 
             // Act
-            target.AttachScrumTeam(inputTeam);
+            Assert.ThrowsException<ArgumentException>(() => target.AttachScrumTeam(inputTeam));
         }
 
         [TestMethod]
@@ -391,7 +388,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetScrumTeam_TeamNotInRepository_ReturnsTeamFromRepository()
         {
             // Arrange
@@ -401,11 +397,10 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetScrumTeam_EmptyTeamInRepository_ThrowsException()
         {
             // Arrange
@@ -416,7 +411,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         [TestMethod]
@@ -445,7 +440,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetScrumTeam_ExpiredTeamInRepository_ThrowsException()
         {
             // Arrange
@@ -466,7 +460,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         [TestMethod]

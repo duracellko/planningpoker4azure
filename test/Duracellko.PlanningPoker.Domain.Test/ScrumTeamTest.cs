@@ -22,14 +22,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var name = string.Empty;
 
             // Act
-            var result = new ScrumTeam(name);
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeam(name));
         }
 
         [TestMethod]
@@ -300,7 +299,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SetScrumMaster_NameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -308,11 +306,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
 
             // Act
-            var result = target.SetScrumMaster(name);
+            Assert.ThrowsException<ArgumentNullException>(() => target.SetScrumMaster(name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void SetScrumMaster_ScrumMasterIsAlreadySet_InvalidOperationException()
         {
             // Arrange
@@ -321,11 +318,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.SetScrumMaster("master");
 
             // Act
-            var result = target.SetScrumMaster(name);
+            Assert.ThrowsException<InvalidOperationException>(() => target.SetScrumMaster(name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void SetScrumMaster_MemberWithSpecifiedNameExists_ArgumentException()
         {
             // Arrange
@@ -334,11 +330,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join("test", false);
 
             // Act
-            var result = target.SetScrumMaster(name);
+            Assert.ThrowsException<ArgumentException>(() => target.SetScrumMaster(name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void SetScrumMaster_ObserverWithSpecifiedNameExists_ArgumentException()
         {
             // Arrange
@@ -347,7 +342,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join("test", true);
 
             // Act
-            var result = target.SetScrumMaster(name);
+            Assert.ThrowsException<ArgumentException>(() => target.SetScrumMaster(name));
         }
 
         [TestMethod]
@@ -387,7 +382,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Join_NameIsEmpty_ArgumentNullEsception()
         {
             // Arrange
@@ -395,7 +389,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
 
             // Act
-            var result = target.Join(name, false);
+            Assert.ThrowsException<ArgumentNullException>(() => target.Join(name, false));
         }
 
         [TestMethod]
@@ -551,7 +545,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Join_AsMemberAndMemberWithNameExists_ArgumentException()
         {
             // Arrange
@@ -560,11 +553,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, false);
 
             // Act
-            var result = target.Join(name, false);
+            Assert.ThrowsException<ArgumentException>(() => target.Join(name, false));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Join_AsMemberAndObserverWithNameExists_ArgumentException()
         {
             // Arrange
@@ -573,11 +565,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, true);
 
             // Act
-            var result = target.Join(name, false);
+            Assert.ThrowsException<ArgumentException>(() => target.Join(name, false));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Join_AsObserverAndMemberWithNameExists_ArgumentException()
         {
             // Arrange
@@ -586,11 +577,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, false);
 
             // Act
-            var result = target.Join(name, true);
+            Assert.ThrowsException<ArgumentException>(() => target.Join(name, true));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Join_AsObserverAndObserverWithNameExists_ArgumentException()
         {
             // Arrange
@@ -599,7 +589,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, true);
 
             // Act
-            var result = target.Join(name, true);
+            Assert.ThrowsException<ArgumentException>(() => target.Join(name, true));
         }
 
         [TestMethod]
@@ -862,7 +852,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Disconnect_EmptyName_ArgumentNullException()
         {
             // Arrange
@@ -870,7 +859,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
 
             // Act
-            target.Disconnect(name);
+            Assert.ThrowsException<ArgumentNullException>(() => target.Disconnect(name));
         }
 
         [TestMethod]

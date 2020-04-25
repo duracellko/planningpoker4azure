@@ -126,6 +126,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         public void UpdateActivity()
         {
+            IsDormant = false;
             LastActivity = Team.DateTimeProvider.UtcNow;
             Team.OnObserverActivity(this);
         }

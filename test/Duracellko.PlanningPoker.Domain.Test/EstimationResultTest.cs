@@ -43,15 +43,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Null_ArgumentNullException()
         {
             // Act
-            var result = new EstimationResult(null);
+            Assert.ThrowsException<ArgumentNullException>(() => new EstimationResult(null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Constructor_DuplicateMember_InvalidOperationException()
         {
             // Arrange
@@ -60,7 +58,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var member = (Member)team.Join("member", false);
 
             // Act
-            var result = new EstimationResult(new Member[] { master, member, master });
+            Assert.ThrowsException<ArgumentException>(() => new EstimationResult(new Member[] { master, member, master }));
         }
 
         [TestMethod]
@@ -108,7 +106,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException))]
         public void IndexerSet_MemberNotInResult_KeyNotFoundException()
         {
             // Arrange
@@ -119,11 +116,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var estimation = new Estimation();
 
             // Act
-            target[member] = estimation;
+            Assert.ThrowsException<KeyNotFoundException>(() => target[member] = estimation);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void IndexerSet_IsReadOnly_InvalidOperationException()
         {
             // Arrange
@@ -135,11 +131,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             target.SetReadOnly();
-            target[member] = estimation;
+            Assert.ThrowsException<InvalidOperationException>(() => target[member] = estimation);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException))]
         public void IndexerGet_MemberNotInResult_KeyNotFoundException()
         {
             // Arrange
@@ -149,7 +144,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new EstimationResult(new Member[] { master });
 
             // Act
-            var estimation = target[member];
+            Assert.ThrowsException<KeyNotFoundException>(() => target[member]);
         }
 
         [TestMethod]

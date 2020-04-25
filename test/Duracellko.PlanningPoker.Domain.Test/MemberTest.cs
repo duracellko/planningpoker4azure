@@ -24,25 +24,23 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange
             var name = "test";
 
             // Act
-            var result = new Member(null, name);
+            Assert.ThrowsException<ArgumentNullException>(() => new Member(null, name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var team = new ScrumTeam("test team");
 
             // Act
-            var result = new Member(team, string.Empty);
+            Assert.ThrowsException<ArgumentNullException>(() => new Member(team, string.Empty));
         }
 
         [TestMethod]
@@ -549,7 +547,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Estimation_SetToNotAvailableValue_ArgumentException()
         {
             // Arrange
@@ -559,7 +556,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var masterEstimation = new Estimation(44.0);
 
             // Act
-            master.Estimation = masterEstimation;
+            Assert.ThrowsException<ArgumentException>(() => master.Estimation = masterEstimation);
         }
     }
 }

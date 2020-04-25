@@ -23,25 +23,23 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange
             var name = "test";
 
             // Act
-            var result = new Observer(null, name);
+            Assert.ThrowsException<ArgumentNullException>(() => new Observer(null, name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var team = new ScrumTeam("test team");
 
             // Act
-            var result = new Observer(team, string.Empty);
+            Assert.ThrowsException<ArgumentNullException>(() => new Observer(team, string.Empty));
         }
 
         [TestMethod]
