@@ -240,7 +240,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void GetScrumTeam_AfterDisconnectingAllScrumMaster_ArgumentException()
+        public void GetScrumTeam_AfterDisconnectingScrumMaster_ArgumentException()
         {
             // Arrange
             var target = CreatePlanningPokerController();

@@ -267,7 +267,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             await Task.Delay(200);
             TakeScreenshot(1, "22-B-Disconnected");
-            ClientTests[1].AssertScrumMasterInTeam(string.Empty);
+            ClientTests[1].AssertScrumMasterInTeam(scrumMaster);
             ClientTests[1].AssertMembersInTeam(member);
 
             // Bob disconnects
@@ -410,7 +410,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             await Task.Delay(200);
             TakeScreenshot(2, "24-C-Disconnected");
-            ClientTests[2].AssertScrumMasterInTeam(string.Empty);
+            ClientTests[2].AssertScrumMasterInTeam(scrumMaster);
             ClientTests[2].AssertMembersInTeam();
             ClientTests[2].AssertObserversInTeam(observer);
 
