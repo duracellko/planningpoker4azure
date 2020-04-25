@@ -65,6 +65,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
                 {
                     Assert.AreEqual(expected.GetType(), actual.GetType());
                     Assert.AreEqual(expected.LastActivity, actual.LastActivity);
+                    Assert.AreEqual(expected.IsDormant, actual.IsDormant);
 
                     if (!basicPropertiesOnly)
                     {

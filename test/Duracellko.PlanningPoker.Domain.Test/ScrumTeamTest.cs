@@ -201,6 +201,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsNotNull(result);
             Assert.AreEqual<ScrumTeam>(target, result.Team);
             Assert.AreEqual<string>(name, result.Name);
+            Assert.IsFalse(result.IsDormant);
         }
 
         [TestMethod]
@@ -364,6 +365,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsInstanceOfType(result, typeof(Member));
             Assert.AreEqual<ScrumTeam>(target, result.Team);
             Assert.AreEqual<string>(name, result.Name);
+            Assert.IsFalse(result.IsDormant);
         }
 
         [TestMethod]
@@ -381,6 +383,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.AreEqual<Type>(typeof(Observer), result.GetType());
             Assert.AreEqual<ScrumTeam>(target, result.Team);
             Assert.AreEqual<string>(name, result.Name);
+            Assert.IsFalse(result.IsDormant);
         }
 
         [TestMethod]
@@ -793,6 +796,23 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void Disconnect_NameOfTheScrumMaster_ScrumMasterIsDormantInTheTeam()
+        {
+            // Arrange
+            var name = "test";
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster(name);
+
+            // Act
+            target.Disconnect(name);
+
+            // Verify
+            CollectionAssert.AreEquivalent(new Member[] { master }, target.Members.ToList());
+            Assert.IsTrue(master.IsDormant);
+            Assert.AreEqual(master, target.ScrumMaster);
+        }
+
+        [TestMethod]
         public void Disconnect_NameOfTheMember_MemberIsRemovedFromTheTeam()
         {
             // Arrange
@@ -828,6 +848,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var name = "test";
             var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
             var member = target.Join("member", false);
 
@@ -836,7 +857,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             CollectionAssert.AreEquivalent(new Observer[] { observer }, target.Observers.ToList());
-            CollectionAssert.AreEquivalent(new Observer[] { member }, target.Members.ToList());
+            CollectionAssert.AreEquivalent(new Observer[] { master, member }, target.Members.ToList());
+            Assert.IsFalse(master.IsDormant);
         }
 
         [TestMethod]
@@ -874,6 +896,73 @@ namespace Duracellko.PlanningPoker.Domain.Test
                 new KeyValuePair<Member, Estimation>(member, null)
             };
             CollectionAssert.AreEquivalent(expectedResult, target.EstimationResult.ToList());
+        }
+
+        [TestMethod]
+        public void Disconnect_ScrumMasterAfterEstimationStarted_EstimationIsInProgress()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = (Member)target.Join("member", false);
+            master.StartEstimation();
+            var memberEstimation = new Estimation();
+
+            // Act
+            member.Estimation = memberEstimation;
+            target.Disconnect(master.Name);
+
+            // Verify
+            Assert.IsTrue(master.IsDormant);
+            Assert.AreEqual<TeamState>(TeamState.EstimationInProgress, target.State);
+            Assert.IsNull(target.EstimationResult);
+            Assert.IsNotNull(target.EstimationParticipants);
+            Assert.AreEqual(2, target.EstimationParticipants.Count());
+            Assert.IsTrue(target.EstimationParticipants.Any(e => e.MemberName == master.Name && !e.Estimated));
+            Assert.IsTrue(target.EstimationParticipants.Any(e => e.MemberName == member.Name && e.Estimated));
+        }
+
+        [TestMethod]
+        public void Disconnect_AsScrumMaster_ScrumTeamGetMemberDisconnectedMessage()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = target.Join("member", false);
+            var eventArgsList = new List<MessageReceivedEventArgs>();
+            target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgsList.Add(e));
+
+            // Act
+            target.Disconnect(master.Name);
+            target.Disconnect(master.Name);
+
+            // Verify
+            Assert.AreEqual(1, eventArgsList.Count);
+            var eventArgs = eventArgsList[0];
+            Assert.IsNotNull(eventArgs);
+            var message = eventArgs.Message;
+            Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
+        }
+
+        [TestMethod]
+        public void Disconnect_AsScrumMaster_ScrumTeamGetMessageWithMember()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = target.Join("member", false);
+            MessageReceivedEventArgs eventArgs = null;
+            target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
+
+            // Act
+            target.Disconnect(master.Name);
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+            var message = eventArgs.Message;
+            Assert.IsInstanceOfType(message, typeof(MemberMessage));
+            var memberMessage = (MemberMessage)message;
+            Assert.AreEqual<Observer>(master, memberMessage.Member);
         }
 
         [TestMethod]
@@ -1186,6 +1275,50 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void DisconnectInactiveObservers_ScrumMasterIsActive_TeamIsUnchanged()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+
+            var name = "test";
+            var target = new ScrumTeam("test team", dateTimeProvider);
+            var master = target.SetScrumMaster(name);
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+
+            // Act
+            target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
+
+            // Verify
+            Assert.AreEqual<int>(1, target.Members.Count());
+            Assert.AreEqual(master, target.ScrumMaster);
+            Assert.IsFalse(master.IsDormant);
+        }
+
+        [TestMethod]
+        public void DisconnectInactiveObservers_ScrumMasterIsNotActive_ScrumMasterIsDormant()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+
+            var name = "test";
+            var target = new ScrumTeam("test team", dateTimeProvider);
+            var master = target.SetScrumMaster(name);
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+
+            // Act
+            target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
+
+            // Verify
+            Assert.AreEqual<int>(1, target.Members.Count());
+            Assert.AreEqual(master, target.ScrumMaster);
+            Assert.IsTrue(master.IsDormant);
+        }
+
+        [TestMethod]
         public void DisconnectInactiveObservers_NoInactiveMembers_TeamIsUnchanged()
         {
             // Arrange
@@ -1263,6 +1396,33 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<int>(0, target.Observers.Count());
+        }
+
+        [TestMethod]
+        public void DisconnectInactiveObservers_ActiveMemberAndInactiveScrumMaster_MemberMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+
+            var target = new ScrumTeam("test team", dateTimeProvider);
+            var master = target.SetScrumMaster("master");
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            var member = target.Join("member", false);
+            EventArgs eventArgs = null;
+            member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+
+            // Act
+            target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+            Assert.IsTrue(member.HasMessage);
+            var message = member.PopMessage();
+            Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
         }
 
         [TestMethod]
@@ -1352,6 +1512,38 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsTrue(master.HasMessage);
             var message = master.PopMessage();
             Assert.AreEqual<MessageType>(MessageType.EstimationEnded, message.MessageType);
+        }
+
+        [TestMethod]
+        public void DisconnectInactiveObservers_EstimationStartedActiveMemberInactiveScrumMaster_EstimationIsInProgress()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+
+            var target = new ScrumTeam("test team", dateTimeProvider);
+            var master = target.SetScrumMaster("master");
+            var member = (Member)target.Join("member", false);
+            master.StartEstimation();
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            member.Estimation = new Estimation();
+            member.UpdateActivity();
+
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            TestHelper.ClearMessages(master);
+
+            // Act
+            target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
+
+            // Verify
+            Assert.IsTrue(master.IsDormant);
+            Assert.AreEqual<TeamState>(TeamState.EstimationInProgress, target.State);
+            Assert.IsNull(target.EstimationResult);
+            Assert.IsNotNull(target.EstimationParticipants);
+            Assert.AreEqual(2, target.EstimationParticipants.Count());
+            Assert.IsTrue(target.EstimationParticipants.Any(e => e.MemberName == master.Name && !e.Estimated));
+            Assert.IsTrue(target.EstimationParticipants.Any(e => e.MemberName == member.Name && e.Estimated));
         }
     }
 }

@@ -59,6 +59,20 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         }
 
         [TestMethod]
+        public void SerializeAndDeserialize_TeamWithDormantScrumMaster_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            team.SetScrumMaster("master");
+            team.Join("member", false);
+            team.Disconnect("master");
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
         public void SerializeAndDeserialize_TeamWithMembersAndObservers_CopyOfTheTeam()
         {
             // Arrange
