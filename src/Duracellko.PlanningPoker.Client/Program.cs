@@ -12,10 +12,10 @@ namespace Duracellko.PlanningPoker.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddBaseAddressHttpClient();
+            var environment = builder.HostEnvironment;
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(environment.BaseAddress) });
 
-            var serviceProvider = builder.Services.BuildServiceProvider();
-            var useHttpClient = await GetClientConfiguration(serviceProvider);
+            var useHttpClient = await GetClientConfiguration(environment);
             Startup.ConfigureServices(builder.Services, false, useHttpClient);
             builder.RootComponents.Add<App>("app");
 
@@ -23,11 +23,11 @@ namespace Duracellko.PlanningPoker.Client
         }
 
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Use default configuration, when loading fails.")]
-        private static async Task<bool> GetClientConfiguration(IServiceProvider serviceProvider)
+        private static async Task<bool> GetClientConfiguration(IWebAssemblyHostEnvironment environment)
         {
             try
             {
-                using (var httpClient = serviceProvider.GetRequiredService<HttpClient>())
+                using (var httpClient = new HttpClient { BaseAddress = new Uri(environment.BaseAddress) })
                 {
                     var clientConfiguration = await httpClient.GetStringAsync("configuration");
                     return string.Equals(clientConfiguration.Trim(), "HttpClient", StringComparison.OrdinalIgnoreCase);
