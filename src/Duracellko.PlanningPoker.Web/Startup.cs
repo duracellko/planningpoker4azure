@@ -11,6 +11,7 @@ using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -111,6 +112,10 @@ namespace Duracellko.PlanningPoker.Web
                     app.UseWebAssemblyDebugging();
                 }
             }
+
+            var rewriteOptions = new RewriteOptions()
+                .AddRewrite(@"^appsettings\.json$", "configuration", false);
+            app.UseRewriter(rewriteOptions);
 
             app.UseStaticFiles();
             app.UseBlazorFrameworkFiles();
