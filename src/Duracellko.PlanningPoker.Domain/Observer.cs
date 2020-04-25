@@ -51,6 +51,7 @@ namespace Duracellko.PlanningPoker.Domain
             Name = memberData.Name;
             LastActivity = DateTime.SpecifyKind(memberData.LastActivity, DateTimeKind.Utc);
             _lastMessageId = memberData.LastMessageId;
+            IsDormant = memberData.IsDormant;
         }
 
         /// <summary>
@@ -76,31 +77,30 @@ namespace Duracellko.PlanningPoker.Domain
         /// <value>
         ///     <c>True</c> if the member has message; otherwise, <c>false</c>.
         /// </value>
-        public bool HasMessage
-        {
-            get
-            {
-                return _messages.Count != 0;
-            }
-        }
+        public bool HasMessage => _messages.Count != 0;
 
         /// <summary>
         /// Gets the collection messages sent to the member.
         /// </summary>
         /// <value>The collection of messages.</value>
-        public IEnumerable<Message> Messages
-        {
-            get
-            {
-                return _messages;
-            }
-        }
+        public IEnumerable<Message> Messages => _messages;
 
         /// <summary>
         /// Gets the last time, the member checked for new messages.
         /// </summary>
         /// <value>The last activity time of the member.</value>
         public DateTime LastActivity { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the member is connected or not.
+        /// This value is always false for regular members, because regular member is removed from team
+        /// after disconnecting. However, Scrum Master is never removed from the team, because he is owner.
+        /// This value tracks, if Scrum Master is actually connected or just dormant.
+        /// </summary>
+        /// <value>
+        ///     <c>True</c> if member is connected; otherwise <c>false</c>.
+        /// </value>
+        public bool IsDormant { get; internal set; }
 
         /// <summary>
         /// Pops new message sent to the member and removes it from member's message queue.
@@ -126,6 +126,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         public void UpdateActivity()
         {
+            IsDormant = false;
             LastActivity = Team.DateTimeProvider.UtcNow;
             Team.OnObserverActivity(this);
         }
@@ -172,6 +173,7 @@ namespace Duracellko.PlanningPoker.Domain
                 MemberType = Serialization.MemberType.Observer,
                 LastActivity = LastActivity,
                 LastMessageId = _lastMessageId,
+                IsDormant = IsDormant,
             };
 
             result.Messages = Messages.Select(m => m.GetData()).ToList();

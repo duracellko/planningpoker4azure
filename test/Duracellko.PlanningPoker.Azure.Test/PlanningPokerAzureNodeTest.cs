@@ -289,7 +289,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public async Task Start_MasterDisconnectedFromServiceBus_MasterDisconnectedFromTeam()
+        public async Task Start_MasterDisconnectedFromServiceBus_MasterIsDormant()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
@@ -316,7 +316,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Verify();
             serviceBus.Verify();
             teamLock.Verify();
-            Assert.IsNull(team.ScrumMaster);
+            Assert.IsTrue(team.ScrumMaster.IsDormant);
         }
 
         [TestMethod]

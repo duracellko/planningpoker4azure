@@ -17,6 +17,17 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Message"/> class.
         /// </summary>
+        /// <param name="type">The message type.</param>
+        /// <param name="id">The message ID.</param>
+        public Message(MessageType type, long id)
+        {
+            MessageType = type;
+            Id = id;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Message"/> class.
+        /// </summary>
         /// <param name="messageData">Message serialization data.</param>
         internal Message(Serialization.MessageData messageData)
         {

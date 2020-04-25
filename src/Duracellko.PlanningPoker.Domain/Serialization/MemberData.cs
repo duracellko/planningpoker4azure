@@ -36,6 +36,11 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         public DateTime LastActivity { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the member is connected or not.
+        /// </summary>
+        public bool IsDormant { get; set; }
+
+        /// <summary>
         /// Gets or sets the estimation, the member is picking in planning poker.
         /// </summary>
         public Estimation Estimation { get; set; }

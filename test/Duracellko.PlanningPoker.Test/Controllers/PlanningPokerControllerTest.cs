@@ -103,7 +103,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateScrumTeam_TeamNameAlreadyExists_ArgumentException()
         {
             // Arrange
@@ -112,29 +111,27 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             team.Dispose();
 
             // Act
-            target.CreateScrumTeam("team", "master2");
+            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master2"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CreateScrumTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.CreateScrumTeam(string.Empty, "master");
+            Assert.ThrowsException<ArgumentNullException>(() => target.CreateScrumTeam(string.Empty, "master"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CreateScrumTeam_ScrumMasterNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.CreateScrumTeam("test team", string.Empty);
+            Assert.ThrowsException<ArgumentNullException>(() => target.CreateScrumTeam("test team", string.Empty));
         }
 
         [TestMethod]
@@ -181,7 +178,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void AttachScrumTeam_TeamNameAlreadyExists_ArgumentException()
         {
             // Arrange
@@ -191,18 +187,17 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var team = new ScrumTeam("team");
 
             // Act
-            target.AttachScrumTeam(team);
+            Assert.ThrowsException<ArgumentException>(() => target.AttachScrumTeam(team));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AttachScrumTeam_Null_ArgumentNullException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.AttachScrumTeam(null);
+            Assert.ThrowsException<ArgumentNullException>(() => target.AttachScrumTeam(null));
         }
 
         [TestMethod]
@@ -225,54 +220,80 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetScrumTeam_TeamNameNotExists_ArgumentException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetScrumTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.GetScrumTeam(string.Empty);
+            Assert.ThrowsException<ArgumentNullException>(() => target.GetScrumTeam(string.Empty));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        public void GetScrumTeam_AfterDisconnectingScrumMaster_ArgumentException()
+        {
+            // Arrange
+            var target = CreatePlanningPokerController();
+            using (var teamLock = target.CreateScrumTeam("team", "master"))
+            {
+                var team = teamLock.Team;
+            }
+
+            using (var teamLock = target.GetScrumTeam("team"))
+            {
+                var team = teamLock.Team;
+                team.Disconnect("master");
+            }
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+        }
+
+        [TestMethod]
         public void GetScrumTeam_AfterDisconnectingAllMembers_ArgumentException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
-            ScrumTeam team;
             using (var teamLock = target.CreateScrumTeam("team", "master"))
             {
-                team = teamLock.Team;
+                var team = teamLock.Team;
+                team.Join("member", false);
             }
 
-            team.Disconnect("master");
+            using (var teamLock = target.GetScrumTeam("team"))
+            {
+                var team = teamLock.Team;
+                team.Disconnect("master");
+            }
+
+            using (var teamLock = target.GetScrumTeam("team"))
+            {
+                var team = teamLock.Team;
+                team.Disconnect("member");
+            }
 
             // Act
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetMessagesAsync_ObserverIsNull_ArgumentNullException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            target.GetMessagesAsync(null, default(CancellationToken));
+            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null, default(CancellationToken)));
         }
 
         [TestMethod]
@@ -336,7 +357,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OperationCanceledException))]
         public async Task GetMessagesAsync_TaskIsCancelled_ThrowsTaskCancelledException()
         {
             using (var cancellationToken = new CancellationTokenSource())
@@ -354,7 +374,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 }
 
                 cancellationToken.Cancel();
-                await messagesTask;
+                await Assert.ThrowsExceptionAsync<OperationCanceledException>(() => messagesTask);
             }
         }
 
@@ -507,7 +527,6 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void DisconnectInactiveObservers_InactiveScrumMaster_TeamIsClosed()
         {
             // Arrange
@@ -527,7 +546,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
 
             // Verify
-            target.GetScrumTeam("team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
         }
 
         private static PlanningPokerController CreatePlanningPokerController(

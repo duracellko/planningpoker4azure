@@ -24,25 +24,23 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange
             var name = "test";
 
             // Act
-            var result = new ScrumMaster(null, name);
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(null, name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NameIsEmpty_ArgumentNullException()
         {
             // Arrange
             var team = new ScrumTeam("test team");
 
             // Act
-            var result = new ScrumMaster(team, string.Empty);
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(team, string.Empty));
         }
 
         [TestMethod]
@@ -201,7 +199,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void StartEstimation_EstimationInProgress_InvalidOperationException()
         {
             // Arrange
@@ -210,7 +207,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             master.StartEstimation();
 
             // Act
-            master.StartEstimation();
+            Assert.ThrowsException<InvalidOperationException>(() => master.StartEstimation());
         }
 
         [TestMethod]
@@ -537,6 +534,23 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsFalse(observer.HasMessage);
+        }
+
+        [TestMethod]
+        public void UpdateActivity_IsDormant_IsNotDormant()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var master = team.SetScrumMaster("master");
+            var observer = team.Join("observer", true);
+
+            // Act
+            team.Disconnect(master.Name);
+            Assert.IsTrue(master.IsDormant);
+            master.UpdateActivity();
+
+            // Verify
+            Assert.IsFalse(master.IsDormant);
         }
     }
 }

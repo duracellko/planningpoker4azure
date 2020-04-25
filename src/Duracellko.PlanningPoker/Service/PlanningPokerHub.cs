@@ -300,7 +300,8 @@ namespace Duracellko.PlanningPoker.Service
             try
             {
                 var messages = await receiveMessagesTask;
-                var clientMessages = messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+                var clientMessages = messages.Select(ServiceEntityMapper.FilterMessage)
+                    .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
 
                 _logger.LogDebug("Notify messages received (connectionId: {connectionId})", connectionId);
                 var client = _clientContext.Clients.Client(connectionId);

@@ -40,14 +40,11 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Null_ArgumentNullException()
         {
             // Act
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
-            using (var result = new PlanningPokerHub(null, null, logger))
-            {
-            }
+            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null, null, logger));
         }
 
         [TestMethod]
@@ -102,7 +99,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CreateTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -110,12 +106,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CreateTeam(null, ScrumMasterName);
+                Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null, ScrumMasterName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CreateTeam_ScrumMasterNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -123,12 +118,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CreateTeam(TeamName, null);
+                Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateTeam_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -136,12 +130,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CreateTeam(LongTeamName, ScrumMasterName);
+                Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateTeam_ScrumMasterNameTooLong_ArgumentException()
         {
             // Arrange
@@ -149,7 +142,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CreateTeam(TeamName, LongMemberName);
+                Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName));
             }
         }
 
@@ -272,7 +265,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void JoinTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -280,12 +272,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.JoinTeam(null, MemberName, false);
+                Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(null, MemberName, false));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void JoinTeam_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -293,12 +284,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.JoinTeam(TeamName, null, false);
+                Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null, false));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void JoinTeam_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -306,12 +296,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.JoinTeam(LongTeamName, MemberName, false);
+                Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void JoinTeam_MemberNameTooLong_ArgumentException()
         {
             // Arrange
@@ -319,7 +308,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.JoinTeam(TeamName, LongMemberName, false);
+                Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
             }
         }
 
@@ -427,7 +416,42 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(HubException))]
+        public void ReconnectTeam_TeamNameAndDisconnectedScrumMaster_ReturnsReconnectedTeam()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var member = team.Join(MemberName, false);
+            team.Disconnect(ScrumMasterName);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                var result = target.ReconnectTeam(TeamName, ScrumMasterName);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                teamLock.Verify(l => l.Team);
+
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.ScrumTeam);
+                Assert.AreEqual<long>(3, result.LastMessageId);
+                Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+                Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+                Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+                Assert.IsNotNull(result.ScrumTeam.Members);
+                var expectedMembers = new string[] { ScrumMasterName, MemberName };
+                CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+                var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+                CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+
+                Assert.IsFalse(team.ScrumMaster.IsDormant);
+            }
+        }
+
+        [TestMethod]
         public void ReconnectTeam_TeamNameAndNonExistingMemberName_HubException()
         {
             // Arrange
@@ -438,7 +462,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.ReconnectTeam(TeamName, MemberName);
+                Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
             }
         }
 
@@ -665,7 +689,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ReconnectTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -673,12 +696,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.ReconnectTeam(null, MemberName);
+                Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(null, MemberName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ReconnectTeam_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -686,12 +708,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.ReconnectTeam(TeamName, null);
+                Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void ReconnectTeam_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -699,12 +720,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.ReconnectTeam(LongTeamName, MemberName);
+                Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void ReconnectTeam_MemberNameTooLong_ArgumentException()
         {
             // Arrange
@@ -712,12 +732,12 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.ReconnectTeam(TeamName, LongMemberName);
+                Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
             }
         }
 
         [TestMethod]
-        public void DisconnectTeam_TeamNameAndScrumMasterName_ScrumMasterIsRemovedFromTheTeam()
+        public void DisconnectTeam_TeamNameAndScrumMasterName_ScrumMasterIsDormant()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -734,8 +754,9 @@ namespace Duracellko.PlanningPoker.Test.Service
                 teamLock.Verify();
                 teamLock.Verify(l => l.Team);
 
-                Assert.IsNull(team.ScrumMaster);
-                Assert.IsFalse(team.Members.Any());
+                Assert.IsTrue(team.ScrumMaster.IsDormant);
+                var expectedMembers = new string[] { ScrumMasterName };
+                CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
             }
         }
 
@@ -787,7 +808,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void DisconnectTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -795,12 +815,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.DisconnectTeam(null, MemberName);
+                Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(null, MemberName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void DisconnectTeam_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -808,12 +827,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.DisconnectTeam(TeamName, null);
+                Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void DisconnectTeam_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -821,12 +839,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.DisconnectTeam(LongTeamName, MemberName);
+                Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void DisconnectTeam_MemberNameTooLong_ArgumentException()
         {
             // Arrange
@@ -834,7 +851,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.DisconnectTeam(TeamName, LongMemberName);
+                Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
             }
         }
 
@@ -861,7 +878,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void StartEstimation_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -869,12 +885,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.StartEstimation(null);
+                Assert.ThrowsException<ArgumentNullException>(() => target.StartEstimation(null));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void StartEstimation_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -882,7 +897,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.StartEstimation(LongTeamName);
+                Assert.ThrowsException<ArgumentException>(() => target.StartEstimation(LongTeamName));
             }
         }
 
@@ -910,7 +925,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CancelEstimation_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -918,12 +932,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CancelEstimation(null);
+                Assert.ThrowsException<ArgumentNullException>(() => target.CancelEstimation(null));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CancelEstimation_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -931,7 +944,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.CancelEstimation(LongTeamName);
+                Assert.ThrowsException<ArgumentException>(() => target.CancelEstimation(LongTeamName));
             }
         }
 
@@ -1078,7 +1091,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SubmitEstimation_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -1086,12 +1098,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(null, MemberName, 0.0);
+                Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(null, MemberName, 0.0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SubmitEstimation_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -1099,12 +1110,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(TeamName, null, 0.0);
+                Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null, 0.0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void SubmitEstimation_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -1112,12 +1122,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(LongTeamName, MemberName, 1.0);
+                Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void SubmitEstimation_MemberNameTooLong_ArgumentException()
         {
             // Arrange
@@ -1125,7 +1134,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(TeamName, LongMemberName, 1.0);
+                Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
             }
         }
 
@@ -1227,6 +1236,82 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void GetMessages_ScrumMasterDisconnected_MemberGetsEmptyMessage()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var member = team.Join(MemberName, false);
+            team.Disconnect(ScrumMasterName);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(member, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => member.Messages.ToList()).Verifiable();
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+            {
+                // Act
+                target.GetMessages(TeamName, MemberName, 0);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual<int>(1, result.Count);
+                Assert.AreEqual<long>(1, result[0].Id);
+                Assert.AreEqual<MessageType>(MessageType.Empty, result[0].Type);
+            }
+        }
+
+        [TestMethod]
+        public void GetMessages_MemberDisconnected_ScrumMasterGetsMessage()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            team.Join(MemberName, false);
+            team.Disconnect(MemberName);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => team.ScrumMaster.Messages.ToList()).Verifiable();
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+            {
+                // Act
+                target.GetMessages(TeamName, ScrumMasterName, 0);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual<int>(2, result.Count);
+                Assert.AreEqual<long>(2, result[1].Id);
+                Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
+                Assert.IsInstanceOfType(result[1], typeof(MemberMessage));
+                var memberMessage = (MemberMessage)result[1];
+                Assert.IsNotNull(memberMessage.Member);
+                Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
+            }
+        }
+
+        [TestMethod]
         public void GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
         {
             // Arrange
@@ -1258,7 +1343,6 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetMessages_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -1266,12 +1350,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.GetMessages(null, MemberName, 0);
+                Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(null, MemberName, 0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetMessages_MemberNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -1279,12 +1362,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.GetMessages(TeamName, null, 0);
+                Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(TeamName, null, 0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetMessages_TeamNameTooLong_ArgumentException()
         {
             // Arrange
@@ -1292,12 +1374,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.GetMessages(LongTeamName, MemberName, 0);
+                Assert.ThrowsException<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, 0));
             }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetMessages_MemberNameTooLong_ArgumentException()
         {
             // Arrange
@@ -1305,7 +1386,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.GetMessages(TeamName, LongMemberName, 0);
+                Assert.ThrowsException<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, 0));
             }
         }
 

@@ -34,8 +34,6 @@ namespace Duracellko.PlanningPoker.Domain
 
         private EstimationResult _estimationResult;
 
-        private DateTimeProvider _dateTimeProvider;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeam"/> class.
         /// </summary>
@@ -57,7 +55,7 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentNullException(nameof(name));
             }
 
-            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = name;
         }
 
@@ -78,7 +76,7 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentException("Scrum Team name cannot be empty.", nameof(scrumTeamData));
             }
 
-            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = scrumTeamData.Name;
             State = scrumTeamData.State;
 
@@ -109,49 +107,25 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets the observers watching planning poker game of the Scrum team.
         /// </summary>
         /// <value>The observers collection.</value>
-        public IEnumerable<Observer> Observers
-        {
-            get
-            {
-                return _observers;
-            }
-        }
+        public IEnumerable<Observer> Observers => _observers;
 
         /// <summary>
         /// Gets the collection members joined to the Scrum team.
         /// </summary>
         /// <value>The members collection.</value>
-        public IEnumerable<Member> Members
-        {
-            get
-            {
-                return _members;
-            }
-        }
+        public IEnumerable<Member> Members => _members;
 
         /// <summary>
         /// Gets the scrum master of the team.
         /// </summary>
         /// <value>The Scrum master.</value>
-        public ScrumMaster ScrumMaster
-        {
-            get
-            {
-                return Members.OfType<ScrumMaster>().FirstOrDefault();
-            }
-        }
+        public ScrumMaster ScrumMaster => Members.OfType<ScrumMaster>().FirstOrDefault();
 
         /// <summary>
         /// Gets the available estimations the members can pick from.
         /// </summary>
         /// <value>The collection of available estimations.</value>
-        public IEnumerable<Estimation> AvailableEstimations
-        {
-            get
-            {
-                return _availableEstimations;
-            }
-        }
+        public IEnumerable<Estimation> AvailableEstimations => _availableEstimations;
 
         /// <summary>
         /// Gets the current Scrum team state.
@@ -163,13 +137,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets the estimation result, when <see cref="P:State"/> is EstimationFinished.
         /// </summary>
         /// <value>The estimation result.</value>
-        public EstimationResult EstimationResult
-        {
-            get
-            {
-                return State == TeamState.EstimationFinished ? _estimationResult : null;
-            }
-        }
+        public EstimationResult EstimationResult => State == TeamState.EstimationFinished ? _estimationResult : null;
 
         /// <summary>
         /// Gets the collection of participants in current estimation.
@@ -196,13 +164,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets the date time provider used by the Scrum team.
         /// </summary>
         /// <value>The date-time provider.</value>
-        public DateTimeProvider DateTimeProvider
-        {
-            get
-            {
-                return _dateTimeProvider;
-            }
-        }
+        public DateTimeProvider DateTimeProvider { get; }
 
         /// <summary>
         /// Sets new scrum master of the team.
@@ -284,36 +246,36 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentNullException(nameof(name));
             }
 
+            Observer disconnectedObserver = null;
             var observer = _observers.FirstOrDefault(o => MatchObserverName(o, name));
             if (observer != null)
             {
                 _observers.Remove(observer);
-
-                var recipients = UnionMembersAndObservers();
-                SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = observer });
-
-                // Send message to disconnecting observer, so that he/she stops waiting for messages.
-                observer.SendMessage(new Message(MessageType.Empty));
+                disconnectedObserver = observer;
             }
             else
             {
                 var member = _members.FirstOrDefault(o => MatchObserverName(o, name));
-                if (member != null)
+                if (member != null && !member.IsDormant)
                 {
-                    _members.Remove(member);
+                    DisconnectMember(member);
+                    disconnectedObserver = member;
 
                     if (State == TeamState.EstimationInProgress)
                     {
                         // Check if all members picked estimations. If member disconnects then his/her estimation is null.
                         UpdateEstimationResult(null);
                     }
-
-                    var recipients = UnionMembersAndObservers();
-                    SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = member });
-
-                    // Send message to disconnecting member, so that he/she stops waiting for messages.
-                    member.SendMessage(new Message(MessageType.Empty));
                 }
+            }
+
+            if (disconnectedObserver != null)
+            {
+                var recipients = UnionMembersAndObservers();
+                SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = disconnectedObserver });
+
+                // Send message to disconnecting member, so that he/she stops waiting for messages.
+                disconnectedObserver.SendMessage(new Message(MessageType.Empty));
             }
         }
 
@@ -324,7 +286,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <returns>The member or observer.</returns>
         public Observer FindMemberOrObserver(string name)
         {
-            var allObservers = Observers.Union(Members);
+            var allObservers = UnionMembersAndObservers();
             return allObservers.FirstOrDefault(o => MatchObserverName(o, name));
         }
 
@@ -335,11 +297,11 @@ namespace Duracellko.PlanningPoker.Domain
         public void DisconnectInactiveObservers(TimeSpan inactivityTime)
         {
             var lastInactivityTime = DateTimeProvider.UtcNow - inactivityTime;
-            var isObserverActive = new Func<Observer, bool>(o => o.LastActivity < lastInactivityTime);
-            var inactiveObservers = Observers.Where(isObserverActive).ToArray();
-            var inactiveMembers = Members.Where<Member>(isObserverActive).ToArray();
+            bool IsObserverActive(Observer observer) => observer.LastActivity < lastInactivityTime && !observer.IsDormant;
+            var inactiveObservers = Observers.Where(IsObserverActive).ToList();
+            var inactiveMembers = Members.Where<Member>(IsObserverActive).ToList();
 
-            if (inactiveObservers.Length > 0 || inactiveMembers.Length > 0)
+            if (inactiveObservers.Count > 0 || inactiveMembers.Count > 0)
             {
                 foreach (var observer in inactiveObservers)
                 {
@@ -348,7 +310,7 @@ namespace Duracellko.PlanningPoker.Domain
 
                 foreach (var member in inactiveMembers)
                 {
-                    _members.Remove(member);
+                    DisconnectMember(member);
                 }
 
                 var recipients = UnionMembersAndObservers();
@@ -357,7 +319,7 @@ namespace Duracellko.PlanningPoker.Domain
                     SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = member });
                 }
 
-                if (inactiveMembers.Length > 0)
+                if (inactiveMembers.Count > 0)
                 {
                     if (State == TeamState.EstimationInProgress)
                     {
@@ -380,7 +342,7 @@ namespace Duracellko.PlanningPoker.Domain
                 State = State,
             };
 
-            result.Members = Observers.Concat(Members).Select(m => m.GetData()).ToList();
+            result.Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList();
             result.EstimationResult = _estimationResult?.GetData();
             return result;
         }
@@ -446,10 +408,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="e">The <see cref="MessageReceivedEventArgs"/> instance containing the event data.</param>
         protected virtual void OnMessageReceived(MessageReceivedEventArgs e)
         {
-            if (MessageReceived != null)
-            {
-                MessageReceived(this, e);
-            }
+            MessageReceived?.Invoke(this, e);
         }
 
         private static bool MatchObserverName(Observer observer, string name)
@@ -484,6 +443,19 @@ namespace Duracellko.PlanningPoker.Domain
             foreach (var recipient in recipients)
             {
                 recipient.SendMessage(messageFactory());
+            }
+        }
+
+        private void DisconnectMember(Member member)
+        {
+            if (member is ScrumMaster)
+            {
+                // Scrum Master is not removed from the team, because he is the owner.
+                member.IsDormant = true;
+            }
+            else
+            {
+                _members.Remove(member);
             }
         }
 
