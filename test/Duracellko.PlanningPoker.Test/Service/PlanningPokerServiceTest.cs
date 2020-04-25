@@ -680,7 +680,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        public void DisconnectTeam_TeamNameAndScrumMasterName_ScrumMasterIsRemovedFromTheTeam()
+        public void DisconnectTeam_TeamNameAndScrumMasterName_ScrumMasterIsDormant()
         {
             // Arrange
             var team = CreateBasicTeam();
@@ -697,8 +697,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify();
             teamLock.Verify(l => l.Team);
 
-            Assert.IsNull(team.ScrumMaster);
-            Assert.IsFalse(team.Members.Any());
+            Assert.IsTrue(team.ScrumMaster.IsDormant);
+            var expectedMembers = new string[] { ScrumMasterName };
+            CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
         }
 
         [TestMethod]

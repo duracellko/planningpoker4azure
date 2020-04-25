@@ -285,6 +285,11 @@ namespace Duracellko.PlanningPoker.Controllers
             // empty implementation by default
         }
 
+        private static bool IsTeamActive(ScrumTeam team)
+        {
+            return team.Members.Any(m => !m.IsDormant) || team.Observers.Any(o => !o.IsDormant);
+        }
+
         private void ScrumTeamOnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             var team = (ScrumTeam)sender;
@@ -294,7 +299,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             if (e.Message.MessageType == MessageType.MemberDisconnected)
             {
-                if (!team.Members.Any() && !team.Observers.Any())
+                if (!IsTeamActive(team))
                 {
                     saveTeam = false;
                     OnTeamRemoved(team);
@@ -361,7 +366,7 @@ namespace Duracellko.PlanningPoker.Controllers
         private bool VerifyTeamActive(ScrumTeam team)
         {
             team.DisconnectInactiveObservers(Configuration.ClientInactivityTimeout);
-            return team.Members.Any() || team.Observers.Any();
+            return IsTeamActive(team);
         }
 
         private void LogScrumTeamMessage(ScrumTeam team, Message message)

@@ -246,16 +246,12 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentNullException(nameof(name));
             }
 
+            Observer disconnectedObserver = null;
             var observer = _observers.FirstOrDefault(o => MatchObserverName(o, name));
             if (observer != null)
             {
                 _observers.Remove(observer);
-
-                var recipients = UnionMembersAndObservers();
-                SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = observer });
-
-                // Send message to disconnecting observer, so that he/she stops waiting for messages.
-                observer.SendMessage(new Message(MessageType.Empty));
+                disconnectedObserver = observer;
             }
             else
             {
@@ -263,19 +259,23 @@ namespace Duracellko.PlanningPoker.Domain
                 if (member != null && !member.IsDormant)
                 {
                     DisconnectMember(member);
+                    disconnectedObserver = member;
 
                     if (State == TeamState.EstimationInProgress)
                     {
                         // Check if all members picked estimations. If member disconnects then his/her estimation is null.
                         UpdateEstimationResult(null);
                     }
-
-                    var recipients = UnionMembersAndObservers();
-                    SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = member });
-
-                    // Send message to disconnecting member, so that he/she stops waiting for messages.
-                    member.SendMessage(new Message(MessageType.Empty));
                 }
+            }
+
+            if (disconnectedObserver != null)
+            {
+                var recipients = UnionMembersAndObservers();
+                SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected) { Member = disconnectedObserver });
+
+                // Send message to disconnecting member, so that he/she stops waiting for messages.
+                disconnectedObserver.SendMessage(new Message(MessageType.Empty));
             }
         }
 
