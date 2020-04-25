@@ -1236,6 +1236,82 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void GetMessages_ScrumMasterDisconnected_MemberGetsEmptyMessage()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var member = team.Join(MemberName, false);
+            team.Disconnect(ScrumMasterName);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(member, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => member.Messages.ToList()).Verifiable();
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+            {
+                // Act
+                target.GetMessages(TeamName, MemberName, 0);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual<int>(1, result.Count);
+                Assert.AreEqual<long>(1, result[0].Id);
+                Assert.AreEqual<MessageType>(MessageType.Empty, result[0].Type);
+            }
+        }
+
+        [TestMethod]
+        public void GetMessages_MemberDisconnected_ScrumMasterGetsMessage()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            team.Join(MemberName, false);
+            team.Disconnect(MemberName);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => team.ScrumMaster.Messages.ToList()).Verifiable();
+
+            IList<Message> result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+            {
+                // Act
+                target.GetMessages(TeamName, ScrumMasterName, 0);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual<int>(2, result.Count);
+                Assert.AreEqual<long>(2, result[1].Id);
+                Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
+                Assert.IsInstanceOfType(result[1], typeof(MemberMessage));
+                var memberMessage = (MemberMessage)result[1];
+                Assert.IsNotNull(memberMessage.Member);
+                Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
+            }
+        }
+
+        [TestMethod]
         public void GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
         {
             // Arrange

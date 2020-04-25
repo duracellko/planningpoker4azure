@@ -277,7 +277,8 @@ namespace Duracellko.PlanningPoker.Service
             }
 
             var messages = await receiveMessagesTask;
-            return messages.Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+            return messages.Select(ServiceEntityMapper.FilterMessage)
+                .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
         }
 
         private static void ValidateTeamName(string teamName)

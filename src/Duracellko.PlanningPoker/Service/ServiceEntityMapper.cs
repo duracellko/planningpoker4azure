@@ -25,6 +25,27 @@ namespace Duracellko.PlanningPoker.Service
             return MappingEngine.Value.Map<TSource, TDestination>(source);
         }
 
+        /// <summary>
+        /// Filters or transforms message before sending to client.
+        /// MemberDisconnected message of ScrumMaster is transformed to Empty message,
+        /// because that is internal message and ScrumMaster is not actually disconnected.
+        /// </summary>
+        /// <param name="message">The message to transform.</param>
+        /// <returns>The transformed message.</returns>
+        public static D.Message FilterMessage(D.Message message)
+        {
+            if (message.MessageType == D.MessageType.MemberDisconnected)
+            {
+                var memberMessage = (D.MemberMessage)message;
+                if (memberMessage.Member is D.ScrumMaster)
+                {
+                    return new D.Message(D.MessageType.Empty, message.Id);
+                }
+            }
+
+            return message;
+        }
+
         private static IConfigurationProvider CreateMapperConfiguration()
         {
             var result = new MapperConfiguration(config =>
