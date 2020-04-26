@@ -122,14 +122,14 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertScrumMasterInTeam(string scrumMaster)
         {
-            var scrumMasterElements = MembersPanelElement.FindElements(By.XPath("./div/ul[1]/li"));
+            var scrumMasterElements = MembersPanelElement.FindElements(By.XPath("./div/ul[1]/li/span[1]"));
             Assert.AreEqual(1, scrumMasterElements.Count);
             Assert.AreEqual(scrumMaster, scrumMasterElements[0].Text);
         }
 
         public void AssertMembersInTeam(params string[] members)
         {
-            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span"));
+            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span[1]"));
             if (members == null)
             {
                 Assert.AreEqual(0, elements.Count);
