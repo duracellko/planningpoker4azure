@@ -529,15 +529,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 return null;
             }
 
-            var isEstimating = false;
+            var missingEstimation = false;
             if (ScrumTeam.State == TeamState.EstimationInProgress)
             {
                 var memberEstimationStatus = _estimationParticipants
                     .FirstOrDefault(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
-                isEstimating = memberEstimationStatus != null && !memberEstimationStatus.Estimated;
+                missingEstimation = memberEstimationStatus != null && !memberEstimationStatus.Estimated;
             }
 
-            return new MemberItem(member, isEstimating);
+            return new MemberItem(member, missingEstimation);
         }
 
         private class EstimationComparer : IComparer<double?>

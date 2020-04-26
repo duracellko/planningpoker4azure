@@ -319,7 +319,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             PlanningPokerControllerTest.AssertNoObserverIsEstimating(target);
 
-            Assert.IsTrue(target.ScrumMaster.Estimating);
+            Assert.IsTrue(target.ScrumMaster.MissingEstimation);
             PlanningPokerControllerTest.AssertMemberIsEstimating(target, PlanningPokerData.MemberName, true);
         }
 
@@ -347,7 +347,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             PlanningPokerControllerTest.AssertNoObserverIsEstimating(target);
 
-            Assert.IsTrue(target.ScrumMaster.Estimating);
+            Assert.IsTrue(target.ScrumMaster.MissingEstimation);
             PlanningPokerControllerTest.AssertMemberIsEstimating(target, PlanningPokerData.MemberName, true);
         }
 
@@ -375,7 +375,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             PlanningPokerControllerTest.AssertNoObserverIsEstimating(target);
 
-            Assert.IsTrue(target.ScrumMaster.Estimating);
+            Assert.IsTrue(target.ScrumMaster.MissingEstimation);
             PlanningPokerControllerTest.AssertMemberIsEstimating(target, PlanningPokerData.MemberName, true);
         }
 
@@ -437,7 +437,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(estimation.HasEstimation);
             PlanningPokerControllerTest.AssertNoObserverIsEstimating(target);
 
-            Assert.IsTrue(target.ScrumMaster.Estimating);
+            Assert.IsTrue(target.ScrumMaster.MissingEstimation);
             PlanningPokerControllerTest.AssertMemberIsEstimating(target, PlanningPokerData.MemberName, false);
         }
 
@@ -474,7 +474,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
             Assert.IsFalse(estimation.HasEstimation);
 
-            Assert.IsFalse(target.ScrumMaster.Estimating);
+            Assert.IsFalse(target.ScrumMaster.MissingEstimation);
             PlanningPokerControllerTest.AssertMemberIsEstimating(target, PlanningPokerData.MemberName, true);
         }
 
