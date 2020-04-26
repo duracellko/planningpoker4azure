@@ -95,20 +95,22 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <summary>
         /// Gets name of Scrum Master.
         /// </summary>
-        public string ScrumMaster => ScrumTeam?.ScrumMaster?.Name;
+        public MemberItem ScrumMaster => ScrumTeam?.ScrumMaster != null ? new MemberItem(ScrumTeam.ScrumMaster, false) : null;
 
         /// <summary>
         /// Gets collection of member names, who can estimate.
         /// </summary>
-        public IEnumerable<string> Members => ScrumTeam.Members
-            .Where(m => m.Type != ScrumMasterType).Select(m => m.Name)
-            .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
+        public IEnumerable<MemberItem> Members => ScrumTeam.Members
+            .Where(m => m.Type != ScrumMasterType)
+            .Select(m => new MemberItem(m, false))
+            .OrderBy(m => m.Name, StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
         /// Gets collection of observer names, who just observe estimation.
         /// </summary>
-        public IEnumerable<string> Observers => ScrumTeam.Observers.Select(m => m.Name)
-            .OrderBy(m => m, StringComparer.CurrentCultureIgnoreCase);
+        public IEnumerable<MemberItem> Observers => ScrumTeam.Observers
+            .Select(m => new MemberItem(m, false))
+            .OrderBy(m => m.Name, StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
         /// Gets a value indicating whether user can estimate and estimation is in progress.
