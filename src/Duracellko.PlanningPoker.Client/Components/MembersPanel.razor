@@ -8,9 +8,9 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 <span>@Controller.ScrumMaster?.Name</span>
-                @if ((Controller.ScrumMaster?.MissingEstimation).GetValueOrDefault())
+                @if ((Controller.ScrumMaster?.HasEstimated).GetValueOrDefault())
                 {
-                    <span class="text-primary ml-1"><span class="oi oi-cloud" title="Missing estimation" aria-hidden="true"></span></span>
+                    <span class="text-success ml-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
                 }
             </li>
         </ul>
@@ -21,9 +21,9 @@
             {
                 <li class="list-group-item">
                     <span>@member.Name</span>
-                    @if (member.MissingEstimation)
+                    @if (member.HasEstimated)
                     {
-                        <span class="text-primary ml-1"><span class="oi oi-cloud" title="Missing estimation" aria-hidden="true"></span></span>
+                        <span class="text-success ml-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
                     }
                     @if (Controller.IsScrumMaster)
                     {

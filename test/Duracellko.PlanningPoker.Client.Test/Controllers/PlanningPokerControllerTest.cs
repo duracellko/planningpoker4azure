@@ -138,7 +138,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
-            Assert.IsFalse(target.ScrumMaster.MissingEstimation);
+            Assert.IsFalse(target.ScrumMaster.HasEstimated);
         }
 
         [TestMethod]
@@ -151,10 +151,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, target.Members.Count());
             Assert.AreEqual(PlanningPokerData.MemberName, target.Members.First().Name);
-            Assert.IsFalse(target.Members.First().MissingEstimation);
+            Assert.IsFalse(target.Members.First().HasEstimated);
             Assert.AreEqual(1, target.Observers.Count());
             Assert.AreEqual(PlanningPokerData.ObserverName, target.Observers.First().Name);
-            Assert.IsFalse(target.Observers.First().MissingEstimation);
+            Assert.IsFalse(target.Observers.First().HasEstimated);
         }
 
         [TestMethod]
@@ -176,7 +176,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var expectedObservers = new string[] { "ABC", "Hello, World!", PlanningPokerData.ObserverName };
             CollectionAssert.AreEqual(expectedObservers, target.Observers.Select(m => m.Name).ToList());
 
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -221,7 +221,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -237,7 +237,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -253,7 +253,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -269,7 +269,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -284,7 +284,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -300,7 +300,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -316,7 +316,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -332,7 +332,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -379,7 +379,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
@@ -460,7 +460,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
@@ -548,7 +548,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
@@ -634,7 +634,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
@@ -684,7 +684,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             Assert.AreEqual(0, target.Estimations.Count());
         }
@@ -718,7 +718,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoObserverIsEstimating(target);
+            AssertNoObserverHasEstimated(target);
 
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(3, estimations.Count);
@@ -738,10 +738,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(estimation.HasEstimation);
             Assert.IsNull(estimation.Estimation);
 
-            Assert.IsFalse(target.ScrumMaster.MissingEstimation);
-            AssertMemberIsEstimating(target, "Tester", true);
-            AssertMemberIsEstimating(target, "Developer 1", false);
-            AssertMemberIsEstimating(target, PlanningPokerData.MemberName, false);
+            Assert.IsTrue(target.ScrumMaster.HasEstimated);
+            AssertMemberHasEstimated(target, "Tester", false);
+            AssertMemberHasEstimated(target, "Developer 1", true);
+            AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
         }
 
         [TestMethod]
@@ -764,7 +764,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             Assert.AreEqual(0, target.Estimations.Count());
         }
@@ -788,7 +788,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoMemberHasEstimated(target);
 
             Assert.IsNull(target.Estimations);
         }
@@ -816,10 +816,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsTrue(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoObserverIsEstimating(target);
-
-            Assert.IsFalse(target.ScrumMaster.MissingEstimation);
-            AssertMemberIsEstimating(target, PlanningPokerData.MemberName, true);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -845,7 +842,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoMemberIsEstimating(target);
+            AssertNoObserverHasEstimated(target);
+
+            Assert.IsFalse(target.ScrumMaster.HasEstimated);
+            AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
         }
 
         [TestMethod]
@@ -871,10 +871,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.IsConnected);
-            AssertNoObserverIsEstimating(target);
-
-            Assert.IsTrue(target.ScrumMaster.MissingEstimation);
-            AssertMemberIsEstimating(target, PlanningPokerData.MemberName, false);
+            AssertNoMemberHasEstimated(target);
         }
 
         [TestMethod]
@@ -1332,33 +1329,33 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             busyIndicatorDisposable.Verify(o => o.Dispose());
         }
 
-        internal static void AssertNoMemberIsEstimating(PlanningPokerController controller, bool skipScrumMaster = false)
+        internal static void AssertNoMemberHasEstimated(PlanningPokerController controller, bool skipScrumMaster = false)
         {
             if (!skipScrumMaster)
             {
-                Assert.IsFalse(controller.ScrumMaster.MissingEstimation);
+                Assert.IsFalse(controller.ScrumMaster.HasEstimated);
             }
 
             foreach (var member in controller.Members)
             {
-                Assert.IsFalse(member.MissingEstimation);
+                Assert.IsFalse(member.HasEstimated);
             }
 
-            AssertNoObserverIsEstimating(controller);
+            AssertNoObserverHasEstimated(controller);
         }
 
-        internal static void AssertNoObserverIsEstimating(PlanningPokerController controller)
+        internal static void AssertNoObserverHasEstimated(PlanningPokerController controller)
         {
             foreach (var observer in controller.Observers)
             {
-                Assert.IsFalse(observer.MissingEstimation);
+                Assert.IsFalse(observer.HasEstimated);
             }
         }
 
-        internal static void AssertMemberIsEstimating(PlanningPokerController controller, string memberName, bool isEstimating)
+        internal static void AssertMemberHasEstimated(PlanningPokerController controller, string memberName, bool hasEstimated)
         {
             var memberItem = controller.Members.First(m => m.Name == memberName);
-            Assert.AreEqual(isEstimating, memberItem.MissingEstimation);
+            Assert.AreEqual(hasEstimated, memberItem.HasEstimated);
         }
 
         private static PlanningPokerController CreateController(

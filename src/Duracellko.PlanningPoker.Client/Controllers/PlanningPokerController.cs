@@ -21,7 +21,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IBusyIndicatorService _busyIndicator;
         private readonly IMemberCredentialsStore _memberCredentialsStore;
-        private readonly List<EstimationParticipantStatus> _estimationParticipants = new List<EstimationParticipantStatus>();
         private List<MemberEstimation> _memberEstimations;
         private bool _isConnected;
         private bool _hasJoinedEstimation;
@@ -168,7 +167,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 scrumTeam.Observers = new List<TeamMember>();
             }
 
-            _estimationParticipants.Clear();
             ScrumTeam = scrumTeam;
             User = FindTeamMember(username);
             IsScrumMaster = User != null && User == ScrumTeam.ScrumMaster;
@@ -180,7 +178,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
             else if (scrumTeam.EstimationParticipants != null)
             {
-                _estimationParticipants.AddRange(scrumTeam.EstimationParticipants);
                 _memberEstimations = scrumTeam.EstimationParticipants
                     .Where(p => p.Estimated).Select(p => new MemberEstimation(p.MemberName)).ToList();
             }
@@ -450,15 +447,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
         private void OnEstimationStarted()
         {
-            _estimationParticipants.Clear();
-            foreach (var member in ScrumTeam.Members)
-            {
-                _estimationParticipants.Add(new EstimationParticipantStatus()
-                {
-                    MemberName = member.Name
-                });
-            }
-
             _memberEstimations = new List<MemberEstimation>();
             ScrumTeam.State = TeamState.EstimationInProgress;
             _hasJoinedEstimation = true;
@@ -479,28 +467,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private void OnMemberEstimated(MemberMessage message)
         {
             var memberName = message.Member?.Name;
-            if (!string.IsNullOrEmpty(memberName))
+            if (!string.IsNullOrEmpty(memberName) && _memberEstimations != null)
             {
-                if (_memberEstimations != null)
-                {
-                    _memberEstimations.Add(new MemberEstimation(memberName));
-                }
-
-                var memberEstimationStatus = _estimationParticipants
-                    .FirstOrDefault(m => string.Equals(m.MemberName, memberName, StringComparison.OrdinalIgnoreCase));
-                if (memberEstimationStatus == null)
-                {
-                    memberEstimationStatus = new EstimationParticipantStatus
-                    {
-                        MemberName = memberName,
-                        Estimated = true
-                    };
-                    _estimationParticipants.Add(memberEstimationStatus);
-                }
-                else
-                {
-                    memberEstimationStatus.Estimated = true;
-                }
+                _memberEstimations.Add(new MemberEstimation(memberName));
             }
         }
 
@@ -529,15 +498,10 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 return null;
             }
 
-            var missingEstimation = false;
-            if (ScrumTeam.State == TeamState.EstimationInProgress)
-            {
-                var memberEstimationStatus = _estimationParticipants
-                    .FirstOrDefault(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
-                missingEstimation = memberEstimationStatus != null && !memberEstimationStatus.Estimated;
-            }
+            var hasEstimated = ScrumTeam.State == TeamState.EstimationInProgress && _memberEstimations != null &&
+                _memberEstimations.Any(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
 
-            return new MemberItem(member, missingEstimation);
+            return new MemberItem(member, hasEstimated);
         }
 
         private class EstimationComparer : IComparer<double?>

@@ -12,8 +12,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Initializes a new instance of the <see cref="MemberItem" /> class.
         /// </summary>
         /// <param name="member">The member used to initialize the item.</param>
-        /// <param name="missingEstimation">Value indicating whether the member has missing estimation.</param>
-        public MemberItem(TeamMember member, bool missingEstimation)
+        /// <param name="hasEstimated">Value indicating whether the member has estimation.</param>
+        public MemberItem(TeamMember member, bool hasEstimated)
         {
             if (member == null)
             {
@@ -21,7 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             Name = member.Name;
-            MissingEstimation = missingEstimation;
+            HasEstimated = hasEstimated;
         }
 
         /// <summary>
@@ -30,10 +30,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public string Name { get; }
 
         /// <summary>
-        /// Gets a value indicating whether final estimation is waiting
-        /// for the member to select estimation.
+        /// Gets a value indicating whether member has already estimated.
         /// </summary>
-        public bool MissingEstimation { get; }
+        public bool HasEstimated { get; }
 
         /// <summary>
         /// Returns a string that represents the current object.
