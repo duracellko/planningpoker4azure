@@ -38,6 +38,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         {
             private readonly PlanningPokerController _planningPokerController;
             private readonly IPlanningPokerClient _planningPokerClient;
+
+            [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "CancellationToken is disposed, when task ends.")]
             private CancellationTokenSource _cancellationTokenSource;
 
             public MessageController(PlanningPokerController planningPokerController, IPlanningPokerClient planningPokerClient)
