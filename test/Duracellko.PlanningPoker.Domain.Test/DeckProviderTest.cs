@@ -31,6 +31,18 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void GetDeck_RockPaperScissorsLizardSpock_ReturnsEstimations()
+        {
+            var result = DeckProvider.Default.GetDeck(Deck.RockPaperScissorsLizardSpock);
+
+            var expectedCollection = new double?[]
+            {
+                -999909.0, -999908.0, -999907.0, -999906.0, -999905.0
+            };
+            CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
+        }
+
+        [TestMethod]
         public void GetDefaultDeck_ReturnsStandardEstimations()
         {
             var result = DeckProvider.Default.GetDefaultDeck();

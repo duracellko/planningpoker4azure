@@ -48,6 +48,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         {
             { Deck.Standard, Resources.EstimationDeck_Standard },
             { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
+            { Deck.RockPaperScissorsLizardSpock, Resources.EstimationDeck_RockPaperScissorsLizardSpock },
         };
 
         /// <summary>

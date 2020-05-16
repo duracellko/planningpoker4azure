@@ -141,6 +141,25 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
+        public void CreateScrumTeam_RockPaperScissorsLizardSpock_CreatedTeam()
+        {
+            // Arrange
+            var target = CreatePlanningPokerController();
+
+            // Act
+            using (var teamLock = target.CreateScrumTeam("team", "master", Deck.RockPaperScissorsLizardSpock))
+            {
+                // Verify
+                var expectedCollection = new double?[]
+                {
+                    -999909.0, -999908.0, -999907.0, -999906.0, -999905.0
+                };
+                var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
+                CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
+            }
+        }
+
+        [TestMethod]
         public void CreateScrumTeam_TeamNameAlreadyExists_ArgumentException()
         {
             // Arrange

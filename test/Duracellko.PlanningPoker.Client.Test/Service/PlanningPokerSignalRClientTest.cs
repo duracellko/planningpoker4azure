@@ -12,6 +12,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [DataTestMethod]
         [DataRow(Deck.Standard)]
         [DataRow(Deck.Fibonacci)]
+        [DataRow(Deck.RockPaperScissorsLizardSpock)]
         public async Task CreateTeam_TeamNameAndScrumMaster_InvocationMessageIsSent(Deck deck)
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();

@@ -21,6 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [DataTestMethod]
         [DataRow(Deck.Standard, nameof(Deck.Standard))]
         [DataRow(Deck.Fibonacci, nameof(Deck.Fibonacci))]
+        [DataRow(Deck.RockPaperScissorsLizardSpock, nameof(Deck.RockPaperScissorsLizardSpock))]
         public async Task CreateTeam_TeamAndScrumMasterName_RequestsCreateTeamUrl(Deck deck, string deckValue)
         {
             var httpMock = new MockHttpMessageHandler();

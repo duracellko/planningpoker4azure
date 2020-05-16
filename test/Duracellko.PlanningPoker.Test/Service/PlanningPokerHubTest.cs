@@ -50,6 +50,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         [DataTestMethod]
         [DataRow(Deck.Standard, D.Deck.Standard)]
         [DataRow(Deck.Fibonacci, D.Deck.Fibonacci)]
+        [DataRow(Deck.RockPaperScissorsLizardSpock, D.Deck.RockPaperScissorsLizardSpock)]
         public void CreateTeam_TeamNameAndScrumMasterName_ReturnsCreatedTeam(Deck deck, D.Deck domainDeck)
         {
             // Arrange
