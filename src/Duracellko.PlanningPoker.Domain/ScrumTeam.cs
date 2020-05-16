@@ -15,23 +15,6 @@ namespace Duracellko.PlanningPoker.Domain
         private readonly List<Member> _members = new List<Member>();
         private readonly List<Observer> _observers = new List<Observer>();
 
-        private readonly Estimation[] _availableEstimations = new Estimation[]
-        {
-            new Estimation(0.0),
-            new Estimation(0.5),
-            new Estimation(1.0),
-            new Estimation(2.0),
-            new Estimation(3.0),
-            new Estimation(5.0),
-            new Estimation(8.0),
-            new Estimation(13.0),
-            new Estimation(20.0),
-            new Estimation(40.0),
-            new Estimation(100.0),
-            new Estimation(double.PositiveInfinity),
-            new Estimation()
-        };
-
         private EstimationResult _estimationResult;
 
         /// <summary>
@@ -39,7 +22,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="name">The team name.</param>
         public ScrumTeam(string name)
-            : this(name, null)
+            : this(name, null, null)
         {
         }
 
@@ -47,8 +30,9 @@ namespace Duracellko.PlanningPoker.Domain
         /// Initializes a new instance of the <see cref="ScrumTeam"/> class.
         /// </summary>
         /// <param name="name">The team name.</param>
+        /// <param name="availableEstimations">The collection of available estimation values.</param>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
-        public ScrumTeam(string name, DateTimeProvider dateTimeProvider)
+        public ScrumTeam(string name, IEnumerable<Estimation> availableEstimations, DateTimeProvider dateTimeProvider)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -57,6 +41,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = name;
+            AvailableEstimations = availableEstimations ?? DeckProvider.Default.GetDefaultDeck();
         }
 
         /// <summary>
@@ -78,6 +63,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             Name = scrumTeamData.Name;
+            AvailableEstimations = scrumTeamData.AvailableEstimations.ToArray();
             State = scrumTeamData.State;
 
             if (scrumTeamData.Members != null)
@@ -125,7 +111,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets the available estimations the members can pick from.
         /// </summary>
         /// <value>The collection of available estimations.</value>
-        public IEnumerable<Estimation> AvailableEstimations => _availableEstimations;
+        public IEnumerable<Estimation> AvailableEstimations { get; }
 
         /// <summary>
         /// Gets the current Scrum team state.
@@ -339,6 +325,7 @@ namespace Duracellko.PlanningPoker.Domain
             var result = new Serialization.ScrumTeamData
             {
                 Name = Name,
+                AvailableEstimations = AvailableEstimations.ToList(),
                 State = State,
             };
 

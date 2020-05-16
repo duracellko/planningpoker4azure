@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -13,14 +14,17 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
     {
         private static readonly IContractResolver _contractResolver = new ScrumTeamContractResolver();
         private readonly DateTimeProvider _dateTimeProvider;
+        private readonly DeckProvider _deckProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamSerializer"/> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
-        public ScrumTeamSerializer(DateTimeProvider dateTimeProvider)
+        /// <param name="deckProvider">The provider to get default estimation deck.</param>
+        public ScrumTeamSerializer(DateTimeProvider dateTimeProvider, DeckProvider deckProvider)
         {
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            _deckProvider = deckProvider ?? DeckProvider.Default;
         }
 
         /// <summary>
@@ -64,6 +68,13 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
                 var serializer = JsonSerializer.Create();
                 serializer.ContractResolver = _contractResolver;
                 var data = serializer.Deserialize<ScrumTeamData>(jsonReader);
+
+                // Available estimations could be missing, when the team was serialized in older version.
+                if (data.AvailableEstimations == null)
+                {
+                    data.AvailableEstimations = _deckProvider.GetDefaultDeck().ToList();
+                }
+
                 return new ScrumTeam(data, _dateTimeProvider);
             }
         }

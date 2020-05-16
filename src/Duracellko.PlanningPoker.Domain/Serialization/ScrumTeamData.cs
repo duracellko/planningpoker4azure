@@ -19,6 +19,12 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         public TeamState State { get; set; }
 
         /// <summary>
+        /// Gets or sets collection of available estimations.
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
+        public IList<Estimation> AvailableEstimations { get; set; }
+
+        /// <summary>
         /// Gets or sets collection of Scrum Team members.
         /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]

@@ -125,7 +125,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(utcNow);
 
-            var team = new ScrumTeam("test team", dateTimeProvider);
+            var team = new ScrumTeam("test team", null, dateTimeProvider);
             var target = new Observer(team, "test");
 
             // Act
@@ -143,7 +143,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0));
 
-            var team = new ScrumTeam("test team", dateTimeProvider);
+            var team = new ScrumTeam("test team", null, dateTimeProvider);
             var target = new Observer(team, "test");
             dateTimeProvider.SetUtcNow(utcNow);
 
