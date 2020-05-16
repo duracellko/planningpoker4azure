@@ -7,42 +7,22 @@ namespace Duracellko.PlanningPoker.Domain
     /// </summary>
     public class DateTimeProvider
     {
-        private static readonly DateTimeProvider DefaultProvider = new DateTimeProvider();
-
         /// <summary>
         /// Gets the default date-time provider that provides system time.
         /// </summary>
         /// <value>The default date-time provider.</value>
-        public static DateTimeProvider Default
-        {
-            get
-            {
-                return DefaultProvider;
-            }
-        }
+        public static DateTimeProvider Default { get; } = new DateTimeProvider();
 
         /// <summary>
         /// Gets the current time expressed as local time.
         /// </summary>
         /// <value>Current date-time.</value>
-        public virtual DateTime Now
-        {
-            get
-            {
-                return DateTime.Now;
-            }
-        }
+        public virtual DateTime Now => DateTime.Now;
 
         /// <summary>
         /// Gets the current time expressed as UTC time.
         /// </summary>
         /// <value>Current date-time.</value>
-        public virtual DateTime UtcNow
-        {
-            get
-            {
-                return DateTime.UtcNow;
-            }
-        }
+        public virtual DateTime UtcNow => DateTime.UtcNow;
     }
 }

@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Client {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,24 @@ namespace Duracellko.PlanningPoker.Client {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89.
+        /// </summary>
+        internal static string EstimationDeck_Fibonacci {
+            get {
+                return ResourceManager.GetString("EstimationDeck_Fibonacci", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100.
+        /// </summary>
+        internal static string EstimationDeck_Standard {
+            get {
+                return ResourceManager.GetString("EstimationDeck_Standard", resourceCulture);
             }
         }
         

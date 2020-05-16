@@ -46,6 +46,16 @@ namespace Duracellko.PlanningPoker.Service
             return message;
         }
 
+        /// <summary>
+        /// Maps service Deck value to domain Deck value.
+        /// </summary>
+        /// <param name="value">Service deck value.</param>
+        /// <returns>Domain deck value.</returns>
+        public static D.Deck Map(Deck value)
+        {
+            return (D.Deck)value;
+        }
+
         private static IConfigurationProvider CreateMapperConfiguration()
         {
             var result = new MapperConfiguration(config =>

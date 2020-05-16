@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Service;
@@ -41,12 +42,22 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         }
 
         /// <summary>
+        /// Gets collection of available estimation decks, which can be selected, when creating new team.
+        /// </summary>
+        public IDictionary<Deck, string> EstimationDecks { get; } = new SortedDictionary<Deck, string>
+        {
+            { Deck.Standard, Resources.EstimationDeck_Standard },
+            { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
+        };
+
+        /// <summary>
         /// Creates new Scrum Team and initialize Planning Poker game.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <param name="scrumMasterName">Name of Scrum Master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <returns><c>True</c> if the operation was successful; otherwise <c>false</c>.</returns>
-        public async Task<bool> CreateTeam(string teamName, string scrumMasterName)
+        public async Task<bool> CreateTeam(string teamName, string scrumMasterName, Deck deck)
         {
             if (string.IsNullOrEmpty(teamName) || string.IsNullOrEmpty(scrumMasterName))
             {
@@ -58,7 +69,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 ScrumTeam team = null;
                 using (_busyIndicatorService.Show())
                 {
-                    team = await _planningPokerService.CreateTeam(teamName, scrumMasterName, CancellationToken.None);
+                    team = await _planningPokerService.CreateTeam(teamName, scrumMasterName, deck, CancellationToken.None);
                 }
 
                 if (team != null)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 {
@@ -18,6 +19,42 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Act
             // Verify
             VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_FibonacciEstimations_CopyOfTheTeam()
+        {
+            // Arrange
+            var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
+            var team = new ScrumTeam("test", availableEstimations, null);
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_CustomEstimations_CopyOfTheTeam()
+        {
+            // Arrange
+            var availableEstimations = TestHelper.GetCustomEstimationDeck();
+            var team = new ScrumTeam("test", availableEstimations, null);
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_WithoutAvailableEstimations_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            team.SetScrumMaster("master");
+
+            // Act
+            // Verify
+            VerifySerialization(team, removeAvailableEstimations: true);
         }
 
         [TestMethod]
@@ -222,9 +259,17 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             Assert.AreEqual(lastMessage.Id + 1, message.Id);
         }
 
-        private static ScrumTeam VerifySerialization(ScrumTeam scrumTeam)
+        private static ScrumTeam VerifySerialization(ScrumTeam scrumTeam, bool removeAvailableEstimations = false)
         {
             var json = SerializeTeam(scrumTeam);
+
+            if (removeAvailableEstimations)
+            {
+                var data = JObject.Parse(json.ToString());
+                data.Remove(nameof(ScrumTeamData.AvailableEstimations));
+                json = data.ToString();
+            }
+
             var result = DeserializeTeam(json);
             ScrumTeamAsserts.AssertScrumTeamsAreEqual(scrumTeam, result);
             return result;
@@ -235,7 +280,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var result = new StringBuilder();
             using (var writer = new StringWriter(result))
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
                 serializer.Serialize(writer, scrumTeam);
             }
 
@@ -246,7 +291,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             using (var reader = new StringReader(json))
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
                 return serializer.Deserialize(reader);
             }
         }

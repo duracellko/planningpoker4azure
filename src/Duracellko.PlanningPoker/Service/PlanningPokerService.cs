@@ -37,18 +37,20 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <returns>
         /// Created Scrum team.
         /// </returns>
         [HttpGet("CreateTeam")]
-        public ActionResult<ScrumTeam> CreateTeam(string teamName, string scrumMasterName)
+        public ActionResult<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck)
         {
             ValidateTeamName(teamName);
             ValidateMemberName(scrumMasterName, nameof(scrumMasterName));
 
             try
             {
-                using (var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName))
+                var domainDeck = ServiceEntityMapper.Map(deck);
+                using (var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck))
                 {
                     teamLock.Lock();
                     return ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);

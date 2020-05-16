@@ -16,6 +16,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.EstimationCanceled,
             };
 
@@ -34,6 +35,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci).ToList(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -54,6 +56,27 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             Assert.AreEqual(scrumTeamData.Members[0].Name, member.Name);
             var observer = result.Observers.First();
             Assert.AreEqual(scrumTeamData.Members[2].Name, observer.Name);
+
+            var expectedCollection = new double?[]
+            {
+                0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, double.PositiveInfinity, null
+            };
+            CollectionAssert.AreEquivalent(expectedCollection, result.AvailableEstimations.Select(e => e.Value).ToList());
+        }
+
+        [TestMethod]
+        public void ScrumTeam_AvailableEstimationsIsNull_ArgumentNullException()
+        {
+            // Arrange
+            var scrumTeamData = new ScrumTeamData
+            {
+                Name = "The Team",
+                State = TeamState.EstimationCanceled,
+            };
+
+            // Act
+            // Assert
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
         }
 
         [TestMethod]
@@ -63,6 +86,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = string.Empty,
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.EstimationCanceled,
             };
 
@@ -78,6 +102,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = string.Empty,
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.EstimationCanceled,
             };
 
@@ -99,6 +124,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -122,6 +148,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -142,6 +169,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -162,6 +190,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -182,6 +211,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -201,6 +231,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var scrumTeamData = new ScrumTeamData
             {
                 Name = "The Team",
+                AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.Initial,
                 Members = new List<MemberData>
                 {
@@ -219,6 +250,11 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
             // Act
             Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+        }
+
+        private static List<Estimation> GetAvailableEstimations()
+        {
+            return DeckProvider.Default.GetDefaultDeck().ToList();
         }
     }
 }

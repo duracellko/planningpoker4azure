@@ -36,15 +36,16 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public async Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, CancellationToken cancellationToken)
+        public async Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedScrumMasterName = _urlEncoder.Encode(scrumMasterName);
-            var uri = $"CreateTeam?teamName={encodedTeamName}&scrumMasterName={encodedScrumMasterName}";
+            var uri = $"CreateTeam?teamName={encodedTeamName}&scrumMasterName={encodedScrumMasterName}&deck={deck}";
 
             var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
 

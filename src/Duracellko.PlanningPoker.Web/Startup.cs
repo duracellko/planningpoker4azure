@@ -42,6 +42,7 @@ namespace Duracellko.PlanningPoker.Web
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
 
             services.AddSingleton<DateTimeProvider>();
+            services.AddSingleton<DeckProvider>();
             services.AddSingleton<ScrumTeamSerializer>();
             services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
             if (isAzure)
@@ -49,6 +50,7 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
                 services.AddSingleton<IAzurePlanningPoker>(sp => new AzurePlanningPokerController(
                     sp.GetService<DateTimeProvider>(),
+                    sp.GetService<DeckProvider>(),
                     sp.GetService<IAzurePlanningPokerConfiguration>(),
                     sp.GetService<IScrumTeamRepository>(),
                     sp.GetService<TaskProvider>(),
@@ -63,6 +65,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 services.AddSingleton<IPlanningPoker>(sp => new PlanningPokerController(
                     sp.GetService<DateTimeProvider>(),
+                    sp.GetService<DeckProvider>(),
                     sp.GetService<IPlanningPokerConfiguration>(),
                     sp.GetService<IScrumTeamRepository>(),
                     sp.GetService<TaskProvider>(),

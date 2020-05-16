@@ -1,4 +1,5 @@
 ﻿@inherits ViewComponentBase
+@using Duracellko.PlanningPoker.Service
 @inject CreateTeamController Controller
 
 <div class="card">
@@ -23,6 +24,16 @@
                     <span class="invalid-feedback">Required</span>
                 }
             </div>
+            <div class="form-group">
+                <label for="createTeam$selectedDeck">Deck of cards:</label>
+                <select id="createTeam$selectedDeck" name="deck" class="form-control"
+                        @bind="SelectedDeck">
+                    @foreach (var deckOption in EstimationDecks)
+                    {
+                        <option value="@deckOption.Key">@deckOption.Value</option>
+                    }
+                </select>
+            </div>
             <button type="submit" id="createTeam$Submit" class="btn btn-primary">Create team</button>
         </form>
     </div>
@@ -36,9 +47,13 @@
 
 @code
 {
+    private IEnumerable<KeyValuePair<Deck, string>> EstimationDecks => Controller.EstimationDecks;
+
     private string TeamName { get; set; }
 
     private string ScrumMasterName { get; set; }
+
+    private Deck SelectedDeck { get; set; }
 
     private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
@@ -56,7 +71,7 @@
             ScrumMasterName = string.Empty;
         }
 
-        return TryRun(() => Controller.CreateTeam(TeamName, ScrumMasterName));
+        return TryRun(() => Controller.CreateTeam(TeamName, ScrumMasterName, SelectedDeck));
     }
 
     private string GetFormControlCss(bool valid) => valid ? "form-control" : "form-control is-invalid";

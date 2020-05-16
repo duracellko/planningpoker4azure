@@ -105,6 +105,60 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void AvailableEstimations_StandardEstimations_ReturnsPlanningPokerCardValues()
+        {
+            // Arrange
+            var availableEstimations = DeckProvider.Default.GetDeck(Deck.Standard);
+            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+
+            // Act
+            var result = target.AvailableEstimations;
+
+            // Verify
+            var expectedCollection = new double?[]
+            {
+                0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
+            };
+            CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
+        }
+
+        [TestMethod]
+        public void AvailableEstimations_FibonacciEstimations_ReturnsPlanningPokerCardValues()
+        {
+            // Arrange
+            var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
+            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+
+            // Act
+            var result = target.AvailableEstimations;
+
+            // Verify
+            var expectedCollection = new double?[]
+            {
+                0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, double.PositiveInfinity, null
+            };
+            CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
+        }
+
+        [TestMethod]
+        public void AvailableEstimations_ExplicitEstimations_ReturnsPlanningPokerCardValues()
+        {
+            // Arrange
+            var availableEstimations = TestHelper.GetCustomEstimationDeck();
+            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+
+            // Act
+            var result = target.AvailableEstimations;
+
+            // Verify
+            var expectedCollection = new double?[]
+            {
+                99.0, -1.0, null, 22.34, -100.2
+            };
+            CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
+        }
+
+        [TestMethod]
         public void State_GetAfterConstruction_ReturnsInitial()
         {
             // Arrange
@@ -1271,7 +1325,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1293,7 +1347,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1315,7 +1369,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             target.Join(name, false);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1335,7 +1389,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             target.Join(name, false);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1355,7 +1409,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             target.Join(name, true);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1375,7 +1429,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             target.Join(name, true);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1394,7 +1448,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster("master");
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
@@ -1421,7 +1475,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
 
@@ -1449,7 +1503,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
 
@@ -1477,7 +1531,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = (Member)target.Join("member", false);
             master.StartEstimation();
@@ -1510,7 +1564,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", dateTimeProvider);
+            var target = new ScrumTeam("test team", null, dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = (Member)target.Join("member", false);
             master.StartEstimation();
