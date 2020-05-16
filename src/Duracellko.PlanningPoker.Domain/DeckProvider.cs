@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Domain
         };
 
         private readonly IEnumerable<Estimation> _fibonacciDeck = new Estimation[]
-{
+        {
             new Estimation(0.0),
             new Estimation(1.0),
             new Estimation(2.0),
@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Domain
             new Estimation(89.0),
             new Estimation(double.PositiveInfinity),
             new Estimation()
-};
+        };
 
         /// <summary>
         /// Gets the default estimation deck provider.
