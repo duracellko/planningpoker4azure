@@ -18,15 +18,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         internal const string JsonType = "application/json";
         internal const string TextType = "text/plain";
 
-        [TestMethod]
-        public async Task CreateTeam_TeamAndScrumMasterName_RequestsCreateTeamUrl()
+        [DataTestMethod]
+        [DataRow(Deck.Standard, nameof(Deck.Standard))]
+        [DataRow(Deck.Fibonacci, nameof(Deck.Fibonacci))]
+        public async Task CreateTeam_TeamAndScrumMasterName_RequestsCreateTeamUrl(Deck deck, string deckValue)
         {
             var httpMock = new MockHttpMessageHandler();
-            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/CreateTeam?teamName={PlanningPokerClientData.TeamName}&scrumMasterName={PlanningPokerClientData.ScrumMasterName}")
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/CreateTeam?teamName={PlanningPokerClientData.TeamName}&scrumMasterName={PlanningPokerClientData.ScrumMasterName}&deck={deckValue}")
                 .Respond(JsonType, PlanningPokerClientData.GetScrumTeamJson());
             var target = CreatePlanningPokerClient(httpMock);
 
-            await target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, CancellationToken.None);
+            await target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, deck, CancellationToken.None);
 
             httpMock.VerifyNoOutstandingExpectation();
         }
@@ -39,7 +41,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(JsonType, PlanningPokerClientData.GetScrumTeamJson());
             var target = CreatePlanningPokerClient(httpMock);
 
-            var result = await target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, CancellationToken.None);
+            var result = await target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, Deck.Standard, CancellationToken.None);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(TeamState.Initial, result.State);
@@ -68,7 +70,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(HttpStatusCode.BadRequest, TextType, "Team 'Test team' already exists.");
             var target = CreatePlanningPokerClient(httpMock);
 
-            var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, CancellationToken.None));
+            var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(
+                () => target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, Deck.Standard, CancellationToken.None));
 
             Assert.AreEqual("Team 'Test team' already exists.", exception.Message);
         }

@@ -15,11 +15,12 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, CancellationToken cancellationToken);
+        Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken);
 
         /// <summary>
         /// Connects member or observer with specified name to the Scrum team with specified name.

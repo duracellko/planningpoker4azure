@@ -39,16 +39,17 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, CancellationToken cancellationToken)
+        public Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
                 await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ScrumTeam>("CreateTeam", teamName, scrumMasterName, cancellationToken);
+                var result = await _hubConnection.InvokeAsync<ScrumTeam>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
 
                 ScrumTeamMapper.ConvertScrumTeam(result);
                 return result;

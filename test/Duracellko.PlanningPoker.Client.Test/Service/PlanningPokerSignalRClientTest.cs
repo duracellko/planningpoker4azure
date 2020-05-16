@@ -9,17 +9,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
     [TestClass]
     public class PlanningPokerSignalRClientTest
     {
-        [TestMethod]
-        public async Task CreateTeam_TeamNameAndScrumMaster_InvocationMessageIsSent()
+        [DataTestMethod]
+        [DataRow(Deck.Standard)]
+        [DataRow(Deck.Fibonacci)]
+        public async Task CreateTeam_TeamNameAndScrumMaster_InvocationMessageIsSent(Deck deck)
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, fixture.CancellationToken);
+            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, deck, fixture.CancellationToken);
 
             var sentMessage = await fixture.GetSentMessage();
             var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
             Assert.AreEqual("CreateTeam", sentInvocationMessage.Target);
-            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName };
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, deck };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam();
@@ -34,7 +36,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, fixture.CancellationToken);
+            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard, fixture.CancellationToken);
 
             var sentMessage = await fixture.GetSentMessage();
             var invocationId = GetInvocationId(sentMessage);
@@ -54,7 +56,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, fixture.CancellationToken);
+            var resultTask = fixture.Target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard, fixture.CancellationToken);
 
             var sentMessage = await fixture.GetSentMessage();
             var invocationId = GetInvocationId(sentMessage);
