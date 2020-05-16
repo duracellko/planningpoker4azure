@@ -20,8 +20,9 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <returns>The new Scrum team.</returns>
-        IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName);
+        IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName, Deck deck);
 
         /// <summary>
         /// Adds existing Scrum team to collection of teams.

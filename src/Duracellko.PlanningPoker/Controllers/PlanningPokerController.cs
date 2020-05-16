@@ -18,6 +18,7 @@ namespace Duracellko.PlanningPoker.Controllers
     public class PlanningPokerController : IPlanningPoker
     {
         private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+        private readonly DeckProvider _deckProvider;
         private readonly TaskProvider _taskProvider;
         private readonly ILogger<PlanningPokerController> _logger;
 
@@ -25,7 +26,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
         /// </summary>
         public PlanningPokerController()
-            : this(null, null, null, null, null)
+            : this(null, null, null, null, null, null)
         {
         }
 
@@ -33,13 +34,21 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
+        /// <param name="deckProvider">The provider to get estimation cards deck.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
         /// <param name="taskProvider">The system tasks provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public PlanningPokerController(DateTimeProvider dateTimeProvider, IPlanningPokerConfiguration configuration, IScrumTeamRepository repository, TaskProvider taskProvider, ILogger<PlanningPokerController> logger)
+        public PlanningPokerController(
+            DateTimeProvider dateTimeProvider,
+            DeckProvider deckProvider,
+            IPlanningPokerConfiguration configuration,
+            IScrumTeamRepository repository,
+            TaskProvider taskProvider,
+            ILogger<PlanningPokerController> logger)
         {
-            DateTimeProvider = dateTimeProvider ?? Duracellko.PlanningPoker.Domain.DateTimeProvider.Default;
+            DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            _deckProvider = deckProvider ?? DeckProvider.Default;
             Configuration = configuration ?? new PlanningPokerConfiguration();
             Repository = repository ?? new EmptyScrumTeamRepository();
             _taskProvider = taskProvider ?? TaskProvider.Default;
@@ -83,10 +92,11 @@ namespace Duracellko.PlanningPoker.Controllers
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <param name="scrumMasterName">Name of the Scrum master.</param>
+        /// <param name="deck">Selected deck of estimation cards to use in the team.</param>
         /// <returns>
         /// The new Scrum team.
         /// </returns>
-        public IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName)
+        public IScrumTeamLock CreateScrumTeam(string teamName, string scrumMasterName, Deck deck)
         {
             if (string.IsNullOrEmpty(teamName))
             {
@@ -100,7 +110,8 @@ namespace Duracellko.PlanningPoker.Controllers
 
             OnBeforeCreateScrumTeam(teamName, scrumMasterName);
 
-            var team = new ScrumTeam(teamName, DateTimeProvider);
+            var availableEstimations = _deckProvider.GetDeck(deck);
+            var team = new ScrumTeam(teamName, availableEstimations, DateTimeProvider);
             team.SetScrumMaster(scrumMasterName);
             var teamLock = new object();
             var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);

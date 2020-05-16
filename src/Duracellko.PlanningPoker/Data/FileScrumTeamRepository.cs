@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Data
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = configuration ?? new PlanningPokerConfiguration();
-            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider);
+            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _folder = new Lazy<string>(GetFolder);
             _invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);

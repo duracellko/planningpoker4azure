@@ -48,12 +48,13 @@ namespace Duracellko.PlanningPoker.Test.Service
             var team = CreateBasicTeam();
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Fibonacci))
+                .Returns(teamLock.Object).Verifiable();
 
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = target.CreateTeam(TeamName, ScrumMasterName).Value;
+            var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Fibonacci).Value;
 
             // Verify
             planningPoker.Verify();
@@ -74,12 +75,13 @@ namespace Duracellko.PlanningPoker.Test.Service
             var team = CreateBasicTeam();
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Standard))
+                .Returns(teamLock.Object).Verifiable();
 
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = target.CreateTeam(TeamName, ScrumMasterName).Value;
+            var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard).Value;
 
             // Verify
             Assert.IsNotNull(result.AvailableEstimations);
@@ -98,7 +100,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null, ScrumMasterName));
+            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null, ScrumMasterName, Deck.Standard));
         }
 
         [TestMethod]
@@ -109,7 +111,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null, Deck.Standard));
         }
 
         [TestMethod]
@@ -120,7 +122,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName));
+            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
         }
 
         [TestMethod]
@@ -131,7 +133,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName));
+            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
         }
 
         [TestMethod]
