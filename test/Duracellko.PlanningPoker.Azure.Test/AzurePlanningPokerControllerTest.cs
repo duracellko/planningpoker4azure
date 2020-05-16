@@ -28,7 +28,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
-            target.CreateScrumTeam("test", "master");
+            target.CreateScrumTeam("test", "master", Deck.Standard);
             target.Dispose();
 
             // Verify
@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -68,7 +68,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -92,7 +92,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -116,7 +116,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -136,7 +136,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
             teamLock.Team.ScrumMaster.StartEstimation();
 
             // Act
@@ -157,7 +157,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
-            var teamLock = target.CreateScrumTeam("test", "master");
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
             teamLock.Team.ScrumMaster.StartEstimation();
 
             // Act
@@ -183,7 +183,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.EndInitialization();
 
             // Act
-            var result = target.CreateScrumTeam("test", "master");
+            var result = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Verify
             Assert.IsNotNull(result);
@@ -199,7 +199,11 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
 
             // Act
-            var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.CreateScrumTeam("test", "master"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+            var task = Task.Factory.StartNew<IScrumTeamLock>(
+                () => target.CreateScrumTeam("test", "master", Deck.Standard),
+                default(CancellationToken),
+                TaskCreationOptions.None,
+                TaskScheduler.Default);
             Assert.IsFalse(task.IsCompleted);
             Thread.Sleep(50);
             Assert.IsFalse(task.IsCompleted);
@@ -219,7 +223,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.SetTeamsInitializingList(new string[] { "test" });
 
             // Act
-            target.CreateScrumTeam("test", "master");
+            target.CreateScrumTeam("test", "master", Deck.Standard);
         }
 
         [TestMethod]
@@ -231,7 +235,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController(configuration: configuration);
 
             // Act
-            target.CreateScrumTeam("test", "master");
+            target.CreateScrumTeam("test", "master", Deck.Standard);
         }
 
         [TestMethod]
@@ -241,7 +245,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             target.EndInitialization();
             ScrumTeam team;
-            using (var teamLock = target.CreateScrumTeam("test team", "master"))
+            using (var teamLock = target.CreateScrumTeam("test team", "master", Deck.Standard))
             {
                 team = teamLock.Team;
             }
@@ -364,6 +368,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
         private static AzurePlanningPokerController CreateAzurePlanningPokerController(
             DateTimeProvider dateTimeProvider = null,
+            DeckProvider deckProvider = null,
             IAzurePlanningPokerConfiguration configuration = null,
             IScrumTeamRepository repository = null,
             TaskProvider taskProvider = null,
@@ -374,7 +379,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 logger = Mock.Of<ILogger<Controllers.PlanningPokerController>>();
             }
 
-            return new AzurePlanningPokerController(dateTimeProvider, configuration, repository, taskProvider, logger);
+            return new AzurePlanningPokerController(dateTimeProvider, deckProvider, configuration, repository, taskProvider, logger);
         }
     }
 }

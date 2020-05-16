@@ -7,21 +7,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
         private DateTime _now = DateTime.Now;
         private DateTime _utcNow = DateTime.UtcNow;
 
-        public override DateTime Now
-        {
-            get
-            {
-                return _now;
-            }
-        }
+        public override DateTime Now => _now;
 
-        public override DateTime UtcNow
-        {
-            get
-            {
-                return _utcNow;
-            }
-        }
+        public override DateTime UtcNow => _utcNow;
 
         public void SetNow(DateTime value)
         {
