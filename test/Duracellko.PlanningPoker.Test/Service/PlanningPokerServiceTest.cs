@@ -41,20 +41,22 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerService(null));
         }
 
-        [TestMethod]
-        public void CreateTeam_TeamNameAndScrumMasterName_ReturnsCreatedTeam()
+        [DataTestMethod]
+        [DataRow(Deck.Standard, D.Deck.Standard)]
+        [DataRow(Deck.Fibonacci, D.Deck.Fibonacci)]
+        public void CreateTeam_TeamNameAndScrumMasterName_ReturnsCreatedTeam(Deck deck, D.Deck domainDeck)
         {
             // Arrange
             var team = CreateBasicTeam();
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Fibonacci))
+            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, domainDeck))
                 .Returns(teamLock.Object).Verifiable();
 
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Fibonacci).Value;
+            var result = target.CreateTeam(TeamName, ScrumMasterName, deck).Value;
 
             // Verify
             planningPoker.Verify();
