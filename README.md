@@ -9,6 +9,7 @@
 - [Configuration](#Configuration)
 - [Buid and test](#Buid-and-test)
 - [Solution projects](#Solution-projects)
+- [Attributions](#Attributions)
 
 ## Overview
 
@@ -163,3 +164,11 @@ PlanningPoker solution contains following projects:
 * **PlanningPoker.Client.Test** contains unit-tests of client application.
 * **PlanningPoker.Azure.Test** contains unit-tests of classes in PlanningPoker.Azure project.
 * **PlanningPoker.E2ETest** contains end-2-end tests of full system. Tests are implemented using Selenium and tests mostly Chrome browser and partially Firefox.
+
+### Attributions
+
+This application including source code can be used under [MIT License](License.txt).
+
+* [Planning Poker](https://www.mountaingoatsoftware.com/agile/planning-poker/license) is a registered trademark of Mountain Goat Software, LLC.
+* [Rock, Paper, Scissors, Lizard, Spock](http://www.samkass.com/theories/RPSSL.html) is licensed under [CC BY-NC 3.0](https://creativecommons.org/licenses/by-nc/3.0/).
+* [Open Iconic](https://useiconic.com/open) is licensed under [MIT](https://opensource.org/licenses/MIT) and [OFL](https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web).

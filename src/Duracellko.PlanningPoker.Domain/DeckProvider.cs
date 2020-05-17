@@ -42,6 +42,15 @@ namespace Duracellko.PlanningPoker.Domain
             new Estimation()
         };
 
+        private readonly IEnumerable<Estimation> _rockPaperScissorsLizardSpock = new Estimation[]
+        {
+            new Estimation(-999909.0), // Rock
+            new Estimation(-999908.0), // Paper
+            new Estimation(-999907.0), // Scissors
+            new Estimation(-999906.0), // Lizard
+            new Estimation(-999905.0), // Spock
+        };
+
         /// <summary>
         /// Gets the default estimation deck provider.
         /// </summary>
@@ -61,6 +70,8 @@ namespace Duracellko.PlanningPoker.Domain
                     return _standardDeck;
                 case Deck.Fibonacci:
                     return _fibonacciDeck;
+                case Deck.RockPaperScissorsLizardSpock:
+                    return _rockPaperScissorsLizardSpock;
                 default:
                     throw new ArgumentException($"Deck '{deck}' is not supported.", nameof(deck));
             }

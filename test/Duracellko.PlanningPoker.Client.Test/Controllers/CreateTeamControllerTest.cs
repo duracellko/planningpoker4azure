@@ -20,14 +20,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             var result = target.EstimationDecks;
 
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
             Assert.AreEqual("0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100", result[Deck.Standard]);
             Assert.AreEqual("0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89", result[Deck.Fibonacci]);
+            Assert.AreEqual("Rock, Paper, Scissors, Lizard, Spock", result[Deck.RockPaperScissorsLizardSpock]);
         }
 
         [DataTestMethod]
         [DataRow(Deck.Standard)]
         [DataRow(Deck.Fibonacci)]
+        [DataRow(Deck.RockPaperScissorsLizardSpock)]
         public async Task CreateTeam_TeamName_CreateTeamOnService(Deck deck)
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();

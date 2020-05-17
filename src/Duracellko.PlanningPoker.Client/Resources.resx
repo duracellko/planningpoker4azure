@@ -120,6 +120,9 @@
   <data name="EstimationDeck_Fibonacci" xml:space="preserve">
     <value>0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89</value>
   </data>
+  <data name="EstimationDeck_RockPaperScissorsLizardSpock" xml:space="preserve">
+    <value>Rock, Paper, Scissors, Lizard, Spock</value>
+  </data>
   <data name="EstimationDeck_Standard" xml:space="preserve">
     <value>0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100</value>
   </data>

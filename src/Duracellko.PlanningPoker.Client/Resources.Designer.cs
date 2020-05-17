@@ -70,6 +70,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rock, Paper, Scissors, Lizard, Spock.
+        /// </summary>
+        internal static string EstimationDeck_RockPaperScissorsLizardSpock {
+            get {
+                return ResourceManager.GetString("EstimationDeck_RockPaperScissorsLizardSpock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100.
         /// </summary>
         internal static string EstimationDeck_Standard {
