@@ -165,7 +165,7 @@ PlanningPoker solution contains following projects:
 * **PlanningPoker.Azure.Test** contains unit-tests of classes in PlanningPoker.Azure project.
 * **PlanningPoker.E2ETest** contains end-2-end tests of full system. Tests are implemented using Selenium and tests mostly Chrome browser and partially Firefox.
 
-### Attributions
+## Attributions
 
 This application including source code can be used under [MIT License](License.txt).
 
