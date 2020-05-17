@@ -25,12 +25,13 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             string team = "My team";
             string scrumMaster = "Test ScrumMaster";
+            string deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
 
             await ClientTest.OpenApplication();
             TakeScreenshot("01-Loading");
             ClientTest.AssertIndexPage();
             TakeScreenshot("02-Index");
-            ClientTest.FillCreateTeamForm(team, scrumMaster);
+            ClientTest.FillCreateTeamForm(team, scrumMaster, "Standard", deckText);
             TakeScreenshot("03-CreateTeamForm");
             ClientTest.SubmitCreateTeamForm();
             ClientTest.AssertPlanningPokerPage("My%20team", "Test%20ScrumMaster");
@@ -46,6 +47,56 @@ namespace Duracellko.PlanningPoker.E2ETest
             await Task.Delay(500);
             TakeScreenshot("06-Estimated");
             ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, "1"));
+            ClientTest.Disconnect();
+            TakeScreenshot("07-Disconnected");
+        }
+
+        [DataTestMethod]
+        [EnvironmentDataSource]
+        public async Task ScrumMaster_Can_Select_Estimation_Deck(bool serverSide, BrowserType browserType, bool useHttpClient)
+        {
+            Contexts.Add(new BrowserTestContext(
+                nameof(ScrumMasterTest),
+                nameof(ScrumMaster_Can_Select_Estimation_Deck),
+                browserType,
+                serverSide,
+                useHttpClient));
+
+            await StartServer();
+            StartClients();
+
+            string team = "RPSLS";
+            string scrumMaster = "Initiator";
+            string deckText = "Rock, Paper, Scissors, Lizard, Spock";
+            var availableEstimations = new string[]
+            {
+                "\uD83D\uDC8E", // Rock
+                "\uD83E\uDDFB", // Paper
+                "\u2702", // Scissors
+                "\uD83E\uDD8E", // Lizard
+                "\uD83D\uDD96", // Spock
+            };
+
+            await ClientTest.OpenApplication();
+            TakeScreenshot("01-Loading");
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("02-Index");
+            ClientTest.FillCreateTeamForm(team, scrumMaster, "RockPaperScissorsLizardSpock", deckText);
+            TakeScreenshot("03-CreateTeamForm");
+            ClientTest.SubmitCreateTeamForm();
+            ClientTest.AssertPlanningPokerPage("RPSLS", "Initiator");
+            TakeScreenshot("04-PlanningPoker");
+            ClientTest.AssertTeamName(team, scrumMaster);
+            ClientTest.AssertScrumMasterInTeam(scrumMaster);
+            ClientTest.AssertMembersInTeam();
+            ClientTest.AssertObserversInTeam();
+            ClientTest.StartEstimation();
+            TakeScreenshot("05-EstimationStarted");
+            ClientTest.AssertAvailableEstimations(availableEstimations);
+            ClientTest.SelectEstimation(1);
+            await Task.Delay(500);
+            TakeScreenshot("06-Estimated");
+            ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, availableEstimations[1]));
             ClientTest.Disconnect();
             TakeScreenshot("07-Disconnected");
         }

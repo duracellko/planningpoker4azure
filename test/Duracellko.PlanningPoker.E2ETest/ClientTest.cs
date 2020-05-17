@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Duracellko.PlanningPoker.E2ETest.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace Duracellko.PlanningPoker.E2ETest
 {
     public class ClientTest
     {
         private static readonly string[] _availableEstimations = new string[]
-            {
-                "0", "\u00BD", "1", "2", "3", "5", "8", "13", "20", "40", "100", "\u221E", "?"
-            };
+        {
+            "0", "\u00BD", "1", "2", "3", "5", "8", "13", "20", "40", "100", "\u221E", "?"
+        };
 
         public ClientTest(IWebDriver browser, ServerFixture server)
         {
@@ -58,16 +59,28 @@ namespace Duracellko.PlanningPoker.E2ETest
             JoinTeamForm = ContainerElement.FindElement(By.CssSelector("form[name='joinTeam']"));
         }
 
-        public void FillCreateTeamForm(string team, string scrumMaster)
+        public void FillCreateTeamForm(string team, string scrumMaster, string deck = null, string deckText = null)
         {
             var teamNameInput = CreateTeamForm.FindElement(By.Id("createTeam$teamName"));
             var scrumMasterNameInput = CreateTeamForm.FindElement(By.Id("createTeam$scrumMasterName"));
+            var selectDeckInput = CreateTeamForm.FindElement(By.Id("createTeam$selectedDeck"));
 
             teamNameInput.SendKeys(team);
             scrumMasterNameInput.SendKeys(scrumMaster);
 
             Assert.AreEqual(0, teamNameInput.FindElements(By.XPath("../span")).Count);
             Assert.AreEqual(0, scrumMasterNameInput.FindElements(By.XPath("../span")).Count);
+
+            if (deck != null)
+            {
+                var selectDeckElement = new SelectElement(selectDeckInput);
+                selectDeckElement.SelectByValue(deck);
+                if (deckText != null)
+                {
+                    Assert.IsNotNull(selectDeckElement.SelectedOption);
+                    Assert.AreEqual(deckText, selectDeckElement.SelectedOption.Text);
+                }
+            }
         }
 
         public void SubmitCreateTeamForm()
@@ -172,11 +185,12 @@ namespace Duracellko.PlanningPoker.E2ETest
             button.Click();
         }
 
-        public void AssertAvailableEstimations()
+        public void AssertAvailableEstimations(ICollection<string> estimations = null)
         {
             var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
-            Assert.AreEqual(13, availableEstimationElements.Count);
-            CollectionAssert.AreEqual(_availableEstimations, availableEstimationElements.Select(e => e.Text).ToList());
+            var expectedEstimations = estimations?.ToArray() ?? _availableEstimations;
+            Assert.AreEqual(expectedEstimations.Length, availableEstimationElements.Count);
+            CollectionAssert.AreEqual(expectedEstimations, availableEstimationElements.Select(e => e.Text).ToList());
         }
 
         public void AssertNotAvailableEstimations()
@@ -188,6 +202,11 @@ namespace Duracellko.PlanningPoker.E2ETest
         public void SelectEstimation(string estimation)
         {
             int index = Array.IndexOf<string>(_availableEstimations, estimation);
+            SelectEstimation(index);
+        }
+
+        public void SelectEstimation(int index)
+        {
             var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
             availableEstimationElements[index].Click();
         }
