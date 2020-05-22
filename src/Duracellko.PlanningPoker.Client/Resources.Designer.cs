@@ -70,6 +70,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+        /// </summary>
+        internal static string EstimationDeck_Rating {
+            get {
+                return ResourceManager.GetString("EstimationDeck_Rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rock, Paper, Scissors, Lizard, Spock.
         /// </summary>
         internal static string EstimationDeck_RockPaperScissorsLizardSpock {
@@ -84,6 +93,15 @@ namespace Duracellko.PlanningPoker.Client {
         internal static string EstimationDeck_Standard {
             get {
                 return ResourceManager.GetString("EstimationDeck_Standard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to T-shirt: XS, S, M, L, XL.
+        /// </summary>
+        internal static string EstimationDeck_Tshirt {
+            get {
+                return ResourceManager.GetString("EstimationDeck_Tshirt", resourceCulture);
             }
         }
         

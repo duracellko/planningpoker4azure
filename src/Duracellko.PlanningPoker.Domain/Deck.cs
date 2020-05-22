@@ -18,6 +18,18 @@
         Fibonacci,
 
         /// <summary>
+        /// Rating 1 - 10:
+        /// 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        /// </summary>
+        Rating,
+
+        /// <summary>
+        /// T-Shirt sizes:
+        /// XS, S, M, L, XL
+        /// </summary>
+        Tshirt,
+
+        /// <summary>
         /// Rock, Paper, Scissors, Lizard, Spock
         /// </summary>
         RockPaperScissorsLizardSpock
