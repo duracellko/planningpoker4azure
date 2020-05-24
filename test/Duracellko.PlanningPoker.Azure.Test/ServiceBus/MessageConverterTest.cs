@@ -1,4 +1,5 @@
-﻿using Duracellko.PlanningPoker.Azure.ServiceBus;
+﻿using System;
+using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,6 +13,20 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         private const string TeamName = "My Team";
         private const string Team1Json = "{\"Name\":\"My Team\",\"State\":1,\"AvailableEstimations\":[{\"Value\":0.0},{\"Value\":0.5},{\"Value\":1.0},{\"Value\":2.0},{\"Value\":3.0},{\"Value\":5.0},{\"Value\":8.0},{\"Value\":13.0},{\"Value\":20.0},{\"Value\":40.0},{\"Value\":100.0},{\"Value\":\"Infinity\"},{\"Value\":null}],\"Members\":[{\"Name\":\"Duracellko\",\"MemberType\":2,\"Messages\":[],\"LastMessageId\":3,\"LastActivity\":\"2020-05-24T14:46:48.1509407Z\",\"IsDormant\":false,\"Estimation\":null},{\"Name\":\"Me\",\"MemberType\":1,\"Messages\":[],\"LastMessageId\":2,\"LastActivity\":\"2020-05-24T14:47:40.119354Z\",\"IsDormant\":false,\"Estimation\":{\"Value\":20.0}}],\"EstimationResult\":{\"Duracellko\":null,\"Me\":{\"Value\":20.0}}}";
         private const string Team2Json = "{\"Name\":\"My Team\",\"State\":1,\"AvailableEstimations\":[{\"Value\":0.0},{\"Value\":0.5},{\"Value\":1.0},{\"Value\":2.0},{\"Value\":3.0},{\"Value\":5.0},{\"Value\":8.0},{\"Value\":13.0},{\"Value\":20.0},{\"Value\":40.0},{\"Value\":100.0},{\"Value\":\"Infinity\"},{\"Value\":null}],\"Members\":[{\"Name\":\"Duracellko\",\"MemberType\":2,\"Messages\":[],\"LastMessageId\":9,\"LastActivity\":\"2020-05-24T14:53:07.6381166Z\",\"IsDormant\":false,\"Estimation\":{\"Value\":2.0}},{\"Name\":\"Me\",\"MemberType\":1,\"Messages\":[],\"LastMessageId\":8,\"LastActivity\":\"2020-05-24T14:53:05.8193334Z\",\"IsDormant\":false,\"Estimation\":{\"Value\":5.0}},{\"Name\":\"Test\",\"MemberType\":1,\"Messages\":[{\"Id\":4,\"MessageType\":6,\"MemberName\":\"Duracellko\",\"EstimationResult\":null},{\"Id\":5,\"MessageType\":6,\"MemberName\":\"Me\",\"EstimationResult\":null}],\"LastMessageId\":5,\"LastActivity\":\"2020-05-24T14:52:40.0708949Z\",\"IsDormant\":false,\"Estimation\":null}],\"EstimationResult\":{\"Duracellko\":{\"Value\":2.0},\"Me\":{\"Value\":5.0},\"Test\":null}}";
+
+        [TestMethod]
+        public void ConvertToBrokeredMessage_Null_ArgumentNullException()
+        {
+            var target = new MessageConverter();
+            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToBrokeredMessage(null));
+        }
+
+        [TestMethod]
+        public void ConvertToNodeMessage_Null_ArgumentNullException()
+        {
+            var target = new MessageConverter();
+            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(null));
+        }
 
         [TestMethod]
         public void ConvertToBrokeredMessageAndBack_ScrumTeamMessage()
@@ -152,12 +167,12 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
 
         private static NodeMessage ConvertToBrokeredMessageAndBack(NodeMessage nodeMessage)
         {
-            var messageConverter = new MessageConverter();
-            var brokeredMessage = messageConverter.ConvertToBrokeredMessage(nodeMessage);
+            var target = new MessageConverter();
+            var brokeredMessage = target.ConvertToBrokeredMessage(nodeMessage);
 
             Assert.IsNotNull(brokeredMessage);
 
-            var result = messageConverter.ConvertToNodeMessage(brokeredMessage);
+            var result = target.ConvertToNodeMessage(brokeredMessage);
 
             Assert.IsNotNull(result);
             Assert.AreNotSame(nodeMessage, result);
