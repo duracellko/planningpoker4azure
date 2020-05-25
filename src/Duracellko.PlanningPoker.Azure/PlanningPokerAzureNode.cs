@@ -31,6 +31,8 @@ namespace Duracellko.PlanningPoker.Azure
         private IDisposable _serviceBusTeamCreatedMessageSubscription;
         private IDisposable _serviceBusRequestTeamListMessageSubscription;
         private IDisposable _serviceBusRequestTeamsMessageSubscription;
+        private IDisposable _serviceBusTeamListMessageSubscription;
+        private IDisposable _serviceBusInitializeTeamMessageSubscription;
 
         private volatile string _processingScrumTeamName;
 
@@ -129,6 +131,18 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 _serviceBusRequestTeamsMessageSubscription.Dispose();
                 _serviceBusRequestTeamsMessageSubscription = null;
+            }
+
+            if (_serviceBusTeamListMessageSubscription != null)
+            {
+                _serviceBusTeamListMessageSubscription.Dispose();
+                _serviceBusTeamListMessageSubscription = null;
+            }
+
+            if (_serviceBusInitializeTeamMessageSubscription != null)
+            {
+                _serviceBusInitializeTeamMessageSubscription.Dispose();
+                _serviceBusInitializeTeamMessageSubscription = null;
             }
 
             return ServiceBus.Unregister();
@@ -384,7 +398,7 @@ namespace Duracellko.PlanningPoker.Azure
                 var teamListActions = serviceBusMessages.Where(m => m.MessageType == NodeMessageType.TeamList).Take(1)
                     .Timeout(Configuration.InitializationMessageTimeout, Observable.Return<NodeMessage>(null))
                     .Select(m => new Action(() => ProcessTeamListMessage(m)));
-                teamListActions.Subscribe(a => a());
+                _serviceBusTeamListMessageSubscription = teamListActions.Subscribe(a => a());
 
                 SendNodeMessage(new NodeMessage(NodeMessageType.RequestTeamList));
             }
@@ -396,6 +410,12 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessTeamListMessage(NodeMessage message)
         {
+            if (_serviceBusTeamListMessageSubscription != null)
+            {
+                _serviceBusTeamListMessageSubscription.Dispose();
+                _serviceBusTeamListMessageSubscription = null;
+            }
+
             if (message != null)
             {
                 _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
@@ -440,11 +460,14 @@ namespace Duracellko.PlanningPoker.Azure
 
                 void RetryRequestTeamList(Exception ex)
                 {
-                    _logger?.LogWarning(Resources.Warning_RetryRequestTeamList, NodeId);
-                    RequestTeamList();
+                    if (!_teamsToInitialize.IsEmpty)
+                    {
+                        _logger?.LogWarning(Resources.Warning_RetryRequestTeamList, NodeId);
+                        RequestTeamList();
+                    }
                 }
 
-                initTeamActions.Merge(messageTimeoutActions)
+                _serviceBusInitializeTeamMessageSubscription = initTeamActions.Merge(messageTimeoutActions)
                     .Subscribe(a => a(), RetryRequestTeamList);
 
                 var requestTeamsMessage = new NodeMessage(NodeMessageType.RequestTeams)
@@ -483,6 +506,13 @@ namespace Duracellko.PlanningPoker.Azure
         private void EndInitialization()
         {
             _teamsToInitialize.Clear();
+
+            if (_serviceBusInitializeTeamMessageSubscription != null)
+            {
+                _serviceBusInitializeTeamMessageSubscription.Dispose();
+                _serviceBusInitializeTeamMessageSubscription = null;
+            }
+
             PlanningPoker.EndInitialization();
             _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeInitialized, NodeId);
 
