@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Xml.Linq;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Primitives;
+using Microsoft.Azure.ServiceBus.Management;
 using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
@@ -28,8 +24,6 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private const string DefaultTopicName = "PlanningPoker";
         private const string SubscriptionPingPropertyName = "SubscriptionPing";
 
-        private static readonly XNamespace _entityNamespace = XNamespace.Get("http://www.w3.org/2005/Atom");
-        private static readonly XNamespace _servicebusNamespace = XNamespace.Get("http://schemas.microsoft.com/netservices/2010/10/servicebus/connect");
         private static readonly TimeSpan _serviceBusTokenTimeOut = TimeSpan.FromMinutes(1);
 
         private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
@@ -39,6 +33,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private volatile string _nodeId;
         private string _connectionString;
         private string _topicName;
+        private TopicClient _topicClient;
         private SubscriptionClient _subscriptionClient;
         private System.Timers.Timer _subscriptionsMaintenanceTimer;
 
@@ -89,25 +84,22 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 throw new ArgumentNullException(nameof(message));
             }
 
+            var topicClient = _topicClient;
+            if (topicClient == null)
+            {
+                throw new InvalidOperationException("AzureServiceBus is not initialized.");
+            }
+
             var topicMessage = MessageConverter.ConvertToBrokeredMessage(message);
 
-            TopicClient topicClient = null;
             try
             {
-                topicClient = new TopicClient(_connectionString, _topicName);
                 await topicClient.SendAsync(topicMessage);
                 _logger?.LogDebug(Resources.AzureServiceBus_Debug_SendMessage);
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, Resources.AzureServiceBus_Error_SendMessage);
-            }
-            finally
-            {
-                if (topicClient != null)
-                {
-                    await topicClient.CloseAsync();
-                }
             }
         }
 
@@ -132,6 +124,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
 
             await CreateSubscription();
+            _topicClient = new TopicClient(_connectionString, _topicName);
 
             await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -161,6 +154,12 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             {
                 _observableMessages.OnCompleted();
                 _observableMessages.Dispose();
+            }
+
+            if (_topicClient != null)
+            {
+                await _topicClient.CloseAsync();
+                _topicClient = null;
             }
 
             await DeleteSubscription();
@@ -195,35 +194,16 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             Dispose(false);
         }
 
-        private static XDocument CreateSubscriptionDescription()
-        {
-            var subscriptionDescription = new XElement(
-                _servicebusNamespace + "SubscriptionDescription",
-                new XElement(_servicebusNamespace + "DefaultMessageTimeToLive", TimeSpan.FromMinutes(1)));
-            return new XDocument(
-                new XElement(
-                    _entityNamespace + "entry",
-                    new XElement(_entityNamespace + "content", new XAttribute("type", "application/xml"), subscriptionDescription)));
-        }
-
         private async Task CreateSubscription()
         {
             if (_subscriptionClient == null)
             {
-                using (var httpClient = new HttpClient())
+                var managementClient = new ManagementClient(_connectionString);
+                var subscriptionDescription = new SubscriptionDescription(_topicName, _nodeId)
                 {
-                    var uri = GetSubscriptionUri(_nodeId);
-                    var tokenProvider = CreateTokenProvider();
-                    var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
-                    httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
-
-                    using (var content = new StringContent(CreateSubscriptionDescription().ToString(SaveOptions.None), Encoding.UTF8, "application/atom+xml"))
-                    {
-                        content.Headers.ContentType.Parameters.Add(new NameValueHeaderValue("type", "entry"));
-                        var subscriptionResponse = await httpClient.PutAsync(uri, content);
-                        subscriptionResponse.Dispose();
-                    }
-                }
+                    DefaultMessageTimeToLive = _serviceBusTokenTimeOut
+                };
+                await managementClient.CreateSubscriptionAsync(subscriptionDescription);
 
                 _subscriptionClient = new SubscriptionClient(_connectionString, _topicName, _nodeId);
                 _logger?.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionCreated, _topicName, _nodeId);
@@ -348,47 +328,27 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
         private async Task<IEnumerable<string>> GetTopicSubscriptions()
         {
-            using (var httpClient = new HttpClient())
-            {
-                var uri = GetSubscriptionUri(string.Empty);
-                var tokenProvider = CreateTokenProvider();
-                var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
-                httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
-
-                var subscriptionsResponse = await httpClient.GetStringAsync(uri);
-                var subscriptionsXml = XDocument.Parse(subscriptionsResponse);
-
-                var subscriptionElements = subscriptionsXml.Root.Elements(_entityNamespace + "entry").Elements(_entityNamespace + "title");
-                return subscriptionElements.Select(e => e.Value).ToList();
-            }
+            var managementClient = new ManagementClient(_connectionString);
+            var subscriptions = await managementClient.GetSubscriptionsAsync(_topicName);
+            return subscriptions.Select(s => s.SubscriptionName);
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Subscription will be deleted next time.")]
         private async Task DeleteSubscription(string name)
         {
-            using (var httpClient = new HttpClient())
+            try
             {
-                var uri = GetSubscriptionUri(name);
-                var tokenProvider = CreateTokenProvider();
-                var token = await tokenProvider.GetTokenAsync(uri.ToString(), _serviceBusTokenTimeOut);
-                httpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token.TokenValue);
-
-                var subscriptionResponse = await httpClient.DeleteAsync(uri);
-                subscriptionResponse.Dispose();
+                var managementClient = new ManagementClient(_connectionString);
+                var existsSubcription = await managementClient.SubscriptionExistsAsync(_topicName, name);
+                if (existsSubcription)
+                {
+                    await managementClient.DeleteSubscriptionAsync(_topicName, name);
+                }
             }
-        }
-
-        private ITokenProvider CreateTokenProvider()
-        {
-            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
-            return TokenProvider.CreateSharedAccessSignatureTokenProvider(connectionStringBuilder.SasKeyName, connectionStringBuilder.SasKey, TokenScope.Namespace);
-        }
-
-        private Uri GetSubscriptionUri(string subcriptionName)
-        {
-            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(_connectionString);
-            var uri = connectionStringBuilder.Endpoint.Replace("sb://", "https://", StringComparison.OrdinalIgnoreCase);
-            uri = $"{uri}/{Uri.EscapeDataString(_topicName)}/subscriptions/{Uri.EscapeDataString(subcriptionName)}";
-            return new Uri(uri);
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(Resources.AzureServiceBus_Warning_SubscriptionDeleteFailed, _topicName, name, ex.Message);
+            }
         }
     }
 }

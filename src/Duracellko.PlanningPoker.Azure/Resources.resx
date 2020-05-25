@@ -150,6 +150,9 @@
   <data name="AzureServiceBus_Info_MessageProcessed" xml:space="preserve">
     <value>Service Bus message was processed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId})</value>
   </data>
+  <data name="AzureServiceBus_Warning_SubscriptionDeleteFailed" xml:space="preserve">
+    <value>Deleting Service Bus subscription (Topic: {topic}, NodeID: {subscriptionId}) failed with error: {error}</value>
+  </data>
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
     <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
   </data>
