@@ -33,6 +33,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private volatile string _nodeId;
         private string _connectionString;
         private string _topicName;
+        private TopicClient _topicClient;
         private SubscriptionClient _subscriptionClient;
         private System.Timers.Timer _subscriptionsMaintenanceTimer;
 
@@ -83,25 +84,22 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 throw new ArgumentNullException(nameof(message));
             }
 
+            var topicClient = _topicClient;
+            if (topicClient == null)
+            {
+                throw new InvalidOperationException("AzureServiceBus is not initialized.");
+            }
+
             var topicMessage = MessageConverter.ConvertToBrokeredMessage(message);
 
-            TopicClient topicClient = null;
             try
             {
-                topicClient = new TopicClient(_connectionString, _topicName);
                 await topicClient.SendAsync(topicMessage);
                 _logger?.LogDebug(Resources.AzureServiceBus_Debug_SendMessage);
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, Resources.AzureServiceBus_Error_SendMessage);
-            }
-            finally
-            {
-                if (topicClient != null)
-                {
-                    await topicClient.CloseAsync();
-                }
             }
         }
 
@@ -126,6 +124,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
 
             await CreateSubscription();
+            _topicClient = new TopicClient(_connectionString, _topicName);
 
             await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -155,6 +154,12 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             {
                 _observableMessages.OnCompleted();
                 _observableMessages.Dispose();
+            }
+
+            if (_topicClient != null)
+            {
+                await _topicClient.CloseAsync();
+                _topicClient = null;
             }
 
             await DeleteSubscription();
