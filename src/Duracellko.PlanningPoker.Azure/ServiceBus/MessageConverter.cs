@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
@@ -35,17 +37,21 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 throw new ArgumentNullException(nameof(message));
             }
 
-            string messageData;
+            byte[] messageBody;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
-                messageData = (string)message.Data;
+                messageBody = ConvertToMessageBody((string)message.Data);
+            }
+            else if (message.Data != null)
+            {
+                messageBody = ConvertToMessageBody(message.Data);
             }
             else
             {
-                messageData = JsonConvert.SerializeObject(message.Data);
+                messageBody = Array.Empty<byte>();
             }
 
-            var result = new Message(Encoding.UTF8.GetBytes(messageData));
+            var result = new Message(messageBody);
             result.UserProperties[MessageTypePropertyName] = message.MessageType.ToString();
             if (message.Data != null)
             {
@@ -76,35 +82,111 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             result.SenderNodeId = (string)message.UserProperties[SenderIdPropertyName];
             result.RecipientNodeId = (string)message.UserProperties[RecipientIdPropertyName];
 
-            var messageJson = message.Body != null ? Encoding.UTF8.GetString(message.Body) : null;
             switch (result.MessageType)
             {
                 case NodeMessageType.ScrumTeamMessage:
                     if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMemberMessage>(messageJson);
+                        result.Data = ConvertFromMessageBody<ScrumTeamMemberMessage>(message.Body);
                     }
                     else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMemberEstimationMessage>(messageJson);
+                        result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(message.Body);
                     }
                     else
                     {
-                        result.Data = JsonConvert.DeserializeObject<ScrumTeamMessage>(messageJson);
+                        result.Data = ConvertFromMessageBody<ScrumTeamMessage>(message.Body);
                     }
 
                     break;
                 case NodeMessageType.TeamCreated:
                 case NodeMessageType.InitializeTeam:
-                    result.Data = messageJson;
+                    result.Data = ConvertFromMessageBody(message.Body);
                     break;
                 case NodeMessageType.TeamList:
                 case NodeMessageType.RequestTeams:
-                    result.Data = JsonConvert.DeserializeObject<string[]>(messageJson);
+                    result.Data = ConvertFromMessageBody<string[]>(message.Body);
                     break;
             }
 
             return result;
+        }
+
+        private static byte[] ConvertToMessageBody(object data)
+        {
+            void WriteData(object data, TextWriter writer)
+            {
+                var serializer = JsonSerializer.Create();
+                serializer.Serialize(writer, data);
+            }
+
+            return ConvertToMessageBody(data, WriteData);
+        }
+
+        private static byte[] ConvertToMessageBody(string data)
+        {
+            void WriteData(string data, TextWriter writer)
+            {
+                writer.Write(data);
+            }
+
+            return ConvertToMessageBody(data, WriteData);
+        }
+
+        private static byte[] ConvertToMessageBody<T>(T data, Action<T, TextWriter> writeAction)
+        {
+            using (var bodyStream = new MemoryStream())
+            {
+                using (var deflateStream = new DeflateStream(bodyStream, CompressionMode.Compress, true))
+                {
+                    using (var writer = new StreamWriter(deflateStream, Encoding.UTF8))
+                    {
+                        writeAction(data, writer);
+                        writer.Flush();
+                        deflateStream.Flush();
+                    }
+                }
+
+                return bodyStream.ToArray();
+            }
+        }
+
+        private static T ConvertFromMessageBody<T>(byte[] body)
+        {
+            T ReadData(TextReader reader)
+            {
+                var serializer = JsonSerializer.Create();
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return serializer.Deserialize<T>(jsonReader);
+                }
+            }
+
+            return ConvertFromMessageBody<T>(body, ReadData);
+        }
+
+        private static string ConvertFromMessageBody(byte[] body)
+        {
+            string ReadData(TextReader reader)
+            {
+                return reader.ReadToEnd();
+            }
+
+            return ConvertFromMessageBody<string>(body, ReadData);
+        }
+
+        private static T ConvertFromMessageBody<T>(byte[] body, Func<TextReader, T> readFunction)
+        {
+            using (var bodyStream = new MemoryStream(body))
+            {
+                using (var deflateStream = new DeflateStream(bodyStream, CompressionMode.Decompress))
+                {
+                    using (var reader = new StreamReader(deflateStream, Encoding.UTF8))
+                    {
+                        return readFunction(reader);
+                    }
+                }
+            }
         }
     }
 }
