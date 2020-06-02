@@ -14,16 +14,19 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
     {
         private static readonly IContractResolver _contractResolver = new ScrumTeamContractResolver();
         private readonly DateTimeProvider _dateTimeProvider;
+        private readonly GuidProvider _guidProvider;
         private readonly DeckProvider _deckProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamSerializer"/> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
         /// <param name="deckProvider">The provider to get default estimation deck.</param>
-        public ScrumTeamSerializer(DateTimeProvider dateTimeProvider, DeckProvider deckProvider)
+        public ScrumTeamSerializer(DateTimeProvider dateTimeProvider, GuidProvider guidProvider, DeckProvider deckProvider)
         {
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            _guidProvider = guidProvider ?? GuidProvider.Default;
             _deckProvider = deckProvider ?? DeckProvider.Default;
         }
 
@@ -75,7 +78,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
                     data.AvailableEstimations = _deckProvider.GetDefaultDeck().ToList();
                 }
 
-                return new ScrumTeam(data, _dateTimeProvider);
+                return new ScrumTeam(data, _dateTimeProvider, _guidProvider);
             }
         }
     }

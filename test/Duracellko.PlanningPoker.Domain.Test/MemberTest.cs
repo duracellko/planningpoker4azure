@@ -24,6 +24,20 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void Constructor_SessionId_ZeroGuid()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var name = "test";
+
+            // Act
+            var result = new Member(team, name);
+
+            // Verify
+            Assert.AreEqual<Guid>(Guid.Empty, result.SessionId);
+        }
+
+        [TestMethod]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange
@@ -78,7 +92,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var estimation = new Estimation(21);
             var target = new Member(team, "test");
 
@@ -140,7 +154,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -166,7 +180,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -240,7 +254,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -484,7 +498,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             var observer = team.Join("observer", true);
@@ -597,7 +611,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
             var masterEstimation = new Estimation(40.0);
@@ -611,7 +625,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = new ScrumTeam("test team", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
             var masterEstimation = new Estimation(double.PositiveInfinity);

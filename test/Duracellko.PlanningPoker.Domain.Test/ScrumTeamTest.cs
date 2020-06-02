@@ -109,7 +109,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Standard);
-            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+            var target = TestHelper.CreateScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
 
             // Act
             var result = target.AvailableEstimations;
@@ -127,7 +127,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+            var target = TestHelper.CreateScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
 
             // Act
             var result = target.AvailableEstimations;
@@ -145,7 +145,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var target = new ScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
+            var target = TestHelper.CreateScrumTeam("test team", availableEstimations, DateTimeProvider.Default);
 
             // Act
             var result = target.AvailableEstimations;
@@ -255,6 +255,22 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.AreEqual<ScrumTeam>(target, result.Team);
             Assert.AreEqual<string>(name, result.Name);
             Assert.IsFalse(result.IsDormant);
+        }
+
+        [TestMethod]
+        public void SetScrumMaster_GuidProvider_ScrumMasterHasSessionId()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var guidProvider = new GuidProviderMock(guid);
+            var name = "test";
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
+
+            // Act
+            var result = target.SetScrumMaster(name);
+
+            // Verify
+            Assert.AreEqual<Guid>(guid, result.SessionId);
         }
 
         [TestMethod]
@@ -433,6 +449,24 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.AreEqual<ScrumTeam>(target, result.Team);
             Assert.AreEqual<string>(name, result.Name);
             Assert.IsFalse(result.IsDormant);
+        }
+
+        [DataTestMethod]
+        [DataRow(false)]
+        [DataRow(true)]
+        public void Join_GuidProvider_MemberHasSessionId(bool isObserver)
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var guidProvider = new GuidProviderMock(guid);
+            var name = "test";
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
+
+            // Act
+            var result = target.Join(name, isObserver);
+
+            // Verify
+            Assert.AreEqual<Guid>(guid, result.SessionId);
         }
 
         [TestMethod]
@@ -1266,11 +1300,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var name = "observer2";
-            var target = new ScrumTeam("test team");
+            var guidProvider = new GuidProviderMock();
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
             target.Join("observer1", true);
             target.Join("observer2", true);
             target.Join("member1", false);
             target.Join("member2", false);
+            guidProvider.SetGuid(Guid.NewGuid());
 
             // Act
             var result = target.FindMemberOrObserver(name);
@@ -1278,6 +1314,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.IsNotNull(result);
             Assert.AreEqual<string>(name, result.Name);
+            Assert.AreEqual<Guid>(GuidProviderMock.DefaultGuid, result.SessionId);
         }
 
         [TestMethod]
@@ -1285,11 +1322,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var name = "member2";
-            var target = new ScrumTeam("test team");
+            var guidProvider = new GuidProviderMock();
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
             target.Join("observer1", true);
             target.Join("observer2", true);
             target.Join("member1", false);
             target.Join("member2", false);
+            guidProvider.SetGuid(Guid.NewGuid());
 
             // Act
             var result = target.FindMemberOrObserver(name);
@@ -1297,6 +1336,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.IsNotNull(result);
             Assert.AreEqual<string>(name, result.Name);
+            Assert.AreEqual<Guid>(GuidProviderMock.DefaultGuid, result.SessionId);
         }
 
         [TestMethod]
@@ -1318,6 +1358,70 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void CreateSession_ObserverExists_ReturnsObserver()
+        {
+            // Arrange
+            var name = "observer2";
+            var guidProvider = new GuidProviderMock();
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
+            target.Join("observer1", true);
+            target.Join("observer2", true);
+            target.Join("member1", false);
+            target.Join("member2", false);
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
+
+            // Act
+            var result = target.CreateSession(name);
+
+            // Verify
+            Assert.IsNotNull(result);
+            Assert.AreEqual<string>(name, result.Name);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
+        }
+
+        [TestMethod]
+        public void CreateSession_MemberExists_ReturnsMember()
+        {
+            // Arrange
+            var name = "member2";
+            var guidProvider = new GuidProviderMock();
+            var target = TestHelper.CreateScrumTeam("test team", guidProvider: guidProvider);
+            target.Join("observer1", true);
+            target.Join("observer2", true);
+            target.Join("member1", false);
+            target.Join("member2", false);
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
+
+            // Act
+            var result = target.CreateSession(name);
+
+            // Verify
+            Assert.IsNotNull(result);
+            Assert.AreEqual<string>(name, result.Name);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
+        }
+
+        [TestMethod]
+        public void CreateSession_MemberNorObserverExists_ReturnsNull()
+        {
+            // Arrange
+            var name = "test";
+            var target = new ScrumTeam("test team");
+            target.Join("observer1", true);
+            target.Join("observer2", true);
+            target.Join("member1", false);
+            target.Join("member2", false);
+
+            // Act
+            var result = target.CreateSession(name);
+
+            // Verify
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
         public void DisconnectInactiveObservers_ScrumMasterIsActive_TeamIsUnchanged()
         {
             // Arrange
@@ -1325,7 +1429,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1347,7 +1451,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1369,7 +1473,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, false);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1389,7 +1493,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, false);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1409,7 +1513,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, true);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
@@ -1429,7 +1533,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
             var name = "test";
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, true);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1448,7 +1552,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
@@ -1475,7 +1579,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
 
@@ -1503,7 +1607,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
 
@@ -1531,7 +1635,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = (Member)target.Join("member", false);
             master.StartEstimation();
@@ -1564,7 +1668,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
 
-            var target = new ScrumTeam("test team", null, dateTimeProvider);
+            var target = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = (Member)target.Join("member", false);
             master.StartEstimation();

@@ -51,6 +51,7 @@ namespace Duracellko.PlanningPoker.Domain
             Name = memberData.Name;
             LastActivity = DateTime.SpecifyKind(memberData.LastActivity, DateTimeKind.Utc);
             _lastMessageId = memberData.LastMessageId;
+            SessionId = memberData.SessionId;
             IsDormant = memberData.IsDormant;
         }
 
@@ -84,6 +85,15 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <value>The collection of messages.</value>
         public IEnumerable<Message> Messages => _messages;
+
+        /// <summary>
+        /// Gets an ID of active session that is receiving observer messages.
+        /// User can have only single client session to receive messages. When user creates or
+        /// joins a team a new session ID is created. This way only the last opened browser window
+        /// gets updated status. So 2 opened browser windows do not steal messages.
+        /// </summary>
+        /// <value>Unique ID of active session.</value>
+        public Guid SessionId { get; internal set; }
 
         /// <summary>
         /// Gets the last time, the member checked for new messages.
@@ -173,6 +183,7 @@ namespace Duracellko.PlanningPoker.Domain
                 MemberType = Serialization.MemberType.Observer,
                 LastActivity = LastActivity,
                 LastMessageId = _lastMessageId,
+                SessionId = SessionId,
                 IsDormant = IsDormant,
             };
 
