@@ -3,16 +3,8 @@
     /// <summary>
     /// Result data of reconnect operation.
     /// </summary>
-    public class ReconnectTeamResult
+    public class ReconnectTeamResult : TeamResult
     {
-        /// <summary>
-        /// Gets or sets the Scrum team.
-        /// </summary>
-        /// <value>
-        /// The Scrum team.
-        /// </value>
-        public ScrumTeam ScrumTeam { get; set; }
-
         /// <summary>
         /// Gets or sets the last message ID for the member.
         /// </summary>

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Domain.Test;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,7 +49,8 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void CreateTeam_TeamNameAndScrumMasterName_ReturnsCreatedTeam(Deck deck, D.Deck domainDeck)
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guid = Guid.NewGuid();
+            var team = CreateBasicTeam(guidProvider: new GuidProviderMock(guid));
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, domainDeck))
@@ -65,10 +67,13 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual<string>(TeamName, result.Name);
-            Assert.IsNotNull(result.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumMaster.Name);
-            Assert.AreEqual<string>(typeof(D.ScrumMaster).Name, result.ScrumMaster.Type);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
+            var resultTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultTeam);
+            Assert.AreEqual<string>(TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+            Assert.AreEqual<string>(typeof(D.ScrumMaster).Name, resultTeam.ScrumMaster.Type);
         }
 
         [TestMethod]
@@ -87,12 +92,13 @@ namespace Duracellko.PlanningPoker.Test.Service
             var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard).Value;
 
             // Verify
-            Assert.IsNotNull(result.AvailableEstimations);
+            var resultTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultTeam.AvailableEstimations);
             var expectedCollection = new double?[]
             {
                 0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, Estimation.PositiveInfinity, null
             };
-            CollectionAssert.AreEquivalent(expectedCollection, result.AvailableEstimations.Select(e => e.Value).ToList());
+            CollectionAssert.AreEquivalent(expectedCollection, resultTeam.AvailableEstimations.Select(e => e.Value).ToList());
         }
 
         [TestMethod]
@@ -143,11 +149,15 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void JoinTeam_TeamNameAndMemberNameAsMember_ReturnsTeamJoined()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.JoinTeam(TeamName, MemberName, false).Value;
@@ -158,14 +168,17 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual<string>(TeamName, result.Name);
-            Assert.IsNotNull(result.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumMaster.Name);
-            Assert.IsNotNull(result.Members);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
+            var resultTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultTeam);
+            Assert.AreEqual<string>(TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+            Assert.IsNotNull(resultTeam.Members);
             var expectedMembers = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEquivalent(expectedMembers, result.Members.Select(m => m.Name).ToList());
+            CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
             var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.Members.Select(m => m.Type).ToList());
+            CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Members.Select(m => m.Type).ToList());
         }
 
         [TestMethod]
@@ -209,11 +222,15 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void JoinTeam_TeamNameAndObserverNameAsObserver_ReturnsTeamJoined()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.JoinTeam(TeamName, ObserverName, true).Value;
@@ -224,14 +241,17 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual<string>(TeamName, result.Name);
-            Assert.IsNotNull(result.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumMaster.Name);
-            Assert.IsNotNull(result.Observers);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
+            var resultTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultTeam);
+            Assert.AreEqual<string>(TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
+            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+            Assert.IsNotNull(resultTeam.Observers);
             var expectedObservers = new string[] { ObserverName };
-            CollectionAssert.AreEquivalent(expectedObservers, result.Observers.Select(m => m.Name).ToList());
+            CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
             var expectedMemberTypes = new string[] { typeof(D.Observer).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.Observers.Select(m => m.Type).ToList());
+            CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Observers.Select(m => m.Type).ToList());
         }
 
         [TestMethod]
@@ -300,11 +320,15 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void ReconnectTeam_TeamNameAndScrumMasterName_ReturnsReconnectedTeam()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.ReconnectTeam(TeamName, ScrumMasterName).Value;
@@ -315,6 +339,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
             Assert.IsNotNull(result.ScrumTeam);
             Assert.AreEqual<long>(0, result.LastMessageId);
             Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
@@ -331,12 +356,16 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void ReconnectTeam_TeamNameAndMemberName_ReturnsReconnectedTeam()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var member = team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.ReconnectTeam(TeamName, MemberName).Value;
@@ -347,6 +376,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
             Assert.IsNotNull(result.ScrumTeam);
             Assert.AreEqual<long>(0, result.LastMessageId);
             Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
@@ -363,12 +393,16 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void ReconnectTeam_TeamNameAndObserverName_ReturnsReconnectedTeam()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var observer = team.Join(ObserverName, true);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.ReconnectTeam(TeamName, ObserverName).Value;
@@ -379,6 +413,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
             Assert.IsNotNull(result.ScrumTeam);
             Assert.AreEqual<long>(0, result.LastMessageId);
             Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
@@ -400,13 +435,17 @@ namespace Duracellko.PlanningPoker.Test.Service
         public void ReconnectTeam_TeamNameAndDisconnectedScrumMasterName_ReturnsReconnectedTeam()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider);
             var member = team.Join(MemberName, false);
             team.Disconnect(ScrumMasterName);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             var target = new PlanningPokerService(planningPoker.Object);
+
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
 
             // Act
             var result = target.ReconnectTeam(TeamName, ScrumMasterName).Value;
@@ -417,6 +456,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify(l => l.Team);
 
             Assert.IsNotNull(result);
+            Assert.AreEqual<Guid>(guid, result.SessionId);
             Assert.IsNotNull(result.ScrumTeam);
             Assert.AreEqual<long>(3, result.LastMessageId);
             Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
@@ -1089,7 +1129,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         public async Task GetMessages_MemberJoinedTeam_ScrumMasterGetsMessage()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var team = CreateBasicTeam(new GuidProviderMock());
             var member = team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -1099,7 +1139,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+            var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+            var result = resultAction.Value;
 
             // Verify
             planningPoker.Verify();
@@ -1119,7 +1160,8 @@ namespace Duracellko.PlanningPoker.Test.Service
         public async Task GetMessages_EstimationEnded_ScrumMasterGetsMessages()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guid = Guid.NewGuid();
+            var team = CreateBasicTeam(new GuidProviderMock(guid));
             var member = (D.Member)team.Join(MemberName, false);
             var master = team.ScrumMaster;
             master.StartEstimation();
@@ -1134,7 +1176,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 1, default(CancellationToken));
+            var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 1, default(CancellationToken));
+            var result = resultAction.Value;
 
             // Verify
             planningPoker.Verify();
@@ -1168,7 +1211,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         public async Task GetMessages_ScrumMasterDisconnected_MemberGetsEmptyMessage()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var team = CreateBasicTeam(new GuidProviderMock());
             var member = team.Join(MemberName, false);
             team.Disconnect(ScrumMasterName);
             var teamLock = CreateTeamLock(team);
@@ -1179,7 +1222,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, MemberName, 0, default(CancellationToken));
+            var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+            var result = resultAction.Value;
 
             // Verify
             planningPoker.Verify();
@@ -1195,7 +1239,8 @@ namespace Duracellko.PlanningPoker.Test.Service
         public async Task GetMessages_MemberDisconnected_ScrumMasterGetsMessage()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var guid = Guid.NewGuid();
+            var team = CreateBasicTeam(new GuidProviderMock(guid));
             team.Join(MemberName, false);
             team.Disconnect(MemberName);
             var teamLock = CreateTeamLock(team);
@@ -1206,7 +1251,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+            var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 0, default(CancellationToken));
+            var result = resultAction.Value;
 
             // Verify
             planningPoker.Verify();
@@ -1226,7 +1272,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         public async Task GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
         {
             // Arrange
-            var team = CreateBasicTeam();
+            var team = CreateBasicTeam(new GuidProviderMock());
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
@@ -1235,13 +1281,71 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            var result = await target.GetMessages(TeamName, ScrumMasterName, 0, default(CancellationToken));
+            var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+            var result = resultAction.Value;
 
             // Verify
             planningPoker.Verify();
 
             Assert.IsNotNull(result);
             Assert.AreEqual<int>(0, result.Count);
+        }
+
+        [TestMethod]
+        public async Task GetMessages_InvalidScrumMasterSessionId_NotFoundResponse()
+        {
+            // Arrange
+            var team = CreateBasicTeam(new GuidProviderMock());
+            var member = team.Join(MemberName, false);
+            var teamLock = CreateTeamLock(team);
+            var messageCount = team.ScrumMaster.Messages.Count();
+
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var resultAction = await target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0, default(CancellationToken));
+            var result = resultAction.Result;
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual("Invalid session ID.", ((NotFoundObjectResult)result).Value);
+            Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
+        }
+
+        [TestMethod]
+        public async Task GetMessages_InvalidMemberSessionId_HubException()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider);
+            guidProvider.SetGuid(guid);
+            var master = team.ScrumMaster;
+            var member = (D.Member)team.Join(MemberName, false);
+            master.StartEstimation();
+            master.Estimation = new D.Estimation(1.0);
+            member.Estimation = new D.Estimation(2.0);
+            var messageCount = member.Messages.Count();
+
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            // Act
+            var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 1, default(CancellationToken));
+            var result = resultAction.Result;
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+            Assert.AreEqual("Invalid session ID.", ((NotFoundObjectResult)result).Value);
+            Assert.AreEqual(messageCount, member.Messages.Count());
         }
 
         [TestMethod]
@@ -1252,7 +1356,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(null, MemberName, 0, default(CancellationToken)));
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(null, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
         }
 
         [TestMethod]
@@ -1263,7 +1367,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null, 0, default(CancellationToken)));
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
         }
 
         [TestMethod]
@@ -1274,7 +1378,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, 0, default(CancellationToken)));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
         }
 
         [TestMethod]
@@ -1285,12 +1389,12 @@ namespace Duracellko.PlanningPoker.Test.Service
             var target = new PlanningPokerService(planningPoker.Object);
 
             // Act
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, 0, default(CancellationToken)));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
         }
 
-        private static D.ScrumTeam CreateBasicTeam()
+        private static D.ScrumTeam CreateBasicTeam(D.GuidProvider guidProvider = null)
         {
-            var result = new D.ScrumTeam(TeamName);
+            var result = new D.ScrumTeam(TeamName, null, null, guidProvider);
             result.SetScrumMaster(ScrumMasterName);
             return result;
         }
