@@ -4,6 +4,7 @@ using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -177,7 +178,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 0, 0, DateTimeKind.Utc));
             var availableEstimations = DeckProvider.Default.GetDefaultDeck();
-            var team = new ScrumTeam("team", availableEstimations, timeProvider);
+            var team = new ScrumTeam("team", availableEstimations, timeProvider, null);
             var master = team.SetScrumMaster("master");
             master.UpdateActivity();
 
@@ -287,7 +288,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
 
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("team", availableEstimations, null);
+            var team = new ScrumTeam("team", availableEstimations, null, null);
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
@@ -451,7 +452,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 0, 0, DateTimeKind.Utc));
             var availableEstimations = DeckProvider.Default.GetDefaultDeck();
-            var team = new ScrumTeam("team", availableEstimations, timeProvider);
+            var team = new ScrumTeam("team", availableEstimations, timeProvider, null);
             var master = team.SetScrumMaster("master");
             master.UpdateActivity();
 
@@ -476,7 +477,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 0, 0, DateTimeKind.Utc));
             var availableEstimations = DeckProvider.Default.GetDefaultDeck();
-            var team = new ScrumTeam("team", availableEstimations, timeProvider);
+            var team = new ScrumTeam("team", availableEstimations, timeProvider, null);
             var master = team.SetScrumMaster("master");
             master.UpdateActivity();
 
@@ -688,6 +689,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             DateTimeProvider dateTimeProvider = null,
             IPlanningPokerConfiguration configuration = null,
             IScrumTeamRepository repository = null,
+            GuidProvider guidProvider = null,
             DeckProvider deckProvider = null,
             TaskProvider taskProvider = null,
             ILogger<PlanningPokerController> logger = null)
@@ -697,7 +699,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 logger = Mock.Of<ILogger<PlanningPokerController>>();
             }
 
-            return new PlanningPokerController(dateTimeProvider, deckProvider, configuration, repository, taskProvider, logger);
+            return new PlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
         }
     }
 }

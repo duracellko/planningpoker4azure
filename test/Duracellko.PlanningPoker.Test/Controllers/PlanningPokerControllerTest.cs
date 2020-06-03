@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -35,6 +36,29 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             // Verify
             Assert.AreEqual<DateTimeProvider>(dateTimeProvider, result.DateTimeProvider);
+        }
+
+        [TestMethod]
+        public void PlanningPokerController_Create_DefaultGuidProvider()
+        {
+            // Act
+            var result = CreatePlanningPokerController();
+
+            // Verify
+            Assert.AreEqual<GuidProvider>(GuidProvider.Default, result.GuidProvider);
+        }
+
+        [TestMethod]
+        public void PlanningPokerController_SpecificGuidProvider_GuidProviderIsSet()
+        {
+            // Arrange
+            var guidProvider = new GuidProviderMock();
+
+            // Act
+            var result = CreatePlanningPokerController(guidProvider: guidProvider);
+
+            // Verify
+            Assert.AreEqual<GuidProvider>(guidProvider, result.GuidProvider);
         }
 
         [TestMethod]
@@ -608,13 +632,14 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
         private static PlanningPokerController CreatePlanningPokerController(
             DateTimeProvider dateTimeProvider = null,
+            GuidProvider guidProvider = null,
             DeckProvider deckProvider = null,
             Configuration.IPlanningPokerConfiguration configuration = null,
             PlanningPoker.Data.IScrumTeamRepository repository = null,
             TaskProvider taskProvider = null,
             ILogger<PlanningPokerController> logger = null)
         {
-            return new PlanningPokerController(dateTimeProvider, deckProvider, configuration, repository, taskProvider, logger);
+            return new PlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
         }
     }
 }

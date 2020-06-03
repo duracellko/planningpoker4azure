@@ -9,6 +9,7 @@ using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Domain.Serialization;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -539,7 +540,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             dateTimeProvider.SetUtcNow(new DateTime(2012, 9, 9, 23, 27, 33, DateTimeKind.Utc));
 
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam(TeamName, availableEstimations, dateTimeProvider);
+            var team = new ScrumTeam(TeamName, availableEstimations, dateTimeProvider, null);
             team.SetScrumMaster(ScrumMasterName);
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
@@ -963,14 +964,18 @@ namespace Duracellko.PlanningPoker.Azure.Test
             IServiceBus serviceBus = null,
             IAzurePlanningPokerConfiguration configuration = null,
             ILogger<PlanningPokerAzureNode> logger = null,
-            DateTimeProvider dateTimeProvider = null)
+            DateTimeProvider dateTimeProvider = null,
+            GuidProvider guidProvider = null)
         {
             if (logger == null)
             {
                 logger = Mock.Of<ILogger<PlanningPokerAzureNode>>();
             }
 
-            var serializer = new ScrumTeamSerializer(dateTimeProvider ?? new DateTimeProviderMock(), DeckProvider.Default);
+            var serializer = new ScrumTeamSerializer(
+                dateTimeProvider ?? new DateTimeProviderMock(),
+                guidProvider ?? new GuidProviderMock(),
+                DeckProvider.Default);
 
             return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, serializer, logger);
         }

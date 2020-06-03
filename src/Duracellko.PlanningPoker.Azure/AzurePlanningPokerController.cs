@@ -36,6 +36,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects.</param>
         /// <param name="deckProvider">The provider to get estimation cards deck.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
@@ -43,12 +44,13 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="logger">Logger instance to log events.</param>
         public AzurePlanningPokerController(
             DateTimeProvider dateTimeProvider,
+            GuidProvider guidProvider,
             DeckProvider deckProvider,
             IAzurePlanningPokerConfiguration configuration,
             IScrumTeamRepository repository,
             TaskProvider taskProvider,
             ILogger<PlanningPokerController> logger)
-            : base(dateTimeProvider, deckProvider, configuration, repository, taskProvider, logger)
+            : base(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger)
         {
         }
 
