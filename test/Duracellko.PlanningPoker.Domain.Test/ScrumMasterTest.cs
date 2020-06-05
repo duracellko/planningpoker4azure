@@ -24,6 +24,20 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void Constructor_SessionId_ZeroGuid()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var name = "test";
+
+            // Act
+            var result = new ScrumMaster(team, name);
+
+            // Verify
+            Assert.AreEqual<Guid>(Guid.Empty, result.SessionId);
+        }
+
+        [TestMethod]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange

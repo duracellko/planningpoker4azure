@@ -14,6 +14,7 @@ namespace Duracellko.PlanningPoker.Domain
     {
         private readonly List<Member> _members = new List<Member>();
         private readonly List<Observer> _observers = new List<Observer>();
+        private readonly GuidProvider _guidProvider;
 
         private EstimationResult _estimationResult;
 
@@ -22,7 +23,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="name">The team name.</param>
         public ScrumTeam(string name)
-            : this(name, null, null)
+            : this(name, null, null, null)
         {
         }
 
@@ -32,7 +33,8 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="name">The team name.</param>
         /// <param name="availableEstimations">The collection of available estimation values.</param>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
-        public ScrumTeam(string name, IEnumerable<Estimation> availableEstimations, DateTimeProvider dateTimeProvider)
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
+        public ScrumTeam(string name, IEnumerable<Estimation> availableEstimations, DateTimeProvider dateTimeProvider, GuidProvider guidProvider)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -40,6 +42,7 @@ namespace Duracellko.PlanningPoker.Domain
             }
 
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            _guidProvider = guidProvider ?? GuidProvider.Default;
             Name = name;
             AvailableEstimations = availableEstimations ?? DeckProvider.Default.GetDefaultDeck();
         }
@@ -49,7 +52,8 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="scrumTeamData">Scrum Team serialization data.</param>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
-        public ScrumTeam(Serialization.ScrumTeamData scrumTeamData, DateTimeProvider dateTimeProvider)
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
+        public ScrumTeam(Serialization.ScrumTeamData scrumTeamData, DateTimeProvider dateTimeProvider, GuidProvider guidProvider)
         {
             if (scrumTeamData == null)
             {
@@ -62,6 +66,7 @@ namespace Duracellko.PlanningPoker.Domain
             }
 
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            _guidProvider = guidProvider ?? GuidProvider.Default;
             Name = scrumTeamData.Name;
             AvailableEstimations = scrumTeamData.AvailableEstimations.ToArray();
             State = scrumTeamData.State;
@@ -176,6 +181,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             var scrumMaster = new ScrumMaster(this, name);
             _members.Add(scrumMaster);
+            scrumMaster.SessionId = _guidProvider.NewGuid();
 
             var recipients = UnionMembersAndObservers().Where(m => m != scrumMaster);
             SendMessage(recipients, () => new MemberMessage(MessageType.MemberJoined) { Member = scrumMaster });
@@ -215,6 +221,7 @@ namespace Duracellko.PlanningPoker.Domain
                 result = member;
             }
 
+            result.SessionId = _guidProvider.NewGuid();
             var recipients = UnionMembersAndObservers().Where(m => m != result);
             SendMessage(recipients, () => new MemberMessage(MessageType.MemberJoined) { Member = result });
 
@@ -274,6 +281,22 @@ namespace Duracellko.PlanningPoker.Domain
         {
             var allObservers = UnionMembersAndObservers();
             return allObservers.FirstOrDefault(o => MatchObserverName(o, name));
+        }
+
+        /// <summary>
+        /// Finds existing member or observer with specified name and generates new session ID.
+        /// </summary>
+        /// <param name="memberName">The member name.</param>
+        /// <returns>The member or observer with new session ID.</returns>
+        public Observer CreateSession(string memberName)
+        {
+            var result = FindMemberOrObserver(memberName);
+            if (result != null)
+            {
+                result.SessionId = _guidProvider.NewGuid();
+            }
+
+            return result;
         }
 
         /// <summary>

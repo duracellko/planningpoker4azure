@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Initializes a new instance of the <see cref="PlanningPokerController"/> class.
         /// </summary>
         public PlanningPokerController()
-            : this(null, null, null, null, null, null)
+            : this(null, null, null, null, null, null, null)
         {
         }
 
@@ -34,6 +34,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects.</param>
         /// <param name="deckProvider">The provider to get estimation cards deck.</param>
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="repository">The Scrum teams repository.</param>
@@ -41,6 +42,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="logger">Logger instance to log events.</param>
         public PlanningPokerController(
             DateTimeProvider dateTimeProvider,
+            GuidProvider guidProvider,
             DeckProvider deckProvider,
             IPlanningPokerConfiguration configuration,
             IScrumTeamRepository repository,
@@ -48,6 +50,7 @@ namespace Duracellko.PlanningPoker.Controllers
             ILogger<PlanningPokerController> logger)
         {
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
+            GuidProvider = guidProvider ?? GuidProvider.Default;
             _deckProvider = deckProvider ?? DeckProvider.Default;
             Configuration = configuration ?? new PlanningPokerConfiguration();
             Repository = repository ?? new EmptyScrumTeamRepository();
@@ -60,6 +63,12 @@ namespace Duracellko.PlanningPoker.Controllers
         /// </summary>
         /// <value>The <see cref="DateTimeProvider"/> object.</value>
         public DateTimeProvider DateTimeProvider { get; private set; }
+
+        /// <summary>
+        /// Gets the GUID provider to provide new GUID objects.
+        /// </summary>
+        /// <value>The <see cref="GuidProvider"/> object.</value>
+        public GuidProvider GuidProvider { get; private set; }
 
         /// <summary>
         /// Gets the configuration of planning poker.
@@ -111,7 +120,7 @@ namespace Duracellko.PlanningPoker.Controllers
             OnBeforeCreateScrumTeam(teamName, scrumMasterName);
 
             var availableEstimations = _deckProvider.GetDeck(deck);
-            var team = new ScrumTeam(teamName, availableEstimations, DateTimeProvider);
+            var team = new ScrumTeam(teamName, availableEstimations, DateTimeProvider, GuidProvider);
             team.SetScrumMaster(scrumMasterName);
             var teamLock = new object();
             var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);

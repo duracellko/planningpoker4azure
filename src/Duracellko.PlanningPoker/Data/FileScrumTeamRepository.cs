@@ -35,17 +35,19 @@ namespace Duracellko.PlanningPoker.Data
         /// <param name="configuration">The configuration of the planning poker.</param>
         /// <param name="scrumTeamSerializer">The serializer that provides serialization and desserialization of Scrum Team.</param>
         /// <param name="dateTimeProvider">The date-time provider.</param>
+        /// <param name="guidProvider">The GUID provider to provide new GUID objects.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public FileScrumTeamRepository(
             IFileScrumTeamRepositorySettings settings,
             IPlanningPokerConfiguration configuration,
             ScrumTeamSerializer scrumTeamSerializer,
             DateTimeProvider dateTimeProvider,
+            GuidProvider guidProvider,
             ILogger<FileScrumTeamRepository> logger)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = configuration ?? new PlanningPokerConfiguration();
-            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
+            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider, guidProvider, DeckProvider.Default);
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _folder = new Lazy<string>(GetFolder);
             _invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);

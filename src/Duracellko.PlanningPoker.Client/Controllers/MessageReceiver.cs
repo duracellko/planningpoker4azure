@@ -78,7 +78,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 }
                 catch (TaskCanceledException)
                 {
-                    // Ignore excpetion. Job was stopped regularly.
+                    // Ignore exception. Job was stopped regularly.
                 }
                 catch (Exception ex)
                 {
@@ -93,6 +93,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     var messages = await _planningPokerClient.GetMessages(
                         _planningPokerController.TeamName,
                         _planningPokerController.User.Name,
+                        _planningPokerController.SessionId,
                         _planningPokerController.LastMessageId,
                         cancellationToken);
 

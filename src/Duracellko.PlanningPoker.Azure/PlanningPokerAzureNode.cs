@@ -54,7 +54,8 @@ namespace Duracellko.PlanningPoker.Azure
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             ServiceBus = serviceBus ?? throw new ArgumentNullException(nameof(serviceBus));
             Configuration = configuration ?? new AzurePlanningPokerConfiguration();
-            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, DeckProvider.Default);
+            _scrumTeamSerializer = scrumTeamSerializer ??
+                new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, PlanningPoker.GuidProvider, DeckProvider.Default);
             _logger = logger;
             NodeId = Guid.NewGuid().ToString();
         }

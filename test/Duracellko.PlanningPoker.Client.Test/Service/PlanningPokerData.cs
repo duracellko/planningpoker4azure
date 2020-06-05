@@ -16,6 +16,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public const string MemberName = "Test member";
         public const string ObserverName = "Test observer";
 
+        public static readonly Guid SessionId = Guid.NewGuid();
+
         public static ScrumTeam GetScrumTeam(bool member = false, bool observer = false, TeamState state = TeamState.Initial, IList<EstimationResultItem> estimationResult = null, IList<EstimationParticipantStatus> estimationParticipants = null)
         {
             var result = new ScrumTeam
@@ -87,11 +89,21 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             };
         }
 
-        public static ReconnectTeamResult GetReconnectTeamResultJson(ScrumTeam scrumTeam, long lastMessageId = 0, double? selectedEstimation = double.NaN)
+        public static TeamResult GetTeamResult(ScrumTeam scrumTeam)
+        {
+            return new TeamResult
+            {
+                ScrumTeam = scrumTeam,
+                SessionId = Guid.NewGuid()
+            };
+        }
+
+        public static ReconnectTeamResult GetReconnectTeamResult(ScrumTeam scrumTeam, long lastMessageId = 0, double? selectedEstimation = double.NaN)
         {
             return new ReconnectTeamResult
             {
                 ScrumTeam = scrumTeam,
+                SessionId = Guid.NewGuid(),
                 LastMessageId = lastMessageId,
                 SelectedEstimation = GetEstimation(selectedEstimation)
             };

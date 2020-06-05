@@ -335,11 +335,11 @@ namespace Duracellko.PlanningPoker.Test.Data
             var configuration = new Mock<IPlanningPokerConfiguration>();
             configuration.SetupGet(o => o.RepositoryTeamExpiration).Returns(TimeSpan.FromMinutes(1));
 
-            var serializer = new ScrumTeamSerializer(DateTimeProvider.Default, DeckProvider.Default);
+            var serializer = new ScrumTeamSerializer(DateTimeProvider.Default, GuidProvider.Default, DeckProvider.Default);
 
             var logger = new Mock<Microsoft.Extensions.Logging.ILogger<FileScrumTeamRepository>>();
 
-            return new FileScrumTeamRepository(settings.Object, configuration.Object, serializer, DateTimeProvider.Default, logger.Object);
+            return new FileScrumTeamRepository(settings.Object, configuration.Object, serializer, DateTimeProvider.Default, GuidProvider.Default, logger.Object);
         }
 
         private FileInfo CreateTextFile(string name)

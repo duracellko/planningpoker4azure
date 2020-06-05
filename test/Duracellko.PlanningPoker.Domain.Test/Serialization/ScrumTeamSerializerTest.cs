@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = new ScrumTeam("test", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
@@ -38,7 +38,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             // Arrange
             var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = new ScrumTeam("test", availableEstimations, null);
+            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
@@ -280,7 +280,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var result = new StringBuilder();
             using (var writer = new StringWriter(result))
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default, DeckProvider.Default);
                 serializer.Serialize(writer, scrumTeam);
             }
 
@@ -291,7 +291,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             using (var reader = new StringReader(json))
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider, DeckProvider.Default);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default, DeckProvider.Default);
                 return serializer.Deserialize(reader);
             }
         }

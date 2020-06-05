@@ -20,6 +20,11 @@ namespace Duracellko.PlanningPoker.Azure
         DateTimeProvider DateTimeProvider { get; }
 
         /// <summary>
+        /// Gets the GUID provider to provide new GUID objects.
+        /// </summary>
+        GuidProvider GuidProvider { get; }
+
+        /// <summary>
         /// Sets collection of Scrum team names, which exists in the Azure and need to be initialized in this node.
         /// </summary>
         /// <param name="teamNames">The list of team names.</param>

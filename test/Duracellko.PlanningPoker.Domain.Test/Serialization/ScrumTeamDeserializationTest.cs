@@ -21,7 +21,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            var result = new ScrumTeam(scrumTeamData, DateTimeProvider.Default);
+            var result = CreateScrumTeam(scrumTeamData);
 
             // Assert
             Assert.AreEqual(scrumTeamData.Name, result.Name);
@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            var result = new ScrumTeam(scrumTeamData, DateTimeProvider.Default);
+            var result = CreateScrumTeam(scrumTeamData);
 
             // Assert
             Assert.AreEqual(scrumTeamData.Name, result.Name);
@@ -76,7 +76,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
             // Act
             // Assert
-            Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentNullException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
             // Act
             // Assert
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 
             // Act
             // Assert
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [DataTestMethod]
@@ -138,7 +138,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             emptyMember.Name = name;
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -159,7 +159,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -180,7 +180,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -201,7 +201,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -221,7 +221,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            Assert.ThrowsException<InvalidOperationException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<InvalidOperationException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         [TestMethod]
@@ -249,12 +249,17 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             };
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => new ScrumTeam(scrumTeamData, DateTimeProvider.Default));
+            Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
         }
 
         private static List<Estimation> GetAvailableEstimations()
         {
             return DeckProvider.Default.GetDefaultDeck().ToList();
+        }
+
+        private static ScrumTeam CreateScrumTeam(ScrumTeamData scrumTeamData)
+        {
+            return new ScrumTeam(scrumTeamData, DateTimeProvider.Default, GuidProvider.Default);
         }
     }
 }

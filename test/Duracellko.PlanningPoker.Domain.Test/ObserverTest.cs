@@ -23,6 +23,20 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void Constructor_SessionId_ZeroGuid()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var name = "test";
+
+            // Act
+            var result = new Observer(team, name);
+
+            // Verify
+            Assert.AreEqual<Guid>(Guid.Empty, result.SessionId);
+        }
+
+        [TestMethod]
         public void Constructor_TeamNotSpecified_ArgumentNullException()
         {
             // Arrange
@@ -125,7 +139,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(utcNow);
 
-            var team = new ScrumTeam("test team", null, dateTimeProvider);
+            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
 
             // Act
@@ -143,7 +157,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0));
 
-            var team = new ScrumTeam("test team", null, dateTimeProvider);
+            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
             dateTimeProvider.SetUtcNow(utcNow);
 

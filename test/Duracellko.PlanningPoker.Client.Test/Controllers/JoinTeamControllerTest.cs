@@ -21,10 +21,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
         public async Task JoinTeam_MemberName_JoinTeamOnService(string memberName, bool asObserver)
         {
-            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult();
             var planningPokerService = new Mock<IPlanningPokerClient>();
             planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(scrumTeam);
+                .ReturnsAsync(teamResult);
             var target = CreateController(planningPokerService: planningPokerService.Object);
 
             await target.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver);
@@ -38,8 +38,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
         public async Task JoinTeam_MemberName_ReturnsTrue(string memberName, bool asObserver)
         {
-            var scrumTeam = PlanningPokerData.GetScrumTeam();
-            var target = CreateController(scrumTeam: scrumTeam);
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var target = CreateController(teamResult: teamResult);
 
             var result = await target.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver);
 
@@ -70,21 +70,21 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         public async Task JoinTeam_ServiceReturnsTeam_InitializePlanningPokerController()
         {
-            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult();
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, scrumTeam: scrumTeam);
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult);
 
             var result = await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(scrumTeam, PlanningPokerData.MemberName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName));
         }
 
         [TestMethod]
         public async Task JoinTeam_ServiceReturnsTeam_NavigatesToPlanningPoker()
         {
-            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult();
             var navigationManager = new Mock<INavigationManager>();
-            var target = CreateController(navigationManager: navigationManager.Object, scrumTeam: scrumTeam);
+            var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
 
@@ -110,7 +110,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ScrumTeam>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var planningPokerService = new Mock<IPlanningPokerClient>();
             var busyIndicatorService = new Mock<IBusyIndicatorService>();
-            var joinTeamTask = new TaskCompletionSource<ScrumTeam>();
+            var joinTeamTask = new TaskCompletionSource<TeamResult>();
             planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .Returns(joinTeamTask.Task);
             var busyIndicatorInstance = new Mock<IDisposable>();
@@ -167,7 +167,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             busyIndicatorService.Verify(o => o.Show());
             busyIndicatorInstance.Verify(o => o.Dispose(), Times.Never());
 
-            joinTeamTask.SetResult(PlanningPokerData.GetScrumTeam());
+            joinTeamTask.SetResult(PlanningPokerData.GetTeamResult());
             await result;
 
             busyIndicatorInstance.Verify(o => o.Dispose());
@@ -313,7 +313,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var planningPokerService = new Mock<IPlanningPokerClient>();
             var busyIndicatorService = new Mock<IBusyIndicatorService>();
-            var joinTeamTask = new TaskCompletionSource<ScrumTeam>();
+            var joinTeamTask = new TaskCompletionSource<TeamResult>();
             var reconnectTeamTask = new TaskCompletionSource<ReconnectTeamResult>();
             planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .Returns(joinTeamTask.Task);
@@ -544,7 +544,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             INavigationManager navigationManager = null,
             IMemberCredentialsStore memberCredentialsStore = null,
             bool memberExistsError = false,
-            ScrumTeam scrumTeam = null,
+            TeamResult teamResult = null,
             ReconnectTeamResult reconnectTeamResult = null,
             string errorMessage = null,
             MemberCredentials memberCredentials = null)
@@ -576,7 +576,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 {
                     if (errorMessage == null)
                     {
-                        joinSetup.ReturnsAsync(scrumTeam);
+                        joinSetup.ReturnsAsync(teamResult);
                     }
                     else
                     {

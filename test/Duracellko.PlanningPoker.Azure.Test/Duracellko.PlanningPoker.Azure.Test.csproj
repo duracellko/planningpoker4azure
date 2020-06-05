@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj" />
     <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj" />
     <ProjectReference Include="..\..\src\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
+    <ProjectReference Include="..\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj" />
   </ItemGroup>
 
 </Project>

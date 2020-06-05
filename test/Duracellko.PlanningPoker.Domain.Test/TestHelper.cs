@@ -12,6 +12,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
             }
         }
 
+        public static ScrumTeam CreateScrumTeam(
+            string name,
+            IEnumerable<Estimation> availableEstimations = null,
+            DateTimeProvider dateTimeProvider = null,
+            GuidProvider guidProvider = null)
+        {
+            return new ScrumTeam(name, availableEstimations, dateTimeProvider, guidProvider);
+        }
+
         public static IEnumerable<Estimation> GetCustomEstimationDeck()
         {
             return new Estimation[]

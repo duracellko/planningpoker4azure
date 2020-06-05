@@ -31,6 +31,11 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         public long LastMessageId { get; set; }
 
         /// <summary>
+        /// Gets or sets active session ID of the member.
+        /// </summary>
+        public Guid SessionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the last time, the member checked for new messages.
         /// </summary>
         public DateTime LastActivity { get; set; }

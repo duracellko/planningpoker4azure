@@ -26,7 +26,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam();
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -43,13 +44,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var invocationId = GetInvocationId(sentMessage);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam();
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
         }
 
         [TestMethod]
@@ -84,7 +86,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -104,7 +107,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(observer: true);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -121,13 +125,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var invocationId = GetInvocationId(sentMessage);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
         }
 
         [TestMethod]
@@ -141,13 +146,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var invocationId = GetInvocationId(sentMessage);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(observer: true);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
         }
 
         [TestMethod]
@@ -162,15 +168,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult();
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
-            Assert.AreEqual(5.0, result.EstimationResult[0].Estimation.Value);
-            Assert.AreEqual(20.0, result.EstimationResult[1].Estimation.Value);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.AreEqual(5.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.AreEqual(20.0, result.ScrumTeam.EstimationResult[1].Estimation.Value);
         }
 
         [TestMethod]
@@ -185,15 +192,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: Estimation.PositiveInfinity, memberEstimation: null);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
-            Assert.IsTrue(double.IsPositiveInfinity(result.EstimationResult[0].Estimation.Value.Value));
-            Assert.IsNull(result.EstimationResult[1].Estimation.Value);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[0].Estimation.Value.Value));
+            Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation.Value);
         }
 
         [TestMethod]
@@ -208,15 +216,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: 0, memberEstimation: double.NaN);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationCanceled, estimationResult: estimationResult);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
-            Assert.AreEqual(0.0, result.EstimationResult[0].Estimation.Value);
-            Assert.IsNull(result.EstimationResult[1].Estimation);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
+            Assert.AreEqual(0.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation);
         }
 
         [TestMethod]
@@ -231,13 +240,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationParticipants = PlanningPokerData.GetEstimationParticipants();
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationInProgress, estimationParticipants: estimationParticipants);
-            var returnMessage = new CompletionMessage(invocationId, null, scrumTeam, true);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             var result = await resultTask;
 
-            Assert.AreEqual(scrumTeam, result);
-            AssertAvailableEstimations(result);
+            Assert.AreEqual(teamResult, result);
+            AssertAvailableEstimations(result.ScrumTeam);
         }
 
         [TestMethod]
@@ -290,7 +300,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam);
             var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
@@ -308,7 +318,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var invocationId = GetInvocationId(sentMessage);
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam);
             var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
@@ -331,7 +341,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: 1, memberEstimation: 1);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 123);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 123);
             var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
@@ -356,7 +366,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: null, memberEstimation: Estimation.PositiveInfinity);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 123, selectedEstimation: Estimation.PositiveInfinity);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 123, selectedEstimation: Estimation.PositiveInfinity);
             var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
@@ -382,7 +392,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: 8, memberEstimation: double.NaN);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 2157483849, selectedEstimation: 8);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 2157483849, selectedEstimation: 8);
             var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
@@ -408,7 +418,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var estimationParticipants = PlanningPokerData.GetEstimationParticipants(scrumMaster: false, member: true);
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, state: TeamState.EstimationInProgress, estimationParticipants: estimationParticipants);
-            var reconnectResult = PlanningPokerData.GetReconnectTeamResultJson(scrumTeam, lastMessageId: 1, selectedEstimation: null);
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 1, selectedEstimation: null);
             var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 

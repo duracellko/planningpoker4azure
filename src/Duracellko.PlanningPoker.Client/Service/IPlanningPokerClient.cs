@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
@@ -20,7 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken);
+        Task<TeamResult> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken);
 
         /// <summary>
         /// Connects member or observer with specified name to the Scrum team with specified name.
@@ -32,7 +33,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken);
+        Task<TeamResult> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken);
 
         /// <summary>
         /// Reconnects member with specified name to the Scrum team with specified name.
@@ -96,11 +97,12 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// List of messages.
         /// </returns>
-        Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken);
+        Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken);
     }
 }

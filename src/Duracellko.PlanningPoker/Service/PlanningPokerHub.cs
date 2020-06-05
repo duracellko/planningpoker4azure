@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public ScrumTeam CreateTeam(string teamName, string scrumMasterName, Deck deck)
+        public TeamResult CreateTeam(string teamName, string scrumMasterName, Deck deck)
         {
             _logger.LogInformation("{action}(\"{teamName}\", \"{scrumMasterName}\", {deck})", nameof(CreateTeam), teamName, scrumMasterName, deck);
             ValidateTeamName(teamName);
@@ -56,7 +56,12 @@ namespace Duracellko.PlanningPoker.Service
                 using (var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck))
                 {
                     teamLock.Lock();
-                    return ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    return new TeamResult
+                    {
+                        ScrumTeam = resultTeam,
+                        SessionId = teamLock.Team.ScrumMaster.SessionId
+                    };
                 }
             }
             catch (ArgumentException ex)
@@ -74,7 +79,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        public ScrumTeam JoinTeam(string teamName, string memberName, bool asObserver)
+        public TeamResult JoinTeam(string teamName, string memberName, bool asObserver)
         {
             _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {asObserver})", nameof(JoinTeam), teamName, memberName, asObserver);
             ValidateTeamName(teamName);
@@ -86,8 +91,14 @@ namespace Duracellko.PlanningPoker.Service
                 {
                     teamLock.Lock();
                     var team = teamLock.Team;
-                    team.Join(memberName, asObserver);
-                    return ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    var member = team.Join(memberName, asObserver);
+
+                    var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    return new TeamResult
+                    {
+                        ScrumTeam = resultTeam,
+                        SessionId = member.SessionId
+                    };
                 }
             }
             catch (ArgumentException ex)
@@ -119,29 +130,26 @@ namespace Duracellko.PlanningPoker.Service
                 {
                     teamLock.Lock();
                     var team = teamLock.Team;
-                    var observer = team.FindMemberOrObserver(memberName);
+                    var observer = team.CreateSession(memberName);
                     if (observer == null)
                     {
                         throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberNotFound, memberName), nameof(memberName));
                     }
 
                     Estimation selectedEstimation = null;
-                    if (team.State == D.TeamState.EstimationInProgress)
+                    if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
                     {
-                        var member = observer as D.Member;
-                        if (member != null)
-                        {
-                            selectedEstimation = ServiceEntityMapper.Map<D.Estimation, Estimation>(member.Estimation);
-                        }
+                        selectedEstimation = ServiceEntityMapper.Map<D.Estimation, Estimation>(member.Estimation);
                     }
 
                     var lastMessageId = observer.ClearMessages();
                     observer.UpdateActivity();
 
-                    var teamResult = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+                    var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
                     return new ReconnectTeamResult()
                     {
-                        ScrumTeam = teamResult,
+                        ScrumTeam = resultTeam,
+                        SessionId = observer.SessionId,
                         LastMessageId = lastMessageId,
                         SelectedEstimation = selectedEstimation
                     };
@@ -240,8 +248,9 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
-        public void GetMessages(string teamName, string memberName, long lastMessageId)
+        public void GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId)
         {
             _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {lastMessageId})", nameof(GetMessages), teamName, memberName, lastMessageId);
             ValidateTeamName(teamName);
@@ -254,6 +263,11 @@ namespace Duracellko.PlanningPoker.Service
                 teamLock.Lock();
                 var team = teamLock.Team;
                 var member = team.FindMemberOrObserver(memberName);
+
+                if (sessionId != member.SessionId)
+                {
+                    throw new HubException(Resources.Error_InvalidSessionId);
+                }
 
                 // Removes old messages, which the member has already read, from the member's message queue.
                 while (member.HasMessage && member.Messages.First().Id <= lastMessageId)

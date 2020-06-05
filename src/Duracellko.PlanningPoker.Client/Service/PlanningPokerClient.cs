@@ -41,15 +41,15 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public async Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
+        public async Task<TeamResult> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedScrumMasterName = _urlEncoder.Encode(scrumMasterName);
             var uri = $"CreateTeam?teamName={encodedTeamName}&scrumMasterName={encodedScrumMasterName}&deck={deck}";
 
-            var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+            var result = await GetJsonAsync<TeamResult>(uri, cancellationToken);
 
-            ScrumTeamMapper.ConvertScrumTeam(result);
+            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
             return result;
         }
 
@@ -63,16 +63,16 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        public async Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
+        public async Task<TeamResult> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
             var encodedAsObserver = asObserver.ToString(CultureInfo.InvariantCulture);
             var uri = $"JoinTeam?teamName={encodedTeamName}&memberName={encodedMemberName}&asObserver={encodedAsObserver}";
 
-            var result = await GetJsonAsync<ScrumTeam>(uri, cancellationToken);
+            var result = await GetJsonAsync<TeamResult>(uri, cancellationToken);
 
-            ScrumTeamMapper.ConvertScrumTeam(result);
+            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
             return result;
         }
 
@@ -189,17 +189,19 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// List of messages.
         /// </returns>
-        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        public async Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
+            var encodedSessionId = _urlEncoder.Encode(sessionId.ToString(null, CultureInfo.InvariantCulture));
             var encodedLastMessageId = _urlEncoder.Encode(lastMessageId.ToString(CultureInfo.InvariantCulture));
-            var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&lastMessageId={encodedLastMessageId}";
+            var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&sessionId={encodedSessionId}&lastMessageId={encodedLastMessageId}";
 
             var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
 

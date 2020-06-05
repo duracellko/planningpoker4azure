@@ -44,14 +44,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
+        public Task<TeamResult> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
                 await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ScrumTeam>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
+                var result = await _hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
 
-                ScrumTeamMapper.ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
             });
         }
@@ -66,14 +66,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        public Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
+        public Task<TeamResult> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
                 await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ScrumTeam>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
+                var result = await _hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
 
-                ScrumTeamMapper.ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
             });
         }
@@ -184,12 +184,13 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// List of messages.
         /// </returns>
-        public Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        public Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
@@ -210,7 +211,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                         getMessagesTask = _getMessagesTask.Task;
                     }
 
-                    await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, lastMessageId, cancellationToken);
+                    await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, sessionId, lastMessageId, cancellationToken);
 
                     var result = await getMessagesTask;
                     ScrumTeamMapper.ConvertMessages(result);
