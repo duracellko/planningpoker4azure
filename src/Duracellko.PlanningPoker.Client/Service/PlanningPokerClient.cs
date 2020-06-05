@@ -189,17 +189,19 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// List of messages.
         /// </returns>
-        public async Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        public async Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken)
         {
             var encodedTeamName = _urlEncoder.Encode(teamName);
             var encodedMemberName = _urlEncoder.Encode(memberName);
+            var encodedSessionId = _urlEncoder.Encode(sessionId.ToString(null, CultureInfo.InvariantCulture));
             var encodedLastMessageId = _urlEncoder.Encode(lastMessageId.ToString(CultureInfo.InvariantCulture));
-            var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&lastMessageId={encodedLastMessageId}";
+            var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&sessionId={encodedSessionId}&lastMessageId={encodedLastMessageId}";
 
             var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
 

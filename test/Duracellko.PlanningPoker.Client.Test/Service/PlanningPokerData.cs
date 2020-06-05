@@ -16,6 +16,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public const string MemberName = "Test member";
         public const string ObserverName = "Test observer";
 
+        public static readonly Guid SessionId = Guid.NewGuid();
+
         public static ScrumTeam GetScrumTeam(bool member = false, bool observer = false, TeamState state = TeamState.Initial, IList<EstimationResultItem> estimationResult = null, IList<EstimationParticipantStatus> estimationParticipants = null)
         {
             var result = new ScrumTeam

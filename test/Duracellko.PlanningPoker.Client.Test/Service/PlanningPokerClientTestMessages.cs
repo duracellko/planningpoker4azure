@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
@@ -14,12 +15,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [TestMethod]
         public async Task GetMessages_TeamAndMemberName_RequestsGetMessagesUrl()
         {
+            var sessionId = Guid.NewGuid();
             var httpMock = new MockHttpMessageHandler();
-            httpMock.Expect(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.ScrumMasterName}&lastMessageId=0")
+            httpMock.Expect(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.ScrumMasterName}&sessionId={sessionId}&lastMessageId=0")
                 .Respond(PlanningPokerClientTest.JsonType, "[]");
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, 0, CancellationToken.None);
+            await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, sessionId, 0, CancellationToken.None);
 
             httpMock.VerifyNoOutstandingExpectation();
         }
@@ -27,12 +29,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [TestMethod]
         public async Task GetMessages_LastMessageId_RequestsGetMessagesUrl()
         {
+            var sessionId = Guid.NewGuid();
             var httpMock = new MockHttpMessageHandler();
-            httpMock.Expect(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&lastMessageId=2157483849")
+            httpMock.Expect(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&sessionId={sessionId}&lastMessageId=2157483849")
                 .Respond(PlanningPokerClientTest.JsonType, "[]");
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 2157483849, CancellationToken.None);
+            await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, sessionId, 2157483849, CancellationToken.None);
 
             httpMock.VerifyNoOutstandingExpectation();
         }
@@ -46,7 +49,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             var message = result[0];
@@ -63,7 +66,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
@@ -83,7 +86,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
@@ -103,7 +106,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             var message = result[0];
@@ -120,7 +123,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             Assert.IsInstanceOfType(result[0], typeof(EstimationResultMessage));
@@ -159,7 +162,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             var message = result[0];
@@ -176,7 +179,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(1, result.Count);
             Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
@@ -199,7 +202,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 .Respond(PlanningPokerClientTest.JsonType, json);
             var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, 0, CancellationToken.None);
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
             Assert.AreEqual(3, result.Count);
             var message = result[0];

@@ -184,12 +184,13 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="memberName">Name of the member.</param>
+        /// <param name="sessionId">The session ID for receiving messages.</param>
         /// <param name="lastMessageId">ID of last message the member received.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>
         /// List of messages.
         /// </returns>
-        public Task<IList<Message>> GetMessages(string teamName, string memberName, long lastMessageId, CancellationToken cancellationToken)
+        public Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
@@ -210,7 +211,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                         getMessagesTask = _getMessagesTask.Task;
                     }
 
-                    await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, lastMessageId, cancellationToken);
+                    await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, sessionId, lastMessageId, cancellationToken);
 
                     var result = await getMessagesTask;
                     ScrumTeamMapper.ConvertMessages(result);

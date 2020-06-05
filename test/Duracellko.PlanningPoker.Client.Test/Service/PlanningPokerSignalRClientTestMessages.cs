@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
@@ -16,16 +17,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [TestMethod]
         public async Task GetMessages_TeamAndMemberName_InvocationMessageIsSent()
         {
+            var sessionId = Guid.NewGuid();
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0, fixture.CancellationToken);
 
             var sentMessage = await fixture.GetSentMessage();
             Assert.IsNotNull(sentMessage);
             Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
             var sentInvocationMessage = (InvocationMessage)sentMessage;
             Assert.AreEqual(RequestName, sentInvocationMessage.Target);
-            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, 0L };
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0L };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
@@ -43,16 +45,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         [TestMethod]
         public async Task GetMessages_LastMessageId_InvocationMessageIsSent()
         {
+            var sessionId = Guid.NewGuid();
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 2157483849, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849, fixture.CancellationToken);
 
             var sentMessage = await fixture.GetSentMessage();
             Assert.IsNotNull(sentMessage);
             Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
             var sentInvocationMessage = (InvocationMessage)sentMessage;
             Assert.AreEqual(RequestName, sentInvocationMessage.Target);
-            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, 2157483849L };
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849L };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
@@ -72,7 +75,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var message = new Message();
             await ProvideMessages(fixture, message);
@@ -88,7 +91,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var message = new MemberMessage
             {
@@ -109,7 +112,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var message = new MemberMessage
             {
@@ -130,7 +133,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var message = new Message
             {
@@ -150,7 +153,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var message = new EstimationResultMessage
             {
@@ -197,7 +200,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();
 
-            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0, fixture.CancellationToken);
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
 
             var estimationStartedMessage = new Message
             {
@@ -249,7 +252,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
             var sentInvocationMessage = (InvocationMessage)sentMessage;
             Assert.AreEqual(RequestName, sentInvocationMessage.Target);
-            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, 0L };
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0L };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
             var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
