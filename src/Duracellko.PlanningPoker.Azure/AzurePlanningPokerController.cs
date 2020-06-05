@@ -302,7 +302,8 @@ namespace Duracellko.PlanningPoker.Azure
                     scrumTeamMessage = new ScrumTeamMemberMessage(team.Name, memberMessage.MessageType)
                     {
                         MemberName = memberMessage.Member.Name,
-                        MemberType = memberMessage.Member.GetType().Name
+                        MemberType = memberMessage.Member.GetType().Name,
+                        SessionId = memberMessage.Member.SessionId
                     };
                     break;
                 case MessageType.MemberEstimated:

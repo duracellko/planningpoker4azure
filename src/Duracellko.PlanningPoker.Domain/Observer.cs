@@ -87,13 +87,13 @@ namespace Duracellko.PlanningPoker.Domain
         public IEnumerable<Message> Messages => _messages;
 
         /// <summary>
-        /// Gets an ID of active session that is receiving observer messages.
+        /// Gets or sets the ID of active session that is receiving observer messages.
         /// User can have only single client session to receive messages. When user creates or
         /// joins a team a new session ID is created. This way only the last opened browser window
         /// gets updated status. So 2 opened browser windows do not steal messages.
         /// </summary>
         /// <value>Unique ID of active session.</value>
-        public Guid SessionId { get; internal set; }
+        public Guid SessionId { get; set; }
 
         /// <summary>
         /// Gets the last time, the member checked for new messages.

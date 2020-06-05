@@ -51,7 +51,8 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             var scrumTeamMessage = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
                 MemberType = "Observer",
-                MemberName = "Test person"
+                MemberName = "Test person",
+                SessionId = Guid.NewGuid()
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
             {
@@ -66,6 +67,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             Assert.AreEqual(TeamName, resultData.TeamName);
             Assert.AreEqual(scrumTeamMessage.MemberType, resultData.MemberType);
             Assert.AreEqual(scrumTeamMessage.MemberName, resultData.MemberName);
+            Assert.AreEqual(scrumTeamMessage.SessionId, resultData.SessionId);
         }
 
         [TestMethod]
