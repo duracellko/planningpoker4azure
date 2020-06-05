@@ -87,11 +87,21 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             };
         }
 
-        public static ReconnectTeamResult GetReconnectTeamResultJson(ScrumTeam scrumTeam, long lastMessageId = 0, double? selectedEstimation = double.NaN)
+        public static TeamResult GetTeamResult(ScrumTeam scrumTeam)
+        {
+            return new TeamResult
+            {
+                ScrumTeam = scrumTeam,
+                SessionId = Guid.NewGuid()
+            };
+        }
+
+        public static ReconnectTeamResult GetReconnectTeamResult(ScrumTeam scrumTeam, long lastMessageId = 0, double? selectedEstimation = double.NaN)
         {
             return new ReconnectTeamResult
             {
                 ScrumTeam = scrumTeam,
+                SessionId = Guid.NewGuid(),
                 LastMessageId = lastMessageId,
                 SelectedEstimation = GetEstimation(selectedEstimation)
             };

@@ -88,6 +88,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public long LastMessageId { get; private set; }
 
         /// <summary>
+        /// Gets the session ID to receive messages.
+        /// </summary>
+        public Guid SessionId { get; private set; }
+
+        /// <summary>
         /// Gets a value indicating whether current user is Scrum Master and can start or stop estimation.
         /// </summary>
         public bool IsScrumMaster { get; private set; }
@@ -142,14 +147,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <summary>
         /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
         /// </summary>
-        /// <param name="scrumTeam">Scrum Team data received from server.</param>
+        /// <param name="teamInfo">Scrum Team data received from server.</param>
         /// <param name="username">Name of user joining the Scrum Team.</param>
         /// <returns>Asynchronous operation.</returns>
-        public Task InitializeTeam(ScrumTeam scrumTeam, string username)
+        public Task InitializeTeam(TeamResult teamInfo, string username)
         {
+            var scrumTeam = teamInfo?.ScrumTeam;
             if (scrumTeam == null)
             {
-                throw new ArgumentNullException(nameof(scrumTeam));
+                throw new ArgumentNullException(nameof(teamInfo));
             }
 
             if (string.IsNullOrEmpty(username))
@@ -171,6 +177,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             User = FindTeamMember(username);
             IsScrumMaster = User != null && User == ScrumTeam.ScrumMaster;
             LastMessageId = -1;
+            SessionId = teamInfo.SessionId;
 
             if (scrumTeam.EstimationResult != null)
             {
@@ -191,37 +198,17 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
             _selectedEstimation = null;
 
+            if (teamInfo is ReconnectTeamResult reconnectTeamInfo)
+            {
+                InitializeTeam(reconnectTeamInfo);
+            }
+
             var memberCredentials = new MemberCredentials
             {
                 TeamName = TeamName,
                 MemberName = User.Name
             };
             return _memberCredentialsStore.SetCredentialsAsync(memberCredentials);
-        }
-
-        /// <summary>
-        /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
-        /// </summary>
-        /// <param name="teamInfo">Scrum Team data received from server.</param>
-        /// <param name="username">Name of user joining the Scrum Team.</param>
-        /// <returns>Asynchronous operation.</returns>
-        /// <remarks>This method overloads setup additional information after reconnecting to existing team.</remarks>
-        public async Task InitializeTeam(ReconnectTeamResult teamInfo, string username)
-        {
-            if (teamInfo == null)
-            {
-                throw new ArgumentNullException(nameof(teamInfo));
-            }
-
-            if (string.IsNullOrEmpty(username))
-            {
-                throw new ArgumentNullException(nameof(username));
-            }
-
-            await InitializeTeam(teamInfo.ScrumTeam, username);
-
-            LastMessageId = teamInfo.LastMessageId;
-            _selectedEstimation = teamInfo.SelectedEstimation;
         }
 
         /// <summary>
@@ -376,6 +363,12 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 return value.Value;
             }
+        }
+
+        private void InitializeTeam(ReconnectTeamResult teamInfo)
+        {
+            LastMessageId = teamInfo.LastMessageId;
+            _selectedEstimation = teamInfo.SelectedEstimation;
         }
 
         private void ProcessMessage(Message message)

@@ -35,9 +35,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task CreateTeam_TeamName_CreateTeamOnService(Deck deck)
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
             var planningPokerService = new Mock<IPlanningPokerClient>();
             planningPokerService.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(scrumTeam);
+                .ReturnsAsync(teamResult);
             var target = CreateController(planningPokerService: planningPokerService.Object);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, deck);
@@ -49,7 +50,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task CreateTeam_TeamNameAndScrumMasterName_ReturnTrue()
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
-            var target = CreateController(scrumTeam: scrumTeam);
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var target = CreateController(teamResult: teamResult);
 
             var result = await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
@@ -76,20 +78,22 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task CreateTeam_ServiceReturnsTeam_InitializePlanningPokerController()
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, scrumTeam: scrumTeam);
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName));
         }
 
         [TestMethod]
         public async Task CreateTeam_ServiceReturnsTeam_NavigatesToPlanningPoker()
         {
             var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
             var navigationManager = new Mock<INavigationManager>();
-            var target = CreateController(navigationManager: navigationManager.Object, scrumTeam: scrumTeam);
+            var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
@@ -115,7 +119,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ScrumTeam>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -161,7 +165,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var planningPokerService = new Mock<IPlanningPokerClient>();
             var busyIndicatorService = new Mock<IBusyIndicatorService>();
-            var createTeamTask = new TaskCompletionSource<ScrumTeam>();
+            var createTeamTask = new TaskCompletionSource<TeamResult>();
             planningPokerService.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()))
                 .Returns(createTeamTask.Task);
             var busyIndicatorInstance = new Mock<IDisposable>();
@@ -173,7 +177,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             busyIndicatorService.Verify(o => o.Show());
             busyIndicatorInstance.Verify(o => o.Dispose(), Times.Never());
 
-            createTeamTask.SetResult(PlanningPokerData.GetInitialScrumTeam());
+            createTeamTask.SetResult(PlanningPokerData.GetTeamResult(PlanningPokerData.GetInitialScrumTeam()));
             await result;
 
             busyIndicatorInstance.Verify(o => o.Dispose());
@@ -185,7 +189,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             IMessageBoxService messageBoxService = null,
             IBusyIndicatorService busyIndicatorService = null,
             INavigationManager navigationManager = null,
-            ScrumTeam scrumTeam = null,
+            TeamResult teamResult = null,
             string errorMessage = null)
         {
             if (planningPokerInitializer == null)
@@ -200,7 +204,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 var createSetup = planningPokerServiceMock.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()));
                 if (errorMessage == null)
                 {
-                    createSetup.ReturnsAsync(scrumTeam);
+                    createSetup.ReturnsAsync(teamResult);
                 }
                 else
                 {

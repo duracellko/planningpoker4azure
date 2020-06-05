@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace Duracellko.PlanningPoker.Client.Test.Service
@@ -13,6 +14,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public const string ScrumMasterName = "Test Scrum Master";
         public const string MemberName = "Test member";
         public const string ObserverName = "Test observer";
+
+        public static readonly Guid SessionId = Guid.NewGuid();
+        public static readonly Guid ReconnectSessionId = Guid.NewGuid();
 
         public static string GetScrumTeamJson(bool member = false, bool observer = false, int state = 0, string estimationResult = "", string estimationParticipants = "")
         {
@@ -135,6 +139,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             }";
         }
 
+        public static string GetTeamResultJson(string scrumTeamJson)
+        {
+            return @"{
+            ""sessionId"": """ + SessionId.ToString() + @""",
+            ""scrumTeam"": " + scrumTeamJson + @"
+}";
+        }
+
         public static string GetReconnectTeamResultJson(string scrumTeamJson, string lastMessageId = "0", string selectedEstimation = null)
         {
             var selectedEstimationJson = string.Empty;
@@ -148,6 +160,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             return @"{
             ""lastMessageId"": " + lastMessageId + @",
+            ""sessionId"": """ + ReconnectSessionId.ToString() + @""",
             ""scrumTeam"": " + scrumTeamJson + selectedEstimationJson + @"
 }";
         }

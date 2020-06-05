@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var renderer = serviceProvider.GetRequiredService<TestRenderer>();
             var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
 
-            await controller.InitializeTeam(PlanningPokerData.GetScrumTeam(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
             var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
             var componentId = renderer.AssignRootComponentId(target);

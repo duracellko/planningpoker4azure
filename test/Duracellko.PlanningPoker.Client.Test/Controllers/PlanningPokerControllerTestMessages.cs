@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             target.ProcessMessages(Enumerable.Empty<Message>());
 
@@ -54,7 +54,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new Message
             {
@@ -73,7 +73,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new MemberMessage
             {
@@ -104,7 +104,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Observers = null;
             scrumTeam.State = TeamState.EstimationFinished;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new MemberMessage
             {
@@ -134,7 +134,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message1 = new MemberMessage
             {
@@ -174,7 +174,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ObserverName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName);
 
             var message = new MemberMessage
             {
@@ -211,7 +211,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             scrumTeam.Members.Add(member);
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new MemberMessage
             {
@@ -241,7 +241,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new MemberMessage
             {
@@ -272,7 +272,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new MemberMessage
             {
@@ -302,7 +302,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new Message
             {
@@ -327,7 +327,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationFinished;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new Message
             {
@@ -352,7 +352,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new Message
             {
@@ -377,7 +377,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new Message
             {
@@ -401,7 +401,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message = new MemberMessage
             {
@@ -438,7 +438,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ObserverName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName);
 
             var message = new MemberMessage
             {
@@ -475,7 +475,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message1 = new MemberMessage
             {
@@ -529,7 +529,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             var message1 = new MemberMessage
             {
@@ -667,7 +667,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new EstimationResultMessage
             {
@@ -752,7 +752,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new EstimationResultMessage
             {
@@ -848,7 +848,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
 
             var message = new EstimationResultMessage
             {
@@ -940,7 +940,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(scrumTeam, PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
             Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null));
         }
@@ -974,6 +974,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 Type = MessageType.EstimationStarted
             };
             ProcessMessage(controller, message);
+        }
+
+        private static TeamResult CreateTeamResult(ScrumTeam scrumTeam)
+        {
+            return new TeamResult
+            {
+                ScrumTeam = scrumTeam,
+                SessionId = Guid.NewGuid()
+            };
         }
     }
 }

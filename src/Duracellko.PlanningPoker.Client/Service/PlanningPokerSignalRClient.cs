@@ -44,14 +44,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// Created Scrum team.
         /// </returns>
-        public Task<ScrumTeam> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
+        public Task<TeamResult> CreateTeam(string teamName, string scrumMasterName, Deck deck, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
                 await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ScrumTeam>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
+                var result = await _hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
 
-                ScrumTeamMapper.ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
             });
         }
@@ -66,14 +66,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>
         /// The Scrum team the member or observer joined to.
         /// </returns>
-        public Task<ScrumTeam> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
+        public Task<TeamResult> JoinTeam(string teamName, string memberName, bool asObserver, CancellationToken cancellationToken)
         {
             return InvokeOperation(async () =>
             {
                 await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ScrumTeam>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
+                var result = await _hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
 
-                ScrumTeamMapper.ConvertScrumTeam(result);
+                ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
             });
         }
