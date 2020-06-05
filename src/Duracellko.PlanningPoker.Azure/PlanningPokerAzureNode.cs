@@ -284,7 +284,9 @@ namespace Duracellko.PlanningPoker.Azure
                 try
                 {
                     _processingScrumTeamName = team.Name;
-                    team.Join(message.MemberName, string.Equals(message.MemberType, typeof(Observer).Name, StringComparison.OrdinalIgnoreCase));
+                    var isObserver = string.Equals(message.MemberType, typeof(Observer).Name, StringComparison.OrdinalIgnoreCase);
+                    var observer = team.Join(message.MemberName, isObserver);
+                    observer.SessionId = message.SessionId;
                 }
                 finally
                 {
@@ -381,6 +383,7 @@ namespace Duracellko.PlanningPoker.Azure
                     var observer = team.FindMemberOrObserver(message.MemberName);
                     if (observer != null)
                     {
+                        observer.SessionId = message.SessionId;
                         observer.UpdateActivity();
                     }
                 }

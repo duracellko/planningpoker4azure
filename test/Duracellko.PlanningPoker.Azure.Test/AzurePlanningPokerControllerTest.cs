@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -41,7 +42,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void ObservableMessages_MemberJoined_ScrumTeamMemberMessage()
         {
             // Arrange
-            var target = CreateAzurePlanningPokerController();
+            var guid = Guid.NewGuid();
+            var target = CreateAzurePlanningPokerController(guidProvider: new GuidProviderMock(guid));
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
             var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
@@ -59,6 +61,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var memberMessage = (ScrumTeamMemberMessage)messages[0];
             Assert.AreEqual<string>("member", memberMessage.MemberName);
             Assert.AreEqual<string>("Member", memberMessage.MemberType);
+            Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
         }
 
         [TestMethod]
@@ -89,7 +92,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void ObservableMessages_MemberUpdateActivity_ScrumTeamMemberMessage()
         {
             // Arrange
-            var target = CreateAzurePlanningPokerController();
+            var guid = Guid.NewGuid();
+            var target = CreateAzurePlanningPokerController(guidProvider: new GuidProviderMock(guid));
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
             var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
@@ -107,6 +111,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var memberMessage = (ScrumTeamMemberMessage)messages[0];
             Assert.AreEqual<string>("master", memberMessage.MemberName);
             Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
+            Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
         }
 
         [TestMethod]

@@ -1,4 +1,5 @@
-﻿using Duracellko.PlanningPoker.Domain;
+﻿using System;
+using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Azure
 {
@@ -35,5 +36,11 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         /// <value>The member type.</value>
         public string MemberType { get; set; }
+
+        /// <summary>
+        /// Gets or sets active session ID of the member.
+        /// </summary>
+        /// <value>The session ID.</value>
+        public Guid SessionId { get; set; }
     }
 }

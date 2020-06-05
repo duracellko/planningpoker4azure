@@ -703,6 +703,33 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void ReconnectTeam_TeamNameAndScrumMasterName_UpdatedLastActivityOfScrumMaster()
+        {
+            // Arrange
+            var utcNow = new DateTime(2020, 6, 5, 22, 14, 31, DateTimeKind.Utc);
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(utcNow);
+            var guidProvider = new GuidProviderMock();
+            var team = CreateBasicTeam(guidProvider: guidProvider, dateTimeProvider: dateTimeProvider);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = new PlanningPokerService(planningPoker.Object);
+
+            utcNow = utcNow.AddMinutes(2.2);
+            dateTimeProvider.SetUtcNow(utcNow);
+            var guid = Guid.NewGuid();
+            guidProvider.SetGuid(guid);
+
+            // Act
+            var result = target.ReconnectTeam(TeamName, ScrumMasterName).Value;
+
+            // Verify
+            Assert.AreEqual<DateTime>(utcNow, team.ScrumMaster.LastActivity);
+            Assert.AreEqual<Guid>(guid, team.ScrumMaster.SessionId);
+        }
+
+        [TestMethod]
         public void ReconnectTeam_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -1392,9 +1419,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
         }
 
-        private static D.ScrumTeam CreateBasicTeam(D.GuidProvider guidProvider = null)
+        private static D.ScrumTeam CreateBasicTeam(D.GuidProvider guidProvider = null, D.DateTimeProvider dateTimeProvider = null)
         {
-            var result = new D.ScrumTeam(TeamName, null, null, guidProvider);
+            var result = new D.ScrumTeam(TeamName, null, dateTimeProvider, guidProvider);
             result.SetScrumMaster(ScrumMasterName);
             return result;
         }

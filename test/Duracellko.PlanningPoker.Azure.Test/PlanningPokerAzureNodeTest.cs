@@ -70,25 +70,23 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_PlanningPokerIsNull_ArgumentNullException()
         {
             // Arrange
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
-            var result = CreatePlanningPokerAzureNode(null, serviceBus.Object, null);
+            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(null, serviceBus.Object, null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_ServiceBusIsNull_ArgumentNullException()
         {
             // Arrange
             var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
 
             // Act
-            var result = CreatePlanningPokerAzureNode(planningPoker.Object, null, null);
+            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null, null));
         }
 
         [TestMethod]
@@ -199,10 +197,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
+            var sessionId = Guid.NewGuid();
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
                 MemberName = MemberName,
-                MemberType = "Member"
+                MemberType = "Member",
+                SessionId = sessionId
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -223,6 +223,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(observer);
             Assert.IsInstanceOfType(observer, typeof(Member));
             Assert.AreEqual<string>(MemberName, observer.Name);
+            Assert.AreEqual<Guid>(sessionId, observer.SessionId);
         }
 
         [TestMethod]
@@ -236,7 +237,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
                 MemberName = MemberName,
-                MemberType = "Member"
+                MemberType = "Member",
+                SessionId = Guid.NewGuid()
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
@@ -263,10 +265,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
+            var sessionId = Guid.NewGuid();
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
                 MemberName = ObserverName,
-                MemberType = "Observer"
+                MemberType = "Observer",
+                SessionId = sessionId
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -287,6 +291,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(observer);
             Assert.IsInstanceOfType(observer, typeof(Observer));
             Assert.AreEqual<string>(ObserverName, observer.Name);
+            Assert.AreEqual<Guid>(sessionId, observer.SessionId);
         }
 
         [TestMethod]
@@ -528,10 +533,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
+            var sessionId = Guid.NewGuid();
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberActivity)
             {
                 MemberName = ScrumMasterName,
-                MemberType = "ScrumMaster"
+                MemberType = "ScrumMaster",
+                SessionId = sessionId
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -556,6 +563,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             teamLock.Verify();
             Assert.AreEqual<DateTime>(dateTimeProvider.UtcNow, team.ScrumMaster.LastActivity);
+            Assert.AreEqual<Guid>(sessionId, team.ScrumMaster.SessionId);
         }
 
         [TestMethod]
@@ -569,7 +577,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberActivity)
             {
                 MemberName = ScrumMasterName,
-                MemberType = "ScrumMaster"
+                MemberType = "ScrumMaster",
+                SessionId = Guid.NewGuid()
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);

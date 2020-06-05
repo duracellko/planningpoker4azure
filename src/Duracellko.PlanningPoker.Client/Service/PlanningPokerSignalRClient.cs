@@ -280,7 +280,18 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (HubException ex)
             {
-                throw new PlanningPokerException(GetHubExceptionMessage(ex), ex);
+                var exceptionMessage = GetHubExceptionMessage(ex);
+                if (!string.IsNullOrEmpty(exceptionMessage) &&
+                    exceptionMessage.Contains("Invalid session ID", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Invalid session ID is not network error. New session was opened
+                    // and this client should not reconnect.
+                    throw new PlanningPokerException(exceptionMessage);
+                }
+                else
+                {
+                    throw new PlanningPokerException(exceptionMessage, ex);
+                }
             }
             catch (TaskCanceledException)
             {
