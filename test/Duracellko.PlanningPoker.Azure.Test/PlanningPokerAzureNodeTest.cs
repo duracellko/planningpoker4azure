@@ -538,7 +538,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             {
                 MemberName = ScrumMasterName,
                 MemberType = "ScrumMaster",
-                SessionId = sessionId
+                SessionId = sessionId,
+                AcknowledgedMessageId = 2
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -549,6 +550,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
             var team = new ScrumTeam(TeamName, availableEstimations, dateTimeProvider, null);
             team.SetScrumMaster(ScrumMasterName);
+            team.Join("member", true);
+            team.Join("observer", false);
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 9, 9, 23, 28, 27, DateTimeKind.Utc));
@@ -564,6 +567,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             teamLock.Verify();
             Assert.AreEqual<DateTime>(dateTimeProvider.UtcNow, team.ScrumMaster.LastActivity);
             Assert.AreEqual<Guid>(sessionId, team.ScrumMaster.SessionId);
+            Assert.AreEqual<long>(2, team.ScrumMaster.AcknowledgedMessageId);
+            Assert.IsFalse(team.ScrumMaster.HasMessage);
+            Assert.IsFalse(team.ScrumMaster.Messages.Any());
         }
 
         [TestMethod]
@@ -578,7 +584,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             {
                 MemberName = ScrumMasterName,
                 MemberType = "ScrumMaster",
-                SessionId = Guid.NewGuid()
+                SessionId = Guid.NewGuid(),
+                AcknowledgedMessageId = 2
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);

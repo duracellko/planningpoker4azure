@@ -42,5 +42,11 @@ namespace Duracellko.PlanningPoker.Azure
         /// </summary>
         /// <value>The session ID.</value>
         public Guid SessionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ID of last acknowledged message.
+        /// </summary>
+        /// <value>The ID of last acknowledged message.</value>
+        public long AcknowledgedMessageId { get; set; }
     }
 }

@@ -34,6 +34,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<Guid>(Guid.Empty, result.SessionId);
+            Assert.AreEqual<long>(0, result.AcknowledgedMessageId);
         }
 
         [TestMethod]
@@ -97,6 +98,169 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsNull(result);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(1)]
+        public void AcknowledgeMessages_SessionIdIsValid_MessageQueueIsNotChanged(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+            target.SessionId = sessionId;
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.IsFalse(target.HasMessage);
+            Assert.IsFalse(target.Messages.Any());
+            Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(1)]
+        public void AcknowledgeMessages_SessionIdIsNotValid_ArgumentException(int lastMessageId)
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+            target.SessionId = Guid.NewGuid();
+
+            // Act
+            var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.NewGuid(), lastMessageId));
+
+            // Verify
+            Assert.AreEqual("sessionId", exception.ParamName);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(1)]
+        public void AcknowledgeMessages_SessionIdIsZeroGuid_ArgumentException(int lastMessageId)
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+
+            // Act
+            var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.Empty, lastMessageId));
+
+            // Verify
+            Assert.AreEqual("sessionId", exception.ParamName);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-1)]
+        [DataRow(int.MinValue)]
+        public void AcknowledgeMessages_LastMessageIdIsZeroOrNegative_MessageQueueIsNotChanged(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.AreEqual(5, target.Messages.Count());
+            CollectionAssert.AreEqual(expectedMessages, target.Messages.ToList());
+            Assert.AreEqual(0, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        [DataRow(4)]
+        public void AcknowledgeMessages_LastMessageIdIsLessThanMessageCount_MessagesAreRemoved(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.Skip(lastMessageId).ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.AreEqual(5 - lastMessageId, target.Messages.Count());
+            CollectionAssert.AreEqual(expectedMessages, target.Messages.ToList());
+            Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(5)]
+        [DataRow(6)]
+        [DataRow(10)]
+        [DataRow(int.MaxValue)]
+        public void AcknowledgeMessages_LastMessageIdIsMoreThanMessageCount_AllMessagesAreRemoved(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.IsFalse(target.HasMessage);
+            Assert.IsFalse(target.Messages.Any());
+            Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(1, 0)]
+        [DataRow(2, 2)]
+        [DataRow(3, 1)]
+        [DataRow(4, 3)]
+        public void AcknowledgeMessages_AcknowledgeSecondTimeWithLowerMessageId_AcknowledgedMessageIdFromFirstCall(int messageId1, int messageId2)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.Skip(messageId1).ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, messageId1);
+            target.AcknowledgeMessages(sessionId, messageId2);
+
+            // Verify
+            Assert.AreEqual(5 - messageId1, target.Messages.Count());
+            CollectionAssert.AreEqual(expectedMessages, target.Messages.ToList());
+            Assert.AreEqual(messageId1, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(5, 2)]
+        [DataRow(6, -5)]
+        [DataRow(10, 0)]
+        [DataRow(int.MaxValue, 5)]
+        public void AcknowledgeMessages_AcknowledgeSecondTimeWithOlderMessageId_AcknowledgedMessageIdFromFirstCall(int messageId1, int messageId2)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.Skip(messageId1).ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, messageId1);
+            target.AcknowledgeMessages(sessionId, messageId2);
+
+            // Verify
+            Assert.IsFalse(target.HasMessage);
+            Assert.IsFalse(target.Messages.Any());
+            Assert.AreEqual(messageId1, target.AcknowledgedMessageId);
         }
 
         [TestMethod]
@@ -167,6 +331,20 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<DateTime>(utcNow, result);
+        }
+
+        private static ScrumTeam CreateScrumTeamWithMessages(Guid sessionId)
+        {
+            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            team.SetScrumMaster("test master");
+            team.Join("test", true);
+            var member = (Member)team.Join("test member", false);
+
+            team.ScrumMaster.StartEstimation();
+            member.Estimation = team.AvailableEstimations.First(e => e.Value == 8);
+            team.ScrumMaster.Estimation = team.AvailableEstimations.First(e => e.Value == 3);
+
+            return team;
         }
     }
 }

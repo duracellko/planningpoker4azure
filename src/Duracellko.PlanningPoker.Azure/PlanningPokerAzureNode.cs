@@ -384,6 +384,7 @@ namespace Duracellko.PlanningPoker.Azure
                     if (observer != null)
                     {
                         observer.SessionId = message.SessionId;
+                        observer.AcknowledgeMessages(message.SessionId, message.AcknowledgedMessageId);
                         observer.UpdateActivity();
                     }
                 }

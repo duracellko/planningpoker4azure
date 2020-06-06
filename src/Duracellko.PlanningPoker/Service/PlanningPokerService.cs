@@ -274,15 +274,14 @@ namespace Duracellko.PlanningPoker.Service
                 var team = teamLock.Team;
                 var member = team.FindMemberOrObserver(memberName);
 
-                if (sessionId != member.SessionId)
-                {
-                    return NotFound(Resources.Error_InvalidSessionId);
-                }
-
                 // Removes old messages, which the member has already read, from the member's message queue.
-                while (member.HasMessage && member.Messages.First().Id <= lastMessageId)
+                try
                 {
-                    member.PopMessage();
+                    member.AcknowledgeMessages(sessionId, lastMessageId);
+                }
+                catch (ArgumentException ex) when (ex.ParamName == "sessionId")
+                {
+                    return NotFound(ex.Message);
                 }
 
                 // Updates last activity on member to record time, when member checked for new messages.

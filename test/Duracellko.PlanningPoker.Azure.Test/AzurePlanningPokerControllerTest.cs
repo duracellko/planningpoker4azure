@@ -100,6 +100,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
+            teamLock.Team.ScrumMaster.AcknowledgeMessages(guid, 2);
             teamLock.Team.ScrumMaster.UpdateActivity();
             target.Dispose();
 
@@ -112,6 +113,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.AreEqual<string>("master", memberMessage.MemberName);
             Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
             Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
+            Assert.AreEqual<long>(2, memberMessage.AcknowledgedMessageId);
         }
 
         [TestMethod]
