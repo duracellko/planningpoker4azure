@@ -122,6 +122,26 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Acknowledge messages received by client by removing them from queue.
+        /// Messages are removed only for specific session ID. Only messages older or
+        /// same as specified last message ID are removed.
+        /// </summary>
+        /// <param name="sessionId">The session ID to confirm received messages.</param>
+        /// <param name="lastMessageId">The ID of last message to confirm receiving.</param>
+        public void AcknowledgeMessages(Guid sessionId, long lastMessageId)
+        {
+            if (sessionId == Guid.Empty || sessionId != SessionId)
+            {
+                throw new ArgumentException(Resources.Error_InvalidSessionId, nameof(sessionId));
+            }
+
+            while (HasMessage && _messages.Peek().Id <= lastMessageId)
+            {
+                _messages.Dequeue();
+            }
+        }
+
+        /// <summary>
         /// Clears the message queue.
         /// </summary>
         /// <returns>ID of last message sent to client.</returns>
@@ -197,10 +217,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         protected virtual void OnMessageReceived(EventArgs e)
         {
-            if (MessageReceived != null)
-            {
-                MessageReceived(this, e);
-            }
+            MessageReceived?.Invoke(this, e);
         }
 
         private Message CreateMessage(Serialization.MessageData messageData)

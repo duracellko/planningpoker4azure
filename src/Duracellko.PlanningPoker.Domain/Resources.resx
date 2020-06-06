@@ -126,6 +126,9 @@
   <data name="Error_EstimationResultIsReadOnly" xml:space="preserve">
     <value>Estimation result is read-only.</value>
   </data>
+  <data name="Error_InvalidSessionId" xml:space="preserve">
+    <value>Invalid session ID.</value>
+  </data>
   <data name="Error_MemberAlreadyExists" xml:space="preserve">
     <value>Member or observer named '{0}' already exists in the team.</value>
   </data>

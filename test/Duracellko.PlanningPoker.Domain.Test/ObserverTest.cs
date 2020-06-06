@@ -100,6 +100,113 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void AcknowledgeMessages_SessionIdIsValid_MessageQueueIsNotChanged()
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+            target.SessionId = sessionId;
+
+            // Act
+            target.AcknowledgeMessages(sessionId, 1);
+
+            // Verify
+            Assert.IsFalse(target.HasMessage);
+            Assert.IsFalse(target.Messages.Any());
+        }
+
+        [TestMethod]
+        public void AcknowledgeMessages_SessionIdIsNotValid_ArgumentException()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+            target.SessionId = Guid.NewGuid();
+
+            // Act
+            var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.NewGuid(), 1));
+
+            // Verify
+            Assert.AreEqual("sessionId", exception.ParamName);
+        }
+
+        [TestMethod]
+        public void AcknowledgeMessages_SessionIdIsZeroGuid_ArgumentException()
+        {
+            // Arrange
+            var team = new ScrumTeam("test team");
+            var target = new Observer(team, "test");
+
+            // Act
+            var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.Empty, 1));
+
+            // Verify
+            Assert.AreEqual("sessionId", exception.ParamName);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-1)]
+        [DataRow(int.MinValue)]
+        public void AcknowledgeMessages_LastMessageIdIsZeroOrNegative_MessageQueueIsNotChanged(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.AreEqual(5, target.Messages.Count());
+            CollectionAssert.AreEqual(expectedMessages, target.Messages.ToList());
+        }
+
+        [DataTestMethod]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        [DataRow(4)]
+        public void AcknowledgeMessages_LastMessageIdIsLessThanMessageCount_MessagesAreRemoved(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+            var expectedMessages = target.Messages.Skip(lastMessageId).ToList();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.AreEqual(5 - lastMessageId, target.Messages.Count());
+            CollectionAssert.AreEqual(expectedMessages, target.Messages.ToList());
+        }
+
+        [DataTestMethod]
+        [DataRow(5)]
+        [DataRow(6)]
+        [DataRow(10)]
+        [DataRow(int.MaxValue)]
+        public void AcknowledgeMessages_LastMessageIdIsMoreThanMessageCount_AllMessagesAreRemoved(int lastMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = CreateScrumTeamWithMessages(sessionId);
+            var target = team.Observers.First();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, lastMessageId);
+
+            // Verify
+            Assert.IsFalse(target.HasMessage);
+            Assert.IsFalse(target.Messages.Any());
+        }
+
+        [TestMethod]
         public void ClearMessages_AfterConstruction_ReturnsZero()
         {
             // Arrange
@@ -167,6 +274,20 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<DateTime>(utcNow, result);
+        }
+
+        private static ScrumTeam CreateScrumTeamWithMessages(Guid sessionId)
+        {
+            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            team.SetScrumMaster("test master");
+            team.Join("test", true);
+            var member = (Member)team.Join("test member", false);
+
+            team.ScrumMaster.StartEstimation();
+            member.Estimation = team.AvailableEstimations.First(e => e.Value == 8);
+            team.ScrumMaster.Estimation = team.AvailableEstimations.First(e => e.Value == 3);
+
+            return team;
         }
     }
 }
