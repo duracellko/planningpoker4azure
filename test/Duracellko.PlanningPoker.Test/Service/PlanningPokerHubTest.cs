@@ -1247,6 +1247,9 @@ namespace Duracellko.PlanningPoker.Test.Service
                 var memberMessage = (MemberMessage)result[0];
                 Assert.IsNotNull(memberMessage.Member);
                 Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
+
+                Assert.AreEqual(1, team.ScrumMaster.Messages.Count());
+                Assert.AreEqual(0, team.ScrumMaster.AcknowledgedMessageId);
             }
         }
 
@@ -1302,10 +1305,13 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.IsNotNull(estimationResultMessage.EstimationResult);
                 var expectedResult = new Tuple<string, double>[]
                 {
-                new Tuple<string, double>(ScrumMasterName, 1.0),
-                new Tuple<string, double>(MemberName, 2.0)
+                    new Tuple<string, double>(ScrumMasterName, 1.0),
+                    new Tuple<string, double>(MemberName, 2.0)
                 };
                 CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member.Name, i.Estimation.Value.Value)).ToList());
+
+                Assert.AreEqual(4, team.ScrumMaster.Messages.Count());
+                Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
             }
         }
 

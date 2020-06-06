@@ -96,6 +96,12 @@ namespace Duracellko.PlanningPoker.Domain
         public Guid SessionId { get; set; }
 
         /// <summary>
+        /// Gets the ID of last acknowledged message.
+        /// </summary>
+        /// <value>The ID of last acknowledged message.</value>
+        public long AcknowledgedMessageId { get; private set; }
+
+        /// <summary>
         /// Gets the last time, the member checked for new messages.
         /// </summary>
         /// <value>The last activity time of the member.</value>
@@ -135,9 +141,13 @@ namespace Duracellko.PlanningPoker.Domain
                 throw new ArgumentException(Resources.Error_InvalidSessionId, nameof(sessionId));
             }
 
-            while (HasMessage && _messages.Peek().Id <= lastMessageId)
+            if (lastMessageId > AcknowledgedMessageId)
             {
-                _messages.Dequeue();
+                AcknowledgedMessageId = lastMessageId;
+                while (HasMessage && _messages.Peek().Id <= lastMessageId)
+                {
+                    _messages.Dequeue();
+                }
             }
         }
 

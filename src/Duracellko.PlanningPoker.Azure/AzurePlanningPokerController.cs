@@ -303,7 +303,8 @@ namespace Duracellko.PlanningPoker.Azure
                     {
                         MemberName = memberMessage.Member.Name,
                         MemberType = memberMessage.Member.GetType().Name,
-                        SessionId = memberMessage.Member.SessionId
+                        SessionId = memberMessage.Member.SessionId,
+                        AcknowledgedMessageId = memberMessage.Member.AcknowledgedMessageId
                     };
                     break;
                 case MessageType.MemberEstimated:
