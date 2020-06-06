@@ -1437,7 +1437,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 // Verify
                 planningPoker.Verify();
                 teamLock.Verify();
-                Assert.AreEqual("Invalid session ID.", exception.Message);
+                Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
                 Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
             }
         }
@@ -1469,7 +1469,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 // Verify
                 planningPoker.Verify();
                 teamLock.Verify();
-                Assert.AreEqual("Invalid session ID.", exception.Message);
+                Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
                 Assert.AreEqual(messageCount, member.Messages.Count());
             }
         }

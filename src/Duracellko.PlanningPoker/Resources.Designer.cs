@@ -106,15 +106,6 @@ namespace Duracellko.PlanningPoker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid session ID..
-        /// </summary>
-        internal static string Error_InvalidSessionId {
-            get {
-                return ResourceManager.GetString("Error_InvalidSessionId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Member name cannot be longer than 50 characters..
         /// </summary>
         internal static string Error_MemberNameTooLong {

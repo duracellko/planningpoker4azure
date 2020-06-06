@@ -1339,7 +1339,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             planningPoker.Verify();
             teamLock.Verify();
             Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
-            Assert.AreEqual("Invalid session ID.", ((NotFoundObjectResult)result).Value);
+            var resultValue = ((NotFoundObjectResult)result).Value.ToString();
+            Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));
             Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
         }
 
@@ -1371,7 +1372,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             planningPoker.Verify();
             teamLock.Verify();
             Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
-            Assert.AreEqual("Invalid session ID.", ((NotFoundObjectResult)result).Value);
+            var resultValue = ((NotFoundObjectResult)result).Value.ToString();
+            Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));
             Assert.AreEqual(messageCount, member.Messages.Count());
         }
 
