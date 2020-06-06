@@ -71,7 +71,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             var availableEstimations = new string[]
             {
                 "\uD83D\uDC8E", // Rock
-                "\uD83E\uDDFB", // Paper
+                "\uD83D\uDCDC", // Paper
                 "\u2702", // Scissors
                 "\uD83E\uDD8E", // Lizard
                 "\uD83D\uDD96", // Spock

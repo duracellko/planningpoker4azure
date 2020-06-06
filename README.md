@@ -84,7 +84,7 @@ The application has following configuration settings:
 ```javascript
 {
     "PlanningPokerClient": {
-        "UseServerSide": false // boolean
+        "UseServerSide": "Never" // string - Never | Always | Mobile
     },
     "PlanningPoker": {
         "RepositoryFolder": "", // string
@@ -104,7 +104,10 @@ The application has following configuration settings:
 }
 ```
 
-- **UseServerSide** (default: false) - When true, Blazor is run in server-side and HTML is synchronized with browser using SignalR. Otherwise Blazor runs in WebAssembly on client.
+- **UseServerSide** (default: Never) - This setting has following options:
+    - **Always** - Blazor runs in server-side and HTML is synchronized with browser using SignalR.
+    - **Never** - Blazor runs in WebAssembly on client.
+    - **Mobile** - Blazor runs on server for mobile devices and on client otherwise. Startup of Blazor can be slow on mobile devices, therefore this option fallbacks to server-side for faster start.
 - **RepositoryFolder** (default: empty) - Path to folder, where data are stored between application restarts. Path is relative to the application folder. When this setting is empty, no data are stored and all are lost on application restart.
 - **RepositoryTeamExpiration** (default: 1200) - Team is deleted after specified time with no user activity.
 - **ClientInactivityTimeout** (default: 900) - User is disconnected from the team after specified time with no connection from the user.
