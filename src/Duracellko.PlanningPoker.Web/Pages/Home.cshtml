@@ -20,7 +20,7 @@
 </head>
 <body>
     <app>
-        @if (Model.ClientConfiguration.UseServerSide)
+        @if (Model.UseServerSide)
         {
             @(await Html.RenderComponentAsync<Duracellko.PlanningPoker.Client.App>(RenderMode.Server))
         }
@@ -65,7 +65,7 @@
     </script>
 
     <script src="Scripts/PlanningPoker.js"></script>
-    @if (Model.ClientConfiguration.UseServerSide)
+    @if (Model.UseServerSide)
     {
         <script src="_framework/blazor.server.js"></script>
     }

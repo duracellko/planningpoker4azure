@@ -1,8 +1,10 @@
-﻿namespace Duracellko.PlanningPoker.Web
+﻿using Duracellko.PlanningPoker.Web.Model;
+
+namespace Duracellko.PlanningPoker.Web
 {
     public class PlanningPokerClientConfiguration
     {
-        public bool UseServerSide { get; set; }
+        public ServerSideConditions UseServerSide { get; set; }
 
         public bool UseHttpClient { get; set; }
     }

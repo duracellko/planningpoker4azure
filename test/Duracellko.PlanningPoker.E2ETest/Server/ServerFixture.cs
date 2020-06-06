@@ -129,12 +129,14 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
         private string[] GetProgramArguments()
         {
+            var useServerSideValue = UseServerSide ? "Always" : "Never";
+
             // Use Development environment, so that static web content is served without building project with publish.
             return new string[]
             {
                 "--urls", "http://127.0.0.1:0",
                 "--environment", "Development",
-                "--PlanningPokerClient:UseServerSide", UseServerSide.ToString(CultureInfo.InvariantCulture),
+                "--PlanningPokerClient:UseServerSide", useServerSideValue,
                 "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
             };
         }
