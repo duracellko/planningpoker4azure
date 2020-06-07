@@ -275,6 +275,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<long>(0, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
         }
 
         [TestMethod]
@@ -293,6 +295,54 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.AreEqual<long>(2, result);
             Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
+        }
+
+        [TestMethod]
+        public void ClearMessages_AfterAcknowledge_HasNoMessages()
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var master = team.SetScrumMaster("master");
+            var target = team.Join("test", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, 2);
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(2, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(2)]
+        [DataRow(5)]
+        [DataRow(6)]
+        public void ClearMessages_After5Messages_HasNoMessages(int acknowledgeMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var master = team.SetScrumMaster("master");
+            var target = team.Join("test", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+            target.AcknowledgeMessages(sessionId, acknowledgeMessageId);
+            master.StartEstimation();
+            master.Estimation = team.AvailableEstimations.First(e => e.Value == 1);
+
+            // Act
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(5, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
         }
 
         [TestMethod]

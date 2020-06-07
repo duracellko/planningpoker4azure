@@ -158,6 +158,7 @@ namespace Duracellko.PlanningPoker.Domain
         public long ClearMessages()
         {
             _messages.Clear();
+            AcknowledgedMessageId = _lastMessageId;
             return _lastMessageId;
         }
 
