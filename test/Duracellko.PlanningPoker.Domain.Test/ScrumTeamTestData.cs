@@ -2,7 +2,7 @@
 
 namespace Duracellko.PlanningPoker.Domain.Test
 {
-    internal static class TestHelper
+    internal static class ScrumTeamTestData
     {
         public static ScrumTeam CreateScrumTeam(
             string name,

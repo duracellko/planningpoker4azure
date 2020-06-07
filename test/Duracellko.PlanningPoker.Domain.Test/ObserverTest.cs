@@ -289,7 +289,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var sessionId = Guid.NewGuid();
-            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
             var master = team.SetScrumMaster("master");
             var target = team.Join("test", true);
             master.StartEstimation();
@@ -313,7 +313,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var sessionId = Guid.NewGuid();
-            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
             var master = team.SetScrumMaster("master");
             var target = team.Join("test", true);
             master.StartEstimation();
@@ -339,7 +339,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(utcNow);
 
-            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
 
             // Act
@@ -357,7 +357,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0));
 
-            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
             dateTimeProvider.SetUtcNow(utcNow);
 
@@ -371,7 +371,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
         private static ScrumTeam CreateScrumTeamWithMessages(Guid sessionId)
         {
-            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
             team.SetScrumMaster("test master");
             team.Join("test", true);
             var member = (Member)team.Join("test member", false);

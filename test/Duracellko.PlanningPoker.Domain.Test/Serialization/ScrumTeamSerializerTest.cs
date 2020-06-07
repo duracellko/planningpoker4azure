@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
@@ -37,8 +37,8 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         public void SerializeAndDeserialize_CustomEstimations_CopyOfTheTeam()
         {
             // Arrange
-            var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
+            var availableEstimations = ScrumTeamTestData.GetCustomEstimationDeck();
+            var team = ScrumTeamTestData.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
