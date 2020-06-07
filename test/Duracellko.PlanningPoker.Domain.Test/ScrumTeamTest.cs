@@ -733,9 +733,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberJoined, message.MessageType);
-            Assert.IsFalse(master.HasMessage);
         }
 
         [TestMethod]
@@ -769,7 +769,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var result = target.Join("member", false);
 
             // Verify
-            var message = master.PopMessage();
+            Assert.IsTrue(master.HasMessage);
+            var message = master.Messages.First();
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
             Assert.AreEqual<Observer>(result, memberMessage.Member);
@@ -818,9 +819,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberJoined, message.MessageType);
-            Assert.IsFalse(observer.HasMessage);
         }
 
         [TestMethod]
@@ -835,7 +836,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var result = target.Join("member", false);
 
             // Verify
-            var message = observer.PopMessage();
+            Assert.IsTrue(observer.HasMessage);
+            var message = observer.Messages.First();
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
             Assert.AreEqual<Observer>(result, memberMessage.Member);
@@ -1110,16 +1112,16 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
 
             // Act
             target.Disconnect(member.Name);
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
-            Assert.IsFalse(master.HasMessage);
         }
 
         [TestMethod]
@@ -1129,13 +1131,14 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
 
             // Act
             target.Disconnect(member.Name);
 
             // Verify
-            var message = master.PopMessage();
+            Assert.IsTrue(master.HasMessage);
+            var message = master.Messages.First();
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
             Assert.AreEqual<Observer>(member, memberMessage.Member);
@@ -1192,9 +1195,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.Empty, message.MessageType);
-            Assert.IsFalse(member.HasMessage);
         }
 
         [TestMethod]
@@ -1211,9 +1214,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
-            Assert.IsFalse(observer.HasMessage);
         }
 
         [TestMethod]
@@ -1229,7 +1232,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Disconnect(member.Name);
 
             // Verify
-            var message = observer.PopMessage();
+            Assert.IsTrue(observer.HasMessage);
+            var message = observer.Messages.First();
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
             Assert.AreEqual<Observer>(member, memberMessage.Member);
@@ -1261,16 +1265,16 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var observer = target.Join("observer", true);
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
 
             // Act
             target.Disconnect(member.Name);
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.Empty, message.MessageType);
-            Assert.IsFalse(member.HasMessage);
         }
 
         [TestMethod]
@@ -1568,7 +1572,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.IsNotNull(eventArgs);
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            var message = member.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
         }
 
@@ -1596,7 +1600,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.IsNotNull(eventArgs);
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            var message = member.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
         }
 
@@ -1624,7 +1628,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.IsNotNull(eventArgs);
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            var message = observer.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, message.MessageType);
         }
 
@@ -1645,7 +1649,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             master.UpdateActivity();
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1655,9 +1659,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsNotNull(target.EstimationResult);
 
             Assert.IsTrue(master.HasMessage);
-            master.PopMessage();
-            Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(2, master.Messages.Count());
+            var message = master.Messages.Last();
             Assert.AreEqual<MessageType>(MessageType.EstimationEnded, message.MessageType);
         }
 
@@ -1678,7 +1681,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             member.UpdateActivity();
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));

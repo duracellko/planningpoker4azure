@@ -86,20 +86,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsFalse(result.Any());
         }
 
-        [TestMethod]
-        public void PopMessage_GetAfterConstruction_ReturnsNull()
-        {
-            // Arrange
-            var team = new ScrumTeam("test team");
-            var target = new Observer(team, "test");
-
-            // Act
-            var result = target.PopMessage();
-
-            // Verify
-            Assert.IsNull(result);
-        }
-
         [DataTestMethod]
         [DataRow(0)]
         [DataRow(1)]
