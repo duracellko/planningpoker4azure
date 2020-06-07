@@ -119,15 +119,6 @@ namespace Duracellko.PlanningPoker.Domain
         public bool IsDormant { get; internal set; }
 
         /// <summary>
-        /// Pops new message sent to the member and removes it from member's message queue.
-        /// </summary>
-        /// <returns>The new message or null, if there is no new message.</returns>
-        public Message PopMessage()
-        {
-            return _messages.Count != 0 ? _messages.Dequeue() : null;
-        }
-
-        /// <summary>
         /// Acknowledge messages received by client by removing them from queue.
         /// Messages are removed only for specific session ID. Only messages older or
         /// same as specified last message ID are removed.
@@ -158,6 +149,7 @@ namespace Duracellko.PlanningPoker.Domain
         public long ClearMessages()
         {
             _messages.Clear();
+            AcknowledgedMessageId = _lastMessageId;
             return _lastMessageId;
         }
 

@@ -86,20 +86,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsFalse(result.Any());
         }
 
-        [TestMethod]
-        public void PopMessage_GetAfterConstruction_ReturnsNull()
-        {
-            // Arrange
-            var team = new ScrumTeam("test team");
-            var target = new Observer(team, "test");
-
-            // Act
-            var result = target.PopMessage();
-
-            // Verify
-            Assert.IsNull(result);
-        }
-
         [DataTestMethod]
         [DataRow(0)]
         [DataRow(1)]
@@ -275,6 +261,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.AreEqual<long>(0, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
         }
 
         [TestMethod]
@@ -293,6 +281,54 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.AreEqual<long>(2, result);
             Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
+        }
+
+        [TestMethod]
+        public void ClearMessages_AfterAcknowledge_HasNoMessages()
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var master = team.SetScrumMaster("master");
+            var target = team.Join("test", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+
+            // Act
+            target.AcknowledgeMessages(sessionId, 2);
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(2, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
+        }
+
+        [DataTestMethod]
+        [DataRow(2)]
+        [DataRow(5)]
+        [DataRow(6)]
+        public void ClearMessages_After5Messages_HasNoMessages(int acknowledgeMessageId)
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var master = team.SetScrumMaster("master");
+            var target = team.Join("test", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+            target.AcknowledgeMessages(sessionId, acknowledgeMessageId);
+            master.StartEstimation();
+            master.Estimation = team.AvailableEstimations.First(e => e.Value == 1);
+
+            // Act
+            var result = target.ClearMessages();
+
+            // Verify
+            Assert.AreEqual<long>(5, result);
+            Assert.IsFalse(target.HasMessage);
+            Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
         }
 
         [TestMethod]
@@ -303,7 +339,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(utcNow);
 
-            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
 
             // Act
@@ -321,7 +357,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0));
 
-            var team = TestHelper.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");
             dateTimeProvider.SetUtcNow(utcNow);
 
@@ -335,7 +371,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
         private static ScrumTeam CreateScrumTeamWithMessages(Guid sessionId)
         {
-            var team = TestHelper.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", guidProvider: new GuidProviderMock(sessionId));
             team.SetScrumMaster("test master");
             team.Join("test", true);
             var member = (Member)team.Join("test member", false);

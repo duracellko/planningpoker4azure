@@ -102,10 +102,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationStarted, message.MessageType);
-            Assert.IsFalse(master.HasMessage);
         }
 
         [TestMethod]
@@ -137,10 +137,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationStarted, message.MessageType);
-            Assert.IsFalse(member.HasMessage);
         }
 
         [TestMethod]
@@ -189,10 +189,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationStarted, message.MessageType);
-            Assert.IsFalse(observer.HasMessage);
         }
 
         [TestMethod]
@@ -333,17 +333,17 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
 
             // Act
             master.CancelEstimation();
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationCanceled, message.MessageType);
-            Assert.IsFalse(master.HasMessage);
         }
 
         [TestMethod]
@@ -406,17 +406,17 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
 
             // Act
             master.CancelEstimation();
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationCanceled, message.MessageType);
-            Assert.IsFalse(member.HasMessage);
         }
 
         [TestMethod]
@@ -482,17 +482,17 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var observer = team.Join("observer", true);
             master.StartEstimation();
-            TestHelper.ClearMessages(observer);
+            observer.ClearMessages();
 
             // Act
             master.CancelEstimation();
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.First();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationCanceled, message.MessageType);
-            Assert.IsFalse(observer.HasMessage);
         }
 
         [TestMethod]

@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
@@ -37,8 +37,8 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         public void SerializeAndDeserialize_CustomEstimations_CopyOfTheTeam()
         {
             // Arrange
-            var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = TestHelper.CreateScrumTeam("test", availableEstimations: availableEstimations);
+            var availableEstimations = ScrumTeamTestData.GetCustomEstimationDeck();
+            var team = ScrumTeamTestData.CreateScrumTeam("test", availableEstimations: availableEstimations);
 
             // Act
             // Verify
@@ -241,11 +241,8 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             team.Join("observer", true);
             master.StartEstimation();
 
-            var lastMessage = master.PopMessage();
-            while (master.HasMessage)
-            {
-                lastMessage = master.PopMessage();
-            }
+            var lastMessage = master.Messages.Last();
+            master.ClearMessages();
 
             // Act
             var result = VerifySerialization(team);
@@ -255,7 +252,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             member.Estimation = result.AvailableEstimations.First(e => e.Value == 5);
 
             Assert.IsTrue(result.ScrumMaster.HasMessage);
-            var message = result.ScrumMaster.PopMessage();
+            var message = result.ScrumMaster.Messages.First();
             Assert.AreEqual(lastMessage.Id + 1, message.Id);
         }
 

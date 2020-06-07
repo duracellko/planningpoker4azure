@@ -92,7 +92,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var estimation = new Estimation(21);
             var target = new Member(team, "test");
 
@@ -153,8 +153,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void Estimation_SetOnAllMembersWithCustomValues_EstimationResultIsGenerated()
         {
             // Arrange
-            var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var availableEstimations = ScrumTeamTestData.GetCustomEstimationDeck();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -180,7 +180,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -254,7 +254,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
@@ -307,7 +307,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
             var masterEstimation = new Estimation();
             var memberEstimation = new Estimation();
 
@@ -317,14 +317,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            master.PopMessage();
-            Assert.IsTrue(master.HasMessage);
-            master.PopMessage();
-            Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            Assert.AreEqual(3, master.Messages.Count());
+            var message = master.Messages.Last();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationEnded, message.MessageType);
-            Assert.IsFalse(master.HasMessage);
         }
 
         [TestMethod]
@@ -335,7 +331,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
             var masterEstimation = new Estimation(double.PositiveInfinity);
             var memberEstimation = new Estimation(double.PositiveInfinity);
 
@@ -344,9 +340,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
             member.Estimation = memberEstimation;
 
             // Verify
-            master.PopMessage();
-            master.PopMessage();
-            var message = master.PopMessage();
+            Assert.IsTrue(master.HasMessage);
+            Assert.AreEqual(3, master.Messages.Count());
+            var message = master.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
             Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
@@ -360,7 +356,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(40);
             EventArgs eventArgs = null;
@@ -382,7 +378,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(master);
+            master.ClearMessages();
             var memberEstimation = new Estimation(3);
 
             // Act
@@ -390,7 +386,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(master.HasMessage);
-            var message = master.PopMessage();
+            var message = master.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
@@ -410,17 +406,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             master.Estimation = masterEstimation;
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
             member.Estimation = memberEstimation;
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            member.PopMessage();
-            Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(2, member.Messages.Count());
+            var message = member.Messages.Last();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationEnded, message.MessageType);
-            Assert.IsFalse(member.HasMessage);
         }
 
         [TestMethod]
@@ -436,13 +430,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             master.Estimation = masterEstimation;
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
             member.Estimation = memberEstimation;
 
             // Verify
-            member.PopMessage();
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            Assert.AreEqual(2, member.Messages.Count());
+            var message = member.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
             Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
@@ -456,7 +450,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(8);
             EventArgs eventArgs = null;
@@ -478,7 +472,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            TestHelper.ClearMessages(member);
+            member.ClearMessages();
             var memberEstimation = new Estimation(1);
 
             // Act
@@ -486,7 +480,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(member.HasMessage);
-            var message = member.PopMessage();
+            var message = member.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
@@ -498,7 +492,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             var observer = team.Join("observer", true);
@@ -508,17 +502,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             master.Estimation = masterEstimation;
-            TestHelper.ClearMessages(observer);
+            observer.ClearMessages();
             member.Estimation = memberEstimation;
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            observer.PopMessage();
-            Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            Assert.AreEqual(2, observer.Messages.Count());
+            var message = observer.Messages.Last();
             Assert.IsNotNull(message);
             Assert.AreEqual<MessageType>(MessageType.EstimationEnded, message.MessageType);
-            Assert.IsFalse(observer.HasMessage);
         }
 
         [TestMethod]
@@ -535,12 +527,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             master.Estimation = masterEstimation;
-            TestHelper.ClearMessages(observer);
+            observer.ClearMessages();
             member.Estimation = memberEstimation;
 
             // Verify
-            observer.PopMessage();
-            var message = observer.PopMessage();
+            Assert.IsTrue(observer.HasMessage);
+            Assert.AreEqual(2, observer.Messages.Count());
+            var message = observer.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
             Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
@@ -555,7 +548,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var member = (Member)team.Join("member", false);
             var observer = team.Join("observer", true);
             master.StartEstimation();
-            TestHelper.ClearMessages(observer);
+            observer.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(5);
             EventArgs eventArgs = null;
@@ -578,7 +571,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var member = (Member)team.Join("member", false);
             var observer = team.Join("observer", true);
             master.StartEstimation();
-            TestHelper.ClearMessages(observer);
+            observer.ClearMessages();
             var memberEstimation = new Estimation();
 
             // Act
@@ -586,7 +579,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
-            var message = observer.PopMessage();
+            var message = observer.Messages.First();
             Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
             Assert.IsInstanceOfType(message, typeof(MemberMessage));
             var memberMessage = (MemberMessage)message;
@@ -611,7 +604,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
             var masterEstimation = new Estimation(40.0);
@@ -624,8 +617,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void Estimation_SetToNotAvailableValueWithCustomValues_ArgumentException()
         {
             // Arrange
-            var availableEstimations = TestHelper.GetCustomEstimationDeck();
-            var team = TestHelper.CreateScrumTeam("test team", availableEstimations: availableEstimations);
+            var availableEstimations = ScrumTeamTestData.GetCustomEstimationDeck();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
             var masterEstimation = new Estimation(double.PositiveInfinity);
