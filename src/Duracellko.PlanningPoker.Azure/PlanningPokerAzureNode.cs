@@ -56,7 +56,7 @@ namespace Duracellko.PlanningPoker.Azure
             Configuration = configuration ?? new AzurePlanningPokerConfiguration();
             _scrumTeamSerializer = scrumTeamSerializer ??
                 new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, PlanningPoker.GuidProvider, DeckProvider.Default);
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             NodeId = PlanningPoker.GuidProvider.NewGuid().ToString();
         }
 
@@ -87,7 +87,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Start()
         {
-            _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeStarting, NodeId);
+            _logger.LogInformation(Resources.Info_PlanningPokerAzureNodeStarting, NodeId);
 
             await ServiceBus.Register(NodeId);
             SetupPlanningPokerListeners();
@@ -102,7 +102,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public Task Stop()
         {
-            _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeStopping, NodeId);
+            _logger.LogInformation(Resources.Info_PlanningPokerAzureNodeStopping, NodeId);
 
             if (_sendNodeMessageSubscription != null)
             {
@@ -220,7 +220,7 @@ namespace Duracellko.PlanningPoker.Azure
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.Error_CreateTeamNodeMessage, teamName, NodeId);
+                _logger.LogError(ex, Resources.Error_CreateTeamNodeMessage, teamName, NodeId);
                 return null;
             }
         }
@@ -233,11 +233,11 @@ namespace Duracellko.PlanningPoker.Azure
                 message.SenderNodeId = NodeId;
                 await ServiceBus.SendMessage(message);
 
-                _logger?.LogInformation(Resources.Info_NodeMessageSent, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+                _logger.LogInformation(Resources.Info_NodeMessageSent, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.Error_SendingNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+                _logger.LogError(ex, Resources.Error_SendingNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Duracellko.PlanningPoker.Azure
             try
             {
                 var scrumTeam = DeserializeScrumTeam((string)message.Data);
-                _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
+                _logger.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
 
                 if (!_teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
                 {
@@ -266,7 +266,7 @@ namespace Duracellko.PlanningPoker.Azure
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.Error_ScrumTeamCreatedNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+                _logger.LogError(ex, Resources.Error_ScrumTeamCreatedNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
             }
         }
 
@@ -274,7 +274,7 @@ namespace Duracellko.PlanningPoker.Azure
         private void ProcessTeamMessage(NodeMessage nodeMessage)
         {
             var message = (ScrumTeamMessage)nodeMessage.Data;
-            _logger?.LogInformation(Resources.Info_ScrumTeamNodeMessageReceived, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
+            _logger.LogInformation(Resources.Info_ScrumTeamNodeMessageReceived, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
             try
             {
                 if (!_teamsToInitialize.ContainsOrNotInit(message.TeamName))
@@ -304,7 +304,7 @@ namespace Duracellko.PlanningPoker.Azure
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.Error_ProcessingScrumTeamNodeMessage, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
+                _logger.LogError(ex, Resources.Error_ProcessingScrumTeamNodeMessage, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
             }
         }
 
@@ -456,7 +456,7 @@ namespace Duracellko.PlanningPoker.Azure
 
             if (message != null)
             {
-                _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+                _logger.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
 
                 var teamList = (IEnumerable<string>)message.Data;
                 if (_teamsToInitialize.Setup(teamList))
@@ -500,7 +500,7 @@ namespace Duracellko.PlanningPoker.Azure
                 {
                     if (!_teamsToInitialize.IsEmpty)
                     {
-                        _logger?.LogWarning(Resources.Warning_RetryRequestTeamList, NodeId);
+                        _logger.LogWarning(Resources.Warning_RetryRequestTeamList, NodeId);
                         RequestTeamList();
                     }
                 }
@@ -529,7 +529,7 @@ namespace Duracellko.PlanningPoker.Azure
             else
             {
                 var scrumTeam = DeserializeScrumTeam(scrumTeamData);
-                _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
+                _logger.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
 
                 _teamsToInitialize.Remove(scrumTeam.Name);
                 PlanningPoker.InitializeScrumTeam(scrumTeam);
@@ -552,7 +552,7 @@ namespace Duracellko.PlanningPoker.Azure
             }
 
             PlanningPoker.EndInitialization();
-            _logger?.LogInformation(Resources.Info_PlanningPokerAzureNodeInitialized, NodeId);
+            _logger.LogInformation(Resources.Info_PlanningPokerAzureNodeInitialized, NodeId);
 
             var serviceBusMessages = ServiceBus.ObservableMessages.Where(m => !string.Equals(m.SenderNodeId, NodeId, StringComparison.OrdinalIgnoreCase));
 
@@ -565,7 +565,7 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessRequestTeamListMesage(NodeMessage message)
         {
-            _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+            _logger.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
 
             var scrumTeamNames = PlanningPoker.ScrumTeamNames.ToArray();
             var teamListMessage = new NodeMessage(NodeMessageType.TeamList)
@@ -579,7 +579,7 @@ namespace Duracellko.PlanningPoker.Azure
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Node will request teams again on failure.")]
         private void ProcessRequestTeamsMessage(NodeMessage message)
         {
-            _logger?.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+            _logger.LogInformation(Resources.Info_NodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
 
             var scrumTeamNames = (IEnumerable<string>)message.Data;
             foreach (var scrumTeamName in scrumTeamNames)
