@@ -185,7 +185,8 @@ namespace Duracellko.PlanningPoker.Azure
                 .Where(m => m.MessageType != MessageType.Empty && m.MessageType != MessageType.TeamCreated && m.MessageType != MessageType.EstimationEnded)
                 .Select(m => new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = m });
             var createTeamMessages = teamMessages.Where(m => m.MessageType == MessageType.TeamCreated)
-                .Select(m => CreateTeamCreatedMessage(m.TeamName));
+                .Select(m => CreateTeamCreatedMessage(m.TeamName))
+                .Where(m => m != null);
             var nodeMessages = nodeTeamMessages.Merge(createTeamMessages);
 
             _sendNodeMessageSubscription = nodeMessages.Subscribe(SendNodeMessage);
@@ -202,76 +203,108 @@ namespace Duracellko.PlanningPoker.Azure
             _serviceBusTeamCreatedMessageSubscription = busTeamCreatedMessages.Subscribe(OnScrumTeamCreated);
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exception would stop observable.")]
         private NodeMessage CreateTeamCreatedMessage(string teamName)
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            try
             {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                return new NodeMessage(NodeMessageType.TeamCreated)
+                using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
                 {
-                    Data = SerializeScrumTeam(team)
-                };
+                    teamLock.Lock();
+                    var team = teamLock.Team;
+                    return new NodeMessage(NodeMessageType.TeamCreated)
+                    {
+                        Data = SerializeScrumTeam(team)
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, Resources.Error_CreateTeamNodeMessage, teamName, NodeId);
+                return null;
             }
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exception would stop observable.")]
         private async void SendNodeMessage(NodeMessage message)
         {
-            message.SenderNodeId = NodeId;
-            await ServiceBus.SendMessage(message);
-
-            _logger?.LogInformation(Resources.Info_NodeMessageSent, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
-        }
-
-        private void OnScrumTeamCreated(NodeMessage message)
-        {
-            var scrumTeam = DeserializeScrumTeam((string)message.Data);
-            _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
-
-            if (!_teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
+            try
             {
-                try
-                {
-                    _processingScrumTeamName = scrumTeam.Name;
-                    using (var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam))
-                    {
-                    }
-                }
-                finally
-                {
-                    _processingScrumTeamName = null;
-                }
+                message.SenderNodeId = NodeId;
+                await ServiceBus.SendMessage(message);
+
+                _logger?.LogInformation(Resources.Info_NodeMessageSent, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, Resources.Error_SendingNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
             }
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exception would stop observable.")]
+        private void OnScrumTeamCreated(NodeMessage message)
+        {
+            try
+            {
+                var scrumTeam = DeserializeScrumTeam((string)message.Data);
+                _logger?.LogInformation(Resources.Info_ScrumTeamCreatedNodeMessageReceived, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
+
+                if (!_teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
+                {
+                    try
+                    {
+                        _processingScrumTeamName = scrumTeam.Name;
+                        using (var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam))
+                        {
+                        }
+                    }
+                    finally
+                    {
+                        _processingScrumTeamName = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, Resources.Error_ScrumTeamCreatedNodeMessage, NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
+            }
+        }
+
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exception would stop observable.")]
         private void ProcessTeamMessage(NodeMessage nodeMessage)
         {
             var message = (ScrumTeamMessage)nodeMessage.Data;
             _logger?.LogInformation(Resources.Info_ScrumTeamNodeMessageReceived, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
-
-            if (!_teamsToInitialize.ContainsOrNotInit(message.TeamName))
+            try
             {
-                switch (message.MessageType)
+                if (!_teamsToInitialize.ContainsOrNotInit(message.TeamName))
                 {
-                    case MessageType.MemberJoined:
-                        OnMemberJoinedMessage(message.TeamName, (ScrumTeamMemberMessage)message);
-                        break;
-                    case MessageType.MemberDisconnected:
-                        OnMemberDisconnectedMessage(message.TeamName, (ScrumTeamMemberMessage)message);
-                        break;
-                    case MessageType.EstimationStarted:
-                        OnEstimationStartedMessage(message.TeamName);
-                        break;
-                    case MessageType.EstimationCanceled:
-                        OnEstimationCanceledMessage(message.TeamName);
-                        break;
-                    case MessageType.MemberEstimated:
-                        OnMemberEstimatedMessage(message.TeamName, (ScrumTeamMemberEstimationMessage)message);
-                        break;
-                    case MessageType.MemberActivity:
-                        OnMemberActivityMessage(message.TeamName, (ScrumTeamMemberMessage)message);
-                        break;
+                    switch (message.MessageType)
+                    {
+                        case MessageType.MemberJoined:
+                            OnMemberJoinedMessage(message.TeamName, (ScrumTeamMemberMessage)message);
+                            break;
+                        case MessageType.MemberDisconnected:
+                            OnMemberDisconnectedMessage(message.TeamName, (ScrumTeamMemberMessage)message);
+                            break;
+                        case MessageType.EstimationStarted:
+                            OnEstimationStartedMessage(message.TeamName);
+                            break;
+                        case MessageType.EstimationCanceled:
+                            OnEstimationCanceledMessage(message.TeamName);
+                            break;
+                        case MessageType.MemberEstimated:
+                            OnMemberEstimatedMessage(message.TeamName, (ScrumTeamMemberEstimationMessage)message);
+                            break;
+                        case MessageType.MemberActivity:
+                            OnMemberActivityMessage(message.TeamName, (ScrumTeamMemberMessage)message);
+                            break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, Resources.Error_ProcessingScrumTeamNodeMessage, NodeId, nodeMessage.SenderNodeId, nodeMessage.RecipientNodeId, nodeMessage.MessageType, message.TeamName, message.MessageType);
             }
         }
 
