@@ -47,7 +47,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         {
             MessageConverter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -95,11 +95,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             try
             {
                 await topicClient.SendAsync(topicMessage);
-                _logger?.LogDebug(Resources.AzureServiceBus_Debug_SendMessage);
+                _logger.LogDebug(Resources.AzureServiceBus_Debug_SendMessage);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.AzureServiceBus_Error_SendMessage);
+                _logger.LogError(ex, Resources.AzureServiceBus_Error_SendMessage);
             }
         }
 
@@ -206,7 +206,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 await managementClient.CreateSubscriptionAsync(subscriptionDescription);
 
                 _subscriptionClient = new SubscriptionClient(_connectionString, _topicName, _nodeId);
-                _logger?.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionCreated, _topicName, _nodeId);
+                _logger.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionCreated, _topicName, _nodeId);
 
                 string sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
                 string senderIdPropertyName = ServiceBus.MessageConverter.SenderIdPropertyName;
@@ -223,7 +223,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             if (_nodeId != null)
             {
                 await DeleteSubscription(_nodeId);
-                _logger?.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionDeleted, _topicName, _nodeId);
+                _logger.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionDeleted, _topicName, _nodeId);
                 _nodeId = null;
             }
         }
@@ -233,7 +233,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         {
             if (message != null && _nodeId != null)
             {
-                _logger?.LogDebug(Resources.AzureServiceBus_Debug_MessageReceived, _topicName, _nodeId, message.MessageId);
+                _logger.LogDebug(Resources.AzureServiceBus_Debug_MessageReceived, _topicName, _nodeId, message.MessageId);
 
                 try
                 {
@@ -248,11 +248,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                     }
 
                     await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
-                    _logger?.LogInformation(Resources.AzureServiceBus_Info_MessageProcessed, _topicName, _nodeId, message.MessageId);
+                    _logger.LogInformation(Resources.AzureServiceBus_Info_MessageProcessed, _topicName, _nodeId, message.MessageId);
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, Resources.AzureServiceBus_Error_MessageError, _topicName, _nodeId, message.MessageId);
+                    _logger.LogError(ex, Resources.AzureServiceBus_Error_MessageError, _topicName, _nodeId, message.MessageId);
                     await _subscriptionClient.AbandonAsync(message.SystemProperties.LockToken);
                 }
             }
@@ -268,7 +268,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, Resources.AzureServiceBus_Error_SubscriptionsMaintenance, _nodeId);
+                _logger.LogError(ex, Resources.AzureServiceBus_Error_SubscriptionsMaintenance, _nodeId);
             }
         }
 
@@ -276,7 +276,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         {
             var subscriptionLastActivityTime = (DateTime)message.UserProperties[SubscriptionPingPropertyName];
             var subscriptionId = (string)message.UserProperties[ServiceBus.MessageConverter.SenderIdPropertyName];
-            _logger?.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionAliveMessageReceived, _topicName, _nodeId, subscriptionId);
+            _logger.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionAliveMessageReceived, _topicName, _nodeId, subscriptionId);
             _nodes[subscriptionId] = subscriptionLastActivityTime;
         }
 
@@ -290,7 +290,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             {
                 topicClient = new TopicClient(_connectionString, _topicName);
                 await topicClient.SendAsync(message);
-                _logger?.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionAliveSent, _nodeId);
+                _logger.LogDebug(Resources.AzureServiceBus_Debug_SubscriptionAliveSent, _nodeId);
             }
             finally
             {
@@ -319,7 +319,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                         {
                             await DeleteSubscription(subscription);
                             _nodes.TryRemove(subscription, out lastSubscriptionActivity);
-                            _logger?.LogDebug(Resources.AzureServiceBus_Debug_InactiveSubscriptionDeleted, subscription, _nodeId);
+                            _logger.LogDebug(Resources.AzureServiceBus_Debug_InactiveSubscriptionDeleted, subscription, _nodeId);
                         }
                     }
                 }
@@ -347,7 +347,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(Resources.AzureServiceBus_Warning_SubscriptionDeleteFailed, _topicName, name, ex.Message);
+                _logger.LogWarning(Resources.AzureServiceBus_Warning_SubscriptionDeleteFailed, _topicName, name, ex.Message);
             }
         }
     }

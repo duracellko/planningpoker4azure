@@ -639,6 +639,12 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             TaskProvider taskProvider = null,
             ILogger<PlanningPokerController> logger = null)
         {
+            if (logger == null)
+            {
+                var loggerMock = new Mock<ILogger<PlanningPokerController>>();
+                logger = loggerMock.Object;
+            }
+
             return new PlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
         }
     }
