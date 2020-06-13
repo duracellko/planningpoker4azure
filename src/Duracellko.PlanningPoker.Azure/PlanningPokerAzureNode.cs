@@ -57,7 +57,7 @@ namespace Duracellko.PlanningPoker.Azure
             _scrumTeamSerializer = scrumTeamSerializer ??
                 new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, PlanningPoker.GuidProvider, DeckProvider.Default);
             _logger = logger;
-            NodeId = Guid.NewGuid().ToString();
+            NodeId = PlanningPoker.GuidProvider.NewGuid().ToString();
         }
 
         /// <summary>
