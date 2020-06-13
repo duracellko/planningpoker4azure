@@ -153,8 +153,20 @@
   <data name="AzureServiceBus_Warning_SubscriptionDeleteFailed" xml:space="preserve">
     <value>Deleting Service Bus subscription (Topic: {topic}, NodeID: {subscriptionId}) failed with error: {error}</value>
   </data>
+  <data name="Error_CreateTeamNodeMessage" xml:space="preserve">
+    <value>Error creating TeamCreated node message for team "{teamName}". (NodeID: {nodeId})</value>
+  </data>
+  <data name="Error_ProcessingScrumTeamNodeMessage" xml:space="preserve">
+    <value>Error processing Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam}, Message type: {messageType})</value>
+  </data>
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
     <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
+  </data>
+  <data name="Error_ScrumTeamCreatedNodeMessage" xml:space="preserve">
+    <value>Error processing Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type})</value>
+  </data>
+  <data name="Error_SendingNodeMessage" xml:space="preserve">
+    <value>Error sending Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type})</value>
   </data>
   <data name="Info_NodeMessageReceived" xml:space="preserve">
     <value>Planning Poker Azure Node message received (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type})</value>

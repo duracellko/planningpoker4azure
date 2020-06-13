@@ -169,11 +169,47 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error creating TeamCreated node message for team &quot;{teamName}&quot;. (NodeID: {nodeId}).
+        /// </summary>
+        internal static string Error_CreateTeamNodeMessage {
+            get {
+                return ResourceManager.GetString("Error_CreateTeamNodeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error processing Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}, Scrum Team: {scrumTeam}, Message type: {messageType}).
+        /// </summary>
+        internal static string Error_ProcessingScrumTeamNodeMessage {
+            get {
+                return ResourceManager.GetString("Error_ProcessingScrumTeamNodeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
         /// </summary>
         internal static string Error_ScrumTeamAlreadyExists {
             get {
                 return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error processing Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}).
+        /// </summary>
+        internal static string Error_ScrumTeamCreatedNodeMessage {
+            get {
+                return ResourceManager.GetString("Error_ScrumTeamCreatedNodeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error sending Planning Poker Azure Node message (NodeID: {nodeId}, Sender: {sender}, Recipient: {recipient}, Type: {type}).
+        /// </summary>
+        internal static string Error_SendingNodeMessage {
+            get {
+                return ResourceManager.GetString("Error_SendingNodeMessage", resourceCulture);
             }
         }
         

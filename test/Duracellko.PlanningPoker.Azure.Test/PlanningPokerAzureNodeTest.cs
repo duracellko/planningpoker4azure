@@ -30,7 +30,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void Constructor_PlanningPoker_PlanningPokerIsSet()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void Constructor_Configuration_ConfigurationIsSet()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var configuration = CreateConfigutartion();
 
@@ -59,7 +59,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void Constructor_NoConfiguration_DefaultConfigurationIsSet()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
@@ -83,7 +83,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public void Constructor_ServiceBusIsNull_ArgumentNullException()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
 
             // Act
             Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null, null));
@@ -93,7 +93,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_TeamCreatedMessage_MessageIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -105,7 +105,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
 
-            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
             NodeMessage nodeMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamCreated)))
                 .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
@@ -130,10 +130,38 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public async Task Start_TeamCreatedMessageButTeamDoesNotExist_NoMessageIsSentToServiceBus()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization());
+            var message = new ScrumTeamMessage(TeamName, MessageType.TeamCreated);
+            var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).
+                Throws(new ArgumentException("Team doesn't exist.")).Verifiable();
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
+
+            // Act
+            await target.Start();
+            sendServiceBusMsg();
+            startPlanningPokerMsg();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            serviceBus.Verify(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamCreated)), Times.Never());
+        }
+
+        [TestMethod]
         public async Task Start_MemberJoined_MessageIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -142,7 +170,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var message = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined) { MemberName = MemberName };
             var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
 
-            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
             NodeMessage nodeMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage)))
                 .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
@@ -166,7 +194,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_EstimationEnded_NoMessageIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -175,7 +203,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var message = new ScrumTeamMessage(TeamName, MessageType.EstimationEnded);
             var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
 
-            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId, null);
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
 
             // Act
             await target.Start();
@@ -190,10 +218,46 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public async Task Start_FirstScrumTeamMessageFails_SecondMessageIsSentToServiceBus()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization());
+            var message1 = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined) { MemberName = MemberName };
+            var message2 = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
+            var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message1, message2);
+
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage && m.Data == message1)))
+                .ThrowsAsync(new InvalidOperationException()).Verifiable();
+            NodeMessage nodeMessage = null;
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage && m.Data == message2)))
+                .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
+
+            // Act
+            await target.Start();
+            sendServiceBusMsg();
+            startPlanningPokerMsg();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            Assert.IsNotNull(nodeMessage);
+            Assert.AreEqual<NodeMessageType>(NodeMessageType.ScrumTeamMessage, nodeMessage.MessageType);
+            Assert.AreEqual<string>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual(message2, nodeMessage.Data);
+        }
+
+        [TestMethod]
         public async Task Start_MemberJoinedFromServiceBus_MemberJoinedTeam()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -230,7 +294,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndMemberJoinedFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -261,7 +325,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_ObserverJoinedFromServiceBus_ObserverJoinedTeam()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -298,7 +362,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_MasterDisconnectedFromServiceBus_MasterIsDormant()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -329,7 +393,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndMasterDisconnectedFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -359,7 +423,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_EstimationStartedFromServiceBus_TeamEstimationStarted()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -386,7 +450,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndEstimationStartedFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -412,7 +476,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_EstimationCanceledFromServiceBus_TeamEstimationCanceled()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -440,7 +504,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndEstimationCanceledFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -466,7 +530,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_MasterEstimatedFromServiceBus_MasterEstimationIsSet()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -499,7 +563,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndMasterEstimatedFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -529,7 +593,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_MasterActivityFromServiceBus_MasterUpdatedActivityInTeam()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -576,7 +640,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndMasterActivityFromServiceBus_MessageIgnored()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -608,7 +672,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_TeamCreatedFromServiceBus_TeamAttachedToPlanningPoker()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var dateTimeProvider = new DateTimeProviderMock();
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion(), dateTimeProvider: dateTimeProvider);
@@ -640,7 +704,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_NotInitAndTeamCreatedFromServiceBus_IgnoreMessage()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -662,10 +726,78 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public async Task Start_2MessagesFromServiceBusAndFirstTeamDoesNotExist_SecondTeamEstimationStarted()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message1 = new ScrumTeamMessage("No Team", MessageType.EstimationStarted);
+            var nodeMessage1 = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message1 };
+            var message2 = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
+            var nodeMessage2 = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message2 };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage1, nodeMessage2);
+
+            var team = CreateBasicTeam();
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+            planningPoker.Setup(o => o.GetScrumTeam("No Team"))
+                .Throws(new ArgumentException("Team doesn't exist.")).Verifiable();
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.AreEqual<TeamState>(TeamState.EstimationInProgress, team.State);
+        }
+
+        [TestMethod]
+        public async Task Start_2TeamCreatedMessagesFromServiceBusAndFirstTeamExists_SecondTeamAttachedToPlanningPoker()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var dateTimeProvider = new DateTimeProviderMock();
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion(), dateTimeProvider: dateTimeProvider);
+
+            var existingTeam = CreateBasicTeam("Existing team");
+            var existingTeamData = JsonConvert.SerializeObject(existingTeam.GetData());
+            var nodeMessage1 = new NodeMessage(NodeMessageType.TeamCreated) { Data = existingTeamData };
+            var nodeMessage2 = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage1, nodeMessage2);
+
+            ScrumTeam team = null;
+            planningPoker.Setup(p => p.AttachScrumTeam(It.Is<ScrumTeam>(t => t.Name == "Existing team")))
+                .Throws(new InvalidOperationException()).Verifiable();
+            planningPoker.Setup(p => p.AttachScrumTeam(It.Is<ScrumTeam>(t => t.Name == TeamName)))
+                .Callback<ScrumTeam>(t => team = t).Returns(default(IScrumTeamLock)).Verifiable();
+            planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization());
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            Assert.IsNotNull(team);
+            Assert.AreEqual<string>(TeamName, team.Name);
+            Assert.AreEqual<DateTimeProvider>(dateTimeProvider, team.DateTimeProvider);
+        }
+
+        [TestMethod]
         public async Task Start_TeamListMessageReceived_SetScrumTeamListOnPlanningPoker()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -695,7 +827,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_TeamListMessageReceived_RequestForTeams()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -727,7 +859,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_InitializeTeamMessageReceived_InitializeTeamOnPlanningPoker()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -759,7 +891,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_InitializeTeamMessageReceivedButAnotherTeamIsNotInitializedYet_EndInitializationIsNotExecuted()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -789,7 +921,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_InitializeTeamMessageReceivedWithTeamNameOnly_SkipsInitializationOfThisTeam()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -817,7 +949,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_RequestTeamListMessageReceived_TeamListIsObtainedFromPlanningPoker()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -846,7 +978,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_RequestTeamListMessageReceived_TeamListIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -882,7 +1014,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_RequestTeamsMessageReceived_TeamIsObtainedFromPlanningPoker()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -908,7 +1040,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_RequestTeamsMessageReceived_TeamIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -943,7 +1075,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         public async Task Start_RequestTeamsMessageReceivedButTeamDoesNotExistAnymore_TeamNameIsSentToServiceBus()
         {
             // Arrange
-            var planningPoker = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            var planningPoker = CreatePlanningPokerMock();
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
@@ -996,9 +1128,16 @@ namespace Duracellko.PlanningPoker.Azure.Test
             return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, serializer, logger);
         }
 
-        private static ScrumTeam CreateBasicTeam()
+        private static Mock<IAzurePlanningPoker> CreatePlanningPokerMock()
         {
-            var result = new ScrumTeam(TeamName);
+            var result = new Mock<IAzurePlanningPoker>(MockBehavior.Strict);
+            result.SetupGet(p => p.GuidProvider).Returns(GuidProvider.Default);
+            return result;
+        }
+
+        private static ScrumTeam CreateBasicTeam(string name = null)
+        {
+            var result = new ScrumTeam(name ?? TeamName);
             result.SetScrumMaster(ScrumMasterName);
             return result;
         }
@@ -1012,12 +1151,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
             return result;
         }
 
-        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, NodeMessage nodeMessage)
+        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, params NodeMessage[] nodeMessages)
         {
-            return SetupServiceBus(serviceBus, nodeId, null, nodeMessage);
+            return SetupServiceBus(serviceBus, nodeId, null, nodeMessages);
         }
 
-        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, string[] initializationTeamList, NodeMessage nodeMessage)
+        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, string[] initializationTeamList, params NodeMessage[] nodeMessages)
         {
             serviceBus.Setup(b => b.Register(nodeId)).Returns(Task.CompletedTask).Verifiable();
             serviceBus.Setup(b => b.Unregister()).Returns(Task.CompletedTask).Verifiable();
@@ -1046,9 +1185,12 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 () =>
                 {
                     observableMessages.OnNext(emptyTeamListMessage);
-                    if (nodeMessage != null)
+                    if (nodeMessages != null)
                     {
-                        observableMessages.OnNext(nodeMessage);
+                        foreach (var nodeMessage in nodeMessages)
+                        {
+                            observableMessages.OnNext(nodeMessage);
+                        }
                     }
 
                     observableMessages.OnCompleted();
@@ -1076,14 +1218,21 @@ namespace Duracellko.PlanningPoker.Azure.Test
             }
         }
 
-        private static Action SetupPlanningPokerMsg(Mock<IAzurePlanningPoker> planningPoker, ScrumTeamMessage message)
+        private static Action SetupPlanningPokerMsg(Mock<IAzurePlanningPoker> planningPoker, params ScrumTeamMessage[] messages)
         {
             var observableMessages = new Subject<ScrumTeamMessage>();
             planningPoker.Setup(p => p.ObservableMessages).Returns(observableMessages).Verifiable();
             return new Action(
                 () =>
                 {
-                    observableMessages.OnNext(message);
+                    if (messages != null)
+                    {
+                        foreach (var message in messages)
+                        {
+                            observableMessages.OnNext(message);
+                        }
+                    }
+
                     observableMessages.OnCompleted();
                 });
         }
