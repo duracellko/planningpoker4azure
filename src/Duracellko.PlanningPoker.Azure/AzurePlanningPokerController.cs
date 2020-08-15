@@ -22,7 +22,7 @@ namespace Duracellko.PlanningPoker.Azure
         private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
         private HashSet<string> _teamsToInitialize;
         private object _teamsToInitializeLock = new object();
-        private volatile bool _initialized = false;
+        private volatile bool _initialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.

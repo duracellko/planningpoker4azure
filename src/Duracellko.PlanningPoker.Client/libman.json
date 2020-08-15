@@ -7,8 +7,20 @@
       "destination": "wwwroot/js"
     },
     {
-      "library": "twitter-bootstrap@4.5.0",
-      "destination": "wwwroot"
+      "library": "twitter-bootstrap@4.5.2",
+      "destination": "wwwroot",
+      "files": [
+        "css/bootstrap.css",
+        "css/bootstrap.min.css",
+        "css/bootstrap-grid.css",
+        "css/bootstrap-grid.min.css",
+        "css/bootstrap-reboot.css",
+        "css/bootstrap-reboot.min.css",
+        "js/bootstrap.js",
+        "js/bootstrap.min.js",
+        "js/bootstrap.bundle.js",
+        "js/bootstrap.bundle.min.js"
+      ]
     },
     {
       "library": "open-iconic@1.1.1",

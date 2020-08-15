@@ -79,8 +79,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             catch (PlanningPokerException ex)
             {
                 var message = ex.Message;
-                if (message.IndexOf(MemberExistsError1, StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    message.IndexOf(MemberExistsError2, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (message.Contains(MemberExistsError1, StringComparison.OrdinalIgnoreCase) &&
+                    message.Contains(MemberExistsError2, StringComparison.OrdinalIgnoreCase))
                 {
                     message = ControllerHelper.GetErrorMessage(ex);
                     message = $"{message}{Environment.NewLine}{Resources.JoinTeam_ReconnectMessage}";
