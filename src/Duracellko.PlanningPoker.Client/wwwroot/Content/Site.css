@@ -157,4 +157,5 @@ main a:focus, main a:hover, main a:not([href]):not([tabindex]):focus, main a:not
     text-align: center;
     font-size: 10pt;
     font-weight: bold;
+    overflow-wrap: break-word;
 }
