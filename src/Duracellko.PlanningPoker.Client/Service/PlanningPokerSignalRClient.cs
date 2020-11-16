@@ -397,7 +397,11 @@ namespace Duracellko.PlanningPoker.Client.Service
 
                     if (_hubConnection != null)
                     {
-                        _hubConnection.DisposeAsync().Wait(TimeSpan.FromSeconds(8));
+                        var hubConnectionDisposeTask = _hubConnection.DisposeAsync();
+                        if (!hubConnectionDisposeTask.IsCompleted)
+                        {
+                            hubConnectionDisposeTask.AsTask().Wait(TimeSpan.FromSeconds(8));
+                        }
 
                         _hubConnection.Closed -= HubConnectionOnClosed;
                         _hubConnection.Reconnecting -= HubConnectionOnReconnecting;

@@ -15,6 +15,7 @@ using Moq;
 namespace Duracellko.PlanningPoker.Client.Test.Components
 {
     [TestClass]
+    [Ignore("Replace tests using bUnit")]
     public class PlanningPokerDeskTest
     {
         private static readonly string _newLine = Environment.NewLine;

@@ -13,13 +13,13 @@ namespace Duracellko.PlanningPoker.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             var environment = builder.HostEnvironment;
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(environment.BaseAddress) });
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(environment.BaseAddress) });
 
             var configuration = builder.Configuration.Build();
             var useHttpClient = configuration.GetValue<bool>("UseHttpClient");
             Startup.ConfigureServices(builder.Services, false, useHttpClient);
 
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<App>("#app");
 
             await builder.Build().RunAsync();
         }
