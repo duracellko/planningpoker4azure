@@ -126,6 +126,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "Testing that target is not null.")]
         public void Equals_Null_ReturnsFalse()
         {
             // Arrange

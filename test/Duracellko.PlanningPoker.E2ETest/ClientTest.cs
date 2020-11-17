@@ -143,29 +143,15 @@ namespace Duracellko.PlanningPoker.E2ETest
         public void AssertMembersInTeam(params string[] members)
         {
             var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span[1]"));
-            if (members == null)
-            {
-                Assert.AreEqual(0, elements.Count);
-            }
-            else
-            {
-                Assert.AreEqual(members.Length, elements.Count);
-                CollectionAssert.AreEqual(members, elements.Select(e => e.Text).ToList());
-            }
+            Assert.AreEqual(members.Length, elements.Count);
+            CollectionAssert.AreEqual(members, elements.Select(e => e.Text).ToList());
         }
 
         public void AssertObserversInTeam(params string[] observers)
         {
             var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[3]/li/span"));
-            if (observers == null)
-            {
-                Assert.AreEqual(0, elements.Count);
-            }
-            else
-            {
-                Assert.AreEqual(observers.Length, elements.Count);
-                CollectionAssert.AreEqual(observers, elements.Select(e => e.Text).ToList());
-            }
+            Assert.AreEqual(observers.Length, elements.Count);
+            CollectionAssert.AreEqual(observers, elements.Select(e => e.Text).ToList());
         }
 
         public void StartEstimation()
@@ -214,23 +200,16 @@ namespace Duracellko.PlanningPoker.E2ETest
         public void AssertSelectedEstimation(params KeyValuePair<string, string>[] estimations)
         {
             var estimationResultElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult ul li"));
-            if (estimations == null)
-            {
-                Assert.AreEqual(0, estimationResultElements.Count);
-            }
-            else
-            {
-                Assert.AreEqual(estimations.Length, estimationResultElements.Count);
+            Assert.AreEqual(estimations.Length, estimationResultElements.Count);
 
-                for (int i = 0; i < estimations.Length; i++)
-                {
-                    var estimation = estimations[i];
-                    var estimationResultElement = estimationResultElements[i];
-                    var valueElement = estimationResultElement.FindElement(By.XPath("./span[1]"));
-                    var nameElement = estimationResultElement.FindElement(By.XPath("./span[2]"));
-                    Assert.AreEqual(estimation.Key, nameElement.Text);
-                    Assert.AreEqual(estimation.Value, valueElement.Text);
-                }
+            for (int i = 0; i < estimations.Length; i++)
+            {
+                var estimation = estimations[i];
+                var estimationResultElement = estimationResultElements[i];
+                var valueElement = estimationResultElement.FindElement(By.XPath("./span[1]"));
+                var nameElement = estimationResultElement.FindElement(By.XPath("./span[2]"));
+                Assert.AreEqual(estimation.Key, nameElement.Text);
+                Assert.AreEqual(estimation.Value, valueElement.Text);
             }
         }
 

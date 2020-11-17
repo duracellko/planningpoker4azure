@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Duracellko.PlanningPoker.E2ETest
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class EnvironmentDataSourceAttribute : Attribute, ITestDataSource
+    public sealed class EnvironmentDataSourceAttribute : Attribute, ITestDataSource
     {
         public IEnumerable<object[]> GetData(MethodInfo methodInfo)
         {

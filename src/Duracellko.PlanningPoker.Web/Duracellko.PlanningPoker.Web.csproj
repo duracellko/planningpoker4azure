@@ -11,8 +11,6 @@
     <OutputPath>..\..\Build\web\Release\</OutputPath>
   </PropertyGroup>
 
-  <Import Project="..\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
-  
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.0" />

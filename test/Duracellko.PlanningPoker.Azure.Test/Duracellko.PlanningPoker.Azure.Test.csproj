@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>CA1707</NoWarn>
-  </PropertyGroup>
-
-  <Import Project="..\..\src\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />

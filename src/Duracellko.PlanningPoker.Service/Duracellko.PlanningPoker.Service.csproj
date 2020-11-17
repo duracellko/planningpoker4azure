@@ -4,8 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="..\Duracellko.PlanningPoker.Shared\Duracellko.PlanningPoker.Shared.projitems" Label="Shared" />
-
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

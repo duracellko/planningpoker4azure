@@ -280,6 +280,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             _nodes[subscriptionId] = subscriptionLastActivityTime;
         }
 
+        [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "topicClient can be null, when constructor fails.")]
         private async Task SendSubscriptionIsAliveMessage()
         {
             var message = new Message();
