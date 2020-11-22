@@ -80,6 +80,7 @@ jobs:
       publishWebProjects: false
       projects: $(PublishProjects)
       arguments: --configuration $(BuildConfiguration) --verbosity normal
+      zipAfterPublish: false
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
 
   - task: ArchiveFiles@2

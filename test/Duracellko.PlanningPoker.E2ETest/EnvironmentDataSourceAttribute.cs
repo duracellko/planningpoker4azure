@@ -13,8 +13,6 @@ namespace Duracellko.PlanningPoker.E2ETest
         {
             yield return new object[] { false, BrowserType.Chrome, false };
             yield return new object[] { true, BrowserType.Chrome, false };
-            yield return new object[] { false, BrowserType.Chrome, true };
-            yield return new object[] { true, BrowserType.Chrome, true };
         }
 
         public string GetDisplayName(MethodInfo methodInfo, object[] data)
