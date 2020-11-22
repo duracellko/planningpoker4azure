@@ -219,7 +219,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                     {
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
-                            var content = await response.Content.ReadAsStringAsync();
+                            var content = await response.Content.ReadAsStringAsync(cancellationToken);
                             throw new PlanningPokerException(content);
                         }
                         else if (!response.IsSuccessStatusCode)
@@ -227,7 +227,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                             throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                         }
 
-                        using (var contentStream = await response.Content.ReadAsStreamAsync())
+                        using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
                         {
                             using (var textReader = new StreamReader(contentStream))
                             {
@@ -257,7 +257,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                     {
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
-                            var content = await response.Content.ReadAsStringAsync();
+                            var content = await response.Content.ReadAsStringAsync(cancellationToken);
                             throw new PlanningPokerException(content);
                         }
                         else if (!response.IsSuccessStatusCode)

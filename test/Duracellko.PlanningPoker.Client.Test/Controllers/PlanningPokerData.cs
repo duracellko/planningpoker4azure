@@ -106,6 +106,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "Creates new instance.")]
         public static MemberCredentials GetMemberCredentials()
         {
             return new MemberCredentials

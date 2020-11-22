@@ -1,10 +1,12 @@
 Param (
-    [bool] $E2ETest = $false
+    [bool] $E2ETest = $false,
+    [string] $ChromeVersion = ''
 )
 
 $scriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $buildConfiguration = 'Release'
 $buildProjects = Join-Path -Path $scriptDir -ChildPath 'PlanningPokerCore.sln'
+$webProject = Join-Path -Path $scriptDir '.\src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj'
 
 try {
 
@@ -24,15 +26,15 @@ try {
 
     Write-Host "Step: unit tests" -ForegroundColor Green
     $testFiles = [System.Collections.Generic.List[string]]::new()
-    $testPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\netcoreapp3.1"
+    $testPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net5.0"
     Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add('"' + $_.FullName + '"') }
     $testAssemblies = $testFiles.ToArray()
     $testAssembliesString = [string]::Join(' ', $testAssemblies)
 
-    Write-Host "dotnet vstest $testAssembliesString --logger:trx"
-    & dotnet vstest $testAssemblies --logger:trx
+    Write-Host "dotnet test $testAssembliesString --logger:trx"
+    & dotnet test $testAssemblies --logger:trx
     if (!$?) {
-        throw "dotnet vstest failed"
+        throw "dotnet test failed"
     }
 
     if ($E2ETest) {
@@ -48,29 +50,34 @@ try {
     
         Write-Host "Step: install Selenium" -ForegroundColor Green
         $seleniumPath = Join-Path -Path $scriptDir -ChildPath 'node_modules\.bin\selenium-standalone'
-        Write-Host "`"$seleniumPath`" install"
-        & $seleniumPath install
+        $chromeVersionParameter = ''
+        if (![string]::IsNullOrEmpty($ChromeVersion)) {
+            $chromeVersionParameter = '--drivers.chrome.version=' + $ChromeVersion
+        }
+
+        Write-Host "`"$seleniumPath`" install $chromeVersionParameter"
+        & $seleniumPath install $chromeVersionParameter
         if (!$?) {
             throw "selenium-standalone install failed"
         }
 
         Write-Host "Step: End-2-End tests" -ForegroundColor Green
         $e2eTestPath = Join-Path -Path $testPath -ChildPath 'Duracellko.PlanningPoker.E2ETest.dll'
-        Write-Host "dotnet vstest `"$e2eTestPath`" --logger:trx"
-        & dotnet vstest $e2eTestPath --logger:trx
+        Write-Host "dotnet test `"$e2eTestPath`" --logger:trx"
+        & dotnet test $e2eTestPath --logger:trx
         if (!$?) {
-            throw "dotnet vstest failed"
+            throw "dotnet test failed"
         }
     }
 
     Write-Host "Step: dotnet publish" -ForegroundColor Green
-    Write-Host "dotnet publish `"$buildProjects`" --configuration $buildConfiguration"
-    & dotnet publish $buildProjects --configuration $buildConfiguration
+    Write-Host "dotnet publish `"$webProject`" --configuration $buildConfiguration"
+    & dotnet publish $webProject --configuration $buildConfiguration
     if (!$?) {
         throw "dotnet publish failed"
     }
 
-    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\netcoreapp3.1\publish"
+    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\net5.0\publish"
     $dockerAppFolder = Join-Path -Path $scriptDir -ChildPath "docker\app"
     if (!(Test-Path -Path $dockerAppFolder)) {
         New-Item -Path $dockerAppFolder -ItemType Directory

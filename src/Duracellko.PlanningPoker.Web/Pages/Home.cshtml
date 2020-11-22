@@ -19,7 +19,7 @@
     <link href="Content/Site.css" rel="stylesheet" />
 </head>
 <body>
-    <app>
+    <app id="app">
         @if (Model.UseServerSide)
         {
             @(await Html.RenderComponentAsync<Duracellko.PlanningPoker.Client.App>(RenderMode.Server))

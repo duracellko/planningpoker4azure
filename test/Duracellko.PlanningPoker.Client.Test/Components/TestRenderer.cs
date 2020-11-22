@@ -16,7 +16,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
         }
 
-        public List<CapturedBatch> Batches { get; } = new List<CapturedBatch>();
+        public IList<CapturedBatch> Batches { get; } = new List<CapturedBatch>();
 
         public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
 

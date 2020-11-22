@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR.Protocol;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Collection is queue.")]
+    [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Collection is queue.")]
     public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposable
     {
         private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
