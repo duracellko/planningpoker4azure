@@ -17,13 +17,12 @@ jobs:
   variables:
     RunEnd2EndTests: ${{ parameters.RunEnd2EndTests }}
     PublishArtifacts: ${{ parameters.PublishArtifacts }}
-    TestAssemblies: ''
 
   steps:
   - task: UseDotNet@2
-    displayName: Install .NET Core SDK
+    displayName: Install .NET SDK
     inputs:
-      version: 3.1.x
+      version: 5.0.x
 
   - task: NodeTool@0
     displayName: Install Node.js
@@ -54,21 +53,12 @@ jobs:
       projects: $(BuildProjects)
       arguments: --configuration $(BuildConfiguration) --verbosity normal
 
-  - pwsh: |
-      $testFiles = [System.Collections.Generic.List[string]]::new()
-      $testPath = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath "Build\bin\$env:BUILDCONFIGURATION\netcoreapp3.1"
-      Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add('"' + $_.FullName + '"') }
-      $testAssemblies = [string]::Join(' ', $testFiles)
-      Write-Host "##vso[task.setvariable variable=TestAssemblies]$testAssemblies"
-    displayName: Find Test Assemblies
-    failOnStderr: true
-
   - task: DotNetCoreCLI@2
-    displayName: dotnet vstest
+    displayName: dotnet test
     inputs:
-      command: custom
-      custom: vstest
-      arguments: $(TestAssemblies) --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPoker.trx"
+      command: test
+      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/*.Test.dll'
+      testRunTitle: Planning Poker
 
   - pwsh: .\node_modules\.bin\selenium-standalone install
     displayName: Install Selenium
@@ -76,11 +66,11 @@ jobs:
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
   - task: DotNetCoreCLI@2
-    displayName: dotnet vstest Duracellko.PlanningPoker.E2ETest
+    displayName: dotnet test Duracellko.PlanningPoker.E2ETest
     inputs:
-      command: custom
-      custom: vstest
-      arguments: '"$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp3.1/Duracellko.PlanningPoker.E2ETest.dll" --logger:trx;LogFileName="$(Build.BinariesDirectory)/PlanningPokerE2E.trx"'
+      command: test
+      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/Duracellko.PlanningPoker.E2ETest.dll'
+      testRunTitle: Planning Poker E2E
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
   - task: DotNetCoreCLI@2
@@ -88,27 +78,16 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: $(BuildProjects)
+      projects: $(PublishProjects)
       arguments: --configuration $(BuildConfiguration) --verbosity normal
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
-
-  - task: PublishTestResults@2
-    displayName: Publish test results
-    inputs:
-      testResultsFormat: VSTest
-      testResultsFiles: '*.trx'
-      searchFolder: $(Build.BinariesDirectory)
-      testRunTitle: Planning Poker
-      configuration: $(BuildConfiguration)
-      platform: $(BuildPlatform)
-    condition: succeededOrFailed()
 
   - task: ArchiveFiles@2
     displayName: Zip web
     inputs:
       archiveType: zip
       archiveFile: $(Build.StagingDirectory)/web/web.zip
-      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/netcoreapp3.1/publish
+      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/net5.0/publish
       includeRootFolder: false
       replaceExistingArchive: true
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
@@ -123,7 +102,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy screenshots
     inputs:
-      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/netcoreapp3.1/Screenshots
+      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/Screenshots
       TargetFolder: $(Build.Build.StagingDirectory)/screenshots
       CleanTargetFolder: true
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
