@@ -30,7 +30,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             }
 
             var driver = CreateDriver(browserType);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
             Browser = driver;
         }
 
