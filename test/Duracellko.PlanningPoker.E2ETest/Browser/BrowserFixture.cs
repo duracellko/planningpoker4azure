@@ -75,11 +75,11 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             {
                 case BrowserType.Chrome:
                     driverName = "chromedriver";
-                    environmentVariable = "ChromeWebDriver";
+                    environmentVariable = "CHROMEWEBDRIVER";
                     break;
                 case BrowserType.Firefox:
                     driverName = "geckodriver";
-                    environmentVariable = "GeckoWebDriver";
+                    environmentVariable = "GECKOWEBDRIVER";
                     break;
                 default:
                     throw new NotSupportedException($"Browser type '{browserType}' is not supported.");
