@@ -141,6 +141,9 @@
   <data name="AzureServiceBus_Error_MessageError" xml:space="preserve">
     <value>Service Bus message processing failed (Topic: {topic}, NodeID: {nodeId}, MessageID: {messageId})</value>
   </data>
+  <data name="AzureServiceBus_Error_ProcessError" xml:space="preserve">
+    <value>Service Bus processing failed (Topic: {topic}, NodeID: {nodeId}, Error source: {errorSource})</value>
+  </data>
   <data name="AzureServiceBus_Error_SendMessage" xml:space="preserve">
     <value>Error sending message to Azure Service Bus.</value>
   </data>

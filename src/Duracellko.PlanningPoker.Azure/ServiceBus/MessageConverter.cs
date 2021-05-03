@@ -2,42 +2,44 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
     /// <summary>
-    /// Instance of this class is able to convert messages of type <see cref="T:NodeMessage"/> to BrokeredMessage and vice versa.
+    /// Instance of this class is able to convert messages of type <see cref="T:NodeMessage"/> to ServiceBusMessage and vice versa.
     /// </summary>
     public class MessageConverter : IMessageConverter
     {
         /// <summary>
-        /// Name of property in BrokeredMessage holding recipient node ID.
+        /// Name of property in ServiceBusMessage holding recipient node ID.
         /// </summary>
         internal const string RecipientIdPropertyName = "RecipientId";
 
         /// <summary>
-        /// Name of property in BrokeredMessage holding sender node ID.
+        /// Name of property in ServiceBusMessage holding sender node ID.
         /// </summary>
         internal const string SenderIdPropertyName = "SenderId";
 
         private const string MessageTypePropertyName = "MessageType";
         private const string MessageSubtypePropertyName = "MessageSubtype";
 
+        private static readonly BinaryData _emptyBinaryData = new BinaryData(Array.Empty<byte>());
+
         /// <summary>
-        /// Converts <see cref="T:NodeMessage"/> message to BrokeredMessage object.
+        /// Converts <see cref="T:NodeMessage"/> message to ServiceBusMessage  object.
         /// </summary>
         /// <param name="message">The message to convert.</param>
-        /// <returns>Converted message of BrokeredMessage type.</returns>
-        public Message ConvertToBrokeredMessage(NodeMessage message)
+        /// <returns>Converted message of ServiceBusMessage type.</returns>
+        public ServiceBusMessage ConvertToServiceBusMessage(NodeMessage message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            byte[] messageBody;
+            BinaryData messageBody;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
                 messageBody = ConvertToMessageBody((string)message.Data);
@@ -48,39 +50,43 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
             else
             {
-                messageBody = Array.Empty<byte>();
+                messageBody = _emptyBinaryData;
             }
 
-            var result = new Message(messageBody);
-            result.UserProperties[MessageTypePropertyName] = message.MessageType.ToString();
+            var result = new ServiceBusMessage(messageBody);
+            result.ApplicationProperties[MessageTypePropertyName] = message.MessageType.ToString();
             if (message.Data != null)
             {
-                result.UserProperties[MessageSubtypePropertyName] = message.Data.GetType().Name;
+                result.ApplicationProperties[MessageSubtypePropertyName] = message.Data.GetType().Name;
             }
 
-            result.UserProperties[SenderIdPropertyName] = message.SenderNodeId;
-            result.UserProperties[RecipientIdPropertyName] = message.RecipientNodeId;
+            result.ApplicationProperties[SenderIdPropertyName] = message.SenderNodeId;
+            result.ApplicationProperties[RecipientIdPropertyName] = message.RecipientNodeId;
             return result;
         }
 
         /// <summary>
-        /// Converts BrokeredMessage message to <see cref="T:NodeMessage"/> object.
+        /// Converts ServiceBusReceivedMessage message to <see cref="T:NodeMessage"/> object.
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of NodeMessage type.</returns>
-        public NodeMessage ConvertToNodeMessage(Message message)
+        public NodeMessage ConvertToNodeMessage(ServiceBusReceivedMessage message)
         {
             if (message == null)
             {
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.UserProperties[MessageTypePropertyName]);
-            var messageSubtype = message.UserProperties.ContainsKey(MessageSubtypePropertyName) ? (string)message.UserProperties[MessageSubtypePropertyName] : null;
+            var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.ApplicationProperties[MessageTypePropertyName]);
+            string messageSubtype = null;
+            if (message.ApplicationProperties.TryGetValue(MessageSubtypePropertyName, out var messageSubtypeObject))
+            {
+                messageSubtype = (string)messageSubtypeObject;
+            }
 
             var result = new NodeMessage(messageType);
-            result.SenderNodeId = (string)message.UserProperties[SenderIdPropertyName];
-            result.RecipientNodeId = (string)message.UserProperties[RecipientIdPropertyName];
+            result.SenderNodeId = (string)message.ApplicationProperties[SenderIdPropertyName];
+            result.RecipientNodeId = (string)message.ApplicationProperties[RecipientIdPropertyName];
 
             switch (result.MessageType)
             {
@@ -112,7 +118,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             return result;
         }
 
-        private static byte[] ConvertToMessageBody(object data)
+        private static BinaryData ConvertToMessageBody(object data)
         {
             void WriteData(object data, TextWriter writer)
             {
@@ -123,7 +129,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             return ConvertToMessageBody(data, WriteData);
         }
 
-        private static byte[] ConvertToMessageBody(string data)
+        private static BinaryData ConvertToMessageBody(string data)
         {
             void WriteData(string data, TextWriter writer)
             {
@@ -133,7 +139,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             return ConvertToMessageBody(data, WriteData);
         }
 
-        private static byte[] ConvertToMessageBody<T>(T data, Action<T, TextWriter> writeAction)
+        private static BinaryData ConvertToMessageBody<T>(T data, Action<T, TextWriter> writeAction)
         {
             using (var bodyStream = new MemoryStream())
             {
@@ -147,11 +153,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                     }
                 }
 
-                return bodyStream.ToArray();
+                return BinaryData.FromBytes(bodyStream.ToArray());
             }
         }
 
-        private static T ConvertFromMessageBody<T>(byte[] body)
+        private static T ConvertFromMessageBody<T>(BinaryData body)
         {
             T ReadData(TextReader reader)
             {
@@ -165,7 +171,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             return ConvertFromMessageBody<T>(body, ReadData);
         }
 
-        private static string ConvertFromMessageBody(byte[] body)
+        private static string ConvertFromMessageBody(BinaryData body)
         {
             string ReadData(TextReader reader)
             {
@@ -175,9 +181,9 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             return ConvertFromMessageBody<string>(body, ReadData);
         }
 
-        private static T ConvertFromMessageBody<T>(byte[] body, Func<TextReader, T> readFunction)
+        private static T ConvertFromMessageBody<T>(BinaryData body, Func<TextReader, T> readFunction)
         {
-            using (var bodyStream = new MemoryStream(body))
+            using (var bodyStream = body.ToStream())
             {
                 using (var deflateStream = new DeflateStream(bodyStream, CompressionMode.Decompress))
                 {
