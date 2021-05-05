@@ -126,8 +126,9 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
             _serviceBusAdministrationClient = new ServiceBusAdministrationClient(_connectionString);
             _serviceBusClient = new ServiceBusClient(_connectionString);
-            _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
+
             await CreateSubscription();
+            _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
 
             await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -171,7 +172,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 _serviceBusClient = null;
             }
 
-            await DeleteSubscription();
+            if (_serviceBusAdministrationClient != null)
+            {
+                await DeleteSubscription();
+                _serviceBusAdministrationClient = null;
+            }
         }
 
         /// <summary>
