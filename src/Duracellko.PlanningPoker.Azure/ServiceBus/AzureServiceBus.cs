@@ -126,9 +126,9 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
             _serviceBusAdministrationClient = new ServiceBusAdministrationClient(_connectionString);
             _serviceBusClient = new ServiceBusClient(_connectionString);
+            _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
 
             await CreateSubscription();
-            _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
 
             await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -256,7 +256,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error and try again.")]
         private async Task ReceiveMessage(ProcessMessageEventArgs messageEventArgs)
         {
-            var message = messageEventArgs?.Message;
+            var message = messageEventArgs.Message;
             var cancellationToken = messageEventArgs.CancellationToken;
 
             if (message != null && _nodeId != null)
