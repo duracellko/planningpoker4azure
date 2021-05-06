@@ -133,6 +133,15 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service Bus processing failed (Topic: {topic}, NodeID: {nodeId}, Error source: {errorSource}).
+        /// </summary>
+        internal static string AzureServiceBus_Error_ProcessError {
+            get {
+                return ResourceManager.GetString("AzureServiceBus_Error_ProcessError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error sending message to Azure Service Bus..
         /// </summary>
         internal static string AzureServiceBus_Error_SendMessage {

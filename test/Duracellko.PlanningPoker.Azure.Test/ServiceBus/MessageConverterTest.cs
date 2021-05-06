@@ -1,4 +1,5 @@
 ﻿using System;
+using Azure.Messaging.ServiceBus;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,10 +16,10 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         private const string Team2Json = "{\"Name\":\"My Team\",\"State\":1,\"AvailableEstimations\":[{\"Value\":0.0},{\"Value\":0.5},{\"Value\":1.0},{\"Value\":2.0},{\"Value\":3.0},{\"Value\":5.0},{\"Value\":8.0},{\"Value\":13.0},{\"Value\":20.0},{\"Value\":40.0},{\"Value\":100.0},{\"Value\":\"Infinity\"},{\"Value\":null}],\"Members\":[{\"Name\":\"Duracellko\",\"MemberType\":2,\"Messages\":[],\"LastMessageId\":9,\"LastActivity\":\"2020-05-24T14:53:07.6381166Z\",\"IsDormant\":false,\"Estimation\":{\"Value\":2.0}},{\"Name\":\"Me\",\"MemberType\":1,\"Messages\":[],\"LastMessageId\":8,\"LastActivity\":\"2020-05-24T14:53:05.8193334Z\",\"IsDormant\":false,\"Estimation\":{\"Value\":5.0}},{\"Name\":\"Test\",\"MemberType\":1,\"Messages\":[{\"Id\":4,\"MessageType\":6,\"MemberName\":\"Duracellko\",\"EstimationResult\":null},{\"Id\":5,\"MessageType\":6,\"MemberName\":\"Me\",\"EstimationResult\":null}],\"LastMessageId\":5,\"LastActivity\":\"2020-05-24T14:52:40.0708949Z\",\"IsDormant\":false,\"Estimation\":null}],\"EstimationResult\":{\"Duracellko\":{\"Value\":2.0},\"Me\":{\"Value\":5.0},\"Test\":null}}";
 
         [TestMethod]
-        public void ConvertToBrokeredMessage_Null_ArgumentNullException()
+        public void ConvertToServiceBusMessage_Null_ArgumentNullException()
         {
             var target = new MessageConverter();
-            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToBrokeredMessage(null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToServiceBusMessage(null));
         }
 
         [TestMethod]
@@ -29,7 +30,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_ScrumTeamMessage()
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamMessage()
         {
             var scrumTeamMessage = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
@@ -38,7 +39,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = scrumTeamMessage
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
             var resultData = (ScrumTeamMessage)result.Data;
 
             Assert.AreEqual(MessageType.EstimationStarted, resultData.MessageType);
@@ -46,7 +47,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_ScrumTeamMemberMessage()
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamMemberMessage()
         {
             var scrumTeamMessage = new ScrumTeamMemberMessage(TeamName, MessageType.MemberJoined)
             {
@@ -60,7 +61,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = scrumTeamMessage
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
             var resultData = (ScrumTeamMemberMessage)result.Data;
 
             Assert.AreEqual(MessageType.MemberJoined, resultData.MessageType);
@@ -71,7 +72,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_ScrumTeamMemberEstimationMessage()
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamMemberEstimationMessage()
         {
             var scrumTeamMessage = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
             {
@@ -84,7 +85,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = scrumTeamMessage
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
             var resultData = (ScrumTeamMemberEstimationMessage)result.Data;
 
             Assert.AreEqual(MessageType.MemberEstimated, resultData.MessageType);
@@ -94,7 +95,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_TeamCreated()
+        public void ConvertToServiceBusMessageAndBack_TeamCreated()
         {
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated)
             {
@@ -102,26 +103,26 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = Team1Json
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
             Assert.AreEqual(Team1Json, (string)result.Data);
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_RequestTeamList()
+        public void ConvertToServiceBusMessageAndBack_RequestTeamList()
         {
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList)
             {
                 SenderNodeId = SenderId
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
             Assert.IsNotNull(result);
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_TeamList()
+        public void ConvertToServiceBusMessageAndBack_TeamList()
         {
             var teamList = new[] { TeamName, "Test", "Hello, World!" };
             var nodeMessage = new NodeMessage(NodeMessageType.TeamList)
@@ -131,13 +132,13 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = teamList
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
             CollectionAssert.AreEqual(teamList, (string[])result.Data);
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_RequestTeams()
+        public void ConvertToServiceBusMessageAndBack_RequestTeams()
         {
             var teamList = new[] { TeamName };
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams)
@@ -147,13 +148,13 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = teamList
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
             CollectionAssert.AreEqual(teamList, (string[])result.Data);
         }
 
         [TestMethod]
-        public void ConvertToBrokeredMessageAndBack_InitializeTeam()
+        public void ConvertToServiceBusMessageAndBack_InitializeTeam()
         {
             var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam)
             {
@@ -162,19 +163,25 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
                 Data = Team2Json
             };
 
-            var result = ConvertToBrokeredMessageAndBack(nodeMessage);
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
             Assert.AreEqual(Team2Json, (string)result.Data);
         }
 
-        private static NodeMessage ConvertToBrokeredMessageAndBack(NodeMessage nodeMessage)
+        private static NodeMessage ConvertToServiceBusMessageAndBack(NodeMessage nodeMessage)
         {
             var target = new MessageConverter();
-            var brokeredMessage = target.ConvertToBrokeredMessage(nodeMessage);
+            var serviceBusMessage = target.ConvertToServiceBusMessage(nodeMessage);
 
-            Assert.IsNotNull(brokeredMessage);
+            Assert.IsNotNull(serviceBusMessage);
 
-            var result = target.ConvertToNodeMessage(brokeredMessage);
+            var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+                serviceBusMessage.Body,
+                serviceBusMessage.MessageId,
+                subject: serviceBusMessage.Subject,
+                contentType: serviceBusMessage.ContentType,
+                properties: serviceBusMessage.ApplicationProperties);
+            var result = target.ConvertToNodeMessage(serviceBusReceivedMessage);
 
             Assert.IsNotNull(result);
             Assert.AreNotSame(nodeMessage, result);

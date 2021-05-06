@@ -23,8 +23,7 @@ namespace Duracellko.PlanningPoker.Web
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _node.Stop();
-            return Task.CompletedTask;
+            return _node.Stop();
         }
 
         public void Dispose()
