@@ -134,6 +134,12 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public bool CanCancelEstimation => IsScrumMaster && ScrumTeam.State == TeamState.EstimationInProgress;
 
         /// <summary>
+        /// Gets a value indicating whether user can display estimation summary.
+        /// </summary>
+        public bool CanShowEstimationSummary => ScrumTeam.State == TeamState.EstimationFinished &&
+            EstimationSummary == null && Estimations != null && Estimations.Any(e => e.HasEstimation);
+
+        /// <summary>
         /// Gets a collection of available estimation values, user can select from.
         /// </summary>
         public IEnumerable<double?> AvailableEstimations => ScrumTeam.AvailableEstimations.Select(e => e.Value)
@@ -143,6 +149,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Gets a collection of selected estimates by all users.
         /// </summary>
         public IEnumerable<MemberEstimation> Estimations => _memberEstimations;
+
+        /// <summary>
+        /// Gets a summary of estimations, e.g. average value.
+        /// </summary>
+        public EstimationSummary EstimationSummary { get; private set; }
 
         /// <summary>
         /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
@@ -178,6 +189,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             IsScrumMaster = User != null && User == ScrumTeam.ScrumMaster;
             LastMessageId = -1;
             SessionId = teamInfo.SessionId;
+            EstimationSummary = null;
 
             if (scrumTeam.EstimationResult != null)
             {
@@ -293,6 +305,17 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 {
                     await _planningPokerService.CancelEstimation(TeamName, CancellationToken.None);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Displays estimation summary.
+        /// </summary>
+        public void ShowEstimationSummary()
+        {
+            if (CanShowEstimationSummary)
+            {
+                EstimationSummary = new EstimationSummary(Estimations);
             }
         }
 
@@ -441,6 +464,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private void OnEstimationStarted()
         {
             _memberEstimations = new List<MemberEstimation>();
+            EstimationSummary = null;
             ScrumTeam.State = TeamState.EstimationInProgress;
             _hasJoinedEstimation = true;
             _selectedEstimation = null;
@@ -449,6 +473,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private void OnEstimationEnded(EstimationResultMessage message)
         {
             _memberEstimations = GetMemberEstimationList(message.EstimationResult);
+            EstimationSummary = null;
             ScrumTeam.State = TeamState.EstimationFinished;
         }
 

@@ -250,6 +250,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -268,6 +270,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -286,6 +290,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -304,6 +310,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -321,6 +329,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -339,6 +349,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -357,6 +369,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -375,6 +389,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -424,6 +440,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsTrue(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -508,6 +526,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsTrue(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -599,6 +619,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsTrue(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -687,6 +709,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsTrue(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -739,6 +763,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -775,6 +801,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoObserverHasEstimated(target);
 
@@ -823,6 +851,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -849,6 +879,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsTrue(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
@@ -879,6 +911,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsTrue(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
@@ -907,6 +941,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoObserverHasEstimated(target);
 
@@ -938,6 +974,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanStartEstimation);
             Assert.IsFalse(target.CanCancelEstimation);
             Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
         }
