@@ -27,21 +27,28 @@
         </div>
     }
 
-    @if (Controller.IsScrumMaster)
+    @if (Controller.IsScrumMaster || Controller.CanShowEstimationSummary)
     {
         <div class="actionsBar">
             <p>
                 @if (Controller.CanStartEstimation)
                 {
-                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary">
+                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary mr-3">
                         <span class="oi oi-media-play mr-1" aria-hidden="true"></span> Start estimation
                     </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
-                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary">
+                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary mr-3">
                         <span class="oi oi-media-stop mr-1" aria-hidden="true"></span> Cancel estimation
+                    </button>
+                }
+
+                @if (Controller.CanShowEstimationSummary)
+                {
+                    <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary mr-3">
+                        <span class="oi oi-calculator mr-1" aria-hidden="true"></span> Show average
                     </button>
                 }
             </p>
@@ -52,6 +59,37 @@
     {
         <div class="estimationResult">
             <h3>Selected estimates</h3>
+
+            @if (Controller.EstimationSummary != null)
+            {
+                <div class="estimationSummary row">
+                    <div class="col-md-6">
+                        <div class="estimationSummaryItem">
+                            <div class="estimationSummaryTitle">Average</div>
+                            <div class="estimationSummaryValue">
+                                @FormatSummaryValue(Controller.EstimationSummary.Average)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="estimationSummaryItem">
+                            <div class="estimationSummaryTitle">Median</div>
+                            <div class="estimationSummaryValue">
+                                @FormatSummaryValue(Controller.EstimationSummary.Median)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="estimationSummaryItem">
+                            <div class="estimationSummaryTitle">Sum</div>
+                            <div class="estimationSummaryValue">
+                                @FormatSummaryValue(Controller.EstimationSummary.Sum)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <ul>
                 @foreach (var memberEstimation in Controller.Estimations)
                 {
@@ -95,12 +133,17 @@
         return TryRun(() => Controller.CancelEstimation());
     }
 
+    private void ShowEstimationSummaryCommand()
+    {
+        Controller.ShowEstimationSummary();
+    }
+
     private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         StateHasChanged();
     }
 
-    private string GetEstimationText(double? estimation)
+    private static string GetEstimationText(double? estimation)
     {
         if (estimation == null)
         {
@@ -165,5 +208,15 @@
         {
             return value.ToString();
         }
+    }
+
+    private static string FormatSummaryValue(double? value)
+    {
+        if (!value.HasValue)
+        {
+            return string.Empty;
+        }
+
+        return value.Value.ToString("N2");
     }
 }
