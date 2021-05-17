@@ -171,6 +171,16 @@ namespace Duracellko.PlanningPoker.E2ETest
             button.Click();
         }
 
+        public void ShowAverage(bool isScrumMaster)
+        {
+            var buttons = PlanningPokerDeskElement.FindElements(By.CssSelector("div.actionsBar button"));
+            Assert.AreEqual(isScrumMaster ? 2 : 1, buttons.Count);
+
+            var button = buttons.Last();
+            Assert.AreEqual("Show average", button.Text);
+            button.Click();
+        }
+
         public void AssertAvailableEstimations(ICollection<string> estimations = null)
         {
             var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
@@ -210,6 +220,29 @@ namespace Duracellko.PlanningPoker.E2ETest
                 var nameElement = estimationResultElement.FindElement(By.XPath("./span[2]"));
                 Assert.AreEqual(estimation.Key, nameElement.Text);
                 Assert.AreEqual(estimation.Value, valueElement.Text);
+            }
+        }
+
+        public void AssertEstimationSummary(double average, double median, double sum)
+        {
+            var summaryItems = new[]
+            {
+                KeyValuePair.Create("Average", average),
+                KeyValuePair.Create("Median", median),
+                KeyValuePair.Create("Sum", sum),
+            };
+
+            var summaryItemElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult div.estimationSummary div.estimationSummaryItem"));
+            Assert.AreEqual(summaryItems.Length, summaryItemElements.Count);
+
+            for (int i = 0; i < summaryItems.Length; i++)
+            {
+                var summaryItem = summaryItems[i];
+                var summaryItemElement = summaryItemElements[i];
+                var nameElement = summaryItemElement.FindElement(By.CssSelector("div.estimationSummaryTitle"));
+                var valueElement = summaryItemElement.FindElement(By.CssSelector("div.estimationSummaryValue"));
+                Assert.AreEqual(summaryItem.Key, nameElement.Text);
+                Assert.AreEqual(summaryItem.Value.ToString("N2"), valueElement.Text);
             }
         }
 

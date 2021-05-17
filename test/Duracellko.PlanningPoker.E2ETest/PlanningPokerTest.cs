@@ -73,7 +73,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             await Task.Delay(200);
             TakeScreenshot(1, "10-B-EstimationStarted");
             ClientTests[1].AssertAvailableEstimations();
-            ClientTests[1].SelectEstimation("\u221E");
+            ClientTests[1].SelectEstimation("8");
 
             await Task.Delay(500);
             var expectedResult = new[] { new KeyValuePair<string, string>(member, string.Empty) };
@@ -85,61 +85,71 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             // Alice estimates
             ClientTest.AssertAvailableEstimations();
-            ClientTest.SelectEstimation("\u00BD");
+            ClientTest.SelectEstimation("3");
             await Task.Delay(500);
             expectedResult = new[]
             {
-                new KeyValuePair<string, string>(scrumMaster, "\u00BD"),
-                new KeyValuePair<string, string>(member, "\u221E")
+                new KeyValuePair<string, string>(scrumMaster, "3"),
+                new KeyValuePair<string, string>(member, "8")
             };
             TakeScreenshot("13-A-ScrumMasterEstimated");
             ClientTest.AssertSelectedEstimation(expectedResult);
             TakeScreenshot(1, "14-B-ScrumMasterEstimated");
             ClientTests[1].AssertSelectedEstimation(expectedResult);
 
+            // Alice shows average
+            ClientTest.ShowAverage(true);
+            TakeScreenshot("15-A-ScrumMasterShowsAverage");
+            ClientTest.AssertEstimationSummary(5.5, 5.5, 11);
+
+            // Bob shows average
+            ClientTests[1].ShowAverage(false);
+            TakeScreenshot(1, "16-B-MemberShowsAverage");
+            ClientTests[1].AssertEstimationSummary(5.5, 5.5, 11);
+
             // Alice starts 2nd round of estimation
             ClientTest.StartEstimation();
-            TakeScreenshot("15-A-EstimationStarted");
+            TakeScreenshot("17-A-EstimationStarted");
 
             // Alice estimates
             await Task.Delay(200);
-            TakeScreenshot(1, "16-B-EstimationStarted");
+            TakeScreenshot(1, "18-B-EstimationStarted");
             ClientTest.AssertAvailableEstimations();
-            ClientTest.SelectEstimation("5");
+            ClientTest.SelectEstimation("\u00BD");
 
             await Task.Delay(500);
             expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
-            TakeScreenshot("17-A-ScrumMasterEstimated");
+            TakeScreenshot("19-A-ScrumMasterEstimated");
             ClientTest.AssertSelectedEstimation(expectedResult);
             ClientTest.AssertNotAvailableEstimations();
-            TakeScreenshot(1, "18-B-ScrumMasterEstimated");
+            TakeScreenshot(1, "20-B-ScrumMasterEstimated");
             ClientTests[1].AssertSelectedEstimation(expectedResult);
 
             // Bob estimates
             ClientTests[1].AssertAvailableEstimations();
-            ClientTests[1].SelectEstimation("5");
+            ClientTests[1].SelectEstimation("\u221E");
             await Task.Delay(500);
             expectedResult = new[]
             {
-                new KeyValuePair<string, string>(scrumMaster, "5"),
-                new KeyValuePair<string, string>(member, "5")
+                new KeyValuePair<string, string>(scrumMaster, "\u00BD"),
+                new KeyValuePair<string, string>(member, "\u221E")
             };
-            TakeScreenshot(1, "19-B-MemberEstimated");
+            TakeScreenshot(1, "21-B-MemberEstimated");
             ClientTests[1].AssertSelectedEstimation(expectedResult);
-            TakeScreenshot("20-A-MemberEstimated");
+            TakeScreenshot("22-A-MemberEstimated");
             ClientTest.AssertSelectedEstimation(expectedResult);
 
             // Bob disconnects
             ClientTests[1].Disconnect();
-            TakeScreenshot(1, "21-B-Disconnected");
+            TakeScreenshot(1, "23-B-Disconnected");
 
             await Task.Delay(200);
-            TakeScreenshot("22-A-Disconnected");
+            TakeScreenshot("24-A-Disconnected");
             ClientTest.AssertMembersInTeam();
 
             // Alice disconnects
             ClientTest.Disconnect();
-            TakeScreenshot("23-A-Disconnected");
+            TakeScreenshot("25-A-Disconnected");
         }
 
         [DataTestMethod]
