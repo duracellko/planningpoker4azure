@@ -57,7 +57,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[16], "button", 5);
             AssertFrame.Attribute(frames[17], "type", "button");
             AssertFrame.Attribute(frames[18], "onclick");
-            AssertFrame.Attribute(frames[19], "class", "btn btn-primary");
+            AssertFrame.Attribute(frames[19], "class", "btn btn-primary mr-3");
             AssertFrame.Markup(frames[20], $"<span class=\"oi oi-media-play mr-1\" aria-hidden=\"true\"></span> Start estimation{_newLine}                    ");
         }
 
@@ -121,7 +121,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             // Members, who estimated already
             AssertFrame.Element(frames[69], "div", 12);
             AssertFrame.Attribute(frames[70], "class", "estimationResult");
-            AssertFrame.Markup(frames[71], $"<h3>Selected estimates</h3>{_newLine}            ");
+            AssertFrame.Markup(frames[71], $"<h3>Selected estimates</h3>");
             AssertFrame.Element(frames[72], "ul", 9);
             AssertSelectedEstimation(frames, 73, PlanningPokerData.ScrumMasterName, string.Empty);
         }
@@ -156,10 +156,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.AreEqual(33, frames.Count);
+            Assert.AreEqual(41, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 33);
+            AssertFrame.Element(frames[0], "div", 41);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
             AssertFrame.Element(frames[2], "div", 11);
             AssertFrame.Attribute(frames[3], "class", "team-title");
@@ -172,13 +172,23 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Element(frames[11], "span", 2);
             AssertFrame.Text(frames[12], PlanningPokerData.ObserverName);
 
+            // Button to start estimation
+            AssertFrame.Element(frames[13], "div", 8);
+            AssertFrame.Attribute(frames[14], "class", "actionsBar");
+            AssertFrame.Element(frames[15], "p", 6);
+            AssertFrame.Element(frames[16], "button", 5);
+            AssertFrame.Attribute(frames[17], "type", "button");
+            AssertFrame.Attribute(frames[18], "onclick");
+            AssertFrame.Attribute(frames[19], "class", "btn btn-secondary mr-3");
+            AssertFrame.Markup(frames[20], $"<span class=\"oi oi-calculator mr-1\" aria-hidden=\"true\"></span> Show average{_newLine}                    ");
+
             // Estimations
-            AssertFrame.Element(frames[13], "div", 20);
-            AssertFrame.Attribute(frames[14], "class", "estimationResult");
-            AssertFrame.Markup(frames[15], $"<h3>Selected estimates</h3>{_newLine}            ");
-            AssertFrame.Element(frames[16], "ul", 17);
-            AssertSelectedEstimation(frames, 17, PlanningPokerData.MemberName, "3");
-            AssertSelectedEstimation(frames, 25, PlanningPokerData.ScrumMasterName, "8");
+            AssertFrame.Element(frames[21], "div", 20);
+            AssertFrame.Attribute(frames[22], "class", "estimationResult");
+            AssertFrame.Markup(frames[23], $"<h3>Selected estimates</h3>");
+            AssertFrame.Element(frames[24], "ul", 17);
+            AssertSelectedEstimation(frames, 25, PlanningPokerData.MemberName, "3");
+            AssertSelectedEstimation(frames, 33, PlanningPokerData.ScrumMasterName, "8");
         }
 
         private static IServiceProvider CreateServiceProvider()

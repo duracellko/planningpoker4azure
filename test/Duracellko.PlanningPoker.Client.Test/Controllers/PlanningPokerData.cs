@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
 
@@ -15,6 +16,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public const string ScrumMasterName = "Test Scrum Master";
         public const string MemberName = "Test member";
         public const string ObserverName = "Test observer";
+
+        public static IReadOnlyList<string> MemberNames { get; } = new string[]
+        {
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+        };
 
         public static ScrumTeam GetScrumTeam()
         {
@@ -65,6 +71,20 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 State = TeamState.Initial,
                 AvailableEstimations = GetAvailableEstimations()
             };
+        }
+
+        public static ScrumTeam GetScrumTeam(int membersCount)
+        {
+            var result = GetInitialScrumTeam();
+            result.Members = MemberNames.Take(membersCount)
+                .Select(n => new TeamMember
+                {
+                    Name = n,
+                    Type = MemberType
+                })
+                .ToList();
+
+            return result;
         }
 
         public static IList<Estimation> GetAvailableEstimations()
