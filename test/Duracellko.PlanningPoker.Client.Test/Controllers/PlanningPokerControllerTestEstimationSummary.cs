@@ -32,7 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_10Estimations_CalculatesAverage(bool useEstimationEndedMessage)
+        public void ShowEstimationSummary_11Estimations_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 13, 2, 5, 40, 8, 0, 1, 0.5, 20, 100, 3 };
             var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
@@ -51,16 +51,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataRow(true)]
         public void ShowEstimationSummary_8Estimations_CalculatesAverage(bool useEstimationEndedMessage)
         {
-            var estimations = new double?[] { 13, 2, 2, 0.5, 8, 0.5, 5, 0.5, 20 };
+            var estimations = new double?[] { 13, 2, 2, 0.5, 20, 0.5, 0.5, 0 };
             var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNotNull(target.EstimationSummary);
-            Assert.AreEqual(5.722222222222222, target.EstimationSummary.Average.Value, 1E-15);
-            Assert.AreEqual(2, target.EstimationSummary.Median);
-            Assert.AreEqual(51.5, target.EstimationSummary.Sum);
+            Assert.AreEqual(4.8125, target.EstimationSummary.Average.Value, 1E-15);
+            Assert.AreEqual(1.25, target.EstimationSummary.Median);
+            Assert.AreEqual(38.5, target.EstimationSummary.Sum);
         }
 
         [DataTestMethod]
@@ -219,8 +219,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerClient = new Mock<IPlanningPokerClient>();
             var busyIndicator = new Mock<IBusyIndicatorService>();
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var result = new PlanningPokerController(planningPokerClient.Object, busyIndicator.Object, memberCredentialsStore.Object);
-            return result;
+            return new PlanningPokerController(planningPokerClient.Object, busyIndicator.Object, memberCredentialsStore.Object);
         }
 
         private static ScrumTeam GetScrumTeamWithEstimations(IReadOnlyList<double?> estimations)
