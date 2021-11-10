@@ -65,8 +65,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
                 throw new InvalidOperationException("WebHost is already started.");
             }
 
-            var builder = Program.CreateHostBuilder(GetProgramArguments());
-            WebHost = builder.Build();
+            WebHost = Program.CreateWebApplication(GetProgramArguments());
             RunInBackgroundThread(WebHost.Start);
             return Task.CompletedTask;
         }
