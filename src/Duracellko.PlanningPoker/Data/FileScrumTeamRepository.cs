@@ -279,7 +279,7 @@ namespace Duracellko.PlanningPoker.Data
                         }
 
                         int special = 0;
-                        if (int.TryParse(name.Substring(i + 1, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out special))
+                        if (int.TryParse(name.AsSpan(i + 1, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out special))
                         {
                             result.Append((char)special);
                         }
