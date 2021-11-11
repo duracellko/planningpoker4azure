@@ -3,12 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\Build\client\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\Build\client\Release\</OutputPath>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
@@ -38,4 +32,20 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Copy wwwroot to outbut build directory for E2E tests -->
+  <Target Name="CopyWwwrootToOutput" AfterTargets="AfterBuild">
+    <ItemGroup>
+      <ClientWwwrootFiles Include="wwwroot\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ClientWwwrootFiles)"
+          DestinationFiles="@(ClientWwwrootFiles->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="DeleteWwwrootFromOutput" BeforeTargets="BeforeClean">
+    <ItemGroup>
+      <ClientOutputWwwrootFiles Include="$(OutDir)**\*.*" />
+    </ItemGroup>
+    <Delete Files="@(ClientOutputWwwrootFiles)" />
+  </Target>
+  
 </Project>

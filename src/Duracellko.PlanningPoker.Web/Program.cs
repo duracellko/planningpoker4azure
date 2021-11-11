@@ -12,6 +12,7 @@ using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,7 +34,7 @@ namespace Duracellko.PlanningPoker.Web
             ConfigureServices(builder.Services, builder.Configuration);
 
             var app = builder.Build();
-            ConfigureApp(app, app.Environment);
+            ConfigureApp(app, app, app.Environment);
 
             return app;
         }
@@ -41,10 +42,12 @@ namespace Duracellko.PlanningPoker.Web
         private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddApplicationInsightsTelemetry();
-            services.AddMvc()
+            services.AddControllers()
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
                 .AddNewtonsoftJson();
+            services.AddRazorPages()
+                .AddApplicationPart(typeof(Program).Assembly);
             services.AddSignalR()
                 .AddNewtonsoftJsonProtocol();
 
@@ -115,7 +118,7 @@ namespace Duracellko.PlanningPoker.Web
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "ASP.NET Core convention for Startup class.")]
         [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "ASP.NET Core convention for Startup class.")]
-        private static void ConfigureApp(IApplicationBuilder app, IWebHostEnvironment env)
+        private static void ConfigureApp(IApplicationBuilder app, IEndpointRouteBuilder endpoints, IWebHostEnvironment env)
         {
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
 
@@ -133,22 +136,20 @@ namespace Duracellko.PlanningPoker.Web
                 .AddRewrite(@"^appsettings\.json$", "configuration", false);
             app.UseRewriter(rewriteOptions);
 
-            app.UseStaticFiles();
             app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            endpoints.MapRazorPages();
+            endpoints.MapControllers();
+            endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
+            if (clientConfiguration.UseServerSide != Model.ServerSideConditions.Never)
             {
-                endpoints.MapControllers();
-                endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
-                if (clientConfiguration.UseServerSide != Model.ServerSideConditions.Never)
-                {
-                    endpoints.MapBlazorHub();
-                }
+                endpoints.MapBlazorHub();
+            }
 
-                endpoints.MapFallbackToPage("/Home");
-            });
+            endpoints.MapFallbackToPage("/Home");
         }
 
         private static AzurePlanningPokerConfiguration GetPlanningPokerConfiguration(IConfiguration configuration)
