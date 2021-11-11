@@ -1,8 +1,8 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
+    <AssemblyVersion>3.3.0.0</AssemblyVersion>
+    <FileVersion>3.3.0.0</FileVersion>
     <Company>Duracellko</Company>
     <Copyright>Copyright © Duracellko 2012</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
@@ -18,10 +18,10 @@
     <NoWarn>CA1014</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Client'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web'">
     <OutputPath>..\..\Build\bin\Debug\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Client'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' And '$(MSBuildProjectName)'!='Duracellko.PlanningPoker.Web'">
     <OutputPath>..\..\Build\bin\Release\</OutputPath>
   </PropertyGroup>
 

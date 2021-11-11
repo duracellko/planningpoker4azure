@@ -1,22 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\Build\client\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\Build\client\Release\</OutputPath>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="6.0.0" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.113" />
-    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -38,4 +32,20 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Copy wwwroot to outbut build directory for E2E tests -->
+  <Target Name="CopyWwwrootToOutput" AfterTargets="AfterBuild">
+    <ItemGroup>
+      <ClientWwwrootFiles Include="wwwroot\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ClientWwwrootFiles)"
+          DestinationFiles="@(ClientWwwrootFiles->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="DeleteWwwrootFromOutput" BeforeTargets="BeforeClean">
+    <ItemGroup>
+      <ClientOutputWwwrootFiles Include="$(OutDir)**\*.*" />
+    </ItemGroup>
+    <Delete Files="@(ClientOutputWwwrootFiles)" />
+  </Target>
+  
 </Project>
