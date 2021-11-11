@@ -22,12 +22,12 @@ jobs:
   - task: UseDotNet@2
     displayName: Install .NET SDK
     inputs:
-      version: 5.0.x
+      version: 6.0.x
 
   - task: NodeTool@0
     displayName: Install Node.js
     inputs:
-      versionSpec: 14.x
+      versionSpec: 16.x
 
   - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
@@ -57,7 +57,7 @@ jobs:
     displayName: dotnet test
     inputs:
       command: test
-      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/*.Test.dll'
+      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net6.0/*.Test.dll'
       testRunTitle: Planning Poker
 
   - pwsh: .\node_modules\.bin\selenium-standalone install
@@ -69,7 +69,7 @@ jobs:
     displayName: dotnet test Duracellko.PlanningPoker.E2ETest
     inputs:
       command: test
-      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/Duracellko.PlanningPoker.E2ETest.dll'
+      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net6.0/Duracellko.PlanningPoker.E2ETest.dll'
       testRunTitle: Planning Poker E2E
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
@@ -88,7 +88,7 @@ jobs:
     inputs:
       archiveType: zip
       archiveFile: $(Build.StagingDirectory)/web/web.zip
-      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/net5.0/publish
+      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/net6.0/publish
       includeRootFolder: false
       replaceExistingArchive: true
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
@@ -103,7 +103,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy screenshots
     inputs:
-      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net5.0/Screenshots
+      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net6.0/Screenshots
       TargetFolder: $(Build.Build.StagingDirectory)/screenshots
       CleanTargetFolder: true
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
