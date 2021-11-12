@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Service
         /// </returns>
         public TeamResult CreateTeam(string teamName, string scrumMasterName, Deck deck)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{scrumMasterName}\", {deck})", nameof(CreateTeam), teamName, scrumMasterName, deck);
+            _logger.CreateTeam(teamName, scrumMasterName, deck);
             ValidateTeamName(teamName);
             ValidateMemberName(scrumMasterName, nameof(scrumMasterName));
 
@@ -81,7 +81,7 @@ namespace Duracellko.PlanningPoker.Service
         /// </returns>
         public TeamResult JoinTeam(string teamName, string memberName, bool asObserver)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {asObserver})", nameof(JoinTeam), teamName, memberName, asObserver);
+            _logger.JoinTeam(teamName, memberName, asObserver);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
@@ -120,7 +120,7 @@ namespace Duracellko.PlanningPoker.Service
         /// </remarks>
         public ReconnectTeamResult ReconnectTeam(string teamName, string memberName)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\")", nameof(ReconnectTeam), teamName, memberName);
+            _logger.ReconnectTeam(teamName, memberName);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
@@ -168,7 +168,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="memberName">Name of the member.</param>
         public void DisconnectTeam(string teamName, string memberName)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\")", nameof(DisconnectTeam), teamName, memberName);
+            _logger.DisconnectTeam(teamName, memberName);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
@@ -186,7 +186,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         public void StartEstimation(string teamName)
         {
-            _logger.LogInformation("{action}(\"{teamName}\")", nameof(StartEstimation), teamName);
+            _logger.StartEstimation(teamName);
             ValidateTeamName(teamName);
 
             using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
@@ -203,7 +203,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="teamName">Name of the Scrum team.</param>
         public void CancelEstimation(string teamName)
         {
-            _logger.LogInformation("{action}(\"{teamName}\")", nameof(CancelEstimation), teamName);
+            _logger.CancelEstimation(teamName);
             ValidateTeamName(teamName);
 
             using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
@@ -222,7 +222,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="estimation">The estimation the member is submitting.</param>
         public void SubmitEstimation(string teamName, string memberName, double? estimation)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {estimation})", nameof(SubmitEstimation), teamName, memberName, estimation);
+            _logger.SubmitEstimation(teamName, memberName, estimation);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
@@ -252,7 +252,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="lastMessageId">ID of last message the member received.</param>
         public void GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId)
         {
-            _logger.LogInformation("{action}(\"{teamName}\", \"{memberName}\", {lastMessageId})", nameof(GetMessages), teamName, memberName, lastMessageId);
+            _logger.GetMessages(teamName, memberName, sessionId, lastMessageId);
             ValidateTeamName(teamName);
             ValidateMemberName(memberName, nameof(memberName));
 
@@ -306,7 +306,7 @@ namespace Duracellko.PlanningPoker.Service
 
             if (memberName.Length > 50)
             {
-                throw new ArgumentException(Resources.Error_TeamNameTooLong, paramName);
+                throw new ArgumentException(Resources.Error_MemberNameTooLong, paramName);
             }
         }
 
@@ -318,7 +318,7 @@ namespace Duracellko.PlanningPoker.Service
                 var clientMessages = messages.Select(ServiceEntityMapper.FilterMessage)
                     .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
 
-                _logger.LogDebug("Notify messages received (connectionId: {connectionId})", connectionId);
+                _logger.MessageReceived(connectionId);
                 var client = _clientContext.Clients.Client(connectionId);
                 await client.Notify(clientMessages);
             }

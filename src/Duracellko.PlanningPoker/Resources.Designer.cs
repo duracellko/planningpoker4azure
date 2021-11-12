@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,51 +57,6 @@ namespace Duracellko.PlanningPoker {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Observer &quot;{observer}&quot; in Scrum team &quot;{scrumTeam}&quot; received message: {hasMessages}.
-        /// </summary>
-        internal static string Debug_ObserverMessageReceived {
-            get {
-                return ResourceManager.GetString("Debug_ObserverMessageReceived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was locked..
-        /// </summary>
-        internal static string Debug_ReadScrumTeam {
-            get {
-                return ResourceManager.GetString("Debug_ReadScrumTeam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was added..
-        /// </summary>
-        internal static string Debug_ScrumTeamAdded {
-            get {
-                return ResourceManager.GetString("Debug_ScrumTeamAdded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was removed..
-        /// </summary>
-        internal static string Debug_ScrumTeamRemoved {
-            get {
-                return ResourceManager.GetString("Debug_ScrumTeamRemoved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IAsyncResult object was not provided by BeginGetMessage method..
-        /// </summary>
-        internal static string Error_EndGetMessagesAsyncResult {
-            get {
-                return ResourceManager.GetString("Error_EndGetMessagesAsyncResult", resourceCulture);
             }
         }
         
@@ -156,114 +111,6 @@ namespace Duracellko.PlanningPoker {
         internal static string Error_TeamNameTooLong {
             get {
                 return ResourceManager.GetString("Error_TeamNameTooLong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnecting inactive observers in Scrum team: {scrumTeam}.
-        /// </summary>
-        internal static string Info_DisconnectingInactiveObservers {
-            get {
-                return ResourceManager.GetString("Info_DisconnectingInactiveObservers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team member message (team: {scrumTeam}, ID: {messageId}, type: {messageType}, member: {observer}).
-        /// </summary>
-        internal static string Info_MemberMessage {
-            get {
-                return ResourceManager.GetString("Info_MemberMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was attached..
-        /// </summary>
-        internal static string Info_ScrumTeamAttached {
-            get {
-                return ResourceManager.GetString("Info_ScrumTeamAttached", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was created with Scrum master: {scrumMaster}.
-        /// </summary>
-        internal static string Info_ScrumTeamCreated {
-            get {
-                return ResourceManager.GetString("Info_ScrumTeamCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team message (team: {scrumTeam}, ID: {messageId}, type: {messageType}).
-        /// </summary>
-        internal static string Info_ScrumTeamMessage {
-            get {
-                return ResourceManager.GetString("Info_ScrumTeamMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum team &quot;{scrumTeam}&quot; was removed..
-        /// </summary>
-        internal static string Info_ScrumTeamRemoved {
-            get {
-                return ResourceManager.GetString("Info_ScrumTeamRemoved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Deleting all Scrum teams..
-        /// </summary>
-        internal static string Repository_Debug_DeleteAllScrumTeams {
-            get {
-                return ResourceManager.GetString("Repository_Debug_DeleteAllScrumTeams", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Deleting expired Scrum teams..
-        /// </summary>
-        internal static string Repository_Debug_DeleteExpiredScrumTeams {
-            get {
-                return ResourceManager.GetString("Repository_Debug_DeleteExpiredScrumTeams", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Deleted Scrum team: {scrumTeam}.
-        /// </summary>
-        internal static string Repository_Debug_DeleteScrumTeam {
-            get {
-                return ResourceManager.GetString("Repository_Debug_DeleteScrumTeam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loaded Scrum team: {scrumTeam}.
-        /// </summary>
-        internal static string Repository_Debug_LoadScrumTeam {
-            get {
-                return ResourceManager.GetString("Repository_Debug_LoadScrumTeam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading Scrum team names..
-        /// </summary>
-        internal static string Repository_Debug_LoadScrumTeamNames {
-            get {
-                return ResourceManager.GetString("Repository_Debug_LoadScrumTeamNames", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saved Scrum team: {scrumTeam}.
-        /// </summary>
-        internal static string Repository_Debug_SaveScrumTeam {
-            get {
-                return ResourceManager.GetString("Repository_Debug_SaveScrumTeam", resourceCulture);
             }
         }
     }

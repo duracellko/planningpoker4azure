@@ -134,7 +134,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             OnTeamAdded(team);
-            _logger.LogInformation(Resources.Info_ScrumTeamCreated, team.Name, team.ScrumMaster.Name);
+            _logger.ScrumTeamCreated(team.Name, team.ScrumMaster.Name);
 
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
@@ -164,7 +164,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             OnTeamAdded(team);
-            _logger.LogInformation(Resources.Info_ScrumTeamAttached, team.Name);
+            _logger.ScrumTeamAttached(team.Name);
 
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
@@ -191,7 +191,7 @@ namespace Duracellko.PlanningPoker.Controllers
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, teamName), nameof(teamName));
             }
 
-            _logger.LogDebug(Resources.Debug_ReadScrumTeam, teamTuple.Item1.Name);
+            _logger.ReadScrumTeam(teamTuple.Item1.Name);
             return new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);
         }
 
@@ -213,7 +213,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             if (observer.HasMessage)
             {
-                _logger.LogDebug(Resources.Debug_ObserverMessageReceived, observer.Name, observer.Team.Name, true);
+                _logger.ObserverMessageReceived(observer.Name, observer.Team.Name, true);
                 IEnumerable<Message> messages = observer.Messages.ToList();
                 return Task.FromResult(messages);
             }
@@ -250,7 +250,7 @@ namespace Duracellko.PlanningPoker.Controllers
                 using (var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2))
                 {
                     teamLock.Lock();
-                    _logger.LogInformation(Resources.Info_DisconnectingInactiveObservers, teamLock.Team.Name);
+                    _logger.DisconnectingInactiveObservers(teamLock.Team.Name);
                     teamLock.Team.DisconnectInactiveObservers(inactivityTime);
                 }
             }
@@ -268,7 +268,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
-            _logger.LogDebug(Resources.Debug_ScrumTeamAdded, team.Name);
+            _logger.DebugScrumTeamAdded(team.Name);
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace Duracellko.PlanningPoker.Controllers
             }
 
             team.MessageReceived -= new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
-            _logger.LogDebug(Resources.Debug_ScrumTeamRemoved, team.Name);
+            _logger.DebugScrumTeamRemoved(team.Name);
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace Duracellko.PlanningPoker.Controllers
                     Tuple<ScrumTeam, object> teamTuple;
                     _scrumTeams.TryRemove(team.Name, out teamTuple);
                     Repository.DeleteScrumTeam(team.Name);
-                    _logger.LogInformation(Resources.Info_ScrumTeamRemoved, team.Name);
+                    _logger.ScrumTeamRemoved(team.Name);
                 }
             }
 
@@ -393,11 +393,11 @@ namespace Duracellko.PlanningPoker.Controllers
         {
             if (message is MemberMessage memberMessage)
             {
-                _logger.LogInformation(Resources.Info_MemberMessage, team.Name, memberMessage.Id, memberMessage.MessageType, memberMessage.Member?.Name);
+                _logger.MemberMessage(team.Name, memberMessage.Id, memberMessage.MessageType, memberMessage.Member?.Name);
             }
             else
             {
-                _logger.LogInformation(Resources.Info_ScrumTeamMessage, team.Name, message.Id, message.MessageType);
+                _logger.ScrumTeamMessage(team.Name, message.Id, message.MessageType);
             }
         }
 
