@@ -72,6 +72,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             {
                 Name = "The Team",
                 State = TeamState.EstimationCanceled,
+                AvailableEstimations = null!
             };
 
             // Act
@@ -101,7 +102,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Arrange
             var scrumTeamData = new ScrumTeamData
             {
-                Name = string.Empty,
+                Name = null,
                 AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.EstimationCanceled,
             };

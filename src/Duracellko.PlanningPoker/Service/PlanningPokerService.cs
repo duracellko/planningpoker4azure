@@ -57,7 +57,7 @@ namespace Duracellko.PlanningPoker.Service
                     return new TeamResult
                     {
                         ScrumTeam = resultTeam,
-                        SessionId = teamLock.Team.ScrumMaster.SessionId
+                        SessionId = teamLock.Team.ScrumMaster!.SessionId
                     };
                 }
             }
@@ -133,10 +133,10 @@ namespace Duracellko.PlanningPoker.Service
                         throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberNotFound, memberName), nameof(memberName));
                     }
 
-                    Estimation selectedEstimation = null;
+                    Estimation? selectedEstimation = null;
                     if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
                     {
-                        selectedEstimation = ServiceEntityMapper.Map<D.Estimation, Estimation>(member.Estimation);
+                        selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
                     }
 
                     var lastMessageId = observer.ClearMessages();
@@ -190,7 +190,7 @@ namespace Duracellko.PlanningPoker.Service
             {
                 teamLock.Lock();
                 var team = teamLock.Team;
-                team.ScrumMaster.StartEstimation();
+                team.ScrumMaster?.StartEstimation();
             }
         }
 
@@ -207,7 +207,7 @@ namespace Duracellko.PlanningPoker.Service
             {
                 teamLock.Lock();
                 var team = teamLock.Team;
-                team.ScrumMaster.CancelEstimation();
+                team.ScrumMaster?.CancelEstimation();
             }
         }
 
@@ -273,6 +273,11 @@ namespace Duracellko.PlanningPoker.Service
                 teamLock.Lock();
                 var team = teamLock.Team;
                 var member = team.FindMemberOrObserver(memberName);
+
+                if (member == null)
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberNotFound, memberName), nameof(memberName));
+                }
 
                 // Removes old messages, which the member has already read, from the member's message queue.
                 try

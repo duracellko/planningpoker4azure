@@ -18,7 +18,7 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <returns>The Scrum team with specified name.</returns>
-        ScrumTeam LoadScrumTeam(string teamName);
+        ScrumTeam? LoadScrumTeam(string teamName);
 
         /// <summary>
         /// Saves the Scrum team to repository.

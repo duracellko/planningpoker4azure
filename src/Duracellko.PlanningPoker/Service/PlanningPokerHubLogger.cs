@@ -7,47 +7,47 @@ namespace Duracellko.PlanningPoker.Service
     {
         private const int BaseEventId = 1100;
 
-        private static readonly Action<ILogger, string, string, string, Deck, Exception> _createTeam = LoggerMessage.Define<string, string, string, Deck>(
+        private static readonly Action<ILogger, string, string, string, Deck, Exception?> _createTeam = LoggerMessage.Define<string, string, string, Deck>(
             LogLevel.Information,
             new EventId(BaseEventId + 1, nameof(CreateTeam)),
             "{Action}(\"{TeamName}\", \"{ScrumMasterName}\", {Deck})");
 
-        private static readonly Action<ILogger, string, string, string, bool, Exception> _joinTeam = LoggerMessage.Define<string, string, string, bool>(
+        private static readonly Action<ILogger, string, string, string, bool, Exception?> _joinTeam = LoggerMessage.Define<string, string, string, bool>(
             LogLevel.Information,
             new EventId(BaseEventId + 2, nameof(JoinTeam)),
             "{Action}(\"{TeamName}\", \"{MemberName}\", {AsObserver})");
 
-        private static readonly Action<ILogger, string, string, string, Exception> _reconnectTeam = LoggerMessage.Define<string, string, string>(
+        private static readonly Action<ILogger, string, string, string, Exception?> _reconnectTeam = LoggerMessage.Define<string, string, string>(
             LogLevel.Information,
             new EventId(BaseEventId + 3, nameof(ReconnectTeam)),
             "{Action}(\"{TeamName}\", \"{MemberName}\")");
 
-        private static readonly Action<ILogger, string, string, string, Exception> _disconnectTeam = LoggerMessage.Define<string, string, string>(
+        private static readonly Action<ILogger, string, string, string, Exception?> _disconnectTeam = LoggerMessage.Define<string, string, string>(
             LogLevel.Information,
             new EventId(BaseEventId + 4, nameof(DisconnectTeam)),
             "{Action}(\"{TeamName}\", \"{MemberName}\")");
 
-        private static readonly Action<ILogger, string, string, Exception> _startEstimation = LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, string, Exception?> _startEstimation = LoggerMessage.Define<string, string>(
             LogLevel.Information,
             new EventId(BaseEventId + 5, nameof(StartEstimation)),
             "{Action}(\"{TeamName}\")");
 
-        private static readonly Action<ILogger, string, string, Exception> _cancelEstimation = LoggerMessage.Define<string, string>(
+        private static readonly Action<ILogger, string, string, Exception?> _cancelEstimation = LoggerMessage.Define<string, string>(
             LogLevel.Information,
             new EventId(BaseEventId + 6, nameof(CancelEstimation)),
             "{Action}(\"{TeamName}\")");
 
-        private static readonly Action<ILogger, string, string, string, double?, Exception> _submitEstimation = LoggerMessage.Define<string, string, string, double?>(
+        private static readonly Action<ILogger, string, string, string, double?, Exception?> _submitEstimation = LoggerMessage.Define<string, string, string, double?>(
             LogLevel.Information,
             new EventId(BaseEventId + 7, nameof(SubmitEstimation)),
             "{Action}(\"{TeamName}\", \"{MemberName}\", {Estimation})");
 
-        private static readonly Action<ILogger, string, string, string, Guid, long, Exception> _getMessages = LoggerMessage.Define<string, string, string, Guid, long>(
+        private static readonly Action<ILogger, string, string, string, Guid, long, Exception?> _getMessages = LoggerMessage.Define<string, string, string, Guid, long>(
             LogLevel.Information,
             new EventId(BaseEventId + 8, nameof(GetMessages)),
             "{Action}(\"{TeamName}\", \"{MemberName}\", {SessionId}, {LastMessageId})");
 
-        private static readonly Action<ILogger, string, Exception> _messageReceived = LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, Exception?> _messageReceived = LoggerMessage.Define<string>(
             LogLevel.Debug,
             new EventId(BaseEventId + 9, nameof(MessageReceived)),
             "Notify messages received (connectionId: {ConnectionId})");

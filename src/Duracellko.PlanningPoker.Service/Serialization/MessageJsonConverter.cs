@@ -34,7 +34,7 @@ namespace Duracellko.PlanningPoker.Service.Serialization
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader == null)
             {
@@ -47,8 +47,8 @@ namespace Duracellko.PlanningPoker.Service.Serialization
             }
 
             var jsonObject = JObject.Load(reader);
-            var messageTypeValue = (JValue)jsonObject.GetValue(nameof(Message.Type), StringComparison.OrdinalIgnoreCase);
-            var messageType = (MessageType)Convert.ToInt32(messageTypeValue.Value, CultureInfo.InvariantCulture);
+            var messageTypeValue = (JValue?)jsonObject.GetValue(nameof(Message.Type), StringComparison.OrdinalIgnoreCase);
+            var messageType = (MessageType)Convert.ToInt32(messageTypeValue?.Value, CultureInfo.InvariantCulture);
 
             Message message;
             switch (messageType)
@@ -76,15 +76,15 @@ namespace Duracellko.PlanningPoker.Service.Serialization
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotSupportedException();
         }
 
         private static void SetMessageProperties(Message message, JObject jsonObject, MessageType messageType)
         {
-            var idValue = (JValue)jsonObject.GetValue(nameof(Message.Id), StringComparison.OrdinalIgnoreCase);
-            message.Id = Convert.ToInt64(idValue.Value, CultureInfo.InvariantCulture);
+            var idValue = (JValue?)jsonObject.GetValue(nameof(Message.Id), StringComparison.OrdinalIgnoreCase);
+            message.Id = Convert.ToInt64(idValue?.Value, CultureInfo.InvariantCulture);
             message.Type = messageType;
         }
 
@@ -100,13 +100,18 @@ namespace Duracellko.PlanningPoker.Service.Serialization
         private static EstimationResultMessage GetEstimationResultMessage(JObject jsonObject, JsonSerializer serializer)
         {
             var estimationResultValue = jsonObject.GetValue(nameof(EstimationResultMessage.EstimationResult), StringComparison.OrdinalIgnoreCase);
-            return new EstimationResultMessage
+            var estimationResult = GetObjectFromJToken<IList<EstimationResultItem>>(estimationResultValue, serializer);
+
+            var result = new EstimationResultMessage();
+            if (estimationResult != null)
             {
-                EstimationResult = GetObjectFromJToken<IList<EstimationResultItem>>(estimationResultValue, serializer)
-            };
+                result.EstimationResult = estimationResult;
+            }
+
+            return result;
         }
 
-        private static T GetObjectFromJToken<T>(JToken token, JsonSerializer serializer)
+        private static T? GetObjectFromJToken<T>(JToken? token, JsonSerializer serializer)
         {
             if (token == null)
             {

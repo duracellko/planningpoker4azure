@@ -102,7 +102,7 @@ namespace Duracellko.PlanningPoker.Data
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
         /// <returns>The Scrum team with specified name.</returns>
-        public ScrumTeam LoadScrumTeam(string teamName)
+        public ScrumTeam? LoadScrumTeam(string teamName)
         {
             if (string.IsNullOrEmpty(teamName))
             {
@@ -112,7 +112,7 @@ namespace Duracellko.PlanningPoker.Data
             string file = GetFileName(teamName);
             file = Path.Combine(Folder, file);
 
-            ScrumTeam result = null;
+            ScrumTeam? result = null;
             if (File.Exists(file))
             {
                 try
@@ -260,7 +260,7 @@ namespace Duracellko.PlanningPoker.Data
             return result;
         }
 
-        private static string GetScrumTeamName(string filename)
+        private static string? GetScrumTeamName(string filename)
         {
             var name = Path.GetFileNameWithoutExtension(filename);
 

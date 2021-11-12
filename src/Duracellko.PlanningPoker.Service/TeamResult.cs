@@ -13,7 +13,7 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>
         /// The Scrum team.
         /// </value>
-        public ScrumTeam ScrumTeam { get; set; }
+        public ScrumTeam? ScrumTeam { get; set; }
 
         /// <summary>
         /// Gets or sets the session ID to use to get messages.

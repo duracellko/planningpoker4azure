@@ -12,27 +12,27 @@ namespace Duracellko.PlanningPoker.Service
         /// Gets or sets the Scrum team name.
         /// </summary>
         /// <value>The Scrum team name.</value>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the scrum master of the team.
         /// </summary>
         /// <value>The Scrum master.</value>
-        public TeamMember ScrumMaster { get; set; }
+        public TeamMember? ScrumMaster { get; set; }
 
         /// <summary>
         /// Gets or sets the collection members joined to the Scrum team.
         /// </summary>
         /// <value>The members collection.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-        public IList<TeamMember> Members { get; set; }
+        public IList<TeamMember> Members { get; set; } = new List<TeamMember>();
 
         /// <summary>
         /// Gets or sets the observers watching planning poker game of the Scrum team.
         /// </summary>
         /// <value>The observers collection.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-        public IList<TeamMember> Observers { get; set; }
+        public IList<TeamMember> Observers { get; set; } = new List<TeamMember>();
 
         /// <summary>
         /// Gets or sets the current Scrum team state.
@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <value>The collection of available estimations.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-        public IList<Estimation> AvailableEstimations { get; set; }
+        public IList<Estimation> AvailableEstimations { get; set; } = new List<Estimation>();
 
         /// <summary>
         /// Gets or sets the estimation result of last team estimation.
@@ -54,13 +54,13 @@ namespace Duracellko.PlanningPoker.Service
         /// The estimation result items collection.
         /// </value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Data contract has all properties read-write.")]
-        public IList<EstimationResultItem> EstimationResult { get; set; }
+        public IList<EstimationResultItem>? EstimationResult { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of participants in current estimation.
         /// </summary>
         /// <value>The collection of estimation participants.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-        public IList<EstimationParticipantStatus> EstimationParticipants { get; set; }
+        public IList<EstimationParticipantStatus>? EstimationParticipants { get; set; }
     }
 }

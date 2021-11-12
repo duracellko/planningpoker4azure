@@ -27,14 +27,6 @@ namespace Duracellko.PlanningPoker.Azure
         /// <summary>
         /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
         /// </summary>
-        public AzurePlanningPokerController()
-            : base()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
-        /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current date-time.</param>
         /// <param name="guidProvider">The GUID provider to provide new GUID objects.</param>
         /// <param name="deckProvider">The provider to get estimation cards deck.</param>

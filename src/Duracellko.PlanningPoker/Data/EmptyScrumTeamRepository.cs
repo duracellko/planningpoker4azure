@@ -24,7 +24,7 @@ namespace Duracellko.PlanningPoker.Data
         /// <returns>
         /// The Scrum team with specified name.
         /// </returns>
-        public ScrumTeam LoadScrumTeam(string teamName)
+        public ScrumTeam? LoadScrumTeam(string teamName)
         {
             return null;
         }

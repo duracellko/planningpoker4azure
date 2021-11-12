@@ -14,12 +14,12 @@ namespace Duracellko.PlanningPoker.Service
         /// The type of member.
         /// </value>
         [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods", Justification = "Provides type of member for javascript.")]
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the member's name.
         /// </summary>
         /// <value>The member's name.</value>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

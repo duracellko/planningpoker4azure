@@ -11,7 +11,7 @@
         /// <value>
         /// The Scrum team member.
         /// </value>
-        public TeamMember Member { get; set; }
+        public TeamMember? Member { get; set; }
 
         /// <summary>
         /// Gets or sets the estimation picked by the member.
@@ -19,6 +19,6 @@
         /// <value>
         /// The picked estimation.
         /// </value>
-        public Estimation Estimation { get; set; }
+        public Estimation? Estimation { get; set; }
     }
 }
