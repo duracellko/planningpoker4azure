@@ -75,7 +75,7 @@ namespace Duracellko.PlanningPoker.Data
         {
             get
             {
-                _logger.LogDebug(Resources.Repository_Debug_LoadScrumTeamNames);
+                _logger.LoadScrumTeamNames();
 
                 var expirationTime = _dateTimeProvider.UtcNow - _configuration.RepositoryTeamExpiration;
                 var directory = new DirectoryInfo(Folder);
@@ -136,7 +136,7 @@ namespace Duracellko.PlanningPoker.Data
 
             if (result != null)
             {
-                _logger.LogDebug(Resources.Repository_Debug_LoadScrumTeam, result.Name);
+                _logger.LoadScrumTeam(result.Name);
             }
 
             return result;
@@ -163,7 +163,7 @@ namespace Duracellko.PlanningPoker.Data
                 _scrumTeamSerializer.Serialize(writer, team);
             }
 
-            _logger.LogDebug(Resources.Repository_Debug_SaveScrumTeam, team.Name);
+            _logger.SaveScrumTeam(team.Name);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Duracellko.PlanningPoker.Data
                 try
                 {
                     File.Delete(file);
-                    _logger.LogDebug(Resources.Repository_Debug_DeleteScrumTeam, teamName);
+                    _logger.DeleteScrumTeam(teamName);
                 }
                 catch (IOException)
                 {
@@ -200,7 +200,7 @@ namespace Duracellko.PlanningPoker.Data
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "On error continue deleting other teams.")]
         public void DeleteExpiredScrumTeams()
         {
-            _logger.LogDebug(Resources.Repository_Debug_DeleteExpiredScrumTeams);
+            _logger.DeleteExpiredScrumTeams();
 
             var expirationTime = _dateTimeProvider.UtcNow - _configuration.RepositoryTeamExpiration;
             var directory = new DirectoryInfo(Folder);
@@ -230,7 +230,7 @@ namespace Duracellko.PlanningPoker.Data
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "On error continue deleting other teams.")]
         public void DeleteAll()
         {
-            _logger.LogDebug(Resources.Repository_Debug_DeleteAllScrumTeams);
+            _logger.DeleteAll();
 
             var directory = new DirectoryInfo(Folder);
             if (directory.Exists)

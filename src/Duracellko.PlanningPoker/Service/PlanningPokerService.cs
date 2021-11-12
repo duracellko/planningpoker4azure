@@ -318,7 +318,7 @@ namespace Duracellko.PlanningPoker.Service
 
             if (memberName.Length > 50)
             {
-                throw new ArgumentException(Resources.Error_TeamNameTooLong, paramName);
+                throw new ArgumentException(Resources.Error_MemberNameTooLong, paramName);
             }
         }
     }
