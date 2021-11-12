@@ -72,6 +72,11 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
                 serializer.ContractResolver = _contractResolver;
                 var data = serializer.Deserialize<ScrumTeamData>(jsonReader);
 
+                if (data == null)
+                {
+                    throw new InvalidOperationException("Deserialization of Scrum Team failed.");
+                }
+
                 // Available estimations could be missing, when the team was serialized in older version.
                 if (data.AvailableEstimations == null)
                 {

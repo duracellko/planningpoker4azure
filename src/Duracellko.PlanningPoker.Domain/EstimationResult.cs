@@ -9,9 +9,9 @@ namespace Duracellko.PlanningPoker.Domain
     /// </summary>
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "EstimationResult is more than just a collection.")]
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Interface implemetnation members are grouped together.")]
-    public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimation>>
+    public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimation?>>
     {
-        private readonly Dictionary<Member, Estimation> _estimations = new Dictionary<Member, Estimation>();
+        private readonly Dictionary<Member, Estimation?> _estimations = new Dictionary<Member, Estimation?>();
         private bool _isReadOnly;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="team">Scrum Team owning the estimation result.</param>
         /// <param name="estimationResult">Estimation result serialization data.</param>
-        internal EstimationResult(ScrumTeam team, IDictionary<string, Estimation> estimationResult)
+        internal EstimationResult(ScrumTeam team, IDictionary<string, Estimation?> estimationResult)
         {
             foreach (var estimationResultItem in estimationResult)
             {
@@ -58,7 +58,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <returns>The estimation of the member.</returns>
         [SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers", Justification = "Member is valid indexer of EstimationResult.")]
         [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Key not found in indexer.")]
-        public Estimation this[Member member]
+        public Estimation? this[Member member]
         {
             get
             {
@@ -130,7 +130,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>A <see cref="System.Collections.Generic.IEnumerator&lt;T&gt;"/> that can be used to iterate through the collection.</returns>
-        public IEnumerator<KeyValuePair<Member, Estimation>> GetEnumerator()
+        public IEnumerator<KeyValuePair<Member, Estimation?>> GetEnumerator()
         {
             return _estimations.GetEnumerator();
         }
@@ -140,27 +140,27 @@ namespace Duracellko.PlanningPoker.Domain
             return GetEnumerator();
         }
 
-        bool ICollection<KeyValuePair<Member, Estimation>>.Contains(KeyValuePair<Member, Estimation> item)
+        bool ICollection<KeyValuePair<Member, Estimation?>>.Contains(KeyValuePair<Member, Estimation?> item)
         {
-            return ((ICollection<KeyValuePair<Member, Estimation>>)_estimations).Contains(item);
+            return ((ICollection<KeyValuePair<Member, Estimation?>>)_estimations).Contains(item);
         }
 
-        void ICollection<KeyValuePair<Member, Estimation>>.CopyTo(KeyValuePair<Member, Estimation>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<Member, Estimation?>>.CopyTo(KeyValuePair<Member, Estimation?>[] array, int arrayIndex)
         {
-            ((ICollection<KeyValuePair<Member, Estimation>>)_estimations).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<Member, Estimation?>>)_estimations).CopyTo(array, arrayIndex);
         }
 
-        void ICollection<KeyValuePair<Member, Estimation>>.Add(KeyValuePair<Member, Estimation> item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<KeyValuePair<Member, Estimation>>.Clear()
+        void ICollection<KeyValuePair<Member, Estimation?>>.Add(KeyValuePair<Member, Estimation?> item)
         {
             throw new NotSupportedException();
         }
 
-        bool ICollection<KeyValuePair<Member, Estimation>>.Remove(KeyValuePair<Member, Estimation> item)
+        void ICollection<KeyValuePair<Member, Estimation?>>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ICollection<KeyValuePair<Member, Estimation?>>.Remove(KeyValuePair<Member, Estimation?> item)
         {
             throw new NotSupportedException();
         }
@@ -169,9 +169,9 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets serialization data of the object.
         /// </summary>
         /// <returns>The serialization data.</returns>
-        internal IDictionary<string, Estimation> GetData()
+        internal IDictionary<string, Estimation?> GetData()
         {
-            var result = new Dictionary<string, Estimation>();
+            var result = new Dictionary<string, Estimation?>();
 
             foreach (var estimation in _estimations)
             {

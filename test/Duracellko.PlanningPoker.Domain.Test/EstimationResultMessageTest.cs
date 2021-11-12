@@ -11,26 +11,14 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var type = MessageType.EstimationEnded;
-
-            // Act
-            var result = new EstimationResultMessage(type);
-
-            // Verify
-            Assert.AreEqual<MessageType>(type, result.MessageType);
-        }
-
-        [TestMethod]
-        public void EstimationResult_Set_EstimationResultIsSet()
-        {
-            // Arrange
-            var target = new EstimationResultMessage(MessageType.EstimationEnded);
             var estimationResult = new EstimationResult(Enumerable.Empty<Member>());
 
             // Act
-            target.EstimationResult = estimationResult;
+            var result = new EstimationResultMessage(type, estimationResult);
 
             // Verify
-            Assert.AreEqual<EstimationResult>(estimationResult, target.EstimationResult);
+            Assert.AreEqual<MessageType>(type, result.MessageType);
+            Assert.AreEqual<EstimationResult>(estimationResult, result.EstimationResult);
         }
     }
 }
