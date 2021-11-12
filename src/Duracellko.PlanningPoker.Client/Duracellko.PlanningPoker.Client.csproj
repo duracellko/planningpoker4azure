@@ -43,7 +43,7 @@
 
   <Target Name="DeleteWwwrootFromOutput" BeforeTargets="BeforeClean">
     <ItemGroup>
-      <ClientOutputWwwrootFiles Include="$(OutDir)**\*.*" />
+      <ClientOutputWwwrootFiles Include="$(OutDir)wwwroot\**\*.*" />
     </ItemGroup>
     <Delete Files="@(ClientOutputWwwrootFiles)" />
   </Target>
