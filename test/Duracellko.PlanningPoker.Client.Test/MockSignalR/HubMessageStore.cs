@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.AspNetCore.SignalR.Protocol;
 
@@ -31,7 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             return nextId;
         }
 
-        public bool TryGetMessage(long id, out HubMessage message)
+        public bool TryGetMessage(long id, [MaybeNullWhen(false)] out HubMessage message)
         {
             return _messages.TryGetValue(id, out message);
         }

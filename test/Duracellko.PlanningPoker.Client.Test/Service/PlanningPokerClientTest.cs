@@ -53,6 +53,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.Initial, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -65,7 +66,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -129,6 +132,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.Initial, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -145,7 +149,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -167,6 +173,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.Initial, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -182,7 +189,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -205,6 +214,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.EstimationFinished, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -224,17 +234,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(2, resultTeam.EstimationResult.Count);
             var estimationResult = resultTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.AreEqual(5.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(5.0, estimationResult.Estimation!.Value);
 
             estimationResult = resultTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-            Assert.AreEqual(20.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(20.0, estimationResult.Estimation!.Value);
 
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -257,6 +269,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.EstimationFinished, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -276,17 +289,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(2, resultTeam.EstimationResult.Count);
             var estimationResult = resultTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation.Value.Value));
+            Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
 
             estimationResult = resultTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-            Assert.IsNull(estimationResult.Estimation.Value);
+            Assert.IsNull(estimationResult.Estimation!.Value);
 
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -309,6 +324,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.EstimationCanceled, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -325,17 +341,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(2, resultTeam.EstimationResult.Count);
             var estimationResult = resultTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.AreEqual(0.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(0.0, estimationResult.Estimation!.Value);
 
             estimationResult = resultTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
             Assert.IsNull(estimationResult.Estimation);
 
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
         }
 
@@ -358,6 +376,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.IsNotNull(resultTeam);
             Assert.AreEqual(TeamState.EstimationInProgress, resultTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, resultTeam.Name);
+            Assert.IsNotNull(resultTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
@@ -374,8 +393,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(resultTeam);
 
+            Assert.IsNotNull(resultTeam.EstimationResult);
             Assert.AreEqual(0, resultTeam.EstimationResult.Count);
 
+            Assert.IsNotNull(resultTeam.EstimationParticipants);
             Assert.AreEqual(2, resultTeam.EstimationParticipants.Count);
             var estimationParticipant = resultTeam.EstimationParticipants[0];
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationParticipant.MemberName);
@@ -432,6 +453,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var scrumTeam = result.ScrumTeam;
             Assert.AreEqual(TeamState.Initial, scrumTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, scrumTeam.Name);
+            Assert.IsNotNull(scrumTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
@@ -448,7 +470,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(scrumTeam);
 
+            Assert.IsNotNull(scrumTeam.EstimationResult);
             Assert.AreEqual(0, scrumTeam.EstimationResult.Count);
+            Assert.IsNotNull(scrumTeam.EstimationParticipants);
             Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
         }
 
@@ -472,6 +496,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var scrumTeam = result.ScrumTeam;
             Assert.AreEqual(TeamState.EstimationFinished, scrumTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, scrumTeam.Name);
+            Assert.IsNotNull(scrumTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
@@ -491,17 +516,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(scrumTeam);
 
+            Assert.IsNotNull(scrumTeam.EstimationResult);
             Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
             var estimationResult = scrumTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.AreEqual(1.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(1.0, estimationResult.Estimation!.Value);
 
             estimationResult = scrumTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-            Assert.AreEqual(1.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(1.0, estimationResult.Estimation!.Value);
 
+            Assert.IsNotNull(scrumTeam.EstimationParticipants);
             Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
         }
 
@@ -527,6 +554,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var scrumTeam = result.ScrumTeam;
             Assert.AreEqual(TeamState.EstimationFinished, scrumTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, scrumTeam.Name);
+            Assert.IsNotNull(scrumTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
@@ -546,17 +574,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(scrumTeam);
 
+            Assert.IsNotNull(scrumTeam.EstimationResult);
             Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
             var estimationResult = scrumTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.IsNull(estimationResult.Estimation.Value);
+            Assert.IsNull(estimationResult.Estimation!.Value);
 
             estimationResult = scrumTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-            Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation.Value.Value));
+            Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
 
+            Assert.IsNotNull(scrumTeam.EstimationParticipants);
             Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
         }
 
@@ -581,6 +611,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var scrumTeam = result.ScrumTeam;
             Assert.AreEqual(TeamState.EstimationFinished, scrumTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, scrumTeam.Name);
+            Assert.IsNotNull(scrumTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
@@ -597,17 +628,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(scrumTeam);
 
+            Assert.IsNotNull(scrumTeam.EstimationResult);
             Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
             var estimationResult = scrumTeam.EstimationResult[0];
-            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-            Assert.AreEqual(8.0, estimationResult.Estimation.Value);
+            Assert.AreEqual(8.0, estimationResult.Estimation!.Value);
 
             estimationResult = scrumTeam.EstimationResult[1];
-            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member.Name);
+            Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
             Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
             Assert.IsNull(estimationResult.Estimation);
 
+            Assert.IsNotNull(scrumTeam.EstimationParticipants);
             Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
         }
 
@@ -632,6 +665,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var scrumTeam = result.ScrumTeam;
             Assert.AreEqual(TeamState.EstimationInProgress, scrumTeam.State);
             Assert.AreEqual(PlanningPokerClientData.TeamName, scrumTeam.Name);
+            Assert.IsNotNull(scrumTeam.ScrumMaster);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
@@ -648,8 +682,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             AssertAvailableEstimations(scrumTeam);
 
+            Assert.IsNotNull(scrumTeam.EstimationResult);
             Assert.AreEqual(0, scrumTeam.EstimationResult.Count);
 
+            Assert.IsNotNull(scrumTeam.EstimationParticipants);
             Assert.AreEqual(2, scrumTeam.EstimationParticipants.Count);
             var estimationParticipant = scrumTeam.EstimationParticipants[0];
             Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationParticipant.MemberName);
@@ -786,7 +822,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.AreEqual(40.0, scrumTeam.AvailableEstimations[9].Value);
             Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
             Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-            Assert.IsTrue(double.IsPositiveInfinity(scrumTeam.AvailableEstimations[11].Value.Value));
+            var estimationValue = scrumTeam.AvailableEstimations[11].Value;
+            Assert.IsNotNull(estimationValue);
+            Assert.IsTrue(double.IsPositiveInfinity(estimationValue.Value));
             Assert.IsNull(scrumTeam.AvailableEstimations[12].Value);
         }
     }

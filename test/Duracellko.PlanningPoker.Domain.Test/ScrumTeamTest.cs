@@ -84,7 +84,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var result = target.ScrumMaster;
 
             // Verify
-            Assert.AreEqual<ScrumMaster>(master, result);
+            Assert.AreEqual<ScrumMaster?>(master, result);
         }
 
         [TestMethod]
@@ -279,7 +279,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var name = "test";
             var target = new ScrumTeam("test team");
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -321,7 +321,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name = "test";
             var target = new ScrumTeam("test team");
             var observer = target.Join("observer", true);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -358,7 +358,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name = "test";
             var target = new ScrumTeam("test team");
             var member = target.Join("member", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -744,7 +744,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -782,7 +782,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -850,7 +850,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -969,10 +969,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.AreEqual<TeamState>(TeamState.EstimationFinished, target.State);
             Assert.IsNotNull(target.EstimationResult);
-            var expectedResult = new KeyValuePair<Member, Estimation>[]
+            var expectedResult = new KeyValuePair<Member, Estimation?>[]
             {
-                new KeyValuePair<Member, Estimation>(master, masterEstimation),
-                new KeyValuePair<Member, Estimation>(member, null)
+                new KeyValuePair<Member, Estimation?>(master, masterEstimation),
+                new KeyValuePair<Member, Estimation?>(member, null)
             };
             CollectionAssert.AreEquivalent(expectedResult, target.EstimationResult.ToList());
         }
@@ -1030,7 +1030,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -1051,7 +1051,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -1070,7 +1070,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -1172,7 +1172,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -1247,7 +1247,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var observer = target.Join("observer", true);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -1561,7 +1561,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
             var member = target.Join("member", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1589,7 +1589,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
             var member = target.Join("member", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
@@ -1617,7 +1617,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
             var observer = target.Join("observer", true);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));

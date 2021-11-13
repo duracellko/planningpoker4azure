@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.E2ETest
     [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Disposable objects are disposed in TestCleanup.")]
     public abstract class E2ETestBase
     {
-        protected ServerFixture Server { get; private set; }
+        protected ServerFixture? Server { get; private set; }
 
         protected IList<BrowserFixture> BrowserFixtures { get; } = new List<BrowserFixture>();
 
@@ -22,13 +22,13 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected IList<ClientTest> ClientTests { get; } = new List<ClientTest>();
 
-        protected BrowserFixture BrowserFixture => BrowserFixtures.FirstOrDefault();
+        protected BrowserFixture? BrowserFixture => BrowserFixtures.FirstOrDefault();
 
-        protected BrowserTestContext Context => Contexts.FirstOrDefault();
+        protected BrowserTestContext? Context => Contexts.FirstOrDefault();
 
-        protected ClientTest ClientTest => ClientTests.FirstOrDefault();
+        protected ClientTest ClientTest => ClientTests.First();
 
-        protected ScreenshotCapture ScreenshotCapture { get; private set; }
+        protected ScreenshotCapture? ScreenshotCapture { get; private set; }
 
         [TestInitialize]
         public void TestInitialize()
@@ -62,12 +62,14 @@ namespace Duracellko.PlanningPoker.E2ETest
             }
         }
 
-        protected IWebDriver GetBrowser() => BrowserFixture.Browser;
+        protected IWebDriver? GetBrowser() => BrowserFixture?.Browser;
 
-        protected IWebDriver GetBrowser(int index) => BrowserFixtures[index].Browser;
+        protected IWebDriver? GetBrowser(int index) => BrowserFixtures[index].Browser;
 
         protected async Task StartServer()
         {
+            Assert.IsNotNull(Context);
+            Assert.IsNotNull(Server);
             Server.UseServerSide = Context.ServerSide;
             Server.UseHttpClient = Context.UseHttpClient;
             await Server.Start();
@@ -77,6 +79,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected void StartClients()
         {
+            Assert.IsNotNull(Server);
             bool first = true;
             foreach (var context in Contexts)
             {
@@ -93,12 +96,14 @@ namespace Duracellko.PlanningPoker.E2ETest
                 }
 
                 browserFixture.Initialize(context.BrowserType);
+                Assert.IsNotNull(browserFixture.Browser);
                 ClientTests.Add(new ClientTest(browserFixture.Browser, Server));
             }
         }
 
         protected async Task AssertServerSide(bool serverSide)
         {
+            Assert.IsNotNull(Server);
             var client = new HttpClient();
             var response = await client.GetStringAsync(Server.Uri);
 
@@ -110,6 +115,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected async Task AssertClientConnectionType(bool useHttpClient)
         {
+            Assert.IsNotNull(Server);
             var client = new HttpClient();
             client.BaseAddress = Server.Uri;
             var response = await client.GetStringAsync(new Uri("configuration", UriKind.Relative));
@@ -124,12 +130,20 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected string TakeScreenshot(string name)
         {
-            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)GetBrowser(), Context, name);
+            Assert.IsNotNull(ScreenshotCapture);
+            var browser = GetBrowser();
+            Assert.IsNotNull(browser);
+            Assert.IsNotNull(Context);
+            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)browser, Context, name);
         }
 
         protected string TakeScreenshot(int index, string name)
         {
-            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)GetBrowser(index), Context, name);
+            Assert.IsNotNull(ScreenshotCapture);
+            var browser = GetBrowser(index);
+            Assert.IsNotNull(browser);
+            Assert.IsNotNull(Context);
+            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)browser, Context, name);
         }
     }
 }

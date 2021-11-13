@@ -37,8 +37,8 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
             repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
-            repository.Setup(r => r.LoadScrumTeam("team1")).Returns((ScrumTeam)null);
-            repository.Setup(r => r.LoadScrumTeam("team3")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team1")).Returns((ScrumTeam?)null);
+            repository.Setup(r => r.LoadScrumTeam("team3")).Returns((ScrumTeam?)null);
             var target = CreatePlanningPokerController(repository: repository.Object);
             using (target.CreateScrumTeam("team1", "master", Deck.Standard))
             {
@@ -79,7 +79,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
@@ -204,7 +204,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             using (target.CreateScrumTeam("team", "master", Deck.Standard))
@@ -240,12 +240,13 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             bool firstLoad = true;
             bool firstReturn = true;
-            PlanningPokerController target = null;
+            PlanningPokerController? target = null;
 
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
             repository.Setup(r => r.LoadScrumTeam("team"))
                 .Callback<string>(n =>
                 {
+                    Assert.IsNotNull(target);
                     if (firstLoad)
                     {
                         firstLoad = false;
@@ -285,7 +286,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
 
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
             var team = new ScrumTeam("team", availableEstimations, null, null);
@@ -395,7 +396,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
 
             var target = CreatePlanningPokerController(repository: repository.Object);
 
@@ -551,13 +552,14 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             bool firstLoad = true;
             bool firstReturn = true;
-            PlanningPokerController target = null;
-            ScrumTeam createdTeam = null;
+            PlanningPokerController? target = null;
+            ScrumTeam? createdTeam = null;
 
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
             repository.Setup(r => r.LoadScrumTeam("team"))
                 .Callback<string>(n =>
                 {
+                    Assert.IsNotNull(target);
                     if (firstLoad)
                     {
                         firstLoad = false;
@@ -585,9 +587,9 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             using (var teamLock = target.GetScrumTeam("team"))
             {
                 // Verify
-                Assert.AreNotEqual<ScrumTeam>(team, createdTeam);
+                Assert.AreNotEqual<ScrumTeam?>(team, createdTeam);
                 Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
-                Assert.AreEqual<ScrumTeam>(createdTeam, teamLock.Team);
+                Assert.AreEqual<ScrumTeam?>(createdTeam, teamLock.Team);
                 repository.Verify(r => r.LoadScrumTeam("team"), Times.Exactly(2));
                 repository.Verify(r => r.DeleteScrumTeam("team"), Times.Never());
             }
@@ -633,14 +635,14 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
             repository.Setup(r => r.SaveScrumTeam(It.IsAny<ScrumTeam>()));
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
             using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
             {
-                teamLock.Team.ScrumMaster.UpdateActivity();
+                teamLock.Team.ScrumMaster!.UpdateActivity();
 
                 // Verify
                 repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
@@ -652,7 +654,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
             repository.Setup(r => r.SaveScrumTeam(It.IsAny<ScrumTeam>()));
             var target = CreatePlanningPokerController(repository: repository.Object);
 
@@ -671,14 +673,14 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam)null);
+            repository.Setup(r => r.LoadScrumTeam("team")).Returns((ScrumTeam?)null);
             repository.Setup(r => r.SaveScrumTeam(It.IsAny<ScrumTeam>()));
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
             using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
             {
-                teamLock.Team.ScrumMaster.StartEstimation();
+                teamLock.Team.ScrumMaster!.StartEstimation();
 
                 // Verify
                 repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
@@ -686,13 +688,13 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         private static PlanningPokerController CreatePlanningPokerController(
-            DateTimeProvider dateTimeProvider = null,
-            IPlanningPokerConfiguration configuration = null,
-            IScrumTeamRepository repository = null,
-            GuidProvider guidProvider = null,
-            DeckProvider deckProvider = null,
-            TaskProvider taskProvider = null,
-            ILogger<PlanningPokerController> logger = null)
+            DateTimeProvider? dateTimeProvider = null,
+            IPlanningPokerConfiguration? configuration = null,
+            IScrumTeamRepository? repository = null,
+            GuidProvider? guidProvider = null,
+            DeckProvider? deckProvider = null,
+            TaskProvider? taskProvider = null,
+            ILogger<PlanningPokerController>? logger = null)
         {
             if (logger == null)
             {

@@ -12,10 +12,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         public IList<CapturedRenderTreeDiff> DiffsInOrder { get; } = new List<CapturedRenderTreeDiff>();
 
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Property is captured during rendering.")]
-        public IList<int> DisposedComponentIDs { get; set; }
+        public IList<int>? DisposedComponentIDs { get; set; }
 
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Property is captured during rendering.")]
-        public IList<RenderTreeFrame> ReferenceFrames { get; set; }
+        public IList<RenderTreeFrame>? ReferenceFrames { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "Demonstration only.")]
         internal void AddDiff(RenderTreeDiff diff)

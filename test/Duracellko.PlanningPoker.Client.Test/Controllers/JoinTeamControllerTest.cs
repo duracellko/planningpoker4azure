@@ -537,17 +537,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         private static JoinTeamController CreateController(
-            IPlanningPokerInitializer planningPokerInitializer = null,
-            IPlanningPokerClient planningPokerService = null,
-            IMessageBoxService messageBoxService = null,
-            IBusyIndicatorService busyIndicatorService = null,
-            INavigationManager navigationManager = null,
-            IMemberCredentialsStore memberCredentialsStore = null,
+            IPlanningPokerInitializer? planningPokerInitializer = null,
+            IPlanningPokerClient? planningPokerService = null,
+            IMessageBoxService? messageBoxService = null,
+            IBusyIndicatorService? busyIndicatorService = null,
+            INavigationManager? navigationManager = null,
+            IMemberCredentialsStore? memberCredentialsStore = null,
             bool memberExistsError = false,
-            TeamResult teamResult = null,
-            ReconnectTeamResult reconnectTeamResult = null,
-            string errorMessage = null,
-            MemberCredentials memberCredentials = null)
+            TeamResult? teamResult = null,
+            ReconnectTeamResult? reconnectTeamResult = null,
+            string? errorMessage = null,
+            MemberCredentials? memberCredentials = null)
         {
             if (planningPokerInitializer == null)
             {
@@ -565,7 +565,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                     joinSetup.ThrowsAsync(new PlanningPokerException(ReconnectErrorMessage));
                     if (errorMessage == null)
                     {
-                        reconnectSetup.ReturnsAsync(reconnectTeamResult);
+                        reconnectSetup!.ReturnsAsync(reconnectTeamResult);
                     }
                     else
                     {
@@ -576,7 +576,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 {
                     if (errorMessage == null)
                     {
-                        joinSetup.ReturnsAsync(teamResult);
+                        joinSetup!.ReturnsAsync(teamResult);
                     }
                     else
                     {

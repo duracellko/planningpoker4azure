@@ -34,6 +34,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
             Assert.AreEqual(scrumTeam.Members[0].Name, result.Members[0].Name);
@@ -78,6 +79,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
             Assert.AreEqual(scrumTeam.Members[0].Name, result.Members[0].Name);
@@ -88,12 +90,13 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.Observers[0].Type, result.Observers[0].Type);
             Assert.AreEqual(scrumTeam.AvailableEstimations[0].Value, result.AvailableEstimations[0].Value);
             Assert.AreEqual(scrumTeam.AvailableEstimations[1].Value, result.AvailableEstimations[1].Value);
-            Assert.AreEqual(scrumTeam.EstimationResult[0].Member.Name, result.EstimationResult[0].Member.Name);
-            Assert.AreEqual(scrumTeam.EstimationResult[0].Member.Type, result.EstimationResult[0].Member.Type);
-            Assert.AreEqual(scrumTeam.EstimationResult[0].Estimation.Value, result.EstimationResult[0].Estimation.Value);
-            Assert.AreEqual(scrumTeam.EstimationResult[1].Member.Name, result.EstimationResult[1].Member.Name);
-            Assert.AreEqual(scrumTeam.EstimationResult[1].Member.Type, result.EstimationResult[1].Member.Type);
-            Assert.AreEqual(scrumTeam.EstimationResult[1].Estimation.Value, result.EstimationResult[1].Estimation.Value);
+            Assert.IsNotNull(result.EstimationResult);
+            Assert.AreEqual(scrumTeam.EstimationResult[0].Member!.Name, result.EstimationResult[0].Member!.Name);
+            Assert.AreEqual(scrumTeam.EstimationResult[0].Member!.Type, result.EstimationResult[0].Member!.Type);
+            Assert.AreEqual(scrumTeam.EstimationResult[0].Estimation!.Value, result.EstimationResult[0].Estimation!.Value);
+            Assert.AreEqual(scrumTeam.EstimationResult[1].Member!.Name, result.EstimationResult[1].Member!.Name);
+            Assert.AreEqual(scrumTeam.EstimationResult[1].Member!.Type, result.EstimationResult[1].Member!.Type);
+            Assert.AreEqual(scrumTeam.EstimationResult[1].Estimation!.Value, result.EstimationResult[1].Estimation!.Value);
         }
 
         [TestMethod]
@@ -128,6 +131,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
             Assert.AreEqual(scrumTeam.Members[0].Name, result.Members[0].Name);
@@ -136,6 +140,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.Members[1].Type, result.Members[1].Type);
             Assert.AreEqual(scrumTeam.AvailableEstimations[0].Value, result.AvailableEstimations[0].Value);
             Assert.AreEqual(scrumTeam.AvailableEstimations[1].Value, result.AvailableEstimations[1].Value);
+            Assert.IsNotNull(result.EstimationParticipants);
             Assert.AreEqual(scrumTeam.EstimationParticipants[0].MemberName, result.EstimationParticipants[0].MemberName);
             Assert.AreEqual(scrumTeam.EstimationParticipants[0].Estimated, result.EstimationParticipants[0].Estimated);
             Assert.AreEqual(scrumTeam.EstimationParticipants[1].MemberName, result.EstimationParticipants[1].MemberName);
@@ -174,6 +179,8 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNull(result.SelectedEstimation);
 
             var resultScrumTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultScrumTeam);
+            Assert.IsNotNull(resultScrumTeam.ScrumMaster);
             Assert.AreEqual(scrumTeam.Name, resultScrumTeam.Name);
             Assert.AreEqual(scrumTeam.State, resultScrumTeam.State);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, resultScrumTeam.ScrumMaster.Name);
@@ -223,9 +230,12 @@ namespace Duracellko.PlanningPoker.Test.Service
 
             Assert.IsNotNull(result);
             Assert.AreEqual(reconnectTeamResult.LastMessageId, result.LastMessageId);
+            Assert.IsNotNull(result.SelectedEstimation);
             Assert.AreEqual(reconnectTeamResult.SelectedEstimation.Value, result.SelectedEstimation.Value);
 
             var resultScrumTeam = result.ScrumTeam;
+            Assert.IsNotNull(resultScrumTeam);
+            Assert.IsNotNull(resultScrumTeam.ScrumMaster);
             Assert.AreEqual(scrumTeam.Name, resultScrumTeam.Name);
             Assert.AreEqual(scrumTeam.State, resultScrumTeam.State);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, resultScrumTeam.ScrumMaster.Name);
@@ -236,6 +246,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.Members[1].Type, resultScrumTeam.Members[1].Type);
             Assert.AreEqual(scrumTeam.AvailableEstimations[0].Value, resultScrumTeam.AvailableEstimations[0].Value);
             Assert.AreEqual(scrumTeam.AvailableEstimations[1].Value, resultScrumTeam.AvailableEstimations[1].Value);
+            Assert.IsNotNull(resultScrumTeam.EstimationParticipants);
             Assert.AreEqual(scrumTeam.EstimationParticipants[0].MemberName, resultScrumTeam.EstimationParticipants[0].MemberName);
             Assert.AreEqual(scrumTeam.EstimationParticipants[0].Estimated, resultScrumTeam.EstimationParticipants[0].Estimated);
             Assert.AreEqual(scrumTeam.EstimationParticipants[1].MemberName, resultScrumTeam.EstimationParticipants[1].MemberName);
@@ -292,6 +303,7 @@ namespace Duracellko.PlanningPoker.Test.Service
 
             Assert.IsInstanceOfType(result, typeof(MemberMessage));
             var memberMessageResult = (MemberMessage)result;
+            Assert.IsNotNull(memberMessageResult.Member);
             Assert.AreEqual(message.Member.Name, memberMessageResult.Member.Name);
             Assert.AreEqual(message.Member.Type, memberMessageResult.Member.Type);
         }
@@ -326,15 +338,15 @@ namespace Duracellko.PlanningPoker.Test.Service
 
             Assert.IsInstanceOfType(result, typeof(EstimationResultMessage));
             var estimationResult = (EstimationResultMessage)result;
-            Assert.AreEqual(message.EstimationResult[0].Member.Name, estimationResult.EstimationResult[0].Member.Name);
-            Assert.AreEqual(message.EstimationResult[0].Member.Type, estimationResult.EstimationResult[0].Member.Type);
-            Assert.AreEqual(message.EstimationResult[0].Estimation.Value, estimationResult.EstimationResult[0].Estimation.Value);
-            Assert.AreEqual(message.EstimationResult[1].Member.Name, estimationResult.EstimationResult[1].Member.Name);
-            Assert.AreEqual(message.EstimationResult[1].Member.Type, estimationResult.EstimationResult[1].Member.Type);
-            Assert.AreEqual(message.EstimationResult[1].Estimation.Value, estimationResult.EstimationResult[1].Estimation.Value);
+            Assert.AreEqual(message.EstimationResult[0].Member!.Name, estimationResult.EstimationResult[0].Member!.Name);
+            Assert.AreEqual(message.EstimationResult[0].Member!.Type, estimationResult.EstimationResult[0].Member!.Type);
+            Assert.AreEqual(message.EstimationResult[0].Estimation!.Value, estimationResult.EstimationResult[0].Estimation!.Value);
+            Assert.AreEqual(message.EstimationResult[1].Member!.Name, estimationResult.EstimationResult[1].Member!.Name);
+            Assert.AreEqual(message.EstimationResult[1].Member!.Type, estimationResult.EstimationResult[1].Member!.Type);
+            Assert.AreEqual(message.EstimationResult[1].Estimation!.Value, estimationResult.EstimationResult[1].Estimation!.Value);
         }
 
-        private static T SerializeAndDeserialize<T>(T value)
+        private static T? SerializeAndDeserialize<T>(T value)
         {
             var serialier = JsonSerializer.CreateDefault();
             var json = new StringBuilder();

@@ -236,9 +236,11 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             var result = VerifySerialization(team);
 
             // Verify
-            var member = (Member)result.FindMemberOrObserver("member");
+            var member = (Member?)result.FindMemberOrObserver("member");
+            Assert.IsNotNull(member);
             member.Estimation = result.AvailableEstimations.First(e => e.Value == 5);
 
+            Assert.IsNotNull(result.ScrumMaster);
             Assert.IsTrue(result.ScrumMaster.HasMessage);
             var message = result.ScrumMaster.Messages.First();
             Assert.AreEqual(lastMessage.Id + 1, message.Id);
@@ -252,7 +254,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             return result;
         }
 
-        private static string SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider dateTimeProvider = null)
+        private static string SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider? dateTimeProvider = null)
         {
             var result = new StringBuilder();
             using (var writer = new StringWriter(result))
@@ -264,7 +266,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             return result.ToString();
         }
 
-        private static ScrumTeam DeserializeTeam(string json, DateTimeProvider dateTimeProvider = null)
+        private static ScrumTeam DeserializeTeam(string json, DateTimeProvider? dateTimeProvider = null)
         {
             using (var reader = new StringReader(json))
             {

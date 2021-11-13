@@ -76,7 +76,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(null, serviceBus.Object, null));
+            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(null!, serviceBus.Object, null));
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var planningPoker = CreatePlanningPokerMock();
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null, null));
+            Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null!, null));
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
 
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
-            NodeMessage nodeMessage = null;
+            NodeMessage? nodeMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamCreated)))
                 .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -122,7 +122,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             teamLock.Verify();
             Assert.IsNotNull(nodeMessage);
             Assert.AreEqual<NodeMessageType>(NodeMessageType.TeamCreated, nodeMessage.MessageType);
-            Assert.AreEqual<string>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
             Assert.IsNotNull(nodeMessage.Data);
             Assert.IsInstanceOfType(nodeMessage.Data, typeof(string));
             var expectedData = JsonConvert.SerializeObject(team.GetData());
@@ -171,7 +171,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
 
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
-            NodeMessage nodeMessage = null;
+            NodeMessage? nodeMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage)))
                 .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -186,7 +186,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             Assert.IsNotNull(nodeMessage);
             Assert.AreEqual<NodeMessageType>(NodeMessageType.ScrumTeamMessage, nodeMessage.MessageType);
-            Assert.AreEqual<string>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
             Assert.AreEqual(message, nodeMessage.Data);
         }
 
@@ -234,7 +234,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage && m.Data == message1)))
                 .ThrowsAsync(new InvalidOperationException()).Verifiable();
-            NodeMessage nodeMessage = null;
+            NodeMessage? nodeMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage && m.Data == message2)))
                 .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -249,7 +249,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             Assert.IsNotNull(nodeMessage);
             Assert.AreEqual<NodeMessageType>(NodeMessageType.ScrumTeamMessage, nodeMessage.MessageType);
-            Assert.AreEqual<string>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
             Assert.AreEqual(message2, nodeMessage.Data);
         }
 
@@ -386,7 +386,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Verify();
             serviceBus.Verify();
             teamLock.Verify();
-            Assert.IsTrue(team.ScrumMaster.IsDormant);
+            Assert.IsTrue(team.ScrumMaster!.IsDormant);
         }
 
         [TestMethod]
@@ -485,7 +485,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
             var team = CreateBasicTeam();
-            team.ScrumMaster.StartEstimation();
+            team.ScrumMaster!.StartEstimation();
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
@@ -543,7 +543,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
             var team = CreateBasicTeam();
-            team.ScrumMaster.StartEstimation();
+            team.ScrumMaster!.StartEstimation();
             var teamLock = SetupPlanningPoker(planningPoker, team);
 
             // Act
@@ -629,7 +629,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Verify();
             serviceBus.Verify();
             teamLock.Verify();
-            Assert.AreEqual<DateTime>(dateTimeProvider.UtcNow, team.ScrumMaster.LastActivity);
+            Assert.AreEqual<DateTime>(dateTimeProvider.UtcNow, team.ScrumMaster!.LastActivity);
             Assert.AreEqual<Guid>(sessionId, team.ScrumMaster.SessionId);
             Assert.AreEqual<long>(2, team.ScrumMaster.AcknowledgedMessageId);
             Assert.IsFalse(team.ScrumMaster.HasMessage);
@@ -680,9 +680,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
 
-            ScrumTeam team = null;
+            ScrumTeam? team = null;
             planningPoker.Setup(p => p.AttachScrumTeam(It.IsAny<ScrumTeam>()))
-                .Callback<ScrumTeam>(t => team = t).Returns(default(IScrumTeamLock)).Verifiable();
+                .Callback<ScrumTeam>(t => team = t).Returns(Mock.Of<IScrumTeamLock>()).Verifiable();
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -771,11 +771,11 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage2 = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage1, nodeMessage2);
 
-            ScrumTeam team = null;
+            ScrumTeam? team = null;
             planningPoker.Setup(p => p.AttachScrumTeam(It.Is<ScrumTeam>(t => t.Name == "Existing team")))
                 .Throws(new InvalidOperationException()).Verifiable();
             planningPoker.Setup(p => p.AttachScrumTeam(It.Is<ScrumTeam>(t => t.Name == TeamName)))
-                .Callback<ScrumTeam>(t => team = t).Returns(default(IScrumTeamLock)).Verifiable();
+                .Callback<ScrumTeam>(t => team = t).Returns(Mock.Of<IScrumTeamLock>()).Verifiable();
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>()).Verifiable();
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             planningPoker.Setup(p => p.EndInitialization());
@@ -807,7 +807,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
             planningPoker.Setup(p => p.DateTimeProvider).Returns(DateTimeProvider.Default);
-            IEnumerable<string> initializationTeamList = null;
+            IEnumerable<string>? initializationTeamList = null;
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()))
                 .Callback<IEnumerable<string>>(t => initializationTeamList = t).Verifiable();
 
@@ -833,7 +833,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var teamList = new string[] { TeamName };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, null);
-            NodeMessage requestTeamsMessage = null;
+            NodeMessage? requestTeamsMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.RequestTeams)))
                 .Callback<NodeMessage>(m => requestTeamsMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -871,7 +871,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             planningPoker.Setup(p => p.ObservableMessages).Returns(Observable.Empty<ScrumTeamMessage>());
             planningPoker.Setup(p => p.DateTimeProvider).Returns(DateTimeProvider.Default);
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
-            ScrumTeam initializingTeam = null;
+            ScrumTeam? initializingTeam = null;
             planningPoker.Setup(p => p.InitializeScrumTeam(It.IsAny<ScrumTeam>())).Callback<ScrumTeam>(t => initializingTeam = t).Verifiable();
             planningPoker.Setup(p => p.EndInitialization()).Verifiable();
 
@@ -985,7 +985,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeamList) { SenderNodeId = "sender" };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
-            NodeMessage teamListMessage = null;
+            NodeMessage? teamListMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.TeamList)))
                 .Callback<NodeMessage>(m => teamListMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -1007,7 +1007,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(teamListMessage);
             Assert.IsNotNull(teamListMessage.Data);
             CollectionAssert.AreEquivalent(teamList, (string[])teamListMessage.Data);
-            Assert.AreEqual<string>(nodeMessage.SenderNodeId, teamListMessage.RecipientNodeId);
+            Assert.AreEqual<string?>(nodeMessage.SenderNodeId, teamListMessage.RecipientNodeId);
         }
 
         [TestMethod]
@@ -1048,7 +1048,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
-            NodeMessage initializeTeamMessage = null;
+            NodeMessage? initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
                 .Callback<NodeMessage>(m => initializeTeamMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -1068,7 +1068,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
             var expectedData = JsonConvert.SerializeObject(team.GetData());
             Assert.AreEqual(expectedData, (string)initializeTeamMessage.Data);
-            Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
+            Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
         [TestMethod]
@@ -1083,7 +1083,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.RequestTeams) { Data = teamList };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
-            NodeMessage initializeTeamMessage = null;
+            NodeMessage? initializeTeamMessage = null;
             serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.InitializeTeam)))
                 .Callback<NodeMessage>(m => initializeTeamMessage = m).Returns(Task.CompletedTask).Verifiable();
 
@@ -1104,16 +1104,16 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(initializeTeamMessage.Data);
             Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
             Assert.AreEqual<string>("Deleted:" + TeamName, (string)initializeTeamMessage.Data);
-            Assert.AreEqual<string>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
+            Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
         private static PlanningPokerAzureNode CreatePlanningPokerAzureNode(
-            IAzurePlanningPoker planningPoker = null,
-            IServiceBus serviceBus = null,
-            IAzurePlanningPokerConfiguration configuration = null,
-            ILogger<PlanningPokerAzureNode> logger = null,
-            DateTimeProvider dateTimeProvider = null,
-            GuidProvider guidProvider = null)
+            IAzurePlanningPoker planningPoker,
+            IServiceBus serviceBus,
+            IAzurePlanningPokerConfiguration? configuration = null,
+            ILogger<PlanningPokerAzureNode>? logger = null,
+            DateTimeProvider? dateTimeProvider = null,
+            GuidProvider? guidProvider = null)
         {
             if (logger == null)
             {
@@ -1135,7 +1135,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             return result;
         }
 
-        private static ScrumTeam CreateBasicTeam(string name = null)
+        private static ScrumTeam CreateBasicTeam(string? name = null)
         {
             var result = new ScrumTeam(name ?? TeamName);
             result.SetScrumMaster(ScrumMasterName);
@@ -1151,12 +1151,14 @@ namespace Duracellko.PlanningPoker.Azure.Test
             return result;
         }
 
-        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, params NodeMessage[] nodeMessages)
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Nullable array")]
+        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, params NodeMessage[]? nodeMessages)
         {
             return SetupServiceBus(serviceBus, nodeId, null, nodeMessages);
         }
 
-        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, string[] initializationTeamList, params NodeMessage[] nodeMessages)
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Nullable array")]
+        private static Action SetupServiceBus(Mock<IServiceBus> serviceBus, string nodeId, string[]? initializationTeamList, params NodeMessage[]? nodeMessages)
         {
             serviceBus.Setup(b => b.Register(nodeId)).Returns(Task.CompletedTask).Verifiable();
             serviceBus.Setup(b => b.Unregister()).Returns(Task.CompletedTask).Verifiable();
@@ -1197,7 +1199,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 });
         }
 
-        private static Mock<IScrumTeamLock> SetupPlanningPoker(Mock<IAzurePlanningPoker> planningPoker, ScrumTeam team, bool noEnd = false)
+        [return: NotNullIfNotNull("team")]
+        private static Mock<IScrumTeamLock>? SetupPlanningPoker(Mock<IAzurePlanningPoker> planningPoker, ScrumTeam? team, bool noEnd = false)
         {
             planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
             if (!noEnd)

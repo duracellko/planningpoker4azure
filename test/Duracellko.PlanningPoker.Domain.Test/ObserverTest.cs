@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name = "test";
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new Observer(null, name));
+            Assert.ThrowsException<ArgumentNullException>(() => new Observer(null!, name));
         }
 
         [TestMethod]
@@ -376,7 +376,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             team.Join("test", true);
             var member = (Member)team.Join("test member", false);
 
-            team.ScrumMaster.StartEstimation();
+            team.ScrumMaster!.StartEstimation();
             member.Estimation = team.AvailableEstimations.First(e => e.Value == 8);
             team.ScrumMaster.Estimation = team.AvailableEstimations.First(e => e.Value == 3);
 

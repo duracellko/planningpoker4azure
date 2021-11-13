@@ -184,13 +184,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         private static CreateTeamController CreateController(
-            IPlanningPokerInitializer planningPokerInitializer = null,
-            IPlanningPokerClient planningPokerService = null,
-            IMessageBoxService messageBoxService = null,
-            IBusyIndicatorService busyIndicatorService = null,
-            INavigationManager navigationManager = null,
-            TeamResult teamResult = null,
-            string errorMessage = null)
+            IPlanningPokerInitializer? planningPokerInitializer = null,
+            IPlanningPokerClient? planningPokerService = null,
+            IMessageBoxService? messageBoxService = null,
+            IBusyIndicatorService? busyIndicatorService = null,
+            INavigationManager? navigationManager = null,
+            TeamResult? teamResult = null,
+            string? errorMessage = null)
         {
             if (planningPokerInitializer == null)
             {
@@ -204,7 +204,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 var createSetup = planningPokerServiceMock.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()));
                 if (errorMessage == null)
                 {
-                    createSetup.ReturnsAsync(teamResult);
+                    createSetup!.ReturnsAsync(teamResult);
                 }
                 else
                 {

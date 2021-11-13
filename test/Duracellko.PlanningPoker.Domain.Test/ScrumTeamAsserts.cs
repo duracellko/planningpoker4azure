@@ -9,7 +9,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
     public static class ScrumTeamAsserts
     {
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Asserted using MS Test.")]
-        public static void AssertScrumTeamsAreEqual(ScrumTeam expected, ScrumTeam actual)
+        public static void AssertScrumTeamsAreEqual(ScrumTeam? expected, ScrumTeam? actual)
         {
             if (expected == null)
             {
@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             CollectionAssert.AreEqual(expected.ToList(), actual.ToList());
         }
 
-        private static void AssertObserversAreEqual(Observer expected, Observer actual, bool basicPropertiesOnly = false)
+        private static void AssertObserversAreEqual(Observer? expected, Observer? actual, bool basicPropertiesOnly = false)
         {
             if (expected == null)
             {
@@ -121,7 +121,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             AssertEstimationResultsAreEqual(expected.EstimationResult, actual.EstimationResult);
         }
 
-        private static void AssertEsimationParticipantsAreEqual(IEnumerable<EstimationParticipantStatus> expected, IEnumerable<EstimationParticipantStatus> actual)
+        private static void AssertEsimationParticipantsAreEqual(IEnumerable<EstimationParticipantStatus>? expected, IEnumerable<EstimationParticipantStatus>? actual)
         {
             if (expected == null)
             {
@@ -129,6 +129,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             }
             else
             {
+                Assert.IsNotNull(actual);
                 Assert.AreEqual(expected.Count(), actual.Count());
                 foreach (var expectedItem in expected)
                 {
@@ -139,7 +140,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             }
         }
 
-        private static void AssertEstimationResultsAreEqual(EstimationResult expected, EstimationResult actual)
+        private static void AssertEstimationResultsAreEqual(EstimationResult? expected, EstimationResult? actual)
         {
             if (expected == null)
             {
@@ -147,6 +148,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             }
             else
             {
+                Assert.IsNotNull(actual);
                 Assert.AreEqual(expected.Count, actual.Count);
                 foreach (var expectedItem in expected)
                 {

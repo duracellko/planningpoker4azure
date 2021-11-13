@@ -13,8 +13,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
     {
         private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
         private readonly IObservable<HubMessage> _messages;
-        private IDisposable _subscription;
-        private volatile TaskCompletionSource<(bool, Exception)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception)>();
+        private IDisposable? _subscription;
+        private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception?)>();
 
         public HubMessageQueue(IObservable<HubMessage> messages)
         {
@@ -24,10 +24,10 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public int Count => _queue.Count;
 
-        public async Task<HubMessage> GetNextAsync()
+        public async Task<HubMessage?> GetNextAsync()
         {
             bool moreMessages = true;
-            Exception error = null;
+            Exception? error = null;
             while (true)
             {
                 var receiveMessageTask = _receiveMessageTask.Task;
@@ -55,7 +55,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             }
         }
 
-        public bool TryDequeue(out HubMessage message)
+        public bool TryDequeue([MaybeNullWhen(false)] out HubMessage message)
         {
             return _queue.TryDequeue(out message);
         }
@@ -79,14 +79,14 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             }
         }
 
-        private void NotifyMessageReceived(bool moreMessages, Exception error)
+        private void NotifyMessageReceived(bool moreMessages, Exception? error)
         {
             _receiveMessageTask.SetResult((moreMessages, error));
 
             if (moreMessages)
             {
                 // If there are more messages then create new TaskCompletionSource for next message.
-                _receiveMessageTask = new TaskCompletionSource<(bool, Exception)>();
+                _receiveMessageTask = new TaskCompletionSource<(bool, Exception?)>();
             }
         }
 

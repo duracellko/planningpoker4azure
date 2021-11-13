@@ -20,10 +20,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var result = new EstimationResult(new Member[] { master, member });
 
             // Verify
-            var expectedResult = new KeyValuePair<Member, Estimation>[]
+            var expectedResult = new KeyValuePair<Member, Estimation?>[]
             {
-                new KeyValuePair<Member, Estimation>(member, null),
-                new KeyValuePair<Member, Estimation>(master, null),
+                new KeyValuePair<Member, Estimation?>(member, null),
+                new KeyValuePair<Member, Estimation?>(master, null),
             };
             CollectionAssert.AreEquivalent(expectedResult, result.ToList());
         }
@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void Constructor_Null_ArgumentNullException()
         {
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new EstimationResult(null));
+            Assert.ThrowsException<ArgumentNullException>(() => new EstimationResult(null!));
         }
 
         [TestMethod]
@@ -75,10 +75,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target[master] = estimation;
 
             // Verify
-            var expectedResult = new KeyValuePair<Member, Estimation>[]
+            var expectedResult = new KeyValuePair<Member, Estimation?>[]
             {
-                new KeyValuePair<Member, Estimation>(member, null),
-                new KeyValuePair<Member, Estimation>(master, estimation),
+                new KeyValuePair<Member, Estimation?>(member, null),
+                new KeyValuePair<Member, Estimation?>(master, estimation),
             };
             CollectionAssert.AreEquivalent(expectedResult, target.ToList());
         }
@@ -97,10 +97,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target[member] = estimation;
 
             // Verify
-            var expectedResult = new KeyValuePair<Member, Estimation>[]
+            var expectedResult = new KeyValuePair<Member, Estimation?>[]
             {
-                new KeyValuePair<Member, Estimation>(master, null),
-                new KeyValuePair<Member, Estimation>(member, estimation),
+                new KeyValuePair<Member, Estimation?>(master, null),
+                new KeyValuePair<Member, Estimation?>(member, estimation),
             };
             CollectionAssert.AreEquivalent(expectedResult, target.ToList());
         }

@@ -36,7 +36,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_TeamNameIsEmpty_ArgumentNullException()
         {
             // Arrange
@@ -44,7 +43,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var messageType = MessageType.Empty;
 
             // Act
-            var result = new ScrumTeamMessage(teamName, messageType);
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeamMessage(teamName, messageType));
         }
     }
 }

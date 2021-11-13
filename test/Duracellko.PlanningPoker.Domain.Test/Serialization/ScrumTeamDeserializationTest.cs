@@ -51,6 +51,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Assert
             Assert.AreEqual(scrumTeamData.Name, result.Name);
             Assert.AreEqual(scrumTeamData.State, result.State);
+            Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeamData.Members[1].Name, result.ScrumMaster.Name);
             var member = result.Members.First(m => m.GetType() == typeof(Member));
             Assert.AreEqual(scrumTeamData.Members[0].Name, member.Name);
@@ -102,7 +103,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Arrange
             var scrumTeamData = new ScrumTeamData
             {
-                Name = null,
+                Name = null!,
                 AvailableEstimations = GetAvailableEstimations(),
                 State = TeamState.EstimationCanceled,
             };

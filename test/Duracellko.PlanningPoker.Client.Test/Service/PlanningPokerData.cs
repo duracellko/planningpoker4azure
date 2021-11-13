@@ -18,7 +18,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
         public static readonly Guid SessionId = Guid.NewGuid();
 
-        public static ScrumTeam GetScrumTeam(bool member = false, bool observer = false, TeamState state = TeamState.Initial, IList<EstimationResultItem> estimationResult = null, IList<EstimationParticipantStatus> estimationParticipants = null)
+        public static ScrumTeam GetScrumTeam(bool member = false, bool observer = false, TeamState state = TeamState.Initial, IList<EstimationResultItem>? estimationResult = null, IList<EstimationParticipantStatus>? estimationParticipants = null)
         {
             var result = new ScrumTeam
             {
@@ -109,7 +109,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             };
         }
 
-        private static Estimation GetEstimation(double? estimation)
+        private static Estimation? GetEstimation(double? estimation)
         {
             if (estimation.HasValue)
             {

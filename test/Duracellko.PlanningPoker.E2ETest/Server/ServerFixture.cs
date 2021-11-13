@@ -7,6 +7,7 @@ using Duracellko.PlanningPoker.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Duracellko.PlanningPoker.E2ETest.Server
@@ -14,7 +15,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
     public class ServerFixture : IDisposable
     {
         private bool _disposed;
-        private Uri _uri;
+        private Uri? _uri;
 
         ~ServerFixture()
         {
@@ -25,9 +26,9 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
         public bool UseHttpClient { get; set; }
 
-        public IHost WebHost { get; private set; }
+        public IHost? WebHost { get; private set; }
 
-        public Uri Uri
+        public Uri? Uri
         {
             get
             {
@@ -38,9 +39,13 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
                 if (_uri == null)
                 {
-                    var server = (IServer)WebHost.Services.GetService(typeof(IServer));
-                    var address = server.Features.Get<IServerAddressesFeature>().Addresses.Single();
-                    _uri = new Uri(address);
+                    var server = (IServer)WebHost.Services.GetRequiredService(typeof(IServer));
+                    var serverAddressesFeature = server.Features.Get<IServerAddressesFeature>();
+                    if (serverAddressesFeature != null)
+                    {
+                        var address = serverAddressesFeature.Addresses.Single();
+                        _uri = new Uri(address);
+                    }
                 }
 
                 return _uri;

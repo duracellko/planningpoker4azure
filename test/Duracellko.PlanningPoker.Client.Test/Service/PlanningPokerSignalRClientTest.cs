@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR.Protocol;
@@ -27,7 +28,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -51,6 +52,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
         }
 
@@ -87,7 +89,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
             var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -108,7 +110,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(observer: true);
             var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, teamResult, true);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, teamResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -132,6 +134,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
         }
 
@@ -153,6 +156,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
         }
 
@@ -175,9 +179,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
-            Assert.AreEqual(5.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
-            Assert.AreEqual(20.0, result.ScrumTeam.EstimationResult[1].Estimation.Value);
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.AreEqual(5.0, result.ScrumTeam.EstimationResult[0].Estimation!.Value);
+            Assert.AreEqual(20.0, result.ScrumTeam.EstimationResult[1].Estimation!.Value);
         }
 
         [TestMethod]
@@ -199,9 +205,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
-            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[0].Estimation.Value.Value));
-            Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation.Value);
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[0].Estimation!.Value!.Value));
+            Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation!.Value);
         }
 
         [TestMethod]
@@ -223,8 +231,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
-            Assert.AreEqual(0.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.AreEqual(0.0, result.ScrumTeam.EstimationResult[0].Estimation!.Value);
             Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation);
         }
 
@@ -247,6 +257,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(teamResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
         }
 
@@ -301,7 +312,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 
             var scrumTeam = PlanningPokerData.GetScrumTeam(member: true);
             var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam);
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, reconnectResult, true);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, reconnectResult, true);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -325,6 +336,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(reconnectResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
             Assert.IsNull(reconnectResult.SelectedEstimation);
         }
@@ -348,10 +360,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(reconnectResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
             Assert.IsNull(reconnectResult.SelectedEstimation);
-            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
-            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[1].Estimation.Value);
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[0].Estimation!.Value);
+            Assert.AreEqual(1.0, result.ScrumTeam.EstimationResult[1].Estimation!.Value);
         }
 
         [TestMethod]
@@ -373,11 +387,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(reconnectResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
             Assert.IsNotNull(result.SelectedEstimation);
-            Assert.IsTrue(double.IsPositiveInfinity(result.SelectedEstimation.Value.Value));
-            Assert.IsNull(result.ScrumTeam.EstimationResult[0].Estimation.Value);
-            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[1].Estimation.Value.Value));
+            Assert.IsTrue(double.IsPositiveInfinity(result.SelectedEstimation.Value!.Value));
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.IsNull(result.ScrumTeam.EstimationResult[0].Estimation!.Value);
+            Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[1].Estimation!.Value!.Value));
         }
 
         [TestMethod]
@@ -399,10 +415,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(reconnectResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
             Assert.IsNotNull(result.SelectedEstimation);
             Assert.AreEqual(8.0, result.SelectedEstimation.Value);
-            Assert.AreEqual(8.0, result.ScrumTeam.EstimationResult[0].Estimation.Value);
+            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+            Assert.AreEqual(8.0, result.ScrumTeam.EstimationResult[0].Estimation!.Value);
             Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation);
         }
 
@@ -425,6 +443,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var result = await resultTask;
 
             Assert.AreEqual(reconnectResult, result);
+            Assert.IsNotNull(result.ScrumTeam);
             AssertAvailableEstimations(result.ScrumTeam);
             Assert.IsNotNull(result.SelectedEstimation);
             Assert.IsNull(result.SelectedEstimation.Value);
@@ -443,7 +462,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -462,7 +481,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var expectedArguments = new object[] { PlanningPokerData.TeamName };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -481,7 +500,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var expectedArguments = new object[] { PlanningPokerData.TeamName };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -502,22 +521,23 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var sentMessage = await fixture.GetSentMessage();
             var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
             Assert.AreEqual("SubmitEstimation", sentInvocationMessage.Target);
-            var expectedArguments = new object[] { PlanningPokerData.TeamName, memberName, expectedSentValue };
+            var expectedArguments = new object?[] { PlanningPokerData.TeamName, memberName, expectedSentValue };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
         }
 
-        private static string GetInvocationId(HubMessage message)
+        private static string GetInvocationId([NotNull] HubMessage? message)
         {
             var invocationMessage = AssertIsInvocationMessage(message);
+            Assert.IsNotNull(invocationMessage.InvocationId);
             return invocationMessage.InvocationId;
         }
 
-        private static InvocationMessage AssertIsInvocationMessage(HubMessage message)
+        private static InvocationMessage AssertIsInvocationMessage([NotNull] HubMessage? message)
         {
             Assert.IsNotNull(message);
             Assert.IsInstanceOfType(message, typeof(InvocationMessage));
@@ -539,7 +559,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.AreEqual(40.0, scrumTeam.AvailableEstimations[9].Value);
             Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
             Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-            Assert.IsTrue(double.IsPositiveInfinity(scrumTeam.AvailableEstimations[11].Value.Value));
+            var estimationValue = scrumTeam.AvailableEstimations[11].Value;
+            Assert.IsNotNull(estimationValue);
+            Assert.IsTrue(double.IsPositiveInfinity(estimationValue.Value));
             Assert.IsNull(scrumTeam.AvailableEstimations[12].Value);
         }
     }

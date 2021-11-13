@@ -6,7 +6,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 {
     public class ScreenshotCapture
     {
-        private string _basePath;
+        private string? _basePath;
 
         private string BasePath
         {
@@ -15,7 +15,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
                 if (_basePath == null)
                 {
                     var assemblyLocation = typeof(ScreenshotCapture).Assembly.Location;
-                    _basePath = Path.Combine(Path.GetDirectoryName(assemblyLocation), "Screenshots");
+                    var assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
+                    _basePath = Path.Combine(assemblyDirectory!, "Screenshots");
                 }
 
                 return _basePath;

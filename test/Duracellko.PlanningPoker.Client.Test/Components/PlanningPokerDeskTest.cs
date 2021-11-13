@@ -34,6 +34,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
+            Assert.IsNotNull(frames);
             Assert.AreEqual(21, frames.Count);
 
             // Team name and user name
@@ -69,7 +70,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
 
             var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
-            reconnectResult.ScrumTeam.State = TeamState.EstimationInProgress;
+            reconnectResult.ScrumTeam!.State = TeamState.EstimationInProgress;
             reconnectResult.ScrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
             {
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = true },
@@ -83,6 +84,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
+            Assert.IsNotNull(frames);
             Assert.AreEqual(81, frames.Count);
 
             // Team name and user name
@@ -134,7 +136,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
 
             var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
-            reconnectResult.ScrumTeam.State = TeamState.EstimationFinished;
+            reconnectResult.ScrumTeam!.State = TeamState.EstimationFinished;
             reconnectResult.ScrumTeam.EstimationResult = new List<EstimationResultItem>
             {
                 new EstimationResultItem
@@ -156,6 +158,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
+            Assert.IsNotNull(frames);
             Assert.AreEqual(41, frames.Count);
 
             // Team name and user name

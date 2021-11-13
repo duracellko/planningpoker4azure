@@ -23,10 +23,10 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void Constructor_MemberNameNotSpecified_ArgumentNullException()
         {
             // Arrange
-            string name = null;
+            string? name = null;
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new EstimationParticipantStatus(name, false));
+            Assert.ThrowsException<ArgumentNullException>(() => new EstimationParticipantStatus(name!, false));
         }
 
         [TestMethod]

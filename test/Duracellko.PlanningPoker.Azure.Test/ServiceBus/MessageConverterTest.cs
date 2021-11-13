@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
@@ -19,14 +20,14 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         public void ConvertToServiceBusMessage_Null_ArgumentNullException()
         {
             var target = new MessageConverter();
-            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToServiceBusMessage(null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToServiceBusMessage(null!));
         }
 
         [TestMethod]
         public void ConvertToNodeMessage_Null_ArgumentNullException()
         {
             var target = new MessageConverter();
-            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(null!));
         }
 
         [TestMethod]
@@ -40,7 +41,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             };
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
-            var resultData = (ScrumTeamMessage)result.Data;
+            var resultData = (ScrumTeamMessage)result.Data!;
 
             Assert.AreEqual(MessageType.EstimationStarted, resultData.MessageType);
             Assert.AreEqual(TeamName, resultData.TeamName);
@@ -62,7 +63,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             };
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
-            var resultData = (ScrumTeamMemberMessage)result.Data;
+            var resultData = (ScrumTeamMemberMessage)result.Data!;
 
             Assert.AreEqual(MessageType.MemberJoined, resultData.MessageType);
             Assert.AreEqual(TeamName, resultData.TeamName);
@@ -86,7 +87,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             };
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
-            var resultData = (ScrumTeamMemberEstimationMessage)result.Data;
+            var resultData = (ScrumTeamMemberEstimationMessage)result.Data!;
 
             Assert.AreEqual(MessageType.MemberEstimated, resultData.MessageType);
             Assert.AreEqual(TeamName, resultData.TeamName);
@@ -105,7 +106,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            Assert.AreEqual(Team1Json, (string)result.Data);
+            Assert.AreEqual(Team1Json, (string?)result.Data);
         }
 
         [TestMethod]
@@ -122,6 +123,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Nullable array")]
         public void ConvertToServiceBusMessageAndBack_TeamList()
         {
             var teamList = new[] { TeamName, "Test", "Hello, World!" };
@@ -134,10 +136,11 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            CollectionAssert.AreEqual(teamList, (string[])result.Data);
+            CollectionAssert.AreEqual(teamList, (string[]?)result.Data);
         }
 
         [TestMethod]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Nullable array")]
         public void ConvertToServiceBusMessageAndBack_RequestTeams()
         {
             var teamList = new[] { TeamName };
@@ -150,7 +153,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            CollectionAssert.AreEqual(teamList, (string[])result.Data);
+            CollectionAssert.AreEqual(teamList, (string[]?)result.Data);
         }
 
         [TestMethod]
@@ -165,7 +168,7 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            Assert.AreEqual(Team2Json, (string)result.Data);
+            Assert.AreEqual(Team2Json, (string?)result.Data);
         }
 
         private static NodeMessage ConvertToServiceBusMessageAndBack(NodeMessage nodeMessage)

@@ -93,7 +93,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             return sb.ToString();
         }
 
-        public static string GetEstimationResultJson(string scrumMasterEstimation = "5", string memberEstimation = "20")
+        public static string GetEstimationResultJson(string scrumMasterEstimation = "5", string? memberEstimation = "20")
         {
             var scrumMasterEstimationJson = string.Empty;
             if (scrumMasterEstimation != null)
@@ -147,7 +147,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 }";
         }
 
-        public static string GetReconnectTeamResultJson(string scrumTeamJson, string lastMessageId = "0", string selectedEstimation = null)
+        public static string GetReconnectTeamResultJson(string scrumTeamJson, string lastMessageId = "0", string? selectedEstimation = null)
         {
             var selectedEstimationJson = string.Empty;
             if (selectedEstimation != null)
