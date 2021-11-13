@@ -23,7 +23,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
         /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
         /// <param name="deckProvider">The provider to get default estimation deck.</param>
-        public ScrumTeamSerializer(DateTimeProvider dateTimeProvider, GuidProvider guidProvider, DeckProvider deckProvider)
+        public ScrumTeamSerializer(DateTimeProvider? dateTimeProvider, GuidProvider? guidProvider, DeckProvider? deckProvider)
         {
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _guidProvider = guidProvider ?? GuidProvider.Default;

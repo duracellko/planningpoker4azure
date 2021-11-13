@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name = "test";
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new Member(null, name));
+            Assert.ThrowsException<ArgumentNullException>(() => new Member(null!, name));
         }
 
         [TestMethod]
@@ -235,7 +235,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
             var memberEstimation = new Estimation(1);
 
@@ -258,7 +258,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
             var masterEstimation = new Estimation(55);
             var memberEstimation = new Estimation(55);
@@ -282,7 +282,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
             master.StartEstimation();
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
             var masterEstimation = new Estimation(20);
             var memberEstimation = new Estimation(3);
@@ -296,7 +296,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var message = eventArgs.Message;
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
-            Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
+            Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
         }
 
         [TestMethod]
@@ -345,7 +345,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var message = master.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
-            Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
+            Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
         }
 
         [TestMethod]
@@ -359,7 +359,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             master.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(40);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -439,7 +439,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var message = member.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
-            Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
+            Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
         }
 
         [TestMethod]
@@ -453,7 +453,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             member.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(8);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -536,7 +536,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var message = observer.Messages.Last();
             Assert.IsInstanceOfType(message, typeof(EstimationResultMessage));
             var estimationResultMessage = (EstimationResultMessage)message;
-            Assert.AreEqual<EstimationResult>(team.EstimationResult, estimationResultMessage.EstimationResult);
+            Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
         }
 
         [TestMethod]
@@ -551,7 +551,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             observer.ClearMessages();
             var masterEstimation = new Estimation(5);
             var memberEstimation = new Estimation(5);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act

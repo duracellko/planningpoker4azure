@@ -44,7 +44,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name = "test";
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(null, name));
+            Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(null!, name));
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -114,7 +114,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -166,7 +166,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
             var member = team.Join("member", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -202,7 +202,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
             var observer = team.Join("observer", false);
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -276,7 +276,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -316,7 +316,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
-            MessageReceivedEventArgs eventArgs = null;
+            MessageReceivedEventArgs? eventArgs = null;
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
             // Act
@@ -374,7 +374,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
             master.StartEstimation();
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -449,7 +449,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var member = team.Join("member", false);
             master.StartEstimation();
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
@@ -525,7 +525,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = team.SetScrumMaster("master");
             var observer = team.Join("observer", true);
             master.StartEstimation();
-            EventArgs eventArgs = null;
+            EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
