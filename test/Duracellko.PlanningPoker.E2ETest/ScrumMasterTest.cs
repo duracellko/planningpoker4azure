@@ -123,6 +123,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             ClientTest.AssertIndexPage();
             TakeScreenshot("03-RequiredError");
 
+            Assert.IsNotNull(ClientTest.CreateTeamForm);
             var input = ClientTest.CreateTeamForm.FindElement(By.Id("createTeam$teamName"));
             var required = input.FindElement(By.XPath("../span"));
             Assert.AreEqual("Required", required.Text);

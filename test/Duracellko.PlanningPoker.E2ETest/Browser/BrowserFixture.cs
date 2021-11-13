@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             Dispose(false);
         }
 
-        public IWebDriver Browser { get; private set; }
+        public IWebDriver? Browser { get; private set; }
 
         public void Dispose()
         {
@@ -69,8 +69,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
         private static string GetDriverLocation(BrowserType browserType)
         {
-            string driverName = null;
-            string environmentVariable = null;
+            string? driverName = null;
+            string? environmentVariable = null;
             switch (browserType)
             {
                 case BrowserType.Chrome:
@@ -90,7 +90,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             {
                 var assemblyLocation = Path.GetDirectoryName(typeof(BrowserFixture).Assembly.Location);
                 var seleniumFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(assemblyLocation))));
-                seleniumFolder = Path.Combine(seleniumFolder, "node_modules", "selenium-standalone", ".selenium");
+                seleniumFolder = Path.Combine(seleniumFolder!, "node_modules", "selenium-standalone", ".selenium");
                 driverLocation = Path.Combine(seleniumFolder, driverName);
 
                 var driverFile = Directory.GetFiles(driverLocation)
