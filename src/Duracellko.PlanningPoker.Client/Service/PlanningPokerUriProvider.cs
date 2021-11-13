@@ -22,7 +22,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <summary>
         /// Gets base URI of Planning Poker Services.
         /// </summary>
-        public Uri BaseUri
+        public Uri? BaseUri
         {
             get
             {

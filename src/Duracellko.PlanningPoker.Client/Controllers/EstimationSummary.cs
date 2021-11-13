@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         internal EstimationSummary(IEnumerable<MemberEstimation> memberEstimations)
         {
             var numericEstimations = memberEstimations.Where(IsNumericEstimation)
-                .Select(e => e.Estimation.Value)
+                .Select(e => e.Estimation!.Value)
                 .ToList();
 
             if (numericEstimations.Count > 0)

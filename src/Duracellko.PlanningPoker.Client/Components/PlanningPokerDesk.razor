@@ -91,7 +91,7 @@
             }
 
             <ul>
-                @foreach (var memberEstimation in Controller.Estimations)
+                @foreach (var memberEstimation in Controller.Estimations!)
                 {
                     <li>
                         <span class="estimationItemValue">@(memberEstimation.HasEstimation ? GetEstimationText(memberEstimation.Estimation) : null)</span>
@@ -138,7 +138,7 @@
         Controller.ShowEstimationSummary();
     }
 
-    private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         StateHasChanged();
     }

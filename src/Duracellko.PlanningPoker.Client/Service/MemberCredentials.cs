@@ -8,11 +8,11 @@
         /// <summary>
         /// Gets or sets a name of team.
         /// </summary>
-        public string TeamName { get; set; }
+        public string TeamName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a name of member.
         /// </summary>
-        public string MemberName { get; set; }
+        public string MemberName { get; set; } = string.Empty;
     }
 }

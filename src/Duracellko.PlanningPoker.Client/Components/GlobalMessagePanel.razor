@@ -27,13 +27,13 @@
 {
     private ElementReference messageBoxElement;
 
-    private TaskCompletionSource<bool> _showMessageTask;
+    private TaskCompletionSource<bool>? _showMessageTask;
 
-    private string Message { get; set; }
+    private string Message { get; set; } = string.Empty;
 
-    private string Title { get; set; }
+    private string? Title { get; set; }
 
-    private string PrimaryButtonText { get; set; }
+    private string? PrimaryButtonText { get; set; }
 
     public void Dispose()
     {
@@ -46,7 +46,7 @@
         _messageBoxService.SetMessageHandler(ShowMessage);
     }
 
-    private Task<bool> ShowMessage(string message, string title, string primaryButton)
+    private Task<bool> ShowMessage(string message, string? title, string? primaryButton)
     {
         Message = message;
         Title = title;

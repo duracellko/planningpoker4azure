@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// Gets or sets message box service that is ised to display error to user.
         /// </summary>
         [Inject]
-        public IMessageBoxService MessageBox { get; set; }
+        public IMessageBoxService? MessageBox { get; set; }
 
         /// <summary>
         /// Executes specified action and, when an exception occures, it is displayed to user.
@@ -45,14 +45,17 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// </summary>
         /// <param name="exception">Exception with error to display.</param>
         /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
-        protected Task ShowError(Exception exception)
+        protected async Task ShowError(Exception exception)
         {
             if (exception == null)
             {
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            return MessageBox.ShowMessage(exception.Message, Resources.MessagePanel_Error);
+            if (MessageBox != null)
+            {
+                await MessageBox.ShowMessage(exception.Message, Resources.MessagePanel_Error);
+            }
         }
     }
 }

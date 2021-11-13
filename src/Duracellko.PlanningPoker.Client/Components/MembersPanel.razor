@@ -71,7 +71,7 @@
         return TryRun(() => Controller.DisconnectMember(member));
     }
 
-    private void ControllerOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         StateHasChanged();
     }

@@ -45,8 +45,10 @@ namespace Duracellko.PlanningPoker.Client.Service
         public HubConnection Build()
         {
             // Postpone obtaining URL, because NavigationManager can be initialized later.
+            var uri = _uriProvider.BaseUri != null ? new Uri(_uriProvider.BaseUri, ServiceUri) : new Uri(ServiceUri);
+
             var builder = new HubConnectionBuilder()
-                .WithUrl(new Uri(_uriProvider.BaseUri, ServiceUri))
+                .WithUrl(uri)
                 .AddNewtonsoftJsonProtocol()
                 .WithAutomaticReconnect(_reconnectDelays);
 

@@ -27,7 +27,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
-        public async Task<MemberCredentials> GetCredentialsAsync()
+        public async Task<MemberCredentials?> GetCredentialsAsync()
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <param name="credentials"><see cref="MemberCredentials"/> object to be saved.</param>
         /// <returns>Asynchronous operation.</returns>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
-        public async Task SetCredentialsAsync(MemberCredentials credentials)
+        public async Task SetCredentialsAsync(MemberCredentials? credentials)
         {
             try
             {
