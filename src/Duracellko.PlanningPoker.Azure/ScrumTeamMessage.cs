@@ -35,7 +35,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Gets or sets a name of team, which this message is related to.
         /// </summary>
         /// <value>The Scrum team name.</value>
-        public string TeamName { get; set; }
+        public string TeamName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a type of message sent by a Scrum team.

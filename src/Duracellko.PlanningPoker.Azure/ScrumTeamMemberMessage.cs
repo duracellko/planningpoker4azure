@@ -29,13 +29,13 @@ namespace Duracellko.PlanningPoker.Azure
         /// Gets or sets a name of member, which this message is related to.
         /// </summary>
         /// <value>The member name.</value>
-        public string MemberName { get; set; }
+        public string MemberName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a type of member.
         /// </summary>
         /// <value>The member type.</value>
-        public string MemberType { get; set; }
+        public string MemberType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets active session ID of the member.

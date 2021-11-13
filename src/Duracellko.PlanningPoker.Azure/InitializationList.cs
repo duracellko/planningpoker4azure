@@ -11,7 +11,7 @@ namespace Duracellko.PlanningPoker.Azure
     {
         private readonly StringComparer _comparer = StringComparer.OrdinalIgnoreCase;
         private readonly object _listLock = new object();
-        private List<string> _list;
+        private List<string>? _list;
 
         /// <summary>
         /// Gets a value indicating whether the initialization queue is empty.
@@ -36,13 +36,13 @@ namespace Duracellko.PlanningPoker.Azure
         /// <value>
         /// The values to initialize.
         /// </value>
-        public IList<string> Values
+        public IList<string>? Values
         {
             get
             {
                 lock (_listLock)
                 {
-                    return _list != null ? _list.ToList() : null;
+                    return _list?.ToList();
                 }
             }
         }

@@ -29,14 +29,14 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private readonly ConcurrentDictionary<string, DateTime> _nodes = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly ILogger<AzureServiceBus> _logger;
 
-        private volatile string _nodeId;
-        private string _connectionString;
-        private string _topicName;
-        private ServiceBusAdministrationClient _serviceBusAdministrationClient;
-        private ServiceBusClient _serviceBusClient;
-        private ServiceBusSender _serviceBusSender;
-        private ServiceBusProcessor _serviceBusProcessor;
-        private System.Timers.Timer _subscriptionsMaintenanceTimer;
+        private volatile string? _nodeId;
+        private string? _connectionString;
+        private string? _topicName;
+        private ServiceBusAdministrationClient? _serviceBusAdministrationClient;
+        private ServiceBusClient? _serviceBusClient;
+        private ServiceBusSender? _serviceBusSender;
+        private ServiceBusProcessor? _serviceBusProcessor;
+        private Timer? _subscriptionsMaintenanceTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureServiceBus"/> class.
@@ -64,13 +64,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <summary>
         /// Gets an observable object receiving messages from service bus.
         /// </summary>
-        public IObservable<NodeMessage> ObservableMessages
-        {
-            get
-            {
-                return _observableMessages;
-            }
-        }
+        public IObservable<NodeMessage> ObservableMessages => _observableMessages;
 
         /// <summary>
         /// Sends a message to service bus.
@@ -128,7 +122,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             _serviceBusClient = new ServiceBusClient(_connectionString);
             _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
 
-            await CreateSubscription();
+            await CreateSubscription(_topicName, _nodeId);
 
             await SendSubscriptionIsAliveMessage();
             _subscriptionsMaintenanceTimer = new System.Timers.Timer(Configuration.SubscriptionMaintenanceInterval.TotalMilliseconds);
@@ -208,22 +202,22 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             Dispose(false);
         }
 
-        private async Task CreateSubscription()
+        private async Task CreateSubscription(string topicName, string nodeId)
         {
             if (_serviceBusProcessor == null)
             {
-                await CreateTopicSubscription(_topicName, _nodeId);
+                await CreateTopicSubscription(topicName, nodeId);
 
                 var processorOptions = new ServiceBusProcessorOptions
                 {
                     AutoCompleteMessages = false
                 };
-                var serviceBusProcessor = _serviceBusClient.CreateProcessor(_topicName, _nodeId, processorOptions);
+                var serviceBusProcessor = _serviceBusClient!.CreateProcessor(_topicName, _nodeId, processorOptions);
                 serviceBusProcessor.ProcessMessageAsync += ReceiveMessage;
                 serviceBusProcessor.ProcessErrorAsync += ProcessError;
                 _serviceBusProcessor = serviceBusProcessor;
                 await serviceBusProcessor.StartProcessingAsync();
-                _logger.SubscriptionCreated(_topicName, _nodeId);
+                _logger.SubscriptionCreated(topicName, nodeId);
             }
         }
 
@@ -240,7 +234,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             var filter = new SqlRuleFilter(string.Format(CultureInfo.InvariantCulture, sqlPattern, senderIdPropertyName, recipientIdPropertyName, nodeId));
             var subscriptionRuleOptions = new CreateRuleOptions("RecipientFilter", filter);
 
-            return _serviceBusAdministrationClient.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
+            return _serviceBusAdministrationClient!.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
         }
 
         private async Task DeleteSubscription()
@@ -293,7 +287,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
-        private async void SubscriptionsMaintenanceTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private async void SubscriptionsMaintenanceTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             try
             {
@@ -317,11 +311,14 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "topicClient can be null, when constructor fails.")]
         private async Task SendSubscriptionIsAliveMessage()
         {
-            var message = new ServiceBusMessage();
-            message.ApplicationProperties[SubscriptionPingPropertyName] = DateTime.UtcNow;
-            message.ApplicationProperties[ServiceBus.MessageConverter.SenderIdPropertyName] = _nodeId;
-            await _serviceBusSender.SendMessageAsync(message);
-            _logger.SubscriptionAliveSent(_nodeId);
+            if (_serviceBusSender != null)
+            {
+                var message = new ServiceBusMessage();
+                message.ApplicationProperties[SubscriptionPingPropertyName] = DateTime.UtcNow;
+                message.ApplicationProperties[ServiceBus.MessageConverter.SenderIdPropertyName] = _nodeId;
+                await _serviceBusSender.SendMessageAsync(message);
+                _logger.SubscriptionAliveSent(_nodeId);
+            }
         }
 
         private async Task DeleteInactiveSubscriptions()
@@ -351,6 +348,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
         private async Task<IEnumerable<string>> GetTopicSubscriptions()
         {
+            if (_serviceBusAdministrationClient == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
             var subscriptions = await _serviceBusAdministrationClient.GetSubscriptionsAsync(_topicName).ToListAsync();
             return subscriptions.Select(s => s.SubscriptionName);
         }
@@ -358,6 +360,11 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Subscription will be deleted next time.")]
         private async Task DeleteSubscription(string name)
         {
+            if (_serviceBusAdministrationClient == null)
+            {
+                return;
+            }
+
             try
             {
                 var existsSubcription = await _serviceBusAdministrationClient.SubscriptionExistsAsync(_topicName, name);

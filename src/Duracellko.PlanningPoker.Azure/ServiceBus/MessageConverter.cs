@@ -42,7 +42,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             BinaryData messageBody;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
-                messageBody = ConvertToMessageBody((string)message.Data);
+                messageBody = ConvertToMessageBody((string)message.Data!);
             }
             else if (message.Data != null)
             {
@@ -78,7 +78,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
 
             var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.ApplicationProperties[MessageTypePropertyName]);
-            string messageSubtype = null;
+            string? messageSubtype = null;
             if (message.ApplicationProperties.TryGetValue(MessageSubtypePropertyName, out var messageSubtypeObject))
             {
                 messageSubtype = (string)messageSubtypeObject;
@@ -157,9 +157,9 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
-        private static T ConvertFromMessageBody<T>(BinaryData body)
+        private static T? ConvertFromMessageBody<T>(BinaryData body)
         {
-            T ReadData(TextReader reader)
+            T? ReadData(TextReader reader)
             {
                 var serializer = JsonSerializer.Create();
                 using (var jsonReader = new JsonTextReader(reader))
@@ -168,7 +168,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 }
             }
 
-            return ConvertFromMessageBody<T>(body, ReadData);
+            return ConvertFromMessageBody(body, ReadData);
         }
 
         private static string ConvertFromMessageBody(BinaryData body)
@@ -178,7 +178,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 return reader.ReadToEnd();
             }
 
-            return ConvertFromMessageBody<string>(body, ReadData);
+            return ConvertFromMessageBody(body, ReadData);
         }
 
         private static T ConvertFromMessageBody<T>(BinaryData body, Func<TextReader, T> readFunction)

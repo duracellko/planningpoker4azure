@@ -61,6 +61,15 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Planning Poker controller initialization must be started before initializing a scrum team..
+        /// </summary>
+        internal static string Error_InitializationIsNotStarted {
+            get {
+                return ResourceManager.GetString("Error_InitializationIsNotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
         /// </summary>
         internal static string Error_ScrumTeamAlreadyExists {
