@@ -47,8 +47,8 @@ namespace Duracellko.PlanningPoker.Azure
         public PlanningPokerAzureNode(
             IAzurePlanningPoker planningPoker,
             IServiceBus serviceBus,
-            IAzurePlanningPokerConfiguration configuration,
-            ScrumTeamSerializer scrumTeamSerializer,
+            IAzurePlanningPokerConfiguration? configuration,
+            ScrumTeamSerializer? scrumTeamSerializer,
             ILogger<PlanningPokerAzureNode> logger)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));

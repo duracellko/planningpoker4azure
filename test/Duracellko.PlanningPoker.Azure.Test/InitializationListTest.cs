@@ -177,14 +177,13 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Setup_Null_ArgumentNullException()
         {
             // Arrange
             var target = new InitializationList();
 
             // Act
-            target.Setup(null);
+            Assert.ThrowsException<ArgumentNullException>(() => target.Setup(null!));
         }
 
         [TestMethod]
@@ -198,6 +197,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.Remove("team2");
 
             // Verify
+            Assert.IsNotNull(target.Values);
             CollectionAssert.AreEquivalent(new string[] { "team1" }, target.Values.ToList());
             Assert.IsFalse(target.IsEmpty);
         }
@@ -213,6 +213,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.Remove("team2");
 
             // Verify
+            Assert.IsNotNull(target.Values);
             CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
             Assert.IsTrue(target.IsEmpty);
         }
@@ -242,6 +243,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.Remove("team3");
 
             // Verify
+            Assert.IsNotNull(target.Values);
             CollectionAssert.AreEquivalent(new string[] { "team1", "team2" }, target.Values.ToList());
             Assert.IsFalse(target.IsEmpty);
         }
@@ -272,6 +274,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsTrue(target.IsEmpty);
+            Assert.IsNotNull(target.Values);
             CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
         }
 
@@ -286,6 +289,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsTrue(target.IsEmpty);
+            Assert.IsNotNull(target.Values);
             CollectionAssert.AreEquivalent(Array.Empty<string>(), target.Values.ToList());
         }
     }

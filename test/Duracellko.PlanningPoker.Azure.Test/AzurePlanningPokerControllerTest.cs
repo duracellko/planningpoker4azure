@@ -100,7 +100,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
-            teamLock.Team.ScrumMaster.AcknowledgeMessages(guid, 2);
+            teamLock.Team.ScrumMaster!.AcknowledgeMessages(guid, 2);
             teamLock.Team.ScrumMaster.UpdateActivity();
             target.Dispose();
 
@@ -127,7 +127,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
-            teamLock.Team.ScrumMaster.StartEstimation();
+            teamLock.Team.ScrumMaster!.StartEstimation();
             target.Dispose();
 
             // Verify
@@ -144,7 +144,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
             var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
-            teamLock.Team.ScrumMaster.StartEstimation();
+            teamLock.Team.ScrumMaster!.StartEstimation();
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -165,7 +165,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.EndInitialization();
             var messages = new List<ScrumTeamMessage>();
             var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
-            teamLock.Team.ScrumMaster.StartEstimation();
+            teamLock.Team.ScrumMaster!.StartEstimation();
 
             // Act
             target.ObservableMessages.Subscribe(m => messages.Add(m));
@@ -196,6 +196,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Team);
             Assert.AreEqual<string>("test", result.Team.Name);
+            Assert.IsNotNull(result.Team.ScrumMaster);
             Assert.AreEqual<string>("master", result.Team.ScrumMaster.Name);
         }
 
@@ -222,7 +223,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateScrumteam_TeamNameIsInInitializationTeamList_ArgumentException()
         {
             // Arrange
@@ -230,11 +230,10 @@ namespace Duracellko.PlanningPoker.Azure.Test
             target.SetTeamsInitializingList(new string[] { "test" });
 
             // Act
-            target.CreateScrumTeam("test", "master", Deck.Standard);
+            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TimeoutException))]
         public void CreateScrumteam_InitializationTimeout_Exception()
         {
             // Arrange
@@ -242,7 +241,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController(configuration: configuration);
 
             // Act
-            target.CreateScrumTeam("test", "master", Deck.Standard);
+            Assert.ThrowsException<TimeoutException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
         }
 
         [TestMethod]
@@ -299,7 +298,6 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetScrumTeam_InitializationTimeout_ArgumentException()
         {
             // Arrange
@@ -307,7 +305,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController(configuration: configuration);
 
             // Act
-            target.GetScrumTeam("test team");
+            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("test team"));
         }
 
         [TestMethod]
@@ -363,7 +361,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             var team = new ScrumTeam("team");
             target.SetTeamsInitializingList(new string[] { "team" });
-            ScrumTeamMessage message = null;
+            ScrumTeamMessage? message = null;
             target.ObservableMessages.Subscribe(m => message = m);
 
             // Act
@@ -374,13 +372,13 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         private static AzurePlanningPokerController CreateAzurePlanningPokerController(
-            DateTimeProvider dateTimeProvider = null,
-            GuidProvider guidProvider = null,
-            DeckProvider deckProvider = null,
-            IAzurePlanningPokerConfiguration configuration = null,
-            IScrumTeamRepository repository = null,
-            TaskProvider taskProvider = null,
-            ILogger<Controllers.PlanningPokerController> logger = null)
+            DateTimeProvider? dateTimeProvider = null,
+            GuidProvider? guidProvider = null,
+            DeckProvider? deckProvider = null,
+            IAzurePlanningPokerConfiguration? configuration = null,
+            IScrumTeamRepository? repository = null,
+            TaskProvider? taskProvider = null,
+            ILogger<Controllers.PlanningPokerController>? logger = null)
         {
             if (logger == null)
             {
