@@ -9,7 +9,7 @@ namespace Duracellko.PlanningPoker.Test.Service
 {
     internal class HubCallerContextMock : HubCallerContext
     {
-        private string _connectionId;
+        private string _connectionId = string.Empty;
 
         public override CancellationToken ConnectionAborted => default(CancellationToken);
 
@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Test.Service
 
         public override IFeatureCollection Features => throw new NotImplementedException();
 
-        public override IDictionary<object, object> Items => throw new NotImplementedException();
+        public override IDictionary<object, object?> Items => throw new NotImplementedException();
 
         public override ClaimsPrincipal User => throw new NotImplementedException();
 

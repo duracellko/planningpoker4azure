@@ -9,7 +9,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
     public static class ScrumTeamAsserts
     {
         [SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Asserted using MS Test.")]
-        public static void AssertScrumTeamsAreEqual(ScrumTeam expected, ScrumTeam actual)
+        public static void AssertScrumTeamsAreEqual(ScrumTeam? expected, ScrumTeam? actual)
         {
             if (expected == null)
             {

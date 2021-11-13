@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Test.Data
     [TestClass]
     public class FileScrumTeamRepositoryTest
     {
-        private DirectoryInfo _rootFolder;
+        private DirectoryInfo? _rootFolder;
 
         // This property checks if '\' is invalid character and that is more important.
         // '\' is invalid on Windows and IsWindows seems more readable than IsBackslashInvalid.
@@ -30,8 +30,11 @@ namespace Duracellko.PlanningPoker.Test.Data
         [TestCleanup]
         public void Cleanup()
         {
-            _rootFolder.Delete(true);
-            _rootFolder = null;
+            if (_rootFolder != null)
+            {
+                _rootFolder.Delete(true);
+                _rootFolder = null;
+            }
         }
 
         [TestMethod]
@@ -41,7 +44,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             var result = target.Folder;
 
-            Assert.AreEqual(_rootFolder.FullName, result);
+            Assert.AreEqual(_rootFolder!.FullName, result);
         }
 
         [TestMethod]
@@ -111,7 +114,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.SaveScrumTeam(team);
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             Assert.AreEqual("The team.json", files[0].Name);
         }
@@ -129,7 +132,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.SaveScrumTeam(team);
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             Assert.AreEqual("The team.json", files[0].Name);
         }
@@ -145,7 +148,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             target.SaveScrumTeam(team1);
             target.SaveScrumTeam(team2);
 
-            var fileNames = _rootFolder.GetFiles().Select(f => f.Name).ToList();
+            var fileNames = _rootFolder!.GetFiles().Select(f => f.Name).ToList();
             var expectedFileNames = new[] { "The team.json", "Team2.json" };
         }
 
@@ -162,7 +165,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.SaveScrumTeam(team);
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             var expectedFileName = IsWindows ?
                 "My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json" :
@@ -240,7 +243,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.DeleteScrumTeam(team.Name);
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(0, files.Length);
         }
 
@@ -256,7 +259,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.DeleteScrumTeam("My \\?./ Team% \ud83d\ude0e *");
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             Assert.AreEqual("The team.json", files[0].Name);
         }
@@ -271,7 +274,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.DeleteScrumTeam("Team 2");
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             Assert.AreEqual("The team.json", files[0].Name);
         }
@@ -283,7 +286,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.DeleteScrumTeam("Team 2");
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(0, files.Length);
         }
 
@@ -299,7 +302,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
             target.DeleteAll();
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(0, files.Length);
         }
 
@@ -312,7 +315,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             var target = CreateFileScrumTeamRepository();
             target.DeleteAll();
 
-            var files = _rootFolder.GetFiles();
+            var files = _rootFolder!.GetFiles();
             Assert.AreEqual(1, files.Length);
             Assert.AreEqual("Team 1.txt", files[0].Name);
         }
@@ -322,7 +325,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             var team = new ScrumTeam(name);
             team.SetScrumMaster("master");
             team.Join("member", false);
-            team.ScrumMaster.StartEstimation();
+            team.ScrumMaster!.StartEstimation();
             team.ScrumMaster.Estimation = team.AvailableEstimations.First(e => e.Value == 5);
             return team;
         }
@@ -330,7 +333,7 @@ namespace Duracellko.PlanningPoker.Test.Data
         private FileScrumTeamRepository CreateFileScrumTeamRepository()
         {
             var settings = new Mock<IFileScrumTeamRepositorySettings>();
-            settings.SetupGet(o => o.Folder).Returns(_rootFolder.FullName);
+            settings.SetupGet(o => o.Folder).Returns(_rootFolder!.FullName);
 
             var configuration = new Mock<IPlanningPokerConfiguration>();
             configuration.SetupGet(o => o.RepositoryTeamExpiration).Returns(TimeSpan.FromMinutes(1));
@@ -344,7 +347,7 @@ namespace Duracellko.PlanningPoker.Test.Data
 
         private FileInfo CreateTextFile(string name)
         {
-            var path = Path.Join(_rootFolder.FullName, name);
+            var path = Path.Join(_rootFolder!.FullName, name);
             var result = new FileInfo(path);
             using (var writer = result.CreateText())
             {

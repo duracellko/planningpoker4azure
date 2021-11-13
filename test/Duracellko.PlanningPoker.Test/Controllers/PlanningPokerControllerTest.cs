@@ -278,7 +278,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController();
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.AttachScrumTeam(null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.AttachScrumTeam(null!));
         }
 
         [TestMethod]
@@ -374,7 +374,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController();
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null, default(CancellationToken)));
+            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null!, default(CancellationToken)));
         }
 
         [TestMethod]
@@ -389,7 +389,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 teamLock.Lock();
 
                 teamLock.Team.Join("member", false);
-                teamLock.Team.ScrumMaster.StartEstimation();
+                teamLock.Team.ScrumMaster!.StartEstimation();
 
                 // Act
                 var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default(CancellationToken));
@@ -424,7 +424,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             using (var teamLock = target.GetScrumTeam("team"))
             {
                 teamLock.Lock();
-                teamLock.Team.ScrumMaster.StartEstimation();
+                teamLock.Team.ScrumMaster!.StartEstimation();
             }
 
             Assert.IsTrue(messagesTask.IsCompleted);
@@ -451,7 +451,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                     teamLock.Lock();
 
                     // Act
-                    messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, cancellationToken.Token);
+                    messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, cancellationToken.Token);
                 }
 
                 cancellationToken.Cancel();
@@ -466,7 +466,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             // Arrange
             var waitForMessageTimeout = TimeSpan.FromSeconds(30);
-            var delayTask = new TaskCompletionSource<object>();
+            var delayTask = new TaskCompletionSource<object?>();
             var taskProvider = new Mock<TaskProvider>(MockBehavior.Strict);
             taskProvider.Setup(p => p.Delay(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
                 .Returns(delayTask.Task);
@@ -480,7 +480,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 teamLock.Lock();
 
                 // Act
-                messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default(CancellationToken));
+                messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, default(CancellationToken));
             }
 
             Assert.IsFalse(messagesTask.IsCompleted);
@@ -511,7 +511,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
-            team.ScrumMaster.UpdateActivity();
+            team.ScrumMaster!.UpdateActivity();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -539,7 +539,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
-            team.ScrumMaster.UpdateActivity();
+            team.ScrumMaster!.UpdateActivity();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -567,7 +567,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
-            team.ScrumMaster.UpdateActivity();
+            team.ScrumMaster!.UpdateActivity();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -595,7 +595,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
-            team.ScrumMaster.UpdateActivity();
+            team.ScrumMaster!.UpdateActivity();
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -631,13 +631,13 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         private static PlanningPokerController CreatePlanningPokerController(
-            DateTimeProvider dateTimeProvider = null,
-            GuidProvider guidProvider = null,
-            DeckProvider deckProvider = null,
-            Configuration.IPlanningPokerConfiguration configuration = null,
-            PlanningPoker.Data.IScrumTeamRepository repository = null,
-            TaskProvider taskProvider = null,
-            ILogger<PlanningPokerController> logger = null)
+            DateTimeProvider? dateTimeProvider = null,
+            GuidProvider? guidProvider = null,
+            DeckProvider? deckProvider = null,
+            Configuration.IPlanningPokerConfiguration? configuration = null,
+            PlanningPoker.Data.IScrumTeamRepository? repository = null,
+            TaskProvider? taskProvider = null,
+            ILogger<PlanningPokerController>? logger = null)
         {
             if (logger == null)
             {
