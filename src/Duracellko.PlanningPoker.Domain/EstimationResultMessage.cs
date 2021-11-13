@@ -11,28 +11,32 @@ namespace Duracellko.PlanningPoker.Domain
         /// Initializes a new instance of the <see cref="EstimationResultMessage"/> class.
         /// </summary>
         /// <param name="type">The message type.</param>
-        public EstimationResultMessage(MessageType type)
+        /// <param name="estimationResult">The estimation result associated to the message.</param>
+        public EstimationResultMessage(MessageType type, EstimationResult estimationResult)
             : base(type)
         {
+            EstimationResult = estimationResult;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EstimationResultMessage"/> class.
         /// </summary>
         /// <param name="messageData">Message serialization data.</param>
-        internal EstimationResultMessage(Serialization.MessageData messageData)
+        /// <param name="estimationResult">The estimation result associated to the message.</param>
+        internal EstimationResultMessage(Serialization.MessageData messageData, EstimationResult estimationResult)
             : base(messageData)
         {
+            EstimationResult = estimationResult;
         }
 
         /// <summary>
-        /// Gets or sets the estimation result associated to the message.
+        /// Gets the estimation result associated to the message.
         /// </summary>
         /// <value>
         /// The estimation result.
         /// </value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Message is sent to client and forgotten. Client can modify it as it wants.")]
-        public EstimationResult EstimationResult { get; set; }
+        public EstimationResult EstimationResult { get; }
 
         /// <summary>
         /// Gets serialization data of the object.

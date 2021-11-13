@@ -24,18 +24,18 @@
         /// Gets or sets an ID of sender.
         /// </summary>
         /// <value>The sender ID.</value>
-        public string SenderNodeId { get; set; }
+        public string? SenderNodeId { get; set; }
 
         /// <summary>
         /// Gets or sets an ID of recipient or null, if message is broadcasted to all nodes.
         /// </summary>
         /// <value>The recipient ID.</value>
-        public string RecipientNodeId { get; set; }
+        public string? RecipientNodeId { get; set; }
 
         /// <summary>
         /// Gets or sets a message data.
         /// </summary>
         /// <value>The message data.</value>
-        public object Data { get; set; }
+        public object? Data { get; set; }
     }
 }

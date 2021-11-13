@@ -11,13 +11,13 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Loads member credentials from the store.
         /// </summary>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
-        Task<MemberCredentials> GetCredentialsAsync();
+        Task<MemberCredentials?> GetCredentialsAsync();
 
         /// <summary>
         /// Saves member credentials into the store.
         /// </summary>
         /// <param name="credentials"><see cref="MemberCredentials"/> object to be saved.</param>
         /// <returns>Asynchronous operation.</returns>
-        Task SetCredentialsAsync(MemberCredentials credentials);
+        Task SetCredentialsAsync(MemberCredentials? credentials);
     }
 }

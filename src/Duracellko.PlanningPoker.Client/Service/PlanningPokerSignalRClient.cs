@@ -15,15 +15,15 @@ namespace Duracellko.PlanningPoker.Client.Service
     {
         private readonly IHubConnectionBuilder _hubConnectionBuilder;
 
-        private HubConnection _hubConnection;
+        private HubConnection? _hubConnection;
         private bool _disposed;
         private bool _disposeInProgress;
 
         private object _reconnectingLock = new object();
-        private TaskCompletionSource<bool> _reconnectingTask;
+        private TaskCompletionSource<bool>? _reconnectingTask;
 
         private object _getMessagesLock = new object();
-        private TaskCompletionSource<IList<Message>> _getMessagesTask;
+        private TaskCompletionSource<IList<Message>>? _getMessagesTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerSignalRClient"/> class.
@@ -48,8 +48,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                var result = await hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
 
                 ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
@@ -70,8 +70,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                var result = await hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
 
                 ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 return result;
@@ -94,8 +94,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                var result = await _hubConnection.InvokeAsync<ReconnectTeamResult>("ReconnectTeam", teamName, memberName, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                var result = await hubConnection.InvokeAsync<ReconnectTeamResult>("ReconnectTeam", teamName, memberName, cancellationToken);
 
                 ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
                 ScrumTeamMapper.ConvertEstimation(result.SelectedEstimation);
@@ -116,8 +116,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                await _hubConnection.InvokeAsync("DisconnectTeam", teamName, memberName, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("DisconnectTeam", teamName, memberName, cancellationToken);
             });
         }
 
@@ -133,8 +133,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                await _hubConnection.InvokeAsync("StartEstimation", teamName, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("StartEstimation", teamName, cancellationToken);
             });
         }
 
@@ -150,8 +150,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
-                await _hubConnection.InvokeAsync("CancelEstimation", teamName, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("CancelEstimation", teamName, cancellationToken);
             });
         }
 
@@ -174,8 +174,8 @@ namespace Duracellko.PlanningPoker.Client.Service
                     estimation = Estimation.PositiveInfinity;
                 }
 
-                await EnsureConnected(cancellationToken);
-                await _hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, estimation, cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, estimation, cancellationToken);
             });
         }
 
@@ -194,7 +194,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             return InvokeOperation(async () =>
             {
-                await EnsureConnected(cancellationToken);
+                var hubConnection = await EnsureConnected(cancellationToken);
 
                 try
                 {
@@ -211,7 +211,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                         getMessagesTask = _getMessagesTask.Task;
                     }
 
-                    await _hubConnection.InvokeAsync("GetMessages", teamName, memberName, sessionId, lastMessageId, cancellationToken);
+                    await hubConnection.InvokeAsync("GetMessages", teamName, memberName, sessionId, lastMessageId, cancellationToken);
 
                     var result = await getMessagesTask;
                     ScrumTeamMapper.ConvertMessages(result);
@@ -340,24 +340,29 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
         }
 
-        private async Task EnsureConnected(CancellationToken cancellationToken)
+        private async Task<HubConnection> EnsureConnected(CancellationToken cancellationToken)
         {
             CheckDisposed();
 
+            HubConnection hubConnection;
             if (_hubConnection == null)
             {
-                _hubConnection = _hubConnectionBuilder.Build();
-                _hubConnection.Closed += HubConnectionOnClosed;
-                _hubConnection.Reconnecting += HubConnectionOnReconnecting;
-                _hubConnection.Reconnected += HubConnectionOnReconnected;
-
-                _hubConnection.On<IList<Message>>("Notify", OnNotify);
+                hubConnection = _hubConnectionBuilder.Build();
+                hubConnection.Closed += HubConnectionOnClosed;
+                hubConnection.Reconnecting += HubConnectionOnReconnecting;
+                hubConnection.Reconnected += HubConnectionOnReconnected;
+                hubConnection.On<IList<Message>>("Notify", OnNotify);
+                _hubConnection = hubConnection;
+            }
+            else
+            {
+                hubConnection = _hubConnection;
             }
 
-            while (_hubConnection.State == HubConnectionState.Reconnecting)
+            while (hubConnection.State == HubConnectionState.Reconnecting)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                Task<bool> reconnectingTask = null;
+                Task<bool>? reconnectingTask = null;
                 lock (_reconnectingLock)
                 {
                     reconnectingTask = _reconnectingTask?.Task;
@@ -373,10 +378,12 @@ namespace Duracellko.PlanningPoker.Client.Service
                 }
             }
 
-            if (_hubConnection.State == HubConnectionState.Disconnected)
+            if (hubConnection.State == HubConnectionState.Disconnected)
             {
                 await _hubConnection.StartAsync(cancellationToken);
             }
+
+            return hubConnection;
         }
 
         private void CheckDisposed()
@@ -414,7 +421,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
         }
 
-        private Task HubConnectionOnClosed(Exception arg)
+        private Task HubConnectionOnClosed(Exception? arg)
         {
             var exception = arg ?? new InvalidOperationException();
             lock (_reconnectingLock)
@@ -431,7 +438,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             return Task.CompletedTask;
         }
 
-        private Task HubConnectionOnReconnecting(Exception arg)
+        private Task HubConnectionOnReconnecting(Exception? arg)
         {
             var exception = arg ?? new InvalidOperationException();
             lock (_reconnectingLock)
@@ -450,7 +457,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             return Task.CompletedTask;
         }
 
-        private Task HubConnectionOnReconnected(string arg)
+        private Task HubConnectionOnReconnected(string? arg)
         {
             lock (_reconnectingLock)
             {

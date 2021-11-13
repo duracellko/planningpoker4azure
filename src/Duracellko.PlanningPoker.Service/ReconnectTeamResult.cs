@@ -19,6 +19,6 @@
         /// <value>
         /// The selected estimation.
         /// </value>
-        public Estimation SelectedEstimation { get; set; }
+        public Estimation? SelectedEstimation { get; set; }
     }
 }

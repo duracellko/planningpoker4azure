@@ -20,17 +20,9 @@ namespace Duracellko.PlanningPoker.Azure
     public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IDisposable
     {
         private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
-        private HashSet<string> _teamsToInitialize;
+        private HashSet<string>? _teamsToInitialize;
         private object _teamsToInitializeLock = new object();
         private volatile bool _initialized;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
-        /// </summary>
-        public AzurePlanningPokerController()
-            : base()
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzurePlanningPokerController"/> class.
@@ -43,12 +35,12 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="taskProvider">The system tasks provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public AzurePlanningPokerController(
-            DateTimeProvider dateTimeProvider,
-            GuidProvider guidProvider,
-            DeckProvider deckProvider,
-            IAzurePlanningPokerConfiguration configuration,
-            IScrumTeamRepository repository,
-            TaskProvider taskProvider,
+            DateTimeProvider? dateTimeProvider,
+            GuidProvider? guidProvider,
+            DeckProvider? deckProvider,
+            IAzurePlanningPokerConfiguration? configuration,
+            IScrumTeamRepository? repository,
+            TaskProvider? taskProvider,
             ILogger<PlanningPokerController> logger)
             : base(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger)
         {
@@ -57,13 +49,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <summary>
         /// Gets an observable object sending messages from all Scrum teams.
         /// </summary>
-        public IObservable<ScrumTeamMessage> ObservableMessages
-        {
-            get
-            {
-                return _observableMessages;
-            }
-        }
+        public IObservable<ScrumTeamMessage> ObservableMessages => _observableMessages;
 
         /// <summary>
         /// Sets collection of Scrum team names, which exists in the Azure and need to be initialized in this node.
@@ -105,6 +91,11 @@ namespace Duracellko.PlanningPoker.Azure
                 {
                     if (!_initialized)
                     {
+                        if (_teamsToInitialize == null)
+                        {
+                            throw new InvalidOperationException(Resources.Error_InitializationIsNotStarted);
+                        }
+
                         _teamsToInitialize.Remove(team.Name);
                         if (_teamsToInitialize.Count == 0)
                         {
@@ -288,10 +279,10 @@ namespace Duracellko.PlanningPoker.Azure
             }
         }
 
-        private void ScrumTeamOnMessageReceived(object sender, MessageReceivedEventArgs e)
+        private void ScrumTeamOnMessageReceived(object? sender, MessageReceivedEventArgs e)
         {
-            var team = (ScrumTeam)sender;
-            ScrumTeamMessage scrumTeamMessage = null;
+            var team = (ScrumTeam)(sender ?? throw new ArgumentNullException(nameof(sender)));
+            ScrumTeamMessage? scrumTeamMessage = null;
 
             switch (e.Message.MessageType)
             {

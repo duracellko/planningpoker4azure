@@ -69,7 +69,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             try
             {
-                TeamResult teamResult = null;
+                TeamResult? teamResult = null;
                 using (_busyIndicatorService.Show())
                 {
                     teamResult = await _planningPokerService.CreateTeam(teamName, scrumMasterName, deck, CancellationToken.None);
@@ -78,7 +78,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (teamResult != null)
                 {
                     await _planningPokerInitializer.InitializeTeam(teamResult, scrumMasterName);
-                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam, scrumMasterName);
+                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam!, scrumMasterName);
                     return true;
                 }
             }

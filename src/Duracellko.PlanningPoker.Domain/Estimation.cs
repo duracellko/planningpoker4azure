@@ -37,7 +37,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <returns>
         ///   <c>True</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != typeof(Estimation))
             {
@@ -63,7 +63,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </summary>
         /// <param name="other">The other Estimation to compare with.</param>
         /// <returns><c>True</c> if the specified Estimation is equal to this instance; otherwise, <c>false</c>.</returns>
-        public bool Equals(Estimation other)
+        public bool Equals(Estimation? other)
         {
             return other != null ? Value == other.Value : false;
         }

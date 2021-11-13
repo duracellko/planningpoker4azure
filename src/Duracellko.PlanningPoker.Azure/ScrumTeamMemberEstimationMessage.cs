@@ -28,7 +28,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Gets or sets a name of member, which this message is related to.
         /// </summary>
         /// <value>The member name.</value>
-        public string MemberName { get; set; }
+        public string MemberName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a member's estimation.

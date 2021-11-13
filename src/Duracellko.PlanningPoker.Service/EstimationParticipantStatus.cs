@@ -11,7 +11,7 @@
         /// <value>
         /// The name of the member.
         /// </value>
-        public string MemberName { get; set; }
+        public string MemberName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether this participant submitted an estimate already.

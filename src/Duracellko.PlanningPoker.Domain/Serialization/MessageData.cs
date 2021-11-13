@@ -21,12 +21,12 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// <summary>
         /// Gets or sets member name, when type of message is Member Message.
         /// </summary>
-        public string MemberName { get; set; }
+        public string? MemberName { get; set; }
 
         /// <summary>
         /// Gets or sets the estimation result, when type of message is Estimation Result Message.
         /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-        public IDictionary<string, Estimation> EstimationResult { get; set; }
+        public IDictionary<string, Estimation?>? EstimationResult { get; set; }
     }
 }

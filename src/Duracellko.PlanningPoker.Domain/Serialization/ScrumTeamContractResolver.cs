@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
             return result;
         }
 
-        private static object CreateEstimation(params object[] args)
+        private static object CreateEstimation(params object?[] args)
         {
             return new Estimation((double?)args[0]);
         }

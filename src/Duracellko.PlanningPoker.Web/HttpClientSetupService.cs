@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Web
         private void ConfigureHttpClient()
         {
             var serverAddresses = _server.Features.Get<IServerAddressesFeature>();
-            var address = serverAddresses.Addresses.FirstOrDefault();
+            var address = serverAddresses?.Addresses.FirstOrDefault();
             if (address == null)
             {
                 // Default ASP.NET Core Kestrel endpoint

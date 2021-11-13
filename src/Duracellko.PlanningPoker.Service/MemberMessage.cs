@@ -11,6 +11,6 @@
         /// <value>
         /// The team member.
         /// </value>
-        public TeamMember Member { get; set; }
+        public TeamMember? Member { get; set; }
     }
 }

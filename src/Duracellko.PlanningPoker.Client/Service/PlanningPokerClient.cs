@@ -222,7 +222,10 @@ namespace Duracellko.PlanningPoker.Client.Service
                             var content = await response.Content.ReadAsStringAsync(cancellationToken);
                             throw new PlanningPokerException(content);
                         }
-                        else if (!response.IsSuccessStatusCode)
+
+                        response.EnsureSuccessStatusCode();
+
+                        if (response.Content == null)
                         {
                             throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                         }
@@ -234,7 +237,8 @@ namespace Duracellko.PlanningPoker.Client.Service
                                 using (var jsonReader = new JsonTextReader(textReader))
                                 {
                                     var serializer = JsonSerializer.CreateDefault();
-                                    return serializer.Deserialize<T>(jsonReader);
+                                    var result = serializer.Deserialize<T>(jsonReader);
+                                    return result ?? throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                                 }
                             }
                         }

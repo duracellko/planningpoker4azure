@@ -58,7 +58,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <summary>
         /// Occurs when a new message is received.
         /// </summary>
-        public event EventHandler MessageReceived;
+        public event EventHandler? MessageReceived;
 
         /// <summary>
         /// Gets the Scrum team, the member is joined to.
@@ -233,23 +233,13 @@ namespace Duracellko.PlanningPoker.Domain
                 case MessageType.MemberJoined:
                 case MessageType.MemberDisconnected:
                 case MessageType.MemberEstimated:
-                    var member = Team.FindMemberOrObserver(messageData.MemberName);
-                    if (member == null)
-                    {
-                        member = new Member(Team, messageData.MemberName);
-                    }
-
-                    return new MemberMessage(messageData)
-                    {
-                        Member = member
-                    };
+                    var memberName = messageData.MemberName!;
+                    var member = Team.FindMemberOrObserver(memberName) ?? new Member(Team, memberName);
+                    return new MemberMessage(messageData, member);
                 case MessageType.EstimationEnded:
-                    var estimationResult = new EstimationResult(Team, messageData.EstimationResult);
+                    var estimationResult = new EstimationResult(Team, messageData.EstimationResult!);
                     estimationResult.SetReadOnly();
-                    return new EstimationResultMessage(messageData)
-                    {
-                        EstimationResult = estimationResult
-                    };
+                    return new EstimationResultMessage(messageData, estimationResult);
                 default:
                     throw new ArgumentException($"Invalid message type {messageData.MessageType}.", nameof(messageData));
             }

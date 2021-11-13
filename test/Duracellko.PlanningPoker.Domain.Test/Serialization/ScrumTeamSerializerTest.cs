@@ -46,18 +46,6 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         }
 
         [TestMethod]
-        public void SerializeAndDeserialize_WithoutAvailableEstimations_CopyOfTheTeam()
-        {
-            // Arrange
-            var team = new ScrumTeam("test");
-            team.SetScrumMaster("master");
-
-            // Act
-            // Verify
-            VerifySerialization(team, removeAvailableEstimations: true);
-        }
-
-        [TestMethod]
         public void SerializeAndDeserialize_TeamWithScrumMaster_CopyOfTheTeam()
         {
             // Arrange
@@ -256,17 +244,9 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             Assert.AreEqual(lastMessage.Id + 1, message.Id);
         }
 
-        private static ScrumTeam VerifySerialization(ScrumTeam scrumTeam, bool removeAvailableEstimations = false)
+        private static ScrumTeam VerifySerialization(ScrumTeam scrumTeam)
         {
             var json = SerializeTeam(scrumTeam);
-
-            if (removeAvailableEstimations)
-            {
-                var data = JObject.Parse(json.ToString());
-                data.Remove(nameof(ScrumTeamData.AvailableEstimations));
-                json = data.ToString();
-            }
-
             var result = DeserializeTeam(json);
             ScrumTeamAsserts.AssertScrumTeamsAreEqual(scrumTeam, result);
             return result;

@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             private readonly IPlanningPokerClient _planningPokerClient;
 
             [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "CancellationToken is disposed, when task ends.")]
-            private CancellationTokenSource _cancellationTokenSource;
+            private CancellationTokenSource? _cancellationTokenSource;
 
             public MessageController(PlanningPokerController planningPokerController, IPlanningPokerClient planningPokerClient)
             {
@@ -88,6 +88,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             private async Task<bool> ReceiveMessages(CancellationToken cancellationToken)
             {
+                if (_planningPokerController.TeamName == null || _planningPokerController.User == null)
+                {
+                    throw new TaskCanceledException();
+                }
+
                 try
                 {
                     var messages = await _planningPokerClient.GetMessages(

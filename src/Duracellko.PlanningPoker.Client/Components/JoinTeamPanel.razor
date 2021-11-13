@@ -43,10 +43,10 @@
 @code
 {
     [Parameter]
-    public string TeamName { get; set; }
+    public string? TeamName { get; set; }
 
     [Parameter]
-    public string MemberName { get; set; }
+    public string? MemberName { get; set; }
 
     private bool AsObserver { get; set; }
 
@@ -58,7 +58,7 @@
     {
         base.OnParametersSet();
 
-        if (!string.IsNullOrEmpty(MemberName))
+        if (!string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(MemberName))
         {
             try
             {

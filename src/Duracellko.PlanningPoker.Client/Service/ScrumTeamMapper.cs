@@ -15,16 +15,19 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Converts estimation values in Scrum Team.
         /// </summary>
         /// <param name="scrumTeam">The Scrum Team to convert.</param>
-        public static void ConvertScrumTeam(ScrumTeam scrumTeam)
+        public static void ConvertScrumTeam(ScrumTeam? scrumTeam)
         {
-            if (scrumTeam.AvailableEstimations != null)
+            if (scrumTeam != null)
             {
-                ConvertEstimations(scrumTeam.AvailableEstimations);
-            }
+                if (scrumTeam.AvailableEstimations != null)
+                {
+                    ConvertEstimations(scrumTeam.AvailableEstimations);
+                }
 
-            if (scrumTeam.EstimationResult != null)
-            {
-                ConvertEstimations(scrumTeam.EstimationResult);
+                if (scrumTeam.EstimationResult != null)
+                {
+                    ConvertEstimations(scrumTeam.EstimationResult);
+                }
             }
         }
 
@@ -32,7 +35,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Convert estimation value.
         /// </summary>
         /// <param name="estimation">The estimation to convert.</param>
-        public static void ConvertEstimation(Estimation estimation)
+        public static void ConvertEstimation(Estimation? estimation)
         {
             if (estimation != null && estimation.Value == Estimation.PositiveInfinity)
             {

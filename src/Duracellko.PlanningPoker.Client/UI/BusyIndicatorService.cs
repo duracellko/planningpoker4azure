@@ -7,7 +7,7 @@ namespace Duracellko.PlanningPoker.Client.UI
     /// </summary>
     public class BusyIndicatorService : IBusyIndicatorService
     {
-        private Action<bool> _handler;
+        private Action<bool>? _handler;
         private int _counter;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Duracellko.PlanningPoker.Client.UI
         /// Setup handler function that shows or hides busy indicator in Blazor component.
         /// </summary>
         /// <param name="handler">Handler delegate to show or hide busy indicator.</param>
-        public void SetBusyIndicatorHandler(Action<bool> handler)
+        public void SetBusyIndicatorHandler(Action<bool>? handler)
         {
             _handler = handler;
         }

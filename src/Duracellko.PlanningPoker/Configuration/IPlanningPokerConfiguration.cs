@@ -31,7 +31,7 @@ namespace Duracellko.PlanningPoker.Configuration
         /// <value>
         /// The repository folder.
         /// </value>
-        string RepositoryFolder { get; }
+        string? RepositoryFolder { get; }
 
         /// <summary>
         /// Gets the time, after which team (file) is deleted from repository when it is not used.

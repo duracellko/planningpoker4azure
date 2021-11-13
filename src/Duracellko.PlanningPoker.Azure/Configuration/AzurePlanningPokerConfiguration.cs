@@ -12,13 +12,13 @@ namespace Duracellko.PlanningPoker.Azure.Configuration
         /// Gets or sets a connection string to Azure ServiceBus.
         /// </summary>
         /// <value>ServiceBus connection string.</value>
-        public string ServiceBusConnectionString { get; set; }
+        public string? ServiceBusConnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets a topic for communication on Azure ServiceBus.
         /// </summary>
         /// <value>ServiceBus topic name.</value>
-        public string ServiceBusTopic { get; set; }
+        public string? ServiceBusTopic { get; set; }
 
         /// <summary>
         /// Gets or sets a time in seconds to wait for end of initialization phase.

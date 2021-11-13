@@ -11,7 +11,7 @@ namespace Duracellko.PlanningPoker.Domain
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Fields are placed near properties.")]
     public class Member : Observer
     {
-        private Estimation _estimation;
+        private Estimation? _estimation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Member"/> class.
@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <value>
         /// The estimation.
         /// </value>
-        public Estimation Estimation
+        public Estimation? Estimation
         {
             get
             {

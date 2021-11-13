@@ -20,13 +20,13 @@
 
 @functions
 {
-    private IDisposable _messageController;
+    private IDisposable? _messageController;
 
     [Parameter]
-    public string TeamName { get; set; }
+    public string? TeamName { get; set; }
 
     [Parameter]
-    public string MemberName { get; set; }
+    public string? MemberName { get; set; }
 
     public void Dispose()
     {
