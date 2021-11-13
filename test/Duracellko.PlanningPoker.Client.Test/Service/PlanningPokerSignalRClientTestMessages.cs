@@ -30,7 +30,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0L };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
@@ -61,7 +61,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
             await fixture.ReceiveMessage(notifyMessage);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
@@ -189,10 +189,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(message, result[0]);
             var estimationResult = ((EstimationResultMessage)result[0]).EstimationResult;
-            Assert.AreEqual(2.0, estimationResult[0].Estimation.Value);
-            Assert.IsNull(estimationResult[1].Estimation.Value);
+            Assert.AreEqual(2.0, estimationResult[0].Estimation!.Value);
+            Assert.IsNull(estimationResult[1].Estimation!.Value);
             Assert.IsNull(estimationResult[2].Estimation);
-            Assert.IsTrue(double.IsPositiveInfinity(estimationResult[3].Estimation.Value.Value));
+            Assert.IsTrue(double.IsPositiveInfinity(estimationResult[3].Estimation!.Value!.Value));
         }
 
         [TestMethod]
@@ -241,8 +241,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             Assert.AreEqual(estimationEndedMessage, result[2]);
 
             var estimationResult = ((EstimationResultMessage)result[2]).EstimationResult;
-            Assert.AreEqual(5.0, estimationResult[0].Estimation.Value);
-            Assert.AreEqual(40.0, estimationResult[1].Estimation.Value);
+            Assert.AreEqual(5.0, estimationResult[0].Estimation!.Value);
+            Assert.AreEqual(40.0, estimationResult[1].Estimation!.Value);
         }
 
         private static async Task ProvideMessages(PlanningPokerSignalRClientFixture fixture, params Message[] messages)
@@ -255,7 +255,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0L };
             CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId, null, null, false);
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             var notifyMessage = new InvocationMessage(ResponseName, new object[] { messages.ToList() });

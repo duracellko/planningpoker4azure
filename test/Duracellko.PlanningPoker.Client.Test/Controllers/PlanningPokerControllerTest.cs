@@ -16,7 +16,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     [TestClass]
     public class PlanningPokerControllerTest
     {
-        private CultureInfo _originalCultureInfo;
+        private CultureInfo? _originalCultureInfo;
 
         [TestInitialize]
         public void TestInitialize()
@@ -56,6 +56,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(sessionId, target.SessionId);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
+            Assert.IsNotNull(target.User);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.User.Name);
             Assert.AreEqual(PlanningPokerData.ScrumMasterType, target.User.Type);
             Assert.IsTrue(target.IsScrumMaster);
@@ -74,6 +75,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(sessionId, target.SessionId);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
+            Assert.IsNotNull(target.User);
             Assert.AreEqual(PlanningPokerData.MemberName, target.User.Name);
             Assert.AreEqual(PlanningPokerData.MemberType, target.User.Type);
             Assert.IsFalse(target.IsScrumMaster);
@@ -92,6 +94,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(sessionId, target.SessionId);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
+            Assert.IsNotNull(target.User);
             Assert.AreEqual(PlanningPokerData.MemberName, target.User.Name);
             Assert.AreEqual(PlanningPokerData.MemberType, target.User.Type);
             Assert.IsFalse(target.IsScrumMaster);
@@ -110,6 +113,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(sessionId, target.SessionId);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
+            Assert.IsNotNull(target.User);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.User.Name);
             Assert.AreEqual(PlanningPokerData.ScrumMasterType, target.User.Type);
             Assert.IsTrue(target.IsScrumMaster);
@@ -128,6 +132,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(scrumTeam, target.ScrumTeam);
             Assert.AreEqual(sessionId, target.SessionId);
             Assert.AreEqual(PlanningPokerData.TeamName, target.TeamName);
+            Assert.IsNotNull(target.User);
             Assert.AreEqual(PlanningPokerData.ObserverName, target.User.Name);
             Assert.AreEqual(PlanningPokerData.ObserverType, target.User.Type);
             Assert.IsFalse(target.IsScrumMaster);
@@ -157,6 +162,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName);
 
             Assert.AreEqual(teamResult.SessionId, target.SessionId);
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
             Assert.IsFalse(target.ScrumMaster.HasEstimated);
         }
@@ -207,8 +213,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task InitializeTeam_ScrumTeamWithMembersSetToNull_MembersAndObserversAreSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();
-            scrumTeam.Members = null;
-            scrumTeam.Observers = null;
+            scrumTeam.Members = null!;
+            scrumTeam.Observers = null!;
             var teamResult = CreateTeamResult(scrumTeam);
             var target = CreateController();
 
@@ -217,7 +223,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(teamResult.SessionId, target.SessionId);
             CollectionAssert.AreEqual(Array.Empty<string>(), target.Members.ToList());
             CollectionAssert.AreEqual(Array.Empty<string>(), target.Observers.ToList());
-            Assert.IsNotNull(target.ScrumTeam.Members);
+            Assert.IsNotNull(target.ScrumTeam?.Members);
             Assert.AreEqual(0, target.ScrumTeam.Members.Count);
             Assert.IsNotNull(target.ScrumTeam.Observers);
             Assert.AreEqual(0, target.ScrumTeam.Observers.Count);
@@ -445,6 +451,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
 
@@ -531,6 +538,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
 
@@ -624,6 +632,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
 
@@ -714,6 +723,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
 
@@ -768,6 +778,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(0, target.Estimations.Count());
         }
 
@@ -806,6 +817,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoObserverHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(3, estimations.Count);
 
@@ -824,6 +836,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(estimation.HasEstimation);
             Assert.IsNull(estimation.Estimation);
 
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.IsTrue(target.ScrumMaster.HasEstimated);
             AssertMemberHasEstimated(target, "Tester", false);
             AssertMemberHasEstimated(target, "Developer 1", true);
@@ -856,6 +869,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(0, target.Estimations.Count());
         }
 
@@ -946,6 +960,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.IsConnected);
             AssertNoObserverHasEstimated(target);
 
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.IsFalse(target.ScrumMaster.HasEstimated);
             AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
         }
@@ -998,7 +1013,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task InitializeTeam_ScrumTeam_SetCredentialsAsync()
         {
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            MemberCredentials memberCredentials = null;
+            MemberCredentials? memberCredentials = null;
             memberCredentialsStore.Setup(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()))
                 .Callback<MemberCredentials>(c => memberCredentials = c)
                 .Returns(Task.CompletedTask);
@@ -1018,7 +1033,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task InitializeTeam_ReconnectTeamResult_SetCredentialsAsync()
         {
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            MemberCredentials memberCredentials = null;
+            MemberCredentials? memberCredentials = null;
             memberCredentialsStore.Setup(o => o.SetCredentialsAsync(It.IsAny<MemberCredentials>()))
                 .Callback<MemberCredentials>(c => memberCredentials = c)
                 .Returns(Task.CompletedTask);
@@ -1157,7 +1172,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
             await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName);
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(null));
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(null!));
         }
 
         [TestMethod]
@@ -1465,6 +1480,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             if (!skipScrumMaster)
             {
+                Assert.IsNotNull(controller.ScrumMaster);
                 Assert.IsFalse(controller.ScrumMaster.HasEstimated);
             }
 
@@ -1491,9 +1507,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         private static PlanningPokerController CreateController(
-            IPlanningPokerClient planningPokerClient = null,
-            IBusyIndicatorService busyIndicator = null,
-            IMemberCredentialsStore memberCredentialsStore = null)
+            IPlanningPokerClient? planningPokerClient = null,
+            IBusyIndicatorService? busyIndicator = null,
+            IMemberCredentialsStore? memberCredentialsStore = null)
         {
             if (planningPokerClient == null)
             {

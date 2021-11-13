@@ -4,11 +4,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 {
     public class PropertyChangedCounter
     {
-        private INotifyPropertyChanged _target;
+        private INotifyPropertyChanged? _target;
 
         public int Count { get; set; }
 
-        public INotifyPropertyChanged Target
+        public INotifyPropertyChanged? Target
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             }
         }
 
-        private void TargetOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void TargetOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             Count++;
         }

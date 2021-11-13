@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     [TestClass]
     public class PlanningPokerControllerTestMessages
     {
-        private CultureInfo _originalCultureInfo;
+        private CultureInfo? _originalCultureInfo;
 
         [TestInitialize]
         public void TestInitialize()
@@ -101,7 +101,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
-            scrumTeam.Observers = null;
+            scrumTeam.Observers = null!;
             scrumTeam.State = TeamState.EstimationFinished;
             var target = CreateController(propertyChangedCounter);
             await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
@@ -227,6 +227,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(0, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
             var expectedMembers = new string[] { "New member" };
             CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
@@ -257,6 +258,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(1, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
             var expectedMembers = new string[] { PlanningPokerData.MemberName };
             CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
@@ -288,6 +290,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(0, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
             var expectedMembers = new string[] { PlanningPokerData.MemberName };
             CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
@@ -313,6 +316,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(1, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationInProgress, target.ScrumTeam.State);
             Assert.IsTrue(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -340,6 +344,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(2, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationInProgress, target.ScrumTeam.State);
             Assert.IsTrue(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -367,6 +372,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(3, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationInProgress, target.ScrumTeam.State);
             Assert.IsTrue(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -394,6 +400,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(1, propertyChangedCounter.Count);
             Assert.AreEqual(4, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationCanceled, target.ScrumTeam.State);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.CanStartEstimation);
@@ -432,12 +439,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
 
+            Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(1, target.Estimations.Count());
             var estimation = target.Estimations.First();
             Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
             Assert.IsFalse(estimation.HasEstimation);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.IsFalse(target.ScrumMaster.HasEstimated);
             PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
         }
@@ -472,11 +481,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(1, target.Estimations.Count());
             var estimation = target.Estimations.First();
             Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
             Assert.IsFalse(estimation.HasEstimation);
 
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.IsTrue(target.ScrumMaster.HasEstimated);
             PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, false);
         }
@@ -521,6 +532,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(2, estimations.Count);
             var estimation = estimations[0];
@@ -530,6 +542,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
             Assert.IsFalse(estimation.HasEstimation);
 
+            Assert.IsNotNull(target.ScrumMaster);
             Assert.IsTrue(target.ScrumMaster.HasEstimated);
             PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
         }
@@ -637,6 +650,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(7, propertyChangedCounter.Count);
             Assert.AreEqual(10, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationFinished, target.ScrumTeam.State);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsTrue(target.CanStartEstimation);
@@ -645,6 +659,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
 
@@ -723,6 +738,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(2, propertyChangedCounter.Count);
             Assert.AreEqual(10, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationFinished, target.ScrumTeam.State);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -731,6 +747,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(5, estimations.Count);
 
@@ -816,6 +833,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(2, propertyChangedCounter.Count);
             Assert.AreEqual(10, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationFinished, target.ScrumTeam.State);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -824,6 +842,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
 
@@ -914,6 +933,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             Assert.AreEqual(2, propertyChangedCounter.Count);
             Assert.AreEqual(10, target.LastMessageId);
+            Assert.IsNotNull(target.ScrumTeam);
             Assert.AreEqual(TeamState.EstimationFinished, target.ScrumTeam.State);
             Assert.IsFalse(target.CanSelectEstimation);
             Assert.IsFalse(target.CanStartEstimation);
@@ -922,6 +942,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
+            Assert.IsNotNull(target.Estimations);
             var estimations = target.Estimations.ToList();
             Assert.AreEqual(6, estimations.Count);
 
@@ -964,10 +985,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var target = CreateController(propertyChangedCounter);
             await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
 
-            Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null));
+            Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null!));
         }
 
-        private static PlanningPokerController CreateController(PropertyChangedCounter propertyChangedCounter = null)
+        private static PlanningPokerController CreateController(PropertyChangedCounter? propertyChangedCounter = null)
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
             var busyIndicator = new Mock<IBusyIndicatorService>();

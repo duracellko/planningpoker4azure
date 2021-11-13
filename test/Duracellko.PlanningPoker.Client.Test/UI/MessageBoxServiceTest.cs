@@ -38,7 +38,7 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             var handler = new MessageHandler();
             var target = CreateMessageBoxService(messageHandler: handler);
 
-            await target.ShowMessage(null, null);
+            await target.ShowMessage(null!, null);
 
             Assert.AreEqual(1, handler.Counter);
             Assert.IsNull(handler.Message);
@@ -121,7 +121,7 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             var handler = new MessageHandler();
             var target = CreateMessageBoxService(messageHandler: handler);
 
-            await target.ShowMessage(null, null, null);
+            await target.ShowMessage(null!, null, null);
 
             Assert.AreEqual(1, handler.Counter);
             Assert.IsNull(handler.Message);
@@ -179,10 +179,10 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             await result;
         }
 
-        private static MessageBoxService CreateMessageBoxService(MessageHandler messageHandler = null)
+        private static MessageBoxService CreateMessageBoxService(MessageHandler? messageHandler = null)
         {
             var result = new MessageBoxService();
-            result.SetMessageHandler(messageHandler != null ? messageHandler.HandleMessage : default(Func<string, string, string, Task<bool>>));
+            result.SetMessageHandler(messageHandler != null ? messageHandler.HandleMessage : default(Func<string, string?, string?, Task<bool>>));
             return result;
         }
 
@@ -190,17 +190,17 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
         {
             public bool Result { get; set; } = true;
 
-            public Task<bool> ResultTask { get; set; }
+            public Task<bool>? ResultTask { get; set; }
 
             public int Counter { get; private set; }
 
-            public string Message { get; private set; }
+            public string? Message { get; private set; }
 
-            public string Title { get; private set; }
+            public string? Title { get; private set; }
 
-            public string PrimaryButton { get; private set; }
+            public string? PrimaryButton { get; private set; }
 
-            public Task<bool> HandleMessage(string message, string title, string primaryButton)
+            public Task<bool> HandleMessage(string message, string? title, string? primaryButton)
             {
                 Counter++;
                 Message = message;

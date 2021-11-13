@@ -32,6 +32,6 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         public override IFeatureCollection Features { get; } = new FeatureCollection();
 
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Inherited property")]
-        public override IDictionary<object, object> Items { get; set; } = new ConnectionItems();
+        public override IDictionary<object, object?> Items { get; set; } = new ConnectionItems();
     }
 }

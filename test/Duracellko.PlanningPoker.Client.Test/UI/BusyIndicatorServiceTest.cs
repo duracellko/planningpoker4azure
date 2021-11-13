@@ -99,7 +99,7 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             result2.Dispose();
         }
 
-        private static BusyIndicatorService CreateBusyIndicatorService(BusyIndicatorHandler handler = null)
+        private static BusyIndicatorService CreateBusyIndicatorService(BusyIndicatorHandler? handler = null)
         {
             var result = new BusyIndicatorService();
             result.SetBusyIndicatorHandler(handler != null ? handler.SetVisibility : default(Action<bool>));

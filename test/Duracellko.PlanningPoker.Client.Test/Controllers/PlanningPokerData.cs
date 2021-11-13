@@ -107,7 +107,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
         }
 
-        public static TeamResult GetTeamResult(ScrumTeam scrumTeam = null)
+        public static TeamResult GetTeamResult(ScrumTeam? scrumTeam = null)
         {
             return new TeamResult
             {

@@ -14,8 +14,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         private readonly InMemoryTransport _transport;
         private readonly Lazy<HubConnection> _hubConnection;
 
-        private IServiceProvider _serviceProvider;
-        private ILoggerFactory _loggerFactory;
+        private IServiceProvider? _serviceProvider;
+        private ILoggerFactory? _loggerFactory;
 
         public MockHubConnection()
         {

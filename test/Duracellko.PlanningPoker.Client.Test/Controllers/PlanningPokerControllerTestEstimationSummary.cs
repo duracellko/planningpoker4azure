@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
@@ -15,10 +16,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_SingleEstimation_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_SingleEstimation_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 5 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -32,10 +33,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_11Estimations_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_11Estimations_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 13, 2, 5, 40, 8, 0, 1, 0.5, 20, 100, 3 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -49,15 +50,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_8Estimations_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_8Estimations_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 13, 2, 2, 0.5, 20, 0.5, 0.5, 0 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNotNull(target.EstimationSummary);
+            Assert.IsNotNull(target.EstimationSummary.Average);
             Assert.AreEqual(4.8125, target.EstimationSummary.Average.Value, 1E-15);
             Assert.AreEqual(1.25, target.EstimationSummary.Median);
             Assert.AreEqual(38.5, target.EstimationSummary.Sum);
@@ -66,15 +68,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_EstimationsWithNonNumericValues_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_EstimationsWithNonNumericValues_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { null, 0, 20, double.PositiveInfinity, 0.5, double.PositiveInfinity, null };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNotNull(target.EstimationSummary);
+            Assert.IsNotNull(target.EstimationSummary.Average);
             Assert.AreEqual(6.833333333333333, target.EstimationSummary.Average.Value, 1E-15);
             Assert.AreEqual(0.5, target.EstimationSummary.Median);
             Assert.AreEqual(20.5, target.EstimationSummary.Sum);
@@ -83,10 +86,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_MemberNotEstimated_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_MemberNotEstimated_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 20, double.NaN, 5, double.NaN };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -100,10 +103,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_EstimationsWithNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_EstimationsWithNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 13, -999509, 2, -999507, 8, -999505, 5, -999509, 20 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -117,10 +120,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_EstimationsWithOnlyNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_EstimationsWithOnlyNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { -999509, -999507, -999505, -999509 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -134,10 +137,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ShowEstimationSummary_StartNewEstimation_EstimationSummaryIsNull(bool useEstimationEndedMessage)
+        public async Task ShowEstimationSummary_StartNewEstimation_EstimationSummaryIsNull(bool useEstimationEndedMessage)
         {
             var estimations = new double?[] { 13, 2, 2, 0.5, 8, 0.5, 5, 0.5, 20 };
-            var target = CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
+            var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage);
 
             target.ShowEstimationSummary();
 
@@ -152,19 +155,19 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
         }
 
-        private static PlanningPokerController CreateControllerWithEstimations(IReadOnlyList<double?> estimations, bool useEstimationEndedMessage)
+        private static async Task<PlanningPokerController> CreateControllerWithEstimations(IReadOnlyList<double?> estimations, bool useEstimationEndedMessage)
         {
             if (useEstimationEndedMessage)
             {
-                return CreateControllerWithEstimations(estimations);
+                return await CreateControllerWithEstimations(estimations);
             }
             else
             {
-                return CreateControllerWithEstimationEndedMessage(estimations);
+                return await CreateControllerWithEstimationEndedMessage(estimations);
             }
         }
 
-        private static PlanningPokerController CreateControllerWithEstimations(IReadOnlyList<double?> estimations)
+        private static async Task<PlanningPokerController> CreateControllerWithEstimations(IReadOnlyList<double?> estimations)
         {
             var scrumTeam = GetScrumTeamWithEstimations(estimations);
             var teamResult = new TeamResult
@@ -180,11 +183,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             }
 
             var result = CreateController();
-            result.InitializeTeam(teamResult, memberName);
+            await result.InitializeTeam(teamResult, memberName);
             return result;
         }
 
-        private static PlanningPokerController CreateControllerWithEstimationEndedMessage(IReadOnlyList<double?> estimations)
+        private static async Task<PlanningPokerController> CreateControllerWithEstimationEndedMessage(IReadOnlyList<double?> estimations)
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam(estimations.Count - 1);
             var teamResult = new TeamResult
@@ -194,7 +197,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
 
             var controller = CreateController();
-            controller.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName);
 
             var estimationStartedMessage = new Message
             {
@@ -237,7 +240,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             {
                 Member = new TeamMember
                 {
-                    Name = scrumTeam.ScrumMaster.Name,
+                    Name = scrumTeam.ScrumMaster!.Name,
                     Type = scrumTeam.ScrumMaster.Type
                 },
                 Estimation = new Estimation

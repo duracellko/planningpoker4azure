@@ -37,7 +37,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             return Mock.ReceiveMessage(message, CancellationToken);
         }
 
-        public Task<HubMessage> GetSentMessage()
+        public Task<HubMessage?> GetSentMessage()
         {
             return SentMessages.GetNextAsync();
         }
