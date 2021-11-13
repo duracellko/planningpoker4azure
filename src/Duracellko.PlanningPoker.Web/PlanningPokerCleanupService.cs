@@ -16,7 +16,7 @@ namespace Duracellko.PlanningPoker.Web
         private readonly IScrumTeamRepository _teamRepository;
         private readonly IPlanningPokerConfiguration _configuration;
 
-        private System.Timers.Timer _cleanupTimer;
+        private System.Timers.Timer? _cleanupTimer;
 
         public PlanningPokerCleanupService(IPlanningPoker planningPoker, IScrumTeamRepository teamRepository, IPlanningPokerConfiguration configuration)
         {
@@ -51,7 +51,7 @@ namespace Duracellko.PlanningPoker.Web
             }
         }
 
-        private void CleanupTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void CleanupTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             DisconnectInactiveMembers();
             DeleteExpiredScrumTeams();

@@ -35,12 +35,12 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="taskProvider">The system tasks provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public AzurePlanningPokerController(
-            DateTimeProvider dateTimeProvider,
-            GuidProvider guidProvider,
-            DeckProvider deckProvider,
-            IAzurePlanningPokerConfiguration configuration,
-            IScrumTeamRepository repository,
-            TaskProvider taskProvider,
+            DateTimeProvider? dateTimeProvider,
+            GuidProvider? guidProvider,
+            DeckProvider? deckProvider,
+            IAzurePlanningPokerConfiguration? configuration,
+            IScrumTeamRepository? repository,
+            TaskProvider? taskProvider,
             ILogger<PlanningPokerController> logger)
             : base(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger)
         {

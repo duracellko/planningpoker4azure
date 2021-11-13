@@ -33,12 +33,12 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="taskProvider">The system tasks provider.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public PlanningPokerController(
-            DateTimeProvider dateTimeProvider,
-            GuidProvider guidProvider,
-            DeckProvider deckProvider,
-            IPlanningPokerConfiguration configuration,
-            IScrumTeamRepository repository,
-            TaskProvider taskProvider,
+            DateTimeProvider? dateTimeProvider,
+            GuidProvider? guidProvider,
+            DeckProvider? deckProvider,
+            IPlanningPokerConfiguration? configuration,
+            IScrumTeamRepository? repository,
+            TaskProvider? taskProvider,
             ILogger<PlanningPokerController> logger)
         {
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
