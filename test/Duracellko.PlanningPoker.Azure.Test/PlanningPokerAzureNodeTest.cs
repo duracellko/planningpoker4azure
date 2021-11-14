@@ -1122,8 +1122,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             var serializer = new ScrumTeamSerializer(
                 dateTimeProvider ?? new DateTimeProviderMock(),
-                guidProvider ?? new GuidProviderMock(),
-                DeckProvider.Default);
+                guidProvider ?? new GuidProviderMock());
 
             return new PlanningPokerAzureNode(planningPoker, serviceBus, configuration, serializer, logger);
         }

@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Data
 {
@@ -47,7 +47,7 @@ namespace Duracellko.PlanningPoker.Data
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _configuration = configuration ?? new PlanningPokerConfiguration();
-            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider, guidProvider, DeckProvider.Default);
+            _scrumTeamSerializer = scrumTeamSerializer ?? new ScrumTeamSerializer(dateTimeProvider, guidProvider);
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _folder = new Lazy<string>(GetFolder);
             _invalidCharacters = new Lazy<char[]>(GetInvalidCharacters);
@@ -117,9 +117,9 @@ namespace Duracellko.PlanningPoker.Data
             {
                 try
                 {
-                    using (var reader = File.OpenText(file))
+                    using (var stream = File.OpenRead(file))
                     {
-                        result = _scrumTeamSerializer.Deserialize(reader);
+                        result = _scrumTeamSerializer.Deserialize(stream);
                     }
                 }
                 catch (IOException)
@@ -127,7 +127,7 @@ namespace Duracellko.PlanningPoker.Data
                     // file is not accessible
                     result = null;
                 }
-                catch (JsonReaderException)
+                catch (JsonException)
                 {
                     // file is currupted
                     result = null;
@@ -158,9 +158,9 @@ namespace Duracellko.PlanningPoker.Data
             string file = GetFileName(team.Name);
             file = Path.Combine(Folder, file);
 
-            using (var writer = File.CreateText(file))
+            using (var stream = File.Create(file))
             {
-                _scrumTeamSerializer.Serialize(writer, team);
+                _scrumTeamSerializer.Serialize(stream, team);
             }
 
             _logger.SaveScrumTeam(team.Name);
