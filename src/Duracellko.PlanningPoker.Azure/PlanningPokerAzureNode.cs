@@ -21,6 +21,7 @@ namespace Duracellko.PlanningPoker.Azure
     public class PlanningPokerAzureNode : IDisposable
     {
         private const string DeletedTeamPrefix = "Deleted:";
+        private static readonly byte[] DeletedTeamPrefixBytes = Encoding.UTF8.GetBytes(DeletedTeamPrefix);
 
         private readonly InitializationList _teamsToInitialize = new InitializationList();
         private readonly ScrumTeamSerializer _scrumTeamSerializer;
@@ -55,7 +56,7 @@ namespace Duracellko.PlanningPoker.Azure
             ServiceBus = serviceBus ?? throw new ArgumentNullException(nameof(serviceBus));
             Configuration = configuration ?? new AzurePlanningPokerConfiguration();
             _scrumTeamSerializer = scrumTeamSerializer ??
-                new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, PlanningPoker.GuidProvider, DeckProvider.Default);
+                new ScrumTeamSerializer(PlanningPoker.DateTimeProvider, PlanningPoker.GuidProvider);
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             NodeId = PlanningPoker.GuidProvider.NewGuid().ToString();
         }
@@ -178,6 +179,29 @@ namespace Duracellko.PlanningPoker.Azure
             Dispose(false);
         }
 
+        private static byte[] CreateDeletedTeamData(string scrumTeamName)
+        {
+            return Encoding.UTF8.GetBytes(DeletedTeamPrefix + scrumTeamName);
+        }
+
+        private static string? ParseDeletedTeamData(byte[] data)
+        {
+            if (data.Length > DeletedTeamPrefixBytes.Length)
+            {
+                for (int i = 0; i < DeletedTeamPrefixBytes.Length; i++)
+                {
+                    if (data[i] != DeletedTeamPrefixBytes[i])
+                    {
+                        return null;
+                    }
+                }
+
+                return Encoding.UTF8.GetString(data, DeletedTeamPrefixBytes.Length, data.Length - DeletedTeamPrefixBytes.Length);
+            }
+
+            return null;
+        }
+
         private void SetupPlanningPokerListeners()
         {
             var teamMessages = PlanningPoker.ObservableMessages.Where(m => !string.Equals(m.TeamName, _processingScrumTeamName, StringComparison.OrdinalIgnoreCase));
@@ -246,7 +270,7 @@ namespace Duracellko.PlanningPoker.Azure
         {
             try
             {
-                var scrumTeam = DeserializeScrumTeam((string)message.Data!);
+                var scrumTeam = DeserializeScrumTeam((byte[])message.Data!);
                 _logger.ScrumTeamCreatedNodeMessageReceived(NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType, scrumTeam.Name);
 
                 if (!_teamsToInitialize.ContainsOrNotInit(scrumTeam.Name))
@@ -520,12 +544,12 @@ namespace Duracellko.PlanningPoker.Azure
 
         private void ProcessInitializeTeamMessage(NodeMessage message)
         {
-            var scrumTeamData = (string)message.Data!;
-            if (scrumTeamData.StartsWith(DeletedTeamPrefix, StringComparison.Ordinal))
+            var scrumTeamData = (byte[])message.Data!;
+            var deletedTeamName = ParseDeletedTeamData(scrumTeamData);
+            if (deletedTeamName != null)
             {
                 // team does not exist anymore
-                var teamName = scrumTeamData.Substring(DeletedTeamPrefix.Length);
-                _teamsToInitialize.Remove(teamName);
+                _teamsToInitialize.Remove(deletedTeamName);
             }
             else
             {
@@ -578,6 +602,7 @@ namespace Duracellko.PlanningPoker.Azure
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Node will request teams again on failure.")]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "Nullable byte array")]
         private void ProcessRequestTeamsMessage(NodeMessage message)
         {
             _logger.NodeMessageReceived(NodeId, message.SenderNodeId, message.RecipientNodeId, message.MessageType);
@@ -587,7 +612,7 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 try
                 {
-                    string? scrumTeamData = null;
+                    byte[]? scrumTeamData = null;
                     try
                     {
                         using (var teamLock = PlanningPoker.GetScrumTeam(scrumTeamName))
@@ -604,7 +629,7 @@ namespace Duracellko.PlanningPoker.Azure
                     var initializeTeamMessage = new NodeMessage(NodeMessageType.InitializeTeam)
                     {
                         RecipientNodeId = message.SenderNodeId,
-                        Data = scrumTeamData != null ? scrumTeamData : (DeletedTeamPrefix + scrumTeamName)
+                        Data = scrumTeamData != null ? scrumTeamData : CreateDeletedTeamData(scrumTeamName)
                     };
                     SendNodeMessage(initializeTeamMessage);
                 }
@@ -614,22 +639,20 @@ namespace Duracellko.PlanningPoker.Azure
             }
         }
 
-        private string SerializeScrumTeam(ScrumTeam scrumTeam)
+        private byte[] SerializeScrumTeam(ScrumTeam scrumTeam)
         {
-            var result = new StringBuilder();
-            using (var writer = new StringWriter(result))
+            using (var stream = new MemoryStream())
             {
-                _scrumTeamSerializer.Serialize(writer, scrumTeam);
+                _scrumTeamSerializer.Serialize(stream, scrumTeam);
+                return stream.ToArray();
             }
-
-            return result.ToString();
         }
 
-        private ScrumTeam DeserializeScrumTeam(string json)
+        private ScrumTeam DeserializeScrumTeam(byte[] json)
         {
-            using (var reader = new StringReader(json))
+            using (var stream = new MemoryStream(json))
             {
-                return _scrumTeamSerializer.Deserialize(reader);
+                return _scrumTeamSerializer.Deserialize(stream);
             }
         }
     }

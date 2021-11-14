@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
@@ -72,13 +73,18 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             Assert.AreEqual(scrumTeamMessage.SessionId, resultData.SessionId);
         }
 
-        [TestMethod]
-        public void ConvertToServiceBusMessageAndBack_ScrumTeamMemberEstimationMessage()
+        [DataTestMethod]
+        [DataRow(8.0)]
+        [DataRow(0.5)]
+        [DataRow(0.0)]
+        [DataRow(null)]
+        [DataRow(double.PositiveInfinity)]
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamMemberEstimationMessage(double? estimation)
         {
             var scrumTeamMessage = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
             {
                 MemberName = "Scrum Master",
-                Estimation = 8
+                Estimation = estimation
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
             {
@@ -101,12 +107,13 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated)
             {
                 SenderNodeId = SenderId,
-                Data = Team1Json
+                Data = Encoding.UTF8.GetBytes(Team1Json)
             };
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            Assert.AreEqual(Team1Json, (string?)result.Data);
+            var resultJson = Encoding.UTF8.GetString((byte[])result.Data!);
+            Assert.AreEqual(Team1Json, resultJson);
         }
 
         [TestMethod]
@@ -163,12 +170,13 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             {
                 SenderNodeId = SenderId,
                 RecipientNodeId = RecipientId,
-                Data = Team2Json
+                Data = Encoding.UTF8.GetBytes(Team2Json)
             };
 
             var result = ConvertToServiceBusMessageAndBack(nodeMessage);
 
-            Assert.AreEqual(Team2Json, (string?)result.Data);
+            var resultJson = Encoding.UTF8.GetString((byte[])result.Data!);
+            Assert.AreEqual(Team2Json, resultJson);
         }
 
         private static NodeMessage ConvertToServiceBusMessageAndBack(NodeMessage nodeMessage)

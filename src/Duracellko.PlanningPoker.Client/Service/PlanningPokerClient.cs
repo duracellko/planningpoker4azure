@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Service;
-using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Client.Service
 {
@@ -230,18 +230,8 @@ namespace Duracellko.PlanningPoker.Client.Service
                             throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                         }
 
-                        using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
-                        {
-                            using (var textReader = new StreamReader(contentStream))
-                            {
-                                using (var jsonReader = new JsonTextReader(textReader))
-                                {
-                                    var serializer = JsonSerializer.CreateDefault();
-                                    var result = serializer.Deserialize<T>(jsonReader);
-                                    return result ?? throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
-                                }
-                            }
-                        }
+                        var result = await response.Content.ReadFromJsonAsync<T>(default(JsonSerializerOptions), cancellationToken);
+                        return result ?? throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
                     }
                 }
             }

@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Text;
 using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace Duracellko.PlanningPoker.Domain.Test.Serialization
 {
@@ -254,24 +252,22 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             return result;
         }
 
-        private static string SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider? dateTimeProvider = null)
+        private static byte[] SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider? dateTimeProvider = null)
         {
-            var result = new StringBuilder();
-            using (var writer = new StringWriter(result))
+            using (var stream = new MemoryStream())
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default, DeckProvider.Default);
-                serializer.Serialize(writer, scrumTeam);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
+                serializer.Serialize(stream, scrumTeam);
+                return stream.ToArray();
             }
-
-            return result.ToString();
         }
 
-        private static ScrumTeam DeserializeTeam(string json, DateTimeProvider? dateTimeProvider = null)
+        private static ScrumTeam DeserializeTeam(byte[] json, DateTimeProvider? dateTimeProvider = null)
         {
-            using (var reader = new StringReader(json))
+            using (var stream = new MemoryStream(json))
             {
-                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default, DeckProvider.Default);
-                return serializer.Deserialize(reader);
+                var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
+                return serializer.Deserialize(stream);
             }
         }
     }

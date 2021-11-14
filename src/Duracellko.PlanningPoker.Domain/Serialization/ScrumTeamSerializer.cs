@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 
 namespace Duracellko.PlanningPoker.Domain.Serialization
 {
@@ -12,35 +10,38 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
     /// </summary>
     public class ScrumTeamSerializer
     {
-        private static readonly IContractResolver _contractResolver = new ScrumTeamContractResolver();
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions();
+
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly GuidProvider _guidProvider;
-        private readonly DeckProvider _deckProvider;
+
+        static ScrumTeamSerializer()
+        {
+            _jsonSerializerOptions.Converters.Add(new EstimationJsonConverter());
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScrumTeamSerializer"/> class.
         /// </summary>
         /// <param name="dateTimeProvider">The date time provider to provide current time. If null is specified, then default date time provider is used.</param>
         /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
-        /// <param name="deckProvider">The provider to get default estimation deck.</param>
-        public ScrumTeamSerializer(DateTimeProvider? dateTimeProvider, GuidProvider? guidProvider, DeckProvider? deckProvider)
+        public ScrumTeamSerializer(DateTimeProvider? dateTimeProvider, GuidProvider? guidProvider)
         {
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
             _guidProvider = guidProvider ?? GuidProvider.Default;
-            _deckProvider = deckProvider ?? DeckProvider.Default;
         }
 
         /// <summary>
         /// Serializes ScrumTeam object to JSON format.
         /// </summary>
-        /// <param name="writer">Text writer to serialize the Scrum Team into.</param>
+        /// <param name="utf8Json">UTF8 stream to serialize the Scrum Team into.</param>
         /// <param name="scrumTeam">The Scrum Team to serialize.</param>
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Object should be injected.")]
-        public void Serialize(TextWriter writer, ScrumTeam scrumTeam)
+        public void Serialize(Stream utf8Json, ScrumTeam scrumTeam)
         {
-            if (writer == null)
+            if (utf8Json == null)
             {
-                throw new ArgumentNullException(nameof(writer));
+                throw new ArgumentNullException(nameof(utf8Json));
             }
 
             if (scrumTeam == null)
@@ -49,36 +50,29 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
             }
 
             var data = scrumTeam.GetData();
-            var serializer = JsonSerializer.Create();
-            serializer.ContractResolver = _contractResolver;
-            serializer.Serialize(writer, data);
+            JsonSerializer.Serialize(utf8Json, data, _jsonSerializerOptions);
         }
 
         /// <summary>
         /// Deserializes ScrumTeam object from JSON.
         /// </summary>
-        /// <param name="reader">Text reader to deserialize Scrum Team from.</param>
+        /// <param name="utf8Json">UTF8 stream to deserialize Scrum Team from.</param>
         /// <returns>Deserialized ScrumTeam object.</returns>
-        public ScrumTeam Deserialize(TextReader reader)
+        public ScrumTeam Deserialize(Stream utf8Json)
         {
-            if (reader == null)
+            if (utf8Json == null)
             {
-                throw new ArgumentNullException(nameof(reader));
+                throw new ArgumentNullException(nameof(utf8Json));
             }
 
-            using (var jsonReader = new JsonTextReader(reader))
+            var data = JsonSerializer.Deserialize<ScrumTeamData>(utf8Json, _jsonSerializerOptions);
+
+            if (data == null)
             {
-                var serializer = JsonSerializer.Create();
-                serializer.ContractResolver = _contractResolver;
-                var data = serializer.Deserialize<ScrumTeamData>(jsonReader);
-
-                if (data == null)
-                {
-                    throw new InvalidOperationException(Resources.Error_DeserializationFailed);
-                }
-
-                return new ScrumTeam(data, _dateTimeProvider, _guidProvider);
+                throw new InvalidOperationException(Resources.Error_DeserializationFailed);
             }
+
+            return new ScrumTeam(data, _dateTimeProvider, _guidProvider);
         }
     }
 }

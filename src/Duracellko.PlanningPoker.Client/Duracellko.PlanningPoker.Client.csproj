@@ -7,10 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="6.0.0" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.113" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -37,8 +34,7 @@
     <ItemGroup>
       <ClientWwwrootFiles Include="wwwroot\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(ClientWwwrootFiles)"
-          DestinationFiles="@(ClientWwwrootFiles->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(ClientWwwrootFiles)" DestinationFiles="@(ClientWwwrootFiles->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
   </Target>
 
   <Target Name="DeleteWwwrootFromOutput" BeforeTargets="BeforeClean">

@@ -1,17 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Text.Json;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Test.Service
 {
     [TestClass]
     public class JsonSerializationTest
     {
-        [TestMethod]
-        public void JsonSerialize_ScrumTeam_Initial()
+        public static IEnumerable<object[]> JsonTestData { get; } = new[]
+        {
+            new object[] { JsonSerializerDefaults.General },
+            new object[] { JsonSerializerDefaults.Web },
+        };
+
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_ScrumTeam_Initial(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
 
@@ -29,7 +34,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 }
             };
 
-            var result = SerializeAndDeserialize(scrumTeam);
+            var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
@@ -44,8 +49,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.AvailableEstimations[2].Value, result.AvailableEstimations[2].Value);
         }
 
-        [TestMethod]
-        public void JsonSerialize_ScrumTeam_Estimated()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_ScrumTeam_Estimated(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
             var teamMember = new TeamMember { Name = "John", Type = "Member" };
@@ -74,7 +80,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 }
             };
 
-            var result = SerializeAndDeserialize(scrumTeam);
+            var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
@@ -99,8 +105,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.EstimationResult[1].Estimation!.Value, result.EstimationResult[1].Estimation!.Value);
         }
 
-        [TestMethod]
-        public void JsonSerialize_ScrumTeam_EstimationInProgress()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_ScrumTeam_EstimationInProgress(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
             var teamMember = new TeamMember { Name = "John", Type = "Member" };
@@ -126,7 +133,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 }
             };
 
-            var result = SerializeAndDeserialize(scrumTeam);
+            var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
@@ -147,8 +154,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.EstimationParticipants[1].Estimated, result.EstimationParticipants[1].Estimated);
         }
 
-        [TestMethod]
-        public void JsonSerialize_ReconnectTeamResult_Initial()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_ReconnectTeamResult_Initial(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
 
@@ -172,7 +180,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 LastMessageId = 0
             };
 
-            var result = SerializeAndDeserialize(reconnectTeamResult);
+            var result = SerializeAndDeserialize(reconnectTeamResult, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(reconnectTeamResult.LastMessageId, result.LastMessageId);
@@ -192,8 +200,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.AvailableEstimations[2].Value, resultScrumTeam.AvailableEstimations[2].Value);
         }
 
-        [TestMethod]
-        public void JsonSerialize_ReconnectTeamResult_EstimationInProgress()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_ReconnectTeamResult_EstimationInProgress(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
             var teamMember = new TeamMember { Name = "John", Type = "Member" };
@@ -226,7 +235,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 SelectedEstimation = availableEstimations[1]
             };
 
-            var result = SerializeAndDeserialize(reconnectTeamResult);
+            var result = SerializeAndDeserialize(reconnectTeamResult, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(reconnectTeamResult.LastMessageId, result.LastMessageId);
@@ -253,8 +262,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(scrumTeam.EstimationParticipants[1].Estimated, resultScrumTeam.EstimationParticipants[1].Estimated);
         }
 
-        [TestMethod]
-        public void JsonSerialize_Message_Empty()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_Empty(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var message = new Message
             {
@@ -262,15 +272,16 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Type = MessageType.Empty
             };
 
-            var result = SerializeAndDeserialize(message);
+            var result = SerializeAndDeserialize(message, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(message.Id, result.Id);
             Assert.AreEqual(message.Type, result.Type);
         }
 
-        [TestMethod]
-        public void JsonSerialize_Message_EstimationStarted()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_EstimationStarted(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var message = new Message
             {
@@ -278,15 +289,16 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Type = MessageType.EstimationStarted
             };
 
-            var result = SerializeAndDeserialize(message);
+            var result = SerializeAndDeserialize(message, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(message.Id, result.Id);
             Assert.AreEqual(message.Type, result.Type);
         }
 
-        [TestMethod]
-        public void JsonSerialize_Message_MemberJoined()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_MemberJoined(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var message = new MemberMessage
             {
@@ -295,7 +307,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Member = new TeamMember { Name = "master", Type = "ScrumMaster" }
             };
 
-            var result = SerializeAndDeserialize<Message>(message);
+            var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(message.Id, result.Id);
@@ -308,8 +320,9 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(message.Member.Type, memberMessageResult.Member.Type);
         }
 
-        [TestMethod]
-        public void JsonSerialize_Message_EstimationEnded()
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_EstimationEnded(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var message = new EstimationResultMessage
             {
@@ -330,7 +343,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 }
             };
 
-            var result = SerializeAndDeserialize<Message>(message);
+            var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(message.Id, result.Id);
@@ -346,23 +359,11 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(message.EstimationResult[1].Estimation!.Value, estimationResult.EstimationResult[1].Estimation!.Value);
         }
 
-        private static T? SerializeAndDeserialize<T>(T value)
+        private static T? SerializeAndDeserialize<T>(T value, JsonSerializerDefaults jsonSerializerDefaults)
         {
-            var serialier = JsonSerializer.CreateDefault();
-            var json = new StringBuilder();
-
-            using (var writer = new StringWriter(json))
-            {
-                serialier.Serialize(writer, value, typeof(T));
-            }
-
-            using (var reader = new StringReader(json.ToString()))
-            {
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return serialier.Deserialize<T>(jsonReader);
-                }
-            }
+            var options = new JsonSerializerOptions(jsonSerializerDefaults);
+            var json = JsonSerializer.Serialize(value, options);
+            return JsonSerializer.Deserialize<T>(json, options);
         }
     }
 }
