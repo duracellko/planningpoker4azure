@@ -1,127 +1,186 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Duracellko.PlanningPoker.Service.Serialization
 {
     /// <summary>
     /// Converts a Message object to and from JSON.
     /// </summary>
-    public class MessageJsonConverter : JsonConverter
+    public class MessageJsonConverter : JsonConverter<Message>
     {
         /// <summary>
-        /// Gets a value indicating whether this JsonConverter can write JSON.
+        /// Determines whether the specified type can be converted.
         /// </summary>
-        public override bool CanWrite => false;
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns><c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.</returns>
-        public override bool CanConvert(Type objectType)
+        /// <param name="typeToConvert">The type to compare against.</param>
+        /// <returns><c>true</c> if the type can be converted; otherwise, <c>false</c>.</returns>
+        public override bool CanConvert(Type typeToConvert)
         {
-            return objectType == typeof(Message);
+            return typeof(Message).IsAssignableFrom(typeToConvert);
         }
 
         /// <summary>
-        /// Reads the JSON representation of the object.
+        /// Reads and converts the JSON to type T.
         /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        /// <param name="reader">The reader.</param>
+        /// <param name="typeToConvert">The type to convert.</param>
+        /// <param name="options">An object that specifies serialization options to use.</param>
+        /// <returns>The converted value.</returns>
+        public override Message? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader == null)
+            if (reader.TokenType != JsonTokenType.StartObject)
             {
-                throw new ArgumentNullException(nameof(reader));
+                throw new JsonException();
             }
 
-            if (serializer == null)
+            var messageData = default(MessageData);
+
+            while (reader.Read())
             {
-                throw new ArgumentNullException(nameof(serializer));
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    return CreateMessageFromData(ref messageData);
+                }
+
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException();
+                }
+
+                ReadMessageDataProperty(ref reader, ref messageData, options);
             }
 
-            var jsonObject = JObject.Load(reader);
-            var messageTypeValue = (JValue?)jsonObject.GetValue(nameof(Message.Type), StringComparison.OrdinalIgnoreCase);
-            var messageType = (MessageType)Convert.ToInt32(messageTypeValue?.Value, CultureInfo.InvariantCulture);
+            throw new JsonException();
+        }
 
+        /// <summary>
+        /// Writes a specified value as JSON.
+        /// </summary>
+        /// <param name="writer">The writer to write to.</param>
+        /// <param name="value">The value to convert to JSON.</param>
+        /// <param name="options">An object that specifies serialization options to use.</param>
+        public override void Write(Utf8JsonWriter writer, Message value, JsonSerializerOptions options)
+        {
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName(GetPropertyName(nameof(Message.Id), options));
+            writer.WriteNumberValue(value.Id);
+
+            writer.WritePropertyName(GetPropertyName(nameof(Message.Type), options));
+            JsonSerializer.Serialize(writer, value.Type, options);
+
+            if (value is MemberMessage memberMessage)
+            {
+                writer.WritePropertyName(GetPropertyName(nameof(MemberMessage.Member), options));
+                JsonSerializer.Serialize(writer, memberMessage.Member, options);
+            }
+            else if (value is EstimationResultMessage estimationResultMessage)
+            {
+                writer.WritePropertyName(GetPropertyName(nameof(EstimationResultMessage.EstimationResult), options));
+                JsonSerializer.Serialize(writer, estimationResultMessage.EstimationResult, options);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        private static string GetPropertyName(string propertyName, JsonSerializerOptions options)
+        {
+            if (options.PropertyNamingPolicy != null)
+            {
+                return options.PropertyNamingPolicy.ConvertName(propertyName);
+            }
+
+            return propertyName;
+        }
+
+        private static bool IsPropertyName(ref Utf8JsonReader reader, string propertyName, JsonSerializerOptions options)
+        {
+            propertyName = GetPropertyName(propertyName, options);
+            var stringComparison = options.PropertyNameCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            return string.Equals(reader.GetString(), propertyName, stringComparison);
+        }
+
+        private static Message CreateMessageFromData(ref MessageData messageData)
+        {
             Message message;
-            switch (messageType)
+            switch (messageData.Type)
             {
                 case MessageType.MemberJoined:
                 case MessageType.MemberDisconnected:
                 case MessageType.MemberEstimated:
-                    message = GetMemberMessage(jsonObject, serializer);
+                    message = new MemberMessage
+                    {
+                        Member = messageData.Member
+                    };
                     break;
                 case MessageType.EstimationEnded:
-                    message = GetEstimationResultMessage(jsonObject, serializer);
+                    var estimationResultMessage = new EstimationResultMessage();
+                    if (messageData.EstimationResult != null)
+                    {
+                        estimationResultMessage.EstimationResult = messageData.EstimationResult;
+                    }
+
+                    message = estimationResultMessage;
                     break;
                 default:
                     message = new Message();
                     break;
             }
 
-            SetMessageProperties(message, jsonObject, messageType);
+            message.Id = messageData.Id;
+            message.Type = messageData.Type;
             return message;
         }
 
-        /// <summary>
-        /// Writes the JSON representation of the object.
-        /// </summary>
-        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        private static void ReadMessageDataProperty(ref Utf8JsonReader reader, ref MessageData messageData, JsonSerializerOptions options)
         {
-            throw new NotSupportedException();
-        }
-
-        private static void SetMessageProperties(Message message, JObject jsonObject, MessageType messageType)
-        {
-            var idValue = (JValue?)jsonObject.GetValue(nameof(Message.Id), StringComparison.OrdinalIgnoreCase);
-            message.Id = Convert.ToInt64(idValue?.Value, CultureInfo.InvariantCulture);
-            message.Type = messageType;
-        }
-
-        private static MemberMessage GetMemberMessage(JObject jsonObject, JsonSerializer serializer)
-        {
-            var memberValue = jsonObject.GetValue(nameof(MemberMessage.Member), StringComparison.OrdinalIgnoreCase);
-            return new MemberMessage
+            if (IsPropertyName(ref reader, nameof(Message.Id), options))
             {
-                Member = GetObjectFromJToken<TeamMember>(memberValue, serializer)
-            };
-        }
-
-        private static EstimationResultMessage GetEstimationResultMessage(JObject jsonObject, JsonSerializer serializer)
-        {
-            var estimationResultValue = jsonObject.GetValue(nameof(EstimationResultMessage.EstimationResult), StringComparison.OrdinalIgnoreCase);
-            var estimationResult = GetObjectFromJToken<IList<EstimationResultItem>>(estimationResultValue, serializer);
-
-            var result = new EstimationResultMessage();
-            if (estimationResult != null)
-            {
-                result.EstimationResult = estimationResult;
+                messageData.Id = JsonSerializer.Deserialize<long>(ref reader, options);
             }
-
-            return result;
+            else if (IsPropertyName(ref reader, nameof(Message.Type), options))
+            {
+                messageData.Type = JsonSerializer.Deserialize<MessageType>(ref reader, options);
+            }
+            else if (IsPropertyName(ref reader, nameof(MemberMessage.Member), options))
+            {
+                messageData.Member = JsonSerializer.Deserialize<TeamMember>(ref reader, options);
+            }
+            else if (IsPropertyName(ref reader, nameof(EstimationResultMessage.EstimationResult), options))
+            {
+                messageData.EstimationResult = JsonSerializer.Deserialize<IList<EstimationResultItem>>(ref reader, options);
+            }
+            else
+            {
+                reader.Skip();
+            }
         }
 
-        private static T? GetObjectFromJToken<T>(JToken? token, JsonSerializer serializer)
+        private ref struct MessageData
         {
-            if (token == null)
-            {
-                return default;
-            }
+            public long Id { get; set; }
 
-            using (var reader = new JTokenReader(token))
-            {
-                return serializer.Deserialize<T>(reader);
-            }
+            public MessageType Type { get; set; }
+
+            public TeamMember? Member { get; set; }
+
+            public IList<EstimationResultItem>? EstimationResult { get; set; }
         }
     }
 }

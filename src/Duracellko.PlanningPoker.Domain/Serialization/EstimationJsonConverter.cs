@@ -51,7 +51,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         {
             writer.WriteStartObject();
 
-            writer.WritePropertyName(nameof(Estimation.Value));
+            writer.WritePropertyName(GetPropertyName(nameof(Estimation.Value), options));
             if (!value.Value.HasValue)
             {
                 writer.WriteNullValue();
@@ -68,8 +68,19 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
             writer.WriteEndObject();
         }
 
+        private static string GetPropertyName(string propertyName, JsonSerializerOptions options)
+        {
+            if (options.PropertyNamingPolicy != null)
+            {
+                return options.PropertyNamingPolicy.ConvertName(propertyName);
+            }
+
+            return propertyName;
+        }
+
         private static bool IsPropertyName(ref Utf8JsonReader reader, string propertyName, JsonSerializerOptions options)
         {
+            propertyName = GetPropertyName(propertyName, options);
             var stringComparison = options.PropertyNameCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             return string.Equals(reader.GetString(), propertyName, stringComparison);
         }
