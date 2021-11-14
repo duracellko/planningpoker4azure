@@ -49,7 +49,6 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             var builder = new HubConnectionBuilder()
                 .WithUrl(uri)
-                .AddNewtonsoftJsonProtocol()
                 .WithAutomaticReconnect(_reconnectDelays);
 
             foreach (var service in Services)

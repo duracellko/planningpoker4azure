@@ -44,12 +44,10 @@ namespace Duracellko.PlanningPoker.Web
             services.AddApplicationInsightsTelemetry();
             services.AddControllers()
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
-                .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()))
-                .AddNewtonsoftJson();
+                .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
             services.AddRazorPages()
                 .AddApplicationPart(typeof(Program).Assembly);
-            services.AddSignalR()
-                .AddNewtonsoftJsonProtocol();
+            services.AddSignalR();
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
