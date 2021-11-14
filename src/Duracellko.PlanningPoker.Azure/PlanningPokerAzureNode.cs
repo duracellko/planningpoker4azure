@@ -196,7 +196,7 @@ namespace Duracellko.PlanningPoker.Azure
                     }
                 }
 
-                Encoding.UTF8.GetString(data, DeletedTeamPrefixBytes.Length, data.Length - DeletedTeamPrefixBytes.Length);
+                return Encoding.UTF8.GetString(data, DeletedTeamPrefixBytes.Length, data.Length - DeletedTeamPrefixBytes.Length);
             }
 
             return null;

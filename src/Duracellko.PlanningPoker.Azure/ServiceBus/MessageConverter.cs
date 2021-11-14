@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
-using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus
 {
@@ -26,6 +26,10 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private const string MessageSubtypePropertyName = "MessageSubtype";
 
         private static readonly BinaryData _emptyBinaryData = new BinaryData(Array.Empty<byte>());
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+        };
 
         /// <summary>
         /// Converts <see cref="T:NodeMessage"/> message to ServiceBusMessage  object.
@@ -42,7 +46,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             BinaryData messageBody;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
             {
-                messageBody = ConvertToMessageBody((string)message.Data!);
+                messageBody = ConvertToMessageBody((byte[])message.Data!);
             }
             else if (message.Data != null)
             {
@@ -120,77 +124,38 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
         private static BinaryData ConvertToMessageBody(object data)
         {
-            void WriteData(object data, TextWriter writer)
-            {
-                var serializer = JsonSerializer.Create();
-                serializer.Serialize(writer, data);
-            }
-
-            return ConvertToMessageBody(data, WriteData);
+            var dataBytes = JsonSerializer.SerializeToUtf8Bytes(data, data.GetType(), _jsonSerializerOptions);
+            return BinaryData.FromBytes(dataBytes);
         }
 
-        private static BinaryData ConvertToMessageBody(string data)
+        private static BinaryData ConvertToMessageBody(byte[] data)
         {
-            void WriteData(string data, TextWriter writer)
+            using (var dataStream = new MemoryStream())
             {
-                writer.Write(data);
-            }
-
-            return ConvertToMessageBody(data, WriteData);
-        }
-
-        private static BinaryData ConvertToMessageBody<T>(T data, Action<T, TextWriter> writeAction)
-        {
-            using (var bodyStream = new MemoryStream())
-            {
-                using (var deflateStream = new DeflateStream(bodyStream, CompressionMode.Compress, true))
+                using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
                 {
-                    using (var writer = new StreamWriter(deflateStream, Encoding.UTF8))
-                    {
-                        writeAction(data, writer);
-                        writer.Flush();
-                        deflateStream.Flush();
-                    }
+                    deflateStream.Write(data, 0, data.Length);
+                    deflateStream.Flush();
                 }
 
-                return BinaryData.FromBytes(bodyStream.ToArray());
+                return BinaryData.FromBytes(dataStream.ToArray());
             }
         }
 
         private static T? ConvertFromMessageBody<T>(BinaryData body)
         {
-            T? ReadData(TextReader reader)
-            {
-                var serializer = JsonSerializer.Create();
-                using (var jsonReader = new JsonTextReader(reader))
-                {
-                    return serializer.Deserialize<T>(jsonReader);
-                }
-            }
-
-            return ConvertFromMessageBody(body, ReadData);
+            return JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
         }
 
-        private static string ConvertFromMessageBody(BinaryData body)
+        private static byte[] ConvertFromMessageBody(BinaryData body)
         {
-            string ReadData(TextReader reader)
+            using (var dataStream = body.ToStream())
             {
-                return reader.ReadToEnd();
-            }
-
-            return ConvertFromMessageBody(body, ReadData);
-        }
-
-        private static T ConvertFromMessageBody<T>(BinaryData body, Func<TextReader, T> readFunction)
-        {
-            using (var bodyStream = body.ToStream())
-            {
-                using (var deflateStream = new DeflateStream(bodyStream, CompressionMode.Decompress))
+                using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress))
                 {
-                    using (var reader = new StreamReader(deflateStream, Encoding.UTF8))
-                    {
-                        return readFunction(reader);
-                    }
+                    using var memoryStream = new MemoryStream();
+                    deflateStream.CopyTo(memoryStream);
+                    return memoryStream.ToArray();
                 }
             }
         }

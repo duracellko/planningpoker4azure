@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -13,7 +16,6 @@ using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 
 namespace Duracellko.PlanningPoker.Azure.Test
 {
@@ -124,9 +126,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             Assert.AreEqual<NodeMessageType>(NodeMessageType.TeamCreated, nodeMessage.MessageType);
             Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
             Assert.IsNotNull(nodeMessage.Data);
-            Assert.IsInstanceOfType(nodeMessage.Data, typeof(string));
-            var expectedData = JsonConvert.SerializeObject(team.GetData());
-            Assert.AreEqual(expectedData, (string)nodeMessage.Data);
+            Assert.IsInstanceOfType(nodeMessage.Data, typeof(byte[]));
+            var expectedData = SerializeScrumTeam(team);
+            CollectionAssert.AreEqual(expectedData, (byte[])nodeMessage.Data);
         }
 
         [TestMethod]
@@ -766,7 +768,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion(), dateTimeProvider: dateTimeProvider);
 
             var existingTeam = CreateBasicTeam("Existing team");
-            var existingTeamData = JsonConvert.SerializeObject(existingTeam.GetData());
+            var existingTeamData = SerializeScrumTeam(existingTeam);
             var nodeMessage1 = new NodeMessage(NodeMessageType.TeamCreated) { Data = existingTeamData };
             var nodeMessage2 = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage1, nodeMessage2);
@@ -926,7 +928,10 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
             var teamList = new string[] { TeamName };
-            var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam) { Data = "Deleted:" + TeamName };
+            var nodeMessage = new NodeMessage(NodeMessageType.InitializeTeam)
+            {
+                Data = Encoding.UTF8.GetBytes("Deleted:" + TeamName)
+            };
             serviceBus.Setup(b => b.SendMessage(It.IsAny<NodeMessage>())).Returns(Task.CompletedTask);
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, teamList, nodeMessage);
 
@@ -1065,9 +1070,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             Assert.IsNotNull(initializeTeamMessage);
             Assert.IsNotNull(initializeTeamMessage.Data);
-            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
-            var expectedData = JsonConvert.SerializeObject(team.GetData());
-            Assert.AreEqual(expectedData, (string)initializeTeamMessage.Data);
+            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
+            var expectedData = SerializeScrumTeam(team);
+            CollectionAssert.AreEqual(expectedData, (byte[])initializeTeamMessage.Data);
             Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
@@ -1102,8 +1107,8 @@ namespace Duracellko.PlanningPoker.Azure.Test
             serviceBus.Verify();
             Assert.IsNotNull(initializeTeamMessage);
             Assert.IsNotNull(initializeTeamMessage.Data);
-            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(string));
-            Assert.AreEqual<string>("Deleted:" + TeamName, (string)initializeTeamMessage.Data);
+            Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
+            Assert.AreEqual<string>("Deleted:" + TeamName, Encoding.UTF8.GetString((byte[])initializeTeamMessage.Data));
             Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
         }
 
@@ -1239,10 +1244,19 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 });
         }
 
-        private static string CreateSerializedBasicTeam()
+        private static byte[] CreateSerializedBasicTeam()
         {
             var team = CreateBasicTeam();
-            return JsonConvert.SerializeObject(team.GetData());
+            return SerializeScrumTeam(team);
+        }
+
+        private static byte[] SerializeScrumTeam(ScrumTeam scrumTeam)
+        {
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
+            return JsonSerializer.SerializeToUtf8Bytes(scrumTeam.GetData(), options);
         }
 
         private static AzurePlanningPokerConfiguration CreateConfigutartion()
