@@ -8,6 +8,30 @@ namespace Duracellko.PlanningPoker.Domain.Test
     [TestClass]
     public class MemberTest
     {
+        private static readonly DateTime[] NowData = new[]
+        {
+            new DateTime(2021, 11, 17, 8, 58, 01, DateTimeKind.Utc),
+            new DateTime(2022, 5, 4, 23, 23, 30, DateTimeKind.Utc),
+            new DateTime(2019, 2, 14, 12, 0, 0, DateTimeKind.Utc),
+        };
+
+        private static readonly TimeSpan[] DurationData = new[]
+        {
+            new TimeSpan(1, 5, 45),
+            new TimeSpan(0, 45, 0),
+            new TimeSpan(0, 0, 1),
+        };
+
+        private static readonly DateTime[] ExpectedEndTimeData = new[]
+        {
+            new DateTime(2021, 11, 17, 10, 3, 46, DateTimeKind.Utc),
+            new DateTime(2022, 5, 5, 0, 8, 30, DateTimeKind.Utc),
+            new DateTime(2019, 2, 14, 12, 0, 1, DateTimeKind.Utc),
+        };
+
+        public static IEnumerable<object[]> TimerTestData => Enumerable.Range(0, 3)
+            .Select(i => new object[] { NowData[i], DurationData[i], ExpectedEndTimeData[i] });
+
         [TestMethod]
         public void Constructor_TeamAndNameIsSpecified_TeamAndNameIsSet()
         {
@@ -625,6 +649,402 @@ namespace Duracellko.PlanningPoker.Domain.Test
 
             // Act
             Assert.ThrowsException<ArgumentException>(() => master.Estimation = masterEstimation);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TimerTestData))]
+        public void StartTimer_TimerNotStarted_TimerEndTimeIsSet(DateTime now, TimeSpan duration, DateTime expectedEndTime)
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(now);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            member.StartTimer(duration);
+
+            // Assert
+            Assert.AreEqual(expectedEndTime, team.TimerEndTime);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TimerTestData))]
+        public void StartTimer_TimerIsStarted_TimerEndTimeIsOverwritten(DateTime now, TimeSpan duration, DateTime expectedEndTime)
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(now);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartEstimation();
+            master.StartTimer(TimeSpan.FromMinutes(50));
+
+            // Act
+            member.StartTimer(duration);
+
+            // Assert
+            Assert.AreEqual(expectedEndTime, team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_MemberGetTimerStartedMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[0]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            member.StartTimer(DurationData[0]);
+
+            // Assert
+            Assert.IsTrue(member.HasMessage);
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(TimerMessage));
+            var timerMessage = (TimerMessage)message;
+            Assert.AreEqual(ExpectedEndTimeData[0], timerMessage.EndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_MemberMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[0]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            EventArgs? eventArgs = null;
+            member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            member.StartTimer(DurationData[0]);
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_ScrumMasterGetTimerStartedMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[1]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            master.ClearMessages();
+            member.StartTimer(DurationData[1]);
+
+            // Assert
+            Assert.IsTrue(master.HasMessage);
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(TimerMessage));
+            var timerMessage = (TimerMessage)message;
+            Assert.AreEqual(ExpectedEndTimeData[1], timerMessage.EndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_ScrumMasterMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[1]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            EventArgs? eventArgs = null;
+            master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            member.StartTimer(DurationData[1]);
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_ObserverGetTimerStartedMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[2]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            master.StartEstimation();
+            var observer = team.Join("observer", true);
+
+            // Act
+            master.StartTimer(DurationData[2]);
+
+            // Assert
+            Assert.IsTrue(observer.HasMessage);
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(TimerMessage));
+            var timerMessage = (TimerMessage)message;
+            Assert.AreEqual(ExpectedEndTimeData[2], timerMessage.EndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_ObserverMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[2]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            master.StartEstimation();
+            var observer = team.Join("observer", true);
+            EventArgs? eventArgs = null;
+            observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            master.StartTimer(DurationData[2]);
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void StartTimer_DurationSpecified_ScrumTeamGetTimerStartedMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[0]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            MessageReceivedEventArgs? eventArgs = null;
+            team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
+
+            // Act
+            member.StartTimer(DurationData[0]);
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+            var message = eventArgs.Message;
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(TimerMessage));
+            var timerMessage = (TimerMessage)message;
+            Assert.AreEqual(ExpectedEndTimeData[0], timerMessage.EndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_ZeroDuration_ArgumentOutOfRangeException()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[0]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.Zero));
+        }
+
+        [TestMethod]
+        public void StartTimer_NegativeDuration_ArgumentOutOfRangeException()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(NowData[0]);
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.FromSeconds(-1)));
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_TimerEndTimeIsNull()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+
+            // Act
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsNull(team.TimerEndTime);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsNotStarted_TimerEndTimeIsNull()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+
+            // Act
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsNull(team.TimerEndTime);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_MemberGetTimerCanceledMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+
+            // Act
+            member.ClearMessages();
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsTrue(member.HasMessage);
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_MemberMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+            EventArgs? eventArgs = null;
+            member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_ScrumMasterGetTimerCanceledMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+
+            // Act
+            master.ClearMessages();
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsTrue(master.HasMessage);
+            Assert.AreEqual(1, master.Messages.Count());
+            var message = master.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_ScrumMasterMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+            EventArgs? eventArgs = null;
+            master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_ObserverGetTimerCanceledMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+            var observer = team.Join("observer", true);
+
+            // Act
+            master.CancelTimer();
+
+            // Assert
+            Assert.IsTrue(observer.HasMessage);
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.Single();
+            Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_ObserverMessageReceived()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+            var observer = team.Join("observer", true);
+            EventArgs? eventArgs = null;
+            observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            master.CancelTimer();
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [DataTestMethod]
+        public void CancelTimer_TimerIsStarted_ScrumTeamGetTimerCanceledMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
+            var master = team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            master.StartTimer(DurationData[0]);
+            MessageReceivedEventArgs? eventArgs = null;
+            team.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
+
+            // Act
+            member.CancelTimer();
+
+            // Assert
+            Assert.IsNotNull(eventArgs);
+            var message = eventArgs.Message;
+            Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
         }
     }
 }

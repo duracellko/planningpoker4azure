@@ -132,6 +132,9 @@
   <data name="Error_InvalidSessionId" xml:space="preserve">
     <value>Invalid session ID.</value>
   </data>
+  <data name="Error_InvalidTimerDuraction" xml:space="preserve">
+    <value>Timer duration must be more greater than 0 seconds.</value>
+  </data>
   <data name="Error_MemberAlreadyExists" xml:space="preserve">
     <value>Member or observer named '{0}' already exists in the team.</value>
   </data>

@@ -172,6 +172,19 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void TimerEndTime_GetAfterConstruction_ReturnsNull()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+
+            // Act
+            var result = target.TimerEndTime;
+
+            // Verify
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
         public void EstimationResult_GetAfterConstruction_ReturnsNull()
         {
             // Arrange

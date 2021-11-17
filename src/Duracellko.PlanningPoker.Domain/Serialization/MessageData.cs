@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Duracellko.PlanningPoker.Domain.Serialization
@@ -28,5 +29,10 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
         public IDictionary<string, Estimation?>? EstimationResult { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time in UTC time zone that specifies, when countdown ends. This is specified for Timer Started message.
+        /// </summary>
+        public DateTime? EndTime { get; set; }
     }
 }

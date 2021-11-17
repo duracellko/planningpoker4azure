@@ -229,6 +229,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case MessageType.Empty:
                 case MessageType.EstimationStarted:
                 case MessageType.EstimationCanceled:
+                case MessageType.TimerCanceled:
                     return new Message(messageData);
                 case MessageType.MemberJoined:
                 case MessageType.MemberDisconnected:
@@ -240,6 +241,8 @@ namespace Duracellko.PlanningPoker.Domain
                     var estimationResult = new EstimationResult(Team, messageData.EstimationResult!);
                     estimationResult.SetReadOnly();
                     return new EstimationResultMessage(messageData, estimationResult);
+                case MessageType.TimerStarted:
+                    return new TimerMessage(messageData);
                 default:
                     throw new ArgumentException($"Invalid message type {messageData.MessageType}.", nameof(messageData));
             }

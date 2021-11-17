@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Duracellko.PlanningPoker.Domain.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -211,6 +212,39 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             master.Estimation = team.AvailableEstimations.Single(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value));
             team.Disconnect(observer.Name);
             team.Disconnect(member.Name);
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_TimerStarted_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 01, DateTimeKind.Utc));
+            team.SetScrumMaster("master");
+            var member = (Member)team.Join("member", false);
+            member.StartTimer(TimeSpan.FromMinutes(5));
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize_TimerCanceled_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 01, DateTimeKind.Utc));
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            master.StartTimer(TimeSpan.FromMinutes(5));
+            master.CancelTimer();
 
             // Act
             // Verify
