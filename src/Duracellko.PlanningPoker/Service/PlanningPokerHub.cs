@@ -244,6 +244,58 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of countdown timer.</param>
+        public void StartTimer(string teamName, string memberName, TimeSpan duration)
+        {
+            _logger.StartTimer(teamName, memberName, duration);
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            if (duration <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.Error_InvalidTimerDuraction);
+            }
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                if (member != null)
+                {
+                    member.StartTimer(duration);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        public void CancelTimer(string teamName, string memberName)
+        {
+            _logger.CancelTimer(teamName, memberName);
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                if (member != null)
+                {
+                    member.CancelTimer();
+                }
+            }
+        }
+
+        /// <summary>
         /// Begins to get messages of specified member asynchronously.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>

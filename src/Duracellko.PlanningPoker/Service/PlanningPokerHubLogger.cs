@@ -42,6 +42,16 @@ namespace Duracellko.PlanningPoker.Service
             new EventId(BaseEventId + 7, nameof(SubmitEstimation)),
             "{Action}(\"{TeamName}\", \"{MemberName}\", {Estimation})");
 
+        private static readonly Action<ILogger, string, string, string, TimeSpan, Exception?> _startTimer = LoggerMessage.Define<string, string, string, TimeSpan>(
+            LogLevel.Information,
+            new EventId(BaseEventId + 10, nameof(StartTimer)),
+            "{Action}(\"{TeamName}\", \"{MemberName}\", {Duration})");
+
+        private static readonly Action<ILogger, string, string, string, Exception?> _cancelTimer = LoggerMessage.Define<string, string, string>(
+            LogLevel.Information,
+            new EventId(BaseEventId + 11, nameof(CancelTimer)),
+            "{Action}(\"{TeamName}\", \"{MemberName}\")");
+
         private static readonly Action<ILogger, string, string, string, Guid, long, Exception?> _getMessages = LoggerMessage.Define<string, string, string, Guid, long>(
             LogLevel.Information,
             new EventId(BaseEventId + 8, nameof(GetMessages)),
@@ -85,6 +95,16 @@ namespace Duracellko.PlanningPoker.Service
         public static void SubmitEstimation(this ILogger logger, string teamName, string memberName, double? estimation)
         {
             _submitEstimation(logger, nameof(SubmitEstimation), teamName, memberName, estimation, null);
+        }
+
+        public static void StartTimer(this ILogger logger, string teamName, string memberName, TimeSpan duration)
+        {
+            _startTimer(logger, nameof(StartTimer), teamName, memberName, duration, null);
+        }
+
+        public static void CancelTimer(this ILogger logger, string teamName, string memberName)
+        {
+            _cancelTimer(logger, nameof(CancelTimer), teamName, memberName, null);
         }
 
         public static void GetMessages(this ILogger logger, string teamName, string memberName, Guid sessionId, long lastMessageId)

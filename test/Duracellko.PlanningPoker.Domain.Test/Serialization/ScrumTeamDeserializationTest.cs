@@ -37,6 +37,7 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
                 Name = "The Team",
                 AvailableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci).ToList(),
                 State = TeamState.Initial,
+                TimerEndTime = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Unspecified),
                 Members = new List<MemberData>
                 {
                     new MemberData { MemberType = MemberType.Member, Name = "the member" },
@@ -51,6 +52,8 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
             // Assert
             Assert.AreEqual(scrumTeamData.Name, result.Name);
             Assert.AreEqual(scrumTeamData.State, result.State);
+            Assert.AreEqual(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc), result.TimerEndTime);
+            Assert.AreEqual(DateTimeKind.Utc, result.TimerEndTime!.Value.Kind);
             Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeamData.Members[1].Name, result.ScrumMaster.Name);
             var member = result.Members.First(m => m.GetType() == typeof(Member));

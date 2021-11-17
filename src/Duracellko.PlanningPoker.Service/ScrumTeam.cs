@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Duracellko.PlanningPoker.Service
@@ -62,5 +63,10 @@ namespace Duracellko.PlanningPoker.Service
         /// <value>The collection of estimation participants.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
         public IList<EstimationParticipantStatus>? EstimationParticipants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end time of countdown timer, when the timer is started; otherwise <c>null</c>.
+        /// </summary>
+        public DateTime? TimerEndTime { get; set; }
     }
 }

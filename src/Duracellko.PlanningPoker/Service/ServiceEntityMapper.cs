@@ -67,9 +67,11 @@ namespace Duracellko.PlanningPoker.Service
                 config.CreateMap<D.Message, Message>()
                     .Include<D.MemberMessage, MemberMessage>()
                     .Include<D.EstimationResultMessage, EstimationResultMessage>()
+                    .Include<D.TimerMessage, TimerMessage>()
                     .ForMember(m => m.Type, mc => mc.MapFrom(m => m.MessageType));
                 config.CreateMap<D.MemberMessage, MemberMessage>();
                 config.CreateMap<D.EstimationResultMessage, EstimationResultMessage>();
+                config.CreateMap<D.TimerMessage, TimerMessage>();
                 config.CreateMap<KeyValuePair<D.Member, D.Estimation>, EstimationResultItem>()
                     .ForMember(i => i.Member, mc => mc.MapFrom(p => p.Key))
                     .ForMember(i => i.Estimation, mc => mc.MapFrom(p => p.Value));

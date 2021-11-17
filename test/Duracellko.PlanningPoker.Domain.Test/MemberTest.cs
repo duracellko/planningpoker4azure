@@ -10,7 +10,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
     {
         private static readonly DateTime[] NowData = new[]
         {
-            new DateTime(2021, 11, 17, 8, 58, 01, DateTimeKind.Utc),
+            new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc),
             new DateTime(2022, 5, 4, 23, 23, 30, DateTimeKind.Utc),
             new DateTime(2019, 2, 14, 12, 0, 0, DateTimeKind.Utc),
         };

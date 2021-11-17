@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -245,6 +244,58 @@ namespace Duracellko.PlanningPoker.Service
                 if (member != null)
                 {
                     member.Estimation = new D.Estimation(domainEstimation);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of timer in seconds.</param>
+        [HttpGet("StartTimer")]
+        public void StartTimer(string teamName, string memberName, int duration)
+        {
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            if (duration <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.Error_InvalidTimerDuraction);
+            }
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                if (member != null)
+                {
+                    member.StartTimer(TimeSpan.FromSeconds(duration));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        [HttpGet("CancelTimer")]
+        public void CancelTimer(string teamName, string memberName)
+        {
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                if (member != null)
+                {
+                    member.CancelTimer();
                 }
             }
         }
