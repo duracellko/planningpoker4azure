@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Act
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
-            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, logger));
+            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, logger));
         }
 
         [DataTestMethod]
@@ -1733,6 +1733,23 @@ namespace Duracellko.PlanningPoker.Test.Service
             }
         }
 
+        [TestMethod]
+        public void GetCurrentTime_DateTimeProvider_CurrentUtcTime()
+        {
+            // Arrange
+            var utcNow = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc);
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(utcNow);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object, dateTimeProvider: dateTimeProvider);
+
+            // Act
+            var result = target.GetCurrentTime();
+
+            // Verify
+            Assert.AreEqual(utcNow, result.CurrentUtcTime);
+        }
+
         public void Dispose()
         {
             _loggerFactory.Dispose();
@@ -1757,6 +1774,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         private PlanningPokerHub CreatePlanningPokerHub(
             D.IPlanningPoker planningPoker,
             IPlanningPokerClient? client = null,
+            D.DateTimeProvider? dateTimeProvider = null,
             string? connectionId = null)
         {
             if (connectionId == null)
@@ -1772,9 +1790,14 @@ namespace Duracellko.PlanningPoker.Test.Service
                 clients.Setup(o => o.Client(connectionId)).Returns(client);
             }
 
+            if (dateTimeProvider == null)
+            {
+                dateTimeProvider = D.DateTimeProvider.Default;
+            }
+
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
 
-            var result = new PlanningPokerHub(planningPoker, clientContext.Object, logger);
+            var result = new PlanningPokerHub(planningPoker, clientContext.Object, dateTimeProvider, logger);
 
             var context = new HubCallerContextMock();
             context.SetConnectionId(connectionId);

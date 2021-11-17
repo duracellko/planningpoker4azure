@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Duracellko.PlanningPoker.Service
     public class PlanningPokerHub : Hub<IPlanningPokerClient>
     {
         private readonly IHubContext<PlanningPokerHub, IPlanningPokerClient> _clientContext;
+        private readonly D.DateTimeProvider _dateTimeProvider;
         private readonly ILogger<PlanningPokerHub> _logger;
 
         /// <summary>
@@ -22,11 +24,17 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
         /// <param name="clientContext">Interface to send messages to client.</param>
+        /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public PlanningPokerHub(D.IPlanningPoker planningPoker, IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext, ILogger<PlanningPokerHub> logger)
+        public PlanningPokerHub(
+            D.IPlanningPoker planningPoker,
+            IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext,
+            D.DateTimeProvider dateTimeProvider,
+            ILogger<PlanningPokerHub> logger)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             _clientContext = clientContext ?? throw new ArgumentNullException(nameof(clientContext));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -339,6 +347,19 @@ namespace Duracellko.PlanningPoker.Service
             }
 
             OnMessageReceived(receiveMessagesTask, Context.ConnectionId);
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "GetCurrentTime is SignalR method.")]
+        public TimeResult GetCurrentTime()
+        {
+            return new TimeResult
+            {
+                CurrentUtcTime = _dateTimeProvider.UtcNow
+            };
         }
 
         private static void ValidateTeamName(string teamName)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -17,13 +18,17 @@ namespace Duracellko.PlanningPoker.Service
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PlanningPokerService : ControllerBase
     {
+        private readonly D.DateTimeProvider _dateTimeProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerService"/> class.
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
-        public PlanningPokerService(D.IPlanningPoker planningPoker)
+        /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
+        public PlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider dateTimeProvider)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         /// <summary>
@@ -350,6 +355,20 @@ namespace Duracellko.PlanningPoker.Service
             var messages = await receiveMessagesTask;
             return messages.Select(ServiceEntityMapper.FilterMessage)
                 .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        [HttpGet("GetMessages")]
+        [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "GetCurrentTime is API controller method.")]
+        public TimeResult GetCurrentTime()
+        {
+            return new TimeResult
+            {
+                CurrentUtcTime = _dateTimeProvider.UtcNow
+            };
         }
 
         private static void ValidateTeamName(string teamName)
