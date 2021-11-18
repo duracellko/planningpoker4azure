@@ -33,6 +33,7 @@ namespace Duracellko.PlanningPoker.Client
             services.AddScoped<BusyIndicatorService>();
             services.AddScoped<IBusyIndicatorService>(p => p.GetRequiredService<BusyIndicatorService>());
             services.AddScoped<IPlanningPokerInitializer>(p => p.GetRequiredService<PlanningPokerController>());
+            services.AddScoped<IServiceTimeProvider, ServiceTimeProvider>();
 
             services.AddScoped<PlanningPokerController>();
             services.AddScoped<CreateTeamController>();

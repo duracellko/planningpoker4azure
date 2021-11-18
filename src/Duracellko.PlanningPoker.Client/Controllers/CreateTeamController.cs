@@ -18,6 +18,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IMessageBoxService _messageBoxService;
         private readonly IBusyIndicatorService _busyIndicatorService;
         private readonly INavigationManager _navigationManager;
+        private readonly IServiceTimeProvider _serviceTimeProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateTeamController"/> class.
@@ -27,18 +28,21 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="messageBoxService">Service to display message to user.</param>
         /// <param name="busyIndicatorService">Service to display that operation is in progress.</param>
         /// <param name="navigationManager">Service to navigate to specified URL.</param>
+        /// <param name="serviceTimeProvider">Service to update time from server.</param>
         public CreateTeamController(
             IPlanningPokerClient planningPokerService,
             IPlanningPokerInitializer planningPokerInitializer,
             IMessageBoxService messageBoxService,
             IBusyIndicatorService busyIndicatorService,
-            INavigationManager navigationManager)
+            INavigationManager navigationManager,
+            IServiceTimeProvider serviceTimeProvider)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _planningPokerInitializer = planningPokerInitializer ?? throw new ArgumentNullException(nameof(planningPokerInitializer));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
             _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
+            _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
         }
 
         /// <summary>
@@ -72,6 +76,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 TeamResult? teamResult = null;
                 using (_busyIndicatorService.Show())
                 {
+                    await _serviceTimeProvider.UpdateServiceTimeOffset(CancellationToken.None);
                     teamResult = await _planningPokerService.CreateTeam(teamName, scrumMasterName, deck, CancellationToken.None);
                 }
 

@@ -25,12 +25,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerService = new Mock<IPlanningPokerClient>();
             planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(teamResult);
-            var target = CreateController(planningPokerService: planningPokerService.Object);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(planningPokerService: planningPokerService.Object, serviceTimeProvider: serviceTimeProvider.Object);
 
             await target.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver);
 
             planningPokerService.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver, It.IsAny<CancellationToken>()));
             planningPokerService.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, memberName, It.IsAny<CancellationToken>()), Times.Never());
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
         }
 
         [DataTestMethod]
@@ -202,12 +204,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 .ThrowsAsync(new PlanningPokerException(ReconnectErrorMessage));
             planningPokerService.Setup(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(reconnectTeamResult);
-            var target = CreateController(memberExistsError: true, planningPokerService: planningPokerService.Object);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(memberExistsError: true, planningPokerService: planningPokerService.Object, serviceTimeProvider: serviceTimeProvider.Object);
 
             await target.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver);
 
             planningPokerService.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver, It.IsAny<CancellationToken>()));
             planningPokerService.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, memberName, It.IsAny<CancellationToken>()));
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
         [DataTestMethod]
@@ -386,11 +390,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             planningPokerService.Setup(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(reconnectTeamResult);
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
-            var target = CreateController(planningPokerService: planningPokerService.Object, memberCredentials: memberCredentials);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(planningPokerService: planningPokerService.Object, memberCredentials: memberCredentials, serviceTimeProvider: serviceTimeProvider.Object);
 
             await target.TryReconnectTeam(teamName, memberName);
 
             planningPokerService.Verify(o => o.ReconnectTeam(teamName, memberName, It.IsAny<CancellationToken>()));
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
         }
 
         [TestMethod]
@@ -543,6 +549,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             IBusyIndicatorService? busyIndicatorService = null,
             INavigationManager? navigationManager = null,
             IMemberCredentialsStore? memberCredentialsStore = null,
+            IServiceTimeProvider? serviceTimeProvider = null,
             bool memberExistsError = false,
             TeamResult? teamResult = null,
             ReconnectTeamResult? reconnectTeamResult = null,
@@ -617,7 +624,20 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 memberCredentialsStore = memberCredentialsStoreMock.Object;
             }
 
-            return new JoinTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, navigationManager, memberCredentialsStore);
+            if (serviceTimeProvider == null)
+            {
+                var serviceTimeProviderMock = new Mock<IServiceTimeProvider>();
+                serviceTimeProvider = serviceTimeProviderMock.Object;
+            }
+
+            return new JoinTeamController(
+                planningPokerService,
+                planningPokerInitializer,
+                messageBoxService,
+                busyIndicatorService,
+                navigationManager,
+                memberCredentialsStore,
+                serviceTimeProvider);
         }
 
         private static void SetupReconnectMessageBox(Mock<IMessageBoxService> messageBoxService, bool result)
