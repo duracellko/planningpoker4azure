@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Act
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
-            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, logger));
+            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, logger));
         }
 
         [DataTestMethod]
@@ -162,7 +162,10 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var guidProvider = new GuidProviderMock();
-            var team = CreateBasicTeam(guidProvider: guidProvider);
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
+            var team = CreateBasicTeam(guidProvider: guidProvider, dateTimeProvider: dateTimeProvider);
+            team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(122));
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
@@ -186,6 +189,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, resultTeam.Name);
                 Assert.IsNotNull(resultTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), resultTeam.TimerEndTime);
                 Assert.IsNotNull(resultTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName, MemberName };
                 CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
@@ -263,6 +267,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, resultTeam.Name);
                 Assert.IsNotNull(resultTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+                Assert.IsNull(resultTeam.TimerEndTime);
                 Assert.IsNotNull(resultTeam.Observers);
                 var expectedObservers = new string[] { ObserverName };
                 CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
@@ -367,6 +372,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
                 Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+                Assert.IsNull(result.ScrumTeam.TimerEndTime);
                 Assert.IsNotNull(result.ScrumTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName };
                 CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
@@ -405,6 +411,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
                 Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+                Assert.IsNull(result.ScrumTeam.TimerEndTime);
                 Assert.IsNotNull(result.ScrumTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName, MemberName };
                 CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
@@ -418,7 +425,10 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var guidProvider = new GuidProviderMock();
-            var team = CreateBasicTeam(guidProvider: guidProvider);
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
+            var team = CreateBasicTeam(guidProvider: guidProvider, dateTimeProvider: dateTimeProvider);
+            team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(122));
             var observer = team.Join(ObserverName, true);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -443,6 +453,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
                 Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), result.ScrumTeam.TimerEndTime);
 
                 Assert.IsNotNull(result.ScrumTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName };
@@ -1215,6 +1226,156 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void StartTimer_Duration_ScrumTeamTimerIsSet()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            team.Join(MemberName, false);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            target.StartTimer(TeamName, MemberName, TimeSpan.FromSeconds(122));
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public void StartTimer_TeamNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(null!, MemberName, TimeSpan.FromSeconds(122)));
+        }
+
+        [TestMethod]
+        public void StartTimer_TeamNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.StartTimer(LongTeamName, MemberName, TimeSpan.FromSeconds(122)));
+        }
+
+        [TestMethod]
+        public void StartTimer_MemberNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(TeamName, null!, TimeSpan.FromSeconds(122)));
+        }
+
+        [TestMethod]
+        public void StartTimer_MemberNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.StartTimer(TeamName, LongMemberName, TimeSpan.FromSeconds(122)));
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-122)]
+        public void StartTimer_NegativeDuration_ArgumentOutOfRangeException(int duration)
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => target.StartTimer(TeamName, MemberName, TimeSpan.FromSeconds(duration)));
+        }
+
+        [TestMethod]
+        public void CancelTimer_MemberName_ScrumTeamTimerIsSet()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            team.Join(MemberName, false);
+            team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(122));
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            target.CancelTimer(TeamName, MemberName);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            Assert.IsNull(team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public void CancelTimer_TeamNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(null!, MemberName));
+        }
+
+        [TestMethod]
+        public void CancelTimer_TeamNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(LongTeamName, MemberName));
+        }
+
+        [TestMethod]
+        public void CancelTimer_MemberNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(TeamName, null!));
+        }
+
+        [TestMethod]
+        public void CancelTimer_MemberNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(TeamName, LongMemberName));
+        }
+
+        [TestMethod]
         public void GetMessages_MemberJoinedTeam_ScrumMasterGetsMessage()
         {
             // Arrange
@@ -1396,6 +1557,47 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void GetMessages_TimerStarted_MemberGetsMessage()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
+            var team = CreateBasicTeam(new GuidProviderMock(guid), dateTimeProvider: dateTimeProvider);
+            var member = team.Join(MemberName, false);
+            team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(122));
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(member, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => member.Messages.ToList()).Verifiable();
+
+            IList<Message>? result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
+
+            // Act
+            target.GetMessages(TeamName, MemberName, guid, 0);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual<int>(1, result.Count);
+            Assert.AreEqual<long>(1, result[0].Id);
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
+            Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
+            var timerMessage = (TimerMessage)result[0];
+            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), timerMessage.EndTime);
+        }
+
+        [TestMethod]
         public void GetMessages_NoMessagesOnTime_ReturnsEmptyCollection()
         {
             // Arrange
@@ -1531,6 +1733,23 @@ namespace Duracellko.PlanningPoker.Test.Service
             }
         }
 
+        [TestMethod]
+        public void GetCurrentTime_DateTimeProvider_CurrentUtcTime()
+        {
+            // Arrange
+            var utcNow = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc);
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(utcNow);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using var target = CreatePlanningPokerHub(planningPoker.Object, dateTimeProvider: dateTimeProvider);
+
+            // Act
+            var result = target.GetCurrentTime();
+
+            // Verify
+            Assert.AreEqual(utcNow, result.CurrentUtcTime);
+        }
+
         public void Dispose()
         {
             _loggerFactory.Dispose();
@@ -1555,6 +1774,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         private PlanningPokerHub CreatePlanningPokerHub(
             D.IPlanningPoker planningPoker,
             IPlanningPokerClient? client = null,
+            D.DateTimeProvider? dateTimeProvider = null,
             string? connectionId = null)
         {
             if (connectionId == null)
@@ -1570,9 +1790,14 @@ namespace Duracellko.PlanningPoker.Test.Service
                 clients.Setup(o => o.Client(connectionId)).Returns(client);
             }
 
+            if (dateTimeProvider == null)
+            {
+                dateTimeProvider = D.DateTimeProvider.Default;
+            }
+
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
 
-            var result = new PlanningPokerHub(planningPoker, clientContext.Object, logger);
+            var result = new PlanningPokerHub(planningPoker, clientContext.Object, dateTimeProvider, logger);
 
             var context = new HubCallerContextMock();
             context.SetConnectionId(connectionId);

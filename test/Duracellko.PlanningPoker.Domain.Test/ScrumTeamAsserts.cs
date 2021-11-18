@@ -20,6 +20,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.Name, actual.Name);
             Assert.AreEqual(expected.State, actual.State);
+            Assert.AreEqual(expected.TimerEndTime, actual.TimerEndTime);
             AssertAvailableEstimations(expected.AvailableEstimations, actual.AvailableEstimations);
             AssertObserversAreEqual(expected.ScrumMaster, actual.ScrumMaster);
 
@@ -109,6 +110,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
             {
                 AssertEstimationResultMessagesAreEqual(expectedEstimationResultMessage, (EstimationResultMessage)actual);
             }
+
+            if (expected is TimerMessage expectedTimerMessage)
+            {
+                AssertTimerMessagesAreEqual(expectedTimerMessage, (TimerMessage)actual);
+            }
         }
 
         private static void AssertMemberMessagesAreEqual(MemberMessage expected, MemberMessage actual)
@@ -119,6 +125,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
         private static void AssertEstimationResultMessagesAreEqual(EstimationResultMessage expected, EstimationResultMessage actual)
         {
             AssertEstimationResultsAreEqual(expected.EstimationResult, actual.EstimationResult);
+        }
+
+        private static void AssertTimerMessagesAreEqual(TimerMessage expected, TimerMessage actual)
+        {
+            Assert.AreEqual(expected.EndTime, actual.EndTime);
         }
 
         private static void AssertEsimationParticipantsAreEqual(IEnumerable<EstimationParticipantStatus>? expected, IEnumerable<EstimationParticipantStatus>? actual)

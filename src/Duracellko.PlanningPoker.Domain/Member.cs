@@ -66,6 +66,28 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="duration">The duration of countdown.</param>
+        public void StartTimer(TimeSpan duration)
+        {
+            if (duration <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
+            }
+
+            Team.StartTimer(duration);
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        public void CancelTimer()
+        {
+            Team.CancelTimer();
+        }
+
+        /// <summary>
         /// Resets the estimation to unselected.
         /// </summary>
         internal void ResetEstimation()

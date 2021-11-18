@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Duracellko.PlanningPoker.Service
     public class PlanningPokerHub : Hub<IPlanningPokerClient>
     {
         private readonly IHubContext<PlanningPokerHub, IPlanningPokerClient> _clientContext;
+        private readonly D.DateTimeProvider _dateTimeProvider;
         private readonly ILogger<PlanningPokerHub> _logger;
 
         /// <summary>
@@ -22,11 +24,17 @@ namespace Duracellko.PlanningPoker.Service
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
         /// <param name="clientContext">Interface to send messages to client.</param>
+        /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
         /// <param name="logger">Logger instance to log events.</param>
-        public PlanningPokerHub(D.IPlanningPoker planningPoker, IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext, ILogger<PlanningPokerHub> logger)
+        public PlanningPokerHub(
+            D.IPlanningPoker planningPoker,
+            IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext,
+            D.DateTimeProvider dateTimeProvider,
+            ILogger<PlanningPokerHub> logger)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             _clientContext = clientContext ?? throw new ArgumentNullException(nameof(clientContext));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -244,6 +252,52 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of countdown timer.</param>
+        public void StartTimer(string teamName, string memberName, TimeSpan duration)
+        {
+            _logger.StartTimer(teamName, memberName, duration);
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            if (duration <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
+            }
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                member?.StartTimer(duration);
+            }
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        public void CancelTimer(string teamName, string memberName)
+        {
+            _logger.CancelTimer(teamName, memberName);
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                member?.CancelTimer();
+            }
+        }
+
+        /// <summary>
         /// Begins to get messages of specified member asynchronously.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
@@ -287,6 +341,19 @@ namespace Duracellko.PlanningPoker.Service
             }
 
             OnMessageReceived(receiveMessagesTask, Context.ConnectionId);
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "GetCurrentTime is SignalR method.")]
+        public TimeResult GetCurrentTime()
+        {
+            return new TimeResult
+            {
+                CurrentUtcTime = _dateTimeProvider.UtcNow
+            };
         }
 
         private static void ValidateTeamName(string teamName)

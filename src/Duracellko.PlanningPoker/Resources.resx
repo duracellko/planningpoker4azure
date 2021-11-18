@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Error_InvalidTimerDuraction" xml:space="preserve">
+    <value>Timer duration must be more greater than 0 seconds.</value>
+  </data>
   <data name="Error_MemberNameTooLong" xml:space="preserve">
     <value>Member name cannot be longer than 50 characters.</value>
   </data>

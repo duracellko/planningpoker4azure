@@ -48,6 +48,16 @@
         /// <summary>
         /// Message specifies that a new Scrum team was created.
         /// </summary>
-        TeamCreated
+        TeamCreated,
+
+        /// <summary>
+        /// Message specifies that a countdown timer for team has started.
+        /// </summary>
+        TimerStarted,
+
+        /// <summary>
+        /// Message specifies that a timer was canceled.
+        /// </summary>
+        TimerCanceled
     }
 }

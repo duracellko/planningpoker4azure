@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Duracellko.PlanningPoker.Domain.Serialization
@@ -35,5 +36,10 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
         public IDictionary<string, Estimation?>? EstimationResult { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end time of countdown timer, when the timer is started; otherwise <c>null</c>.
+        /// </summary>
+        public DateTime? TimerEndTime { get; set; }
     }
 }

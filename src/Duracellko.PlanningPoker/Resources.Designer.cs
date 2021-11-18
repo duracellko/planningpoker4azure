@@ -61,6 +61,15 @@ namespace Duracellko.PlanningPoker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timer duration must be more greater than 0 seconds..
+        /// </summary>
+        internal static string Error_InvalidTimerDuraction {
+            get {
+                return ResourceManager.GetString("Error_InvalidTimerDuraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Member name cannot be longer than 50 characters..
         /// </summary>
         internal static string Error_MemberNameTooLong {

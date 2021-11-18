@@ -18,13 +18,17 @@ namespace Duracellko.PlanningPoker.Service
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PlanningPokerService : ControllerBase
     {
+        private readonly D.DateTimeProvider _dateTimeProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerService"/> class.
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
-        public PlanningPokerService(D.IPlanningPoker planningPoker)
+        /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
+        public PlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider dateTimeProvider)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
         }
 
         /// <summary>
@@ -250,6 +254,52 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of timer in seconds.</param>
+        [HttpGet("StartTimer")]
+        public void StartTimer(string teamName, string memberName, int duration)
+        {
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            if (duration <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
+            }
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                member?.StartTimer(TimeSpan.FromSeconds(duration));
+            }
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        [HttpGet("CancelTimer")]
+        public void CancelTimer(string teamName, string memberName)
+        {
+            ValidateTeamName(teamName);
+            ValidateMemberName(memberName, nameof(memberName));
+
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName) as D.Member;
+                member?.CancelTimer();
+            }
+        }
+
+        /// <summary>
         /// Begins to get messages of specified member asynchronously.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
@@ -299,6 +349,20 @@ namespace Duracellko.PlanningPoker.Service
             var messages = await receiveMessagesTask;
             return messages.Select(ServiceEntityMapper.FilterMessage)
                 .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        [HttpGet("GetMessages")]
+        [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "GetCurrentTime is API controller method.")]
+        public TimeResult GetCurrentTime()
+        {
+            return new TimeResult
+            {
+                CurrentUtcTime = _dateTimeProvider.UtcNow
+            };
         }
 
         private static void ValidateTeamName(string teamName)

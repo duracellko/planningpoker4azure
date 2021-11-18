@@ -38,6 +38,16 @@
         /// <summary>
         /// Message specifies that a member placed estimation.
         /// </summary>
-        MemberEstimated
+        MemberEstimated,
+
+        /// <summary>
+        /// Message specifies that a countdown timer for team has started.
+        /// </summary>
+        TimerStarted,
+
+        /// <summary>
+        /// Message specifies that a timer was canceled.
+        /// </summary>
+        TimerCanceled
     }
 }

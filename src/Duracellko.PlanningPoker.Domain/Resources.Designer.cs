@@ -106,6 +106,15 @@ namespace Duracellko.PlanningPoker.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timer duration must be more greater than 0 seconds..
+        /// </summary>
+        internal static string Error_InvalidTimerDuraction {
+            get {
+                return ResourceManager.GetString("Error_InvalidTimerDuraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Member or observer named &apos;{0}&apos; already exists in the team..
         /// </summary>
         internal static string Error_MemberAlreadyExists {

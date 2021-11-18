@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,6 +40,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.AreEqual(scrumTeam.TimerEndTime, result.TimerEndTime);
             Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
@@ -67,6 +69,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Name = "Test Team",
                 State = TeamState.EstimationFinished,
                 ScrumMaster = scrumMaster,
+                TimerEndTime = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc),
                 Members = new List<TeamMember> { scrumMaster, teamMember },
                 Observers = new List<TeamMember>
                 {
@@ -85,6 +88,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.AreEqual(scrumTeam.TimerEndTime, result.TimerEndTime);
             Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
@@ -138,6 +142,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual(scrumTeam.Name, result.Name);
             Assert.AreEqual(scrumTeam.State, result.State);
+            Assert.AreEqual(scrumTeam.TimerEndTime, result.TimerEndTime);
             Assert.IsNotNull(result.ScrumMaster);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, result.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, result.ScrumMaster.Type);
@@ -165,6 +170,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Name = "Test Team",
                 State = TeamState.Initial,
                 ScrumMaster = scrumMaster,
+                TimerEndTime = new DateTime(2022, 3, 4, 5, 6, 7, DateTimeKind.Utc),
                 Members = new List<TeamMember> { scrumMaster },
                 AvailableEstimations = new List<Estimation>
                 {
@@ -191,6 +197,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(resultScrumTeam.ScrumMaster);
             Assert.AreEqual(scrumTeam.Name, resultScrumTeam.Name);
             Assert.AreEqual(scrumTeam.State, resultScrumTeam.State);
+            Assert.AreEqual(scrumTeam.TimerEndTime, resultScrumTeam.TimerEndTime);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, resultScrumTeam.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, resultScrumTeam.ScrumMaster.Type);
             Assert.AreEqual(scrumTeam.Members[0].Name, resultScrumTeam.Members[0].Name);
@@ -247,6 +254,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.IsNotNull(resultScrumTeam.ScrumMaster);
             Assert.AreEqual(scrumTeam.Name, resultScrumTeam.Name);
             Assert.AreEqual(scrumTeam.State, resultScrumTeam.State);
+            Assert.AreEqual(scrumTeam.TimerEndTime, resultScrumTeam.TimerEndTime);
             Assert.AreEqual(scrumTeam.ScrumMaster.Name, resultScrumTeam.ScrumMaster.Name);
             Assert.AreEqual(scrumTeam.ScrumMaster.Type, resultScrumTeam.ScrumMaster.Type);
             Assert.AreEqual(scrumTeam.Members[0].Name, resultScrumTeam.Members[0].Name);
@@ -357,6 +365,28 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual(message.EstimationResult[1].Member!.Name, estimationResult.EstimationResult[1].Member!.Name);
             Assert.AreEqual(message.EstimationResult[1].Member!.Type, estimationResult.EstimationResult[1].Member!.Type);
             Assert.AreEqual(message.EstimationResult[1].Estimation!.Value, estimationResult.EstimationResult[1].Estimation!.Value);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_TimerStarted(JsonSerializerDefaults jsonSerializerDefaults)
+        {
+            var message = new TimerMessage
+            {
+                Id = 3,
+                Type = MessageType.TimerStarted,
+                EndTime = new DateTime(2021, 11, 17, 22, 33, 41, DateTimeKind.Utc)
+            };
+
+            var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(message.Id, result.Id);
+            Assert.AreEqual(message.Type, result.Type);
+
+            Assert.IsInstanceOfType(result, typeof(TimerMessage));
+            var timerMessageResult = (TimerMessage)result;
+            Assert.AreEqual(message.EndTime, timerMessageResult.EndTime);
         }
 
         private static T? SerializeAndDeserialize<T>(T value, JsonSerializerDefaults jsonSerializerDefaults)

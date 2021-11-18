@@ -70,6 +70,7 @@ namespace Duracellko.PlanningPoker.Domain
             Name = scrumTeamData.Name;
             AvailableEstimations = scrumTeamData.AvailableEstimations.ToArray();
             State = scrumTeamData.State;
+            TimerEndTime = scrumTeamData.TimerEndTime.HasValue ? DateTime.SpecifyKind(scrumTeamData.TimerEndTime.Value, DateTimeKind.Utc) : null;
 
             if (scrumTeamData.Members != null)
             {
@@ -150,6 +151,11 @@ namespace Duracellko.PlanningPoker.Domain
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the end time of countdown timer, when the timer is started; otherwise <c>null</c>.
+        /// </summary>
+        public DateTime? TimerEndTime { get; private set; }
 
         /// <summary>
         /// Gets the date time provider used by the Scrum team.
@@ -350,6 +356,7 @@ namespace Duracellko.PlanningPoker.Domain
                 Name = Name,
                 AvailableEstimations = AvailableEstimations.ToList(),
                 State = State,
+                TimerEndTime = TimerEndTime
             };
 
             result.Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList();
@@ -385,6 +392,30 @@ namespace Duracellko.PlanningPoker.Domain
 
             var recipients = UnionMembersAndObservers();
             SendMessage(recipients, () => new Message(MessageType.EstimationCanceled));
+        }
+
+        /// <summary>
+        /// Starts countdown timer with specified duration.
+        /// </summary>
+        /// <param name="duration">The duration of countdown.</param>
+        internal void StartTimer(TimeSpan duration)
+        {
+            var timerEndTime = DateTimeProvider.UtcNow + duration;
+            TimerEndTime = timerEndTime;
+
+            var recipients = UnionMembersAndObservers();
+            SendMessage(recipients, () => new TimerMessage(MessageType.TimerStarted, timerEndTime));
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        internal void CancelTimer()
+        {
+            TimerEndTime = null;
+
+            var recipients = UnionMembersAndObservers();
+            SendMessage(recipients, () => new Message(MessageType.TimerCanceled));
         }
 
         /// <summary>

@@ -95,6 +95,11 @@ namespace Duracellko.PlanningPoker.Service.Serialization
                 writer.WritePropertyName(GetPropertyName(nameof(EstimationResultMessage.EstimationResult), options));
                 JsonSerializer.Serialize(writer, estimationResultMessage.EstimationResult, options);
             }
+            else if (value is TimerMessage timerMessage)
+            {
+                writer.WritePropertyName(GetPropertyName(nameof(TimerMessage.EndTime), options));
+                JsonSerializer.Serialize(writer, timerMessage.EndTime, options);
+            }
 
             writer.WriteEndObject();
         }
@@ -138,6 +143,12 @@ namespace Duracellko.PlanningPoker.Service.Serialization
 
                     message = estimationResultMessage;
                     break;
+                case MessageType.TimerStarted:
+                    message = new TimerMessage
+                    {
+                        EndTime = DateTime.SpecifyKind(messageData.EndTimer, DateTimeKind.Utc)
+                    };
+                    break;
                 default:
                     message = new Message();
                     break;
@@ -166,6 +177,10 @@ namespace Duracellko.PlanningPoker.Service.Serialization
             {
                 messageData.EstimationResult = JsonSerializer.Deserialize<IList<EstimationResultItem>>(ref reader, options);
             }
+            else if (IsPropertyName(ref reader, nameof(TimerMessage.EndTime), options))
+            {
+                messageData.EndTimer = JsonSerializer.Deserialize<DateTime>(ref reader, options);
+            }
             else
             {
                 reader.Skip();
@@ -181,6 +196,8 @@ namespace Duracellko.PlanningPoker.Service.Serialization
             public TeamMember? Member { get; set; }
 
             public IList<EstimationResultItem>? EstimationResult { get; set; }
+
+            public DateTime EndTimer { get; set; }
         }
     }
 }
