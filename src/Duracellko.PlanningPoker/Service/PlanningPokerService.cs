@@ -267,7 +267,7 @@ namespace Duracellko.PlanningPoker.Service
 
             if (duration <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(duration), Resources.Error_InvalidTimerDuraction);
+                throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
             }
 
             using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
@@ -275,10 +275,7 @@ namespace Duracellko.PlanningPoker.Service
                 teamLock.Lock();
                 var team = teamLock.Team;
                 var member = team.FindMemberOrObserver(memberName) as D.Member;
-                if (member != null)
-                {
-                    member.StartTimer(TimeSpan.FromSeconds(duration));
-                }
+                member?.StartTimer(TimeSpan.FromSeconds(duration));
             }
         }
 
@@ -298,10 +295,7 @@ namespace Duracellko.PlanningPoker.Service
                 teamLock.Lock();
                 var team = teamLock.Team;
                 var member = team.FindMemberOrObserver(memberName) as D.Member;
-                if (member != null)
-                {
-                    member.CancelTimer();
-                }
+                member?.CancelTimer();
             }
         }
 

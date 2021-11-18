@@ -73,7 +73,7 @@ namespace Duracellko.PlanningPoker.Domain
         {
             if (duration <= TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(duration), Resources.Error_InvalidTimerDuraction);
+                throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
             }
 
             Team.StartTimer(duration);
