@@ -800,6 +800,59 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             httpMock.VerifyNoOutstandingExpectation();
         }
 
+        [TestMethod]
+        public async Task StartTimer_TeamNameAndDuration_RequestsStartEstimationUrl()
+        {
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/StartTimer?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&duration=264")
+                .Respond(TextType, string.Empty);
+            var target = CreatePlanningPokerClient(httpMock);
+
+            await target.StartTimer(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, TimeSpan.FromSeconds(264), CancellationToken.None);
+
+            httpMock.VerifyNoOutstandingExpectation();
+        }
+
+        [TestMethod]
+        public async Task CancelTimer_TeamName_RequestsCancelEstimationUrl()
+        {
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/CancelTimer?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}")
+                .Respond(TextType, string.Empty);
+            var target = CreatePlanningPokerClient(httpMock);
+
+            await target.CancelTimer(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, CancellationToken.None);
+
+            httpMock.VerifyNoOutstandingExpectation();
+        }
+
+        [TestMethod]
+        public async Task GetCurrentTime_RequestsGetCurrentTimeUrl()
+        {
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/GetCurrentTime")
+                .Respond(JsonType, PlanningPokerClientData.CurrentTimeJson);
+            var target = CreatePlanningPokerClient(httpMock);
+
+            await target.GetCurrentTime(CancellationToken.None);
+
+            httpMock.VerifyNoOutstandingExpectation();
+        }
+
+        [TestMethod]
+        public async Task GetCurrentTime_ReturnsCurrentTime()
+        {
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/GetCurrentTime")
+                .Respond(JsonType, PlanningPokerClientData.CurrentTimeJson);
+            var target = CreatePlanningPokerClient(httpMock);
+
+            var result = await target.GetCurrentTime(CancellationToken.None);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(new DateTime(2022, 5, 6, 16, 43, 21, DateTimeKind.Utc), result.CurrentUtcTime);
+        }
+
         internal static PlanningPokerClient CreatePlanningPokerClient(MockHttpMessageHandler messageHandler)
         {
             var httpClient = messageHandler.ToHttpClient();

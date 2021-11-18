@@ -196,6 +196,27 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         }
 
         [TestMethod]
+        public async Task GetMessages_TeamAndMemberName_ReturnsTimerStartedMessage()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
+
+            var message = new TimerMessage
+            {
+                Id = 1,
+                Type = MessageType.TimerStarted,
+                EndTime = new DateTime(2021, 11, 17, 10, 3, 46, DateTimeKind.Utc)
+            };
+            await ProvideMessages(fixture, message);
+
+            var result = await resultTask;
+            await Task.Yield();
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(message, result[0]);
+        }
+
+        [TestMethod]
         public async Task GetMessages_TeamAndMemberName_Returns3Messages()
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();

@@ -61,7 +61,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         Task DisconnectTeam(string teamName, string memberName, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Signal from Scrum master to starts the estimation.
+        /// Signal from Scrum master to start the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -71,7 +71,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         Task StartEstimation(string teamName, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Signal from Scrum master to cancels the estimation.
+        /// Signal from Scrum master to cancel the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -93,6 +93,29 @@ namespace Duracellko.PlanningPoker.Client.Service
         Task SubmitEstimation(string teamName, string memberName, double? estimation, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of countdown timer.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        Task StartTimer(string teamName, string memberName, TimeSpan duration, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        Task CancelTimer(string teamName, string memberName, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Begins to get messages of specified member asynchronously.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
@@ -104,5 +127,12 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// List of messages.
         /// </returns>
         Task<IList<Message>> GetMessages(string teamName, string memberName, Guid sessionId, long lastMessageId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        Task<TimeResult> GetCurrentTime(CancellationToken cancellationToken);
     }
 }

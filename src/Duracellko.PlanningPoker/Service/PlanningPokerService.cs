@@ -182,7 +182,7 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to starts the estimation.
+        /// Signal from Scrum master to start the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         [HttpGet("StartEstimation")]
@@ -199,7 +199,7 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to cancels the estimation.
+        /// Signal from Scrum master to cancel the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         [HttpGet("CancelEstimation")]
@@ -355,7 +355,7 @@ namespace Duracellko.PlanningPoker.Service
         /// Gets information about current time of service.
         /// </summary>
         /// <returns>Current time of service in UTC time zone.</returns>
-        [HttpGet("GetMessages")]
+        [HttpGet("GetCurrentTime")]
         [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "GetCurrentTime is API controller method.")]
         public TimeResult GetCurrentTime()
         {

@@ -189,7 +189,7 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to starts the estimation.
+        /// Signal from Scrum master to start the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         public void StartEstimation(string teamName)
@@ -206,7 +206,7 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to cancels the estimation.
+        /// Signal from Scrum master to cancel the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         public void CancelEstimation(string teamName)

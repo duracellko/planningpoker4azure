@@ -18,6 +18,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public static readonly Guid SessionId = Guid.NewGuid();
         public static readonly Guid ReconnectSessionId = Guid.NewGuid();
 
+        public static string CurrentTimeJson => @"{""currentUtcTime"": ""2022-05-06T16:43:21Z""}";
+
         public static string GetScrumTeamJson(bool member = false, bool observer = false, int state = 0, string estimationResult = "", string estimationParticipants = "")
         {
             var sb = new StringBuilder();
@@ -304,6 +306,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
                 ""name"": """ + name + @""",
                 ""type"": """ + type + @"""
             }
+}";
+        }
+
+        public static string GetTimerStartedMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 7,
+            ""endTime"": ""2021-11-17T10:03:46Z""
 }";
         }
     }
