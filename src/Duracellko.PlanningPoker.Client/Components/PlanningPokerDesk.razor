@@ -27,7 +27,7 @@
         </div>
     }
 
-    @if (Controller.IsScrumMaster || Controller.CanShowEstimationSummary)
+    @if (Controller.IsScrumMaster || Controller.CanShowEstimationSummary || Controller.CanStartTimer || Controller.CanStopTimer)
     {
         <div class="actionsBar">
             <p>
@@ -49,6 +49,20 @@
                 {
                     <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary mr-3">
                         <span class="oi oi-calculator mr-1" aria-hidden="true"></span> Show average
+                    </button>
+                }
+
+                @if (Controller.CanStartTimer)
+                {
+                    <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary mr-3">
+                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Start timer
+                    </button>
+                }
+
+                @if (Controller.CanStopTimer)
+                {
+                    <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary mr-3">
+                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Stop timer
                     </button>
                 }
             </p>
@@ -136,6 +150,16 @@
     private void ShowEstimationSummaryCommand()
     {
         Controller.ShowEstimationSummary();
+    }
+
+    private Task StartTimerCommand()
+    {
+        return TryRun(() => Controller.StartTimer());
+    }
+
+    private Task CancelTimerCommand()
+    {
+        return TryRun(() => Controller.CancelTimer());
     }
 
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
