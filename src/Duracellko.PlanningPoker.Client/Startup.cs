@@ -11,9 +11,14 @@ namespace Duracellko.PlanningPoker.Client
         public static void ConfigureServices(IServiceCollection services, bool serverSide = false, bool useHttpClient = false)
         {
             // Services are scoped, because on server-side scope is created for each client session.
-            if (!serverSide)
+            if (serverSide)
+            {
+                services.AddScoped<IServiceTimeProvider, ServerSideServiceTimeProvider>();
+            }
+            else
             {
                 services.AddScoped<IPlanningPokerUriProvider, PlanningPokerUriProvider>();
+                services.AddScoped<IServiceTimeProvider, ServiceTimeProvider>();
             }
 
             if (useHttpClient)
@@ -40,7 +45,6 @@ namespace Duracellko.PlanningPoker.Client
             services.AddScoped<BusyIndicatorService>();
             services.AddScoped<IBusyIndicatorService>(p => p.GetRequiredService<BusyIndicatorService>());
             services.AddScoped<IPlanningPokerInitializer>(p => p.GetRequiredService<PlanningPokerController>());
-            services.AddScoped<IServiceTimeProvider, ServiceTimeProvider>();
 
             services.AddScoped<PlanningPokerController>();
             services.AddScoped<CreateTeamController>();

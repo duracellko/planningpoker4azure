@@ -1,8 +1,65 @@
-﻿@inherits ViewComponentBase
+﻿@using System.Globalization
+@inherits ViewComponentBase
 @implements IDisposable
 @inject PlanningPokerController Controller
 
 <div class="pokerDeskPanel">
+
+    <div id="timerSetupModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="timerSetupModalTitle">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="timerSetupModalTitle">Timer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>Timer duration</label>
+                            <div class="input-group">
+                                <select class="custom-select form-control text-right" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
+                                    @for (int i = 0; i < 60; i++)
+                                    {
+                                        @if (i == TimerDurationMinutes)
+                                        {
+                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
+                                        }
+                                    }
+                                </select>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">m</span>
+                                </div>
+                                <select class="custom-select form-control text-right" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
+                                    @for (int i = 0; i < 60; i++)
+                                    {
+                                        @if (i == TimerDurationSeconds)
+                                        {
+                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
+                                        }
+                                    }
+                                </select>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="team-title">
         <h2>
             <span class="badge badge-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
@@ -57,12 +114,16 @@
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary mr-3">
                         <span class="oi oi-timer mr-1" aria-hidden="true"></span> Start timer
                     </button>
+
+                    <button type="button" class="btn btn-secondary mr-3" data-toggle="modal" data-target="#timerSetupModal">
+                        <span class="oi oi-cog mr-1" aria-hidden="true"></span> Setup timer
+                    </button>
                 }
 
                 @if (Controller.CanStopTimer)
                 {
                     <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Stop timer
+                        <span class="oi oi-action-undo mr-1" aria-hidden="true"></span> Stop timer
                     </button>
                 }
             </p>
@@ -119,7 +180,40 @@
 
 @code
 {
+    private int _timerDuractionMinutes = 5;
+    private int _timerDurationSeconds = 0;
+
     private bool HasEstimationResult => Controller.Estimations != null;
+
+    private int TimerDurationMinutes
+    {
+        get => _timerDuractionMinutes;
+        set
+        {
+            value = EnsureTimePartIsInRange(value);
+            if (value == 0 && _timerDurationSeconds == 0)
+            {
+                _timerDurationSeconds = 1;
+            }
+
+            _timerDuractionMinutes = value;
+        }
+    }
+
+    private int TimerDurationSeconds
+    {
+        get => _timerDurationSeconds;
+        set
+        {
+            value = EnsureTimePartIsInRange(value);
+            if (value == 0 && _timerDuractionMinutes == 0)
+            {
+                _timerDuractionMinutes = 1;
+            }
+
+            _timerDurationSeconds = value;
+        }
+    }
 
     public void Dispose()
     {
@@ -130,6 +224,9 @@
     {
         base.OnInitialized();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
+
+        TimerDurationMinutes = Controller.TimerDuration.Minutes;
+        TimerDurationSeconds = Controller.TimerDuration.Seconds;
     }
 
     private Task SelectEstimationCommand(double? estimation)
@@ -162,8 +259,23 @@
         return TryRun(() => Controller.CancelTimer());
     }
 
+    private void OnTimerDurationMinutesSelectChanged(ChangeEventArgs e)
+    {
+        TimerDurationMinutes = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 5;
+        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
+    }
+
+    private void OnTimerDurationSecondsSelectChanged(ChangeEventArgs e)
+    {
+        TimerDurationSeconds = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 5;
+        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
+    }
+
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        TimerDurationMinutes = Controller.TimerDuration.Minutes;
+        TimerDurationSeconds = Controller.TimerDuration.Seconds;
+
         StateHasChanged();
     }
 
@@ -242,5 +354,19 @@
         }
 
         return value.Value.ToString("N2");
+    }
+
+    private static int EnsureTimePartIsInRange(int value)
+    {
+        if (value < 0)
+        {
+            value = 0;
+        }
+        else if (value > 59)
+        {
+            value = 59;
+        }
+
+        return value;
     }
 }

@@ -56,7 +56,7 @@
             <div class="card-header">Timer</div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-center">
-                    <span class="font-weight-bold">@RemainingTimerTime</span>
+                    <p class="h2">@RemainingTimerTime</p>
                 </li>
             </ul>
         }
@@ -75,7 +75,8 @@
                 return null;
             }
 
-            return remainingTimerTime.Value.ToString(@"hh\:mm\:ss");
+            var format = remainingTimerTime.Value.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss";
+            return remainingTimerTime.Value.ToString(format);
         }
     }
 
