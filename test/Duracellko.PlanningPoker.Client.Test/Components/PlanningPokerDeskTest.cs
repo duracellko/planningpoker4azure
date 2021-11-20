@@ -35,10 +35,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
             Assert.IsNotNull(frames);
-            Assert.AreEqual(425, frames.Count);
+            Assert.AreEqual(426, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 425);
+            AssertFrame.Element(frames[0], "div", 426);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
             AssertFrame.Element(frames[400], "div", 11);
             AssertFrame.Attribute(frames[401], "class", "team-title");
@@ -52,9 +52,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertFrame.Text(frames[410], PlanningPokerData.ScrumMasterName);
 
             // Button to start estimation
-            AssertFrame.Element(frames[411], "div", 14);
+            AssertFrame.Element(frames[411], "div", 15);
             AssertFrame.Attribute(frames[412], "class", "actionsBar");
-            AssertFrame.Element(frames[413], "p", 12);
+            AssertFrame.Element(frames[413], "p", 13);
             AssertFrame.Element(frames[414], "button", 5);
             AssertFrame.Attribute(frames[415], "type", "button");
             AssertFrame.Attribute(frames[416], "onclick");
@@ -85,10 +85,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
             Assert.IsNotNull(frames);
-            Assert.AreEqual(488, frames.Count);
+            Assert.AreEqual(489, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 488);
+            AssertFrame.Element(frames[0], "div", 489);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
             AssertFrame.Element(frames[400], "div", 11);
             AssertFrame.Attribute(frames[401], "class", "team-title");
@@ -121,11 +121,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             AssertAvailableEstimation(frames, 463, "?");
 
             // Members, who estimated already
-            AssertFrame.Element(frames[476], "div", 12);
-            AssertFrame.Attribute(frames[477], "class", "estimationResult");
-            AssertFrame.Markup(frames[478], $"<h3>Selected estimates</h3>");
-            AssertFrame.Element(frames[479], "ul", 9);
-            AssertSelectedEstimation(frames, 480, PlanningPokerData.ScrumMasterName, string.Empty);
+            AssertFrame.Element(frames[477], "div", 12);
+            AssertFrame.Attribute(frames[478], "class", "estimationResult");
+            AssertFrame.Markup(frames[479], $"<h3>Selected estimates</h3>");
+            AssertFrame.Element(frames[480], "ul", 9);
+            AssertSelectedEstimation(frames, 481, PlanningPokerData.ScrumMasterName, string.Empty);
         }
 
         [TestMethod]
