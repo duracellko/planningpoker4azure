@@ -311,6 +311,13 @@ namespace Duracellko.PlanningPoker.Azure
                     }
 
                     break;
+                case MessageType.TimerStarted:
+                    var timerMessage = (TimerMessage)e.Message;
+                    scrumTeamMessage = new ScrumTeamTimerMessage(team.Name, timerMessage.MessageType)
+                    {
+                        EndTime = timerMessage.EndTime
+                    };
+                    break;
                 default:
                     scrumTeamMessage = new ScrumTeamMessage(team.Name, e.Message.MessageType);
                     break;

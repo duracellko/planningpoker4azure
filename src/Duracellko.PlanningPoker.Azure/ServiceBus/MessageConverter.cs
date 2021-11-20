@@ -103,6 +103,10 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                     {
                         result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(message.Body);
                     }
+                    else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Data = ConvertFromMessageBody<ScrumTeamTimerMessage>(message.Body);
+                    }
                     else
                     {
                         result.Data = ConvertFromMessageBody<ScrumTeamMessage>(message.Body);

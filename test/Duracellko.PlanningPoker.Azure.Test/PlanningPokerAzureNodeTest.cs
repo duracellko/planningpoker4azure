@@ -220,6 +220,40 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public async Task Start_TimerStarted_MessageIsSentToServiceBus()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization());
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
+
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
+            NodeMessage? nodeMessage = null;
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage)))
+                .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
+
+            // Act
+            await target.Start();
+            sendServiceBusMsg();
+            startPlanningPokerMsg();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            Assert.IsNotNull(nodeMessage);
+            Assert.AreEqual<NodeMessageType>(NodeMessageType.ScrumTeamMessage, nodeMessage.MessageType);
+            Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual(message, nodeMessage.Data);
+        }
+
+        [TestMethod]
         public async Task Start_FirstScrumTeamMessageFails_SecondMessageIsSentToServiceBus()
         {
             // Arrange
@@ -657,6 +691,217 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
 
             SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
+        public async Task Start_TimerStartedFromServiceBus_TeamTimerStarted()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 22, 49, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.AreEqual(endTime, team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public async Task Start_TimerStartedFromServiceBusAndTimerStartedInTeam_TeamTimerIsOverwritten()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 22, 49, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            var member = (Member)team.Join(MemberName, false);
+            member.StartTimer(TimeSpan.FromMinutes(22));
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.AreEqual(endTime, team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public async Task Start_TimerStartedFromServiceBusAndEndTimeIsInPast_TeamTimerIsNotStarted()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 50, 4, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.IsNull(team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public async Task Start_TimerStartedFromServiceBusAndAndTimeIsInPastAndTimerStartedInTeam_TeamTimerIsNotOverwritten()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 50, 4, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            team.ScrumMaster!.StartTimer(TimeSpan.FromMinutes(22));
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.AreEqual(new DateTime(2021, 11, 17, 0, 12, 4, DateTimeKind.Utc), team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public async Task Start_NotInitAndTimerStartedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
+            var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            var teamLock = SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task Start_TimerCanceledFromServiceBus_TeamTimerCanceled(bool timerStarted)
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMessage(TeamName, MessageType.TimerCanceled);
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 22, 49, DateTimeKind.Utc));
+            var team = CreateBasicTeam(dateTimeProvider: dateTimeProvider);
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+            if (timerStarted)
+            {
+                team.ScrumMaster!.StartTimer(TimeSpan.FromMinutes(1));
+            }
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            Assert.IsNull(team.TimerEndTime);
+        }
+
+        [TestMethod]
+        public async Task Start_NotInitAndTimerCanceledFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var message = new ScrumTeamMessage(TeamName, MessageType.TimerCanceled);
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            var teamLock = SetupPlanningPoker(planningPoker, null, true);
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
@@ -1139,9 +1384,9 @@ namespace Duracellko.PlanningPoker.Azure.Test
             return result;
         }
 
-        private static ScrumTeam CreateBasicTeam(string? name = null)
+        private static ScrumTeam CreateBasicTeam(string? name = null, DateTimeProvider? dateTimeProvider = null)
         {
-            var result = new ScrumTeam(name ?? TeamName);
+            var result = new ScrumTeam(name ?? TeamName, null, dateTimeProvider, null);
             result.SetScrumMaster(ScrumMasterName);
             return result;
         }

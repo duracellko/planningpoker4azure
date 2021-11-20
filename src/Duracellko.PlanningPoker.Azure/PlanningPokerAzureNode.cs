@@ -320,6 +320,12 @@ namespace Duracellko.PlanningPoker.Azure
                         case MessageType.MemberEstimated:
                             OnMemberEstimatedMessage(message.TeamName, (ScrumTeamMemberEstimationMessage)message);
                             break;
+                        case MessageType.TimerStarted:
+                            OnTimerStartedMessage(message.TeamName, (ScrumTeamTimerMessage)message);
+                            break;
+                        case MessageType.TimerCanceled:
+                            OnTimerCanceledMessage(message.TeamName);
+                            break;
                         case MessageType.MemberActivity:
                             OnMemberActivityMessage(message.TeamName, (ScrumTeamMemberMessage)message);
                             break;
@@ -420,6 +426,46 @@ namespace Duracellko.PlanningPoker.Azure
                     {
                         member.Estimation = new Estimation(message.Estimation);
                     }
+                }
+                finally
+                {
+                    _processingScrumTeamName = null;
+                }
+            }
+        }
+
+        private void OnTimerStartedMessage(string teamName, ScrumTeamTimerMessage message)
+        {
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                try
+                {
+                    _processingScrumTeamName = team.Name;
+                    var remainingTimerDuration = message.EndTime - team.DateTimeProvider.UtcNow;
+                    if (remainingTimerDuration > TimeSpan.Zero)
+                    {
+                        team.ScrumMaster?.StartTimer(remainingTimerDuration);
+                    }
+                }
+                finally
+                {
+                    _processingScrumTeamName = null;
+                }
+            }
+        }
+
+        private void OnTimerCanceledMessage(string teamName)
+        {
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                try
+                {
+                    _processingScrumTeamName = team.Name;
+                    team.ScrumMaster?.CancelTimer();
                 }
                 finally
                 {
