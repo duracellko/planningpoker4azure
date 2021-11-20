@@ -40,6 +40,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="planningPokerService">Planning poker client to send messages to server.</param>
         /// <param name="busyIndicator">Service to show busy indicator, when operation is in progress.</param>
         /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
+        /// <param name="timerFactory">Factory object to create timer for periodic actions.</param>
+        /// <param name="dateTimeProvider">The provider of current time.</param>
+        /// <param name="serviceTimeProvider">Service to obtain time difference between client and server.</param>
         public PlanningPokerController(
             IPlanningPokerClient planningPokerService,
             IBusyIndicatorService busyIndicator,

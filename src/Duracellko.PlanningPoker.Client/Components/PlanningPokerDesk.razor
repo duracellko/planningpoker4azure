@@ -114,7 +114,6 @@
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary mr-3">
                         <span class="oi oi-timer mr-1" aria-hidden="true"></span> Start timer
                     </button>
-
                     <button type="button" class="btn btn-secondary mr-3" data-toggle="modal" data-target="#timerSetupModal">
                         <span class="oi oi-cog mr-1" aria-hidden="true"></span> Setup timer
                     </button>
@@ -267,7 +266,7 @@
 
     private void OnTimerDurationSecondsSelectChanged(ChangeEventArgs e)
     {
-        TimerDurationSeconds = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 5;
+        TimerDurationSeconds = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 0;
         Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
     }
 

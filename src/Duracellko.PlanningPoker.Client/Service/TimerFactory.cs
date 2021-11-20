@@ -16,7 +16,6 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <summary>
         /// Initializes a new instance of the <see cref="TimerFactory" /> class.
         /// </summary>
-        /// <param name="dispatcher">The dispatcher to invoke interval action on.</param>
         /// <param name="interval">The interval of created timers.</param>
         public TimerFactory(TimeSpan interval)
         {
@@ -48,7 +47,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Sets delegate that can invoke action on Dispatcher.
         /// </summary>
         /// <param name="dispatcherDelegate">The delegate to invoke action on Dispatcher.</param>
-        public void SetDispatcherDelegate(Func<Action, Task>? dispatcherDelegate)
+        internal void SetDispatcherDelegate(Func<Action, Task>? dispatcherDelegate)
         {
             _dispatcherDelegate = dispatcherDelegate;
         }

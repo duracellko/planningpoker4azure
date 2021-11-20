@@ -30,8 +30,8 @@ namespace Duracellko.PlanningPoker.Client
                 services.AddScoped<IPlanningPokerClient, PlanningPokerSignalRClient>();
             }
 
-            var timerInerval = TimeSpan.FromMilliseconds(serverSide ? 1000 : 500);
-            services.AddScoped(p => new TimerFactory(timerInerval));
+            var timerInterval = TimeSpan.FromMilliseconds(serverSide ? 1000 : 500);
+            services.AddScoped(p => new TimerFactory(timerInterval));
             services.AddScoped<ITimerFactory>(p => p.GetRequiredService<TimerFactory>());
 
             services.AddSingleton<DateTimeProvider>();
