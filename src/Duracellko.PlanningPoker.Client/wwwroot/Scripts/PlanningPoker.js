@@ -28,7 +28,7 @@
             let cookie = document.cookie;
             let cookiePairs = cookie.split(';');
             for (let i = 0; i < cookiePairs.length; i++) {
-                let cookiePair = cookiePairs[i];
+                let cookiePair = cookiePairs[i].trim();
                 let startText = PlanningPoker.credentialsCookieName + '=';
                 if (cookiePair.startsWith(startText)) {
                     let value = cookiePair.substr(startText.length);

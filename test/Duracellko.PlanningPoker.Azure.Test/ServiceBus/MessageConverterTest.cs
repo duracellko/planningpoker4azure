@@ -102,6 +102,28 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
         }
 
         [TestMethod]
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamTimerMessage()
+        {
+            var scrumTeamMessage = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted)
+            {
+                EndTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc)
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
+            {
+                SenderNodeId = SenderId,
+                Data = scrumTeamMessage
+            };
+
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
+            var resultData = (ScrumTeamTimerMessage)result.Data!;
+
+            Assert.AreEqual(MessageType.TimerStarted, resultData.MessageType);
+            Assert.AreEqual(TeamName, resultData.TeamName);
+            Assert.AreEqual(scrumTeamMessage.EndTime, resultData.EndTime);
+            Assert.AreEqual(DateTimeKind.Utc, resultData.EndTime.Kind);
+        }
+
+        [TestMethod]
         public void ConvertToServiceBusMessageAndBack_TeamCreated()
         {
             var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated)

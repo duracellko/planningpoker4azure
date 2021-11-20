@@ -183,6 +183,56 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void ObservableMessages_TimerStarted_ScrumTeamTimerMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            var target = CreateAzurePlanningPokerController(dateTimeProvider: dateTimeProvider);
+            target.EndInitialization();
+            var messages = new List<ScrumTeamMessage>();
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
+            var member = (Member)teamLock.Team.Join("testMember", false);
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc));
+
+            // Act
+            target.ObservableMessages.Subscribe(m => messages.Add(m));
+            member.StartTimer(TimeSpan.FromSeconds(112));
+            target.Dispose();
+
+            // Verify
+            Assert.AreEqual<int>(1, messages.Count);
+            Assert.AreEqual<MessageType>(MessageType.TimerStarted, messages[0].MessageType);
+            Assert.AreEqual<string>("test", messages[0].TeamName);
+            Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamTimerMessage));
+            var timerMessage = (ScrumTeamTimerMessage)messages[0];
+            Assert.AreEqual<DateTime>(new DateTime(2021, 11, 16, 23, 51, 23, DateTimeKind.Utc), timerMessage.EndTime);
+        }
+
+        [TestMethod]
+        public void ObservableMessages_TimerCanceled_ScrumTeamMessage()
+        {
+            // Arrange
+            var dateTimeProvider = new DateTimeProviderMock();
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc));
+            var target = CreateAzurePlanningPokerController(dateTimeProvider: dateTimeProvider);
+            target.EndInitialization();
+            var messages = new List<ScrumTeamMessage>();
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
+            teamLock.Team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(112));
+            dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 50, 0, DateTimeKind.Utc));
+
+            // Act
+            target.ObservableMessages.Subscribe(m => messages.Add(m));
+            teamLock.Team.ScrumMaster.CancelTimer();
+            target.Dispose();
+
+            // Verify
+            Assert.AreEqual<int>(1, messages.Count);
+            Assert.AreEqual<MessageType>(MessageType.TimerCanceled, messages[0].MessageType);
+            Assert.AreEqual<string>("test", messages[0].TeamName);
+        }
+
+        [TestMethod]
         public void CreateScrumteam_AfterInitialization_CreatesNewTeam()
         {
             // Arrange
