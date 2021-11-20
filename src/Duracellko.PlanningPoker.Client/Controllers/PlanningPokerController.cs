@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// <summary>
     /// Manages state of planning poker game and provides data for view.
     /// </summary>
-    public class PlanningPokerController : IPlanningPokerInitializer, INotifyPropertyChanged
+    public sealed class PlanningPokerController : IPlanningPokerInitializer, INotifyPropertyChanged, IDisposable
     {
         private const string ScrumMasterType = "ScrumMaster";
         private const string ObserverType = "Observer";
@@ -22,10 +22,17 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IBusyIndicatorService _busyIndicator;
         private readonly IMemberCredentialsStore _memberCredentialsStore;
+        private readonly ITimerFactory _timerFactory;
+        private readonly DateTimeProvider _dateTimeProvider;
+        private readonly IServiceTimeProvider _serviceTimeProvider;
+        private bool _disposed;
         private List<MemberEstimation>? _memberEstimations;
         private bool _isConnected;
         private bool _hasJoinedEstimation;
         private Estimation? _selectedEstimation;
+        private TimeSpan _timerDuration = TimeSpan.FromMinutes(5);
+        private DateTime? _timerEndTime;
+        private IDisposable? _timer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
@@ -33,14 +40,23 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="planningPokerService">Planning poker client to send messages to server.</param>
         /// <param name="busyIndicator">Service to show busy indicator, when operation is in progress.</param>
         /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
+        /// <param name="timerFactory">Factory object to create timer for periodic actions.</param>
+        /// <param name="dateTimeProvider">The provider of current time.</param>
+        /// <param name="serviceTimeProvider">Service to obtain time difference between client and server.</param>
         public PlanningPokerController(
             IPlanningPokerClient planningPokerService,
             IBusyIndicatorService busyIndicator,
-            IMemberCredentialsStore memberCredentialsStore)
+            IMemberCredentialsStore memberCredentialsStore,
+            ITimerFactory timerFactory,
+            DateTimeProvider dateTimeProvider,
+            IServiceTimeProvider serviceTimeProvider)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
             _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
+            _timerFactory = timerFactory ?? throw new ArgumentNullException(nameof(timerFactory));
+            _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
         }
 
         /// <summary>
@@ -161,6 +177,58 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public EstimationSummary? EstimationSummary { get; private set; }
 
         /// <summary>
+        /// Gets a remaining time until end of timer.
+        /// </summary>
+        public TimeSpan? RemainingTimerTime
+        {
+            get
+            {
+                if (!_timerEndTime.HasValue)
+                {
+                    return null;
+                }
+
+                var remainingTime = _timerEndTime.Value - _dateTimeProvider.UtcNow.Add(_serviceTimeProvider.ServiceTimeOffset);
+                return remainingTime < TimeSpan.Zero ? TimeSpan.Zero : remainingTime;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets timer duration for starting next timer.
+        /// </summary>
+        public TimeSpan TimerDuration
+        {
+            get => _timerDuration;
+            set
+            {
+                if (value <= TimeSpan.Zero)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Timer duration must be greater than 0 seconds.");
+                }
+
+                _timerDuration = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether user can start timer.
+        /// </summary>
+        public bool CanStartTimer => ScrumTeam != null && User != null && User.Type != ObserverType &&
+            RemainingTimerTime.GetValueOrDefault() == TimeSpan.Zero;
+
+        /// <summary>
+        /// Gets a value indicating whether user can stop timer.
+        /// </summary>
+        public bool CanStopTimer => ScrumTeam != null && User != null && User.Type != ObserverType &&
+            RemainingTimerTime.GetValueOrDefault() > TimeSpan.Zero;
+
+        public void Dispose()
+        {
+            StopInternalTimer();
+            _disposed = true;
+        }
+
+        /// <summary>
         /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
         /// </summary>
         /// <param name="teamInfo">Scrum Team data received from server.</param>
@@ -219,11 +287,14 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _hasJoinedEstimation = scrumTeam.EstimationParticipants != null &&
                 scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
             _selectedEstimation = null;
+            _timerEndTime = scrumTeam.TimerEndTime;
 
             if (teamInfo is ReconnectTeamResult reconnectTeamInfo)
             {
                 InitializeTeam(reconnectTeamInfo);
             }
+
+            UpdateCountdownTimer(false);
 
             if (TeamName != null && User != null)
             {
@@ -332,6 +403,36 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         }
 
         /// <summary>
+        /// Starts timer by a member.
+        /// </summary>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        public async Task StartTimer()
+        {
+            if (CanStartTimer)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.StartTimer(TeamName!, User!.Name, TimerDuration, CancellationToken.None);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops timer by a member.
+        /// </summary>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        public async Task CancelTimer()
+        {
+            if (CanStopTimer)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.CancelTimer(TeamName!, User!.Name, CancellationToken.None);
+                }
+            }
+        }
+
+        /// <summary>
         /// Displays estimation summary.
         /// </summary>
         public void ShowEstimationSummary()
@@ -357,15 +458,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 ProcessMessage(message);
             }
-        }
-
-        /// <summary>
-        /// Notifies that a property of this instance has been changed.
-        /// </summary>
-        /// <param name="e">Arguments of PropertyChanged event.</param>
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            PropertyChanged?.Invoke(this, e);
         }
 
         private static string GetMemberName(EstimationResultItem item) => item.Member?.Name ?? string.Empty;
@@ -419,6 +511,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _selectedEstimation = teamInfo.SelectedEstimation;
         }
 
+        private void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, e);
+        }
+
         private void ProcessMessage(Message message)
         {
             switch (message.Type)
@@ -440,6 +537,12 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     break;
                 case MessageType.MemberEstimated:
                     OnMemberEstimated((MemberMessage)message);
+                    break;
+                case MessageType.TimerStarted:
+                    OnTimerStarted((TimerMessage)message);
+                    break;
+                case MessageType.TimerCanceled:
+                    OnTimerCanceled();
                     break;
             }
 
@@ -541,6 +644,18 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        private void OnTimerStarted(TimerMessage message)
+        {
+            _timerEndTime = message.EndTime;
+            UpdateCountdownTimer(false);
+        }
+
+        private void OnTimerCanceled()
+        {
+            _timerEndTime = null;
+            UpdateCountdownTimer(false);
+        }
+
         private TeamMember? FindTeamMember(string name)
         {
             if (ScrumTeam == null)
@@ -576,6 +691,40 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 _memberEstimations.Any(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
 
             return new MemberItem(member, hasEstimated);
+        }
+
+        private void UpdateCountdownTimer(bool raisePropertyChanged)
+        {
+            if (RemainingTimerTime.GetValueOrDefault() > TimeSpan.Zero)
+            {
+                StartInternalTimer();
+            }
+            else
+            {
+                StopInternalTimer();
+            }
+
+            if (raisePropertyChanged)
+            {
+                OnPropertyChanged(new PropertyChangedEventArgs(null));
+            }
+        }
+
+        private void StartInternalTimer()
+        {
+            if (_timer == null && !_disposed)
+            {
+                _timer = _timerFactory.StartTimer(() => UpdateCountdownTimer(true));
+            }
+        }
+
+        private void StopInternalTimer()
+        {
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
         }
 
         private class EstimationComparer : IComparer<double?>

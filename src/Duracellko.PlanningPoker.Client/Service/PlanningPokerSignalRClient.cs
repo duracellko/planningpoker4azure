@@ -122,7 +122,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to starts the estimation.
+        /// Signal from Scrum master to start the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -139,7 +139,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to cancels the estimation.
+        /// Signal from Scrum master to cancel the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -176,6 +176,43 @@ namespace Duracellko.PlanningPoker.Client.Service
 
                 var hubConnection = await EnsureConnected(cancellationToken);
                 await hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, estimation, cancellationToken);
+            });
+        }
+
+        /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of countdown timer.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        public Task StartTimer(string teamName, string memberName, TimeSpan duration, CancellationToken cancellationToken)
+        {
+            return InvokeOperation(async () =>
+            {
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("StartTimer", teamName, memberName, duration, cancellationToken);
+            });
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        public Task CancelTimer(string teamName, string memberName, CancellationToken cancellationToken)
+        {
+            return InvokeOperation(async () =>
+            {
+                var hubConnection = await EnsureConnected(cancellationToken);
+                await hubConnection.InvokeAsync("CancelTimer", teamName, memberName, cancellationToken);
             });
         }
 
@@ -225,6 +262,20 @@ namespace Duracellko.PlanningPoker.Client.Service
                         _getMessagesTask = null;
                     }
                 }
+            });
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        public Task<TimeResult> GetCurrentTime(CancellationToken cancellationToken)
+        {
+            return InvokeOperation(async () =>
+            {
+                var hubConnection = await EnsureConnected(cancellationToken);
+                return await hubConnection.InvokeAsync<TimeResult>("GetCurrentTime", cancellationToken);
             });
         }
 

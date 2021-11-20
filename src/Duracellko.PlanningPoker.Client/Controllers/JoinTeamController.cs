@@ -21,6 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IBusyIndicatorService _busyIndicatorService;
         private readonly INavigationManager _navigationManager;
         private readonly IMemberCredentialsStore _memberCredentialsStore;
+        private readonly IServiceTimeProvider _serviceTimeProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JoinTeamController"/> class.
@@ -31,13 +32,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="busyIndicatorService">Service to display that operation is in progress.</param>
         /// <param name="navigationManager">Service to navigate to specified URL.</param>
         /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
+        /// <param name="serviceTimeProvider">Service to update time from server.</param>
         public JoinTeamController(
             IPlanningPokerClient planningPokerService,
             IPlanningPokerInitializer planningPokerInitializer,
             IMessageBoxService messageBoxService,
             IBusyIndicatorService busyIndicatorService,
             INavigationManager navigationManager,
-            IMemberCredentialsStore memberCredentialsStore)
+            IMemberCredentialsStore memberCredentialsStore,
+            IServiceTimeProvider serviceTimeProvider)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _planningPokerInitializer = planningPokerInitializer ?? throw new ArgumentNullException(nameof(planningPokerInitializer));
@@ -45,6 +48,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
             _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
             _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
+            _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
         }
 
         /// <summary>
@@ -66,6 +70,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 TeamResult? teamResult = null;
                 using (_busyIndicatorService.Show())
                 {
+                    await _serviceTimeProvider.UpdateServiceTimeOffset(CancellationToken.None);
                     teamResult = await _planningPokerService.JoinTeam(teamName, memberName, asObserver, CancellationToken.None);
                 }
 
@@ -130,6 +135,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 ReconnectTeamResult? reconnectTeamResult = null;
                 using (_busyIndicatorService.Show())
                 {
+                    await _serviceTimeProvider.UpdateServiceTimeOffset(CancellationToken.None);
                     reconnectTeamResult = await _planningPokerService.ReconnectTeam(teamName, memberName, cancellationToken);
                 }
 

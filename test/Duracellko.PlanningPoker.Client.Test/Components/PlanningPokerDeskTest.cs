@@ -35,31 +35,31 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
             Assert.IsNotNull(frames);
-            Assert.AreEqual(21, frames.Count);
+            Assert.AreEqual(426, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 21);
+            AssertFrame.Element(frames[0], "div", 426);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[2], "div", 11);
-            AssertFrame.Attribute(frames[3], "class", "team-title");
-            AssertFrame.Element(frames[4], "h2", 4);
-            AssertFrame.Markup(frames[5], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[6], "span", 2);
-            AssertFrame.Text(frames[7], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[9], "h3", 4);
-            AssertFrame.Markup(frames[10], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[11], "span", 2);
-            AssertFrame.Text(frames[12], PlanningPokerData.ScrumMasterName);
+            AssertFrame.Element(frames[400], "div", 11);
+            AssertFrame.Attribute(frames[401], "class", "team-title");
+            AssertFrame.Element(frames[402], "h2", 4);
+            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[404], "span", 2);
+            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
+            AssertFrame.Element(frames[407], "h3", 4);
+            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[409], "span", 2);
+            AssertFrame.Text(frames[410], PlanningPokerData.ScrumMasterName);
 
             // Button to start estimation
-            AssertFrame.Element(frames[13], "div", 8);
-            AssertFrame.Attribute(frames[14], "class", "actionsBar");
-            AssertFrame.Element(frames[15], "p", 6);
-            AssertFrame.Element(frames[16], "button", 5);
-            AssertFrame.Attribute(frames[17], "type", "button");
-            AssertFrame.Attribute(frames[18], "onclick");
-            AssertFrame.Attribute(frames[19], "class", "btn btn-primary mr-3");
-            AssertFrame.Markup(frames[20], $"<span class=\"oi oi-media-play mr-1\" aria-hidden=\"true\"></span> Start estimation{_newLine}                    ");
+            AssertFrame.Element(frames[411], "div", 15);
+            AssertFrame.Attribute(frames[412], "class", "actionsBar");
+            AssertFrame.Element(frames[413], "p", 13);
+            AssertFrame.Element(frames[414], "button", 5);
+            AssertFrame.Attribute(frames[415], "type", "button");
+            AssertFrame.Attribute(frames[416], "onclick");
+            AssertFrame.Attribute(frames[417], "class", "btn btn-primary mr-3");
+            AssertFrame.Markup(frames[418], $"<span class=\"oi oi-media-play mr-1\" aria-hidden=\"true\"></span> Start estimation{_newLine}                    ");
         }
 
         [TestMethod]
@@ -85,47 +85,47 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
             Assert.IsNotNull(frames);
-            Assert.AreEqual(81, frames.Count);
+            Assert.AreEqual(489, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 81);
+            AssertFrame.Element(frames[0], "div", 489);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[2], "div", 11);
-            AssertFrame.Attribute(frames[3], "class", "team-title");
-            AssertFrame.Element(frames[4], "h2", 4);
-            AssertFrame.Markup(frames[5], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[6], "span", 2);
-            AssertFrame.Text(frames[7], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[9], "h3", 4);
-            AssertFrame.Markup(frames[10], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[11], "span", 2);
-            AssertFrame.Text(frames[12], PlanningPokerData.MemberName);
+            AssertFrame.Element(frames[400], "div", 11);
+            AssertFrame.Attribute(frames[401], "class", "team-title");
+            AssertFrame.Element(frames[402], "h2", 4);
+            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[404], "span", 2);
+            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
+            AssertFrame.Element(frames[407], "h3", 4);
+            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[409], "span", 2);
+            AssertFrame.Text(frames[410], PlanningPokerData.MemberName);
 
             // Available estimations
-            AssertFrame.Element(frames[13], "div", 56);
-            AssertFrame.Attribute(frames[14], "class", "availableEstimations");
-            AssertFrame.Markup(frames[15], $"<h3>Pick estimation</h3>{_newLine}            ");
-            AssertFrame.Element(frames[16], "ul", 53);
-            AssertAvailableEstimation(frames, 17, "0");
-            AssertAvailableEstimation(frames, 21, "½");
-            AssertAvailableEstimation(frames, 25, "1");
-            AssertAvailableEstimation(frames, 29, "2");
-            AssertAvailableEstimation(frames, 33, "3");
-            AssertAvailableEstimation(frames, 37, "5");
-            AssertAvailableEstimation(frames, 41, "8");
-            AssertAvailableEstimation(frames, 45, "13");
-            AssertAvailableEstimation(frames, 49, "20");
-            AssertAvailableEstimation(frames, 53, "40");
-            AssertAvailableEstimation(frames, 57, "100");
-            AssertAvailableEstimation(frames, 61, "∞");
-            AssertAvailableEstimation(frames, 65, "?");
+            AssertFrame.Element(frames[411], "div", 56);
+            AssertFrame.Attribute(frames[412], "class", "availableEstimations");
+            AssertFrame.Markup(frames[413], $"<h3>Pick estimation</h3>{_newLine}            ");
+            AssertFrame.Element(frames[414], "ul", 53);
+            AssertAvailableEstimation(frames, 415, "0");
+            AssertAvailableEstimation(frames, 419, "½");
+            AssertAvailableEstimation(frames, 423, "1");
+            AssertAvailableEstimation(frames, 427, "2");
+            AssertAvailableEstimation(frames, 431, "3");
+            AssertAvailableEstimation(frames, 435, "5");
+            AssertAvailableEstimation(frames, 439, "8");
+            AssertAvailableEstimation(frames, 443, "13");
+            AssertAvailableEstimation(frames, 447, "20");
+            AssertAvailableEstimation(frames, 451, "40");
+            AssertAvailableEstimation(frames, 455, "100");
+            AssertAvailableEstimation(frames, 459, "∞");
+            AssertAvailableEstimation(frames, 463, "?");
 
             // Members, who estimated already
-            AssertFrame.Element(frames[69], "div", 12);
-            AssertFrame.Attribute(frames[70], "class", "estimationResult");
-            AssertFrame.Markup(frames[71], $"<h3>Selected estimates</h3>");
-            AssertFrame.Element(frames[72], "ul", 9);
-            AssertSelectedEstimation(frames, 73, PlanningPokerData.ScrumMasterName, string.Empty);
+            AssertFrame.Element(frames[477], "div", 12);
+            AssertFrame.Attribute(frames[478], "class", "estimationResult");
+            AssertFrame.Markup(frames[479], $"<h3>Selected estimates</h3>");
+            AssertFrame.Element(frames[480], "ul", 9);
+            AssertSelectedEstimation(frames, 481, PlanningPokerData.ScrumMasterName, string.Empty);
         }
 
         [TestMethod]
@@ -159,39 +159,39 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(1, renderer.Batches.Count);
             var frames = renderer.Batches[0].ReferenceFrames;
             Assert.IsNotNull(frames);
-            Assert.AreEqual(41, frames.Count);
+            Assert.AreEqual(439, frames.Count);
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 41);
+            AssertFrame.Element(frames[0], "div", 439);
             AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[2], "div", 11);
-            AssertFrame.Attribute(frames[3], "class", "team-title");
-            AssertFrame.Element(frames[4], "h2", 4);
-            AssertFrame.Markup(frames[5], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[6], "span", 2);
-            AssertFrame.Text(frames[7], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[9], "h3", 4);
-            AssertFrame.Markup(frames[10], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[11], "span", 2);
-            AssertFrame.Text(frames[12], PlanningPokerData.ObserverName);
+            AssertFrame.Element(frames[400], "div", 11);
+            AssertFrame.Attribute(frames[401], "class", "team-title");
+            AssertFrame.Element(frames[402], "h2", 4);
+            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[404], "span", 2);
+            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
+            AssertFrame.Element(frames[407], "h3", 4);
+            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
+            AssertFrame.Element(frames[409], "span", 2);
+            AssertFrame.Text(frames[410], PlanningPokerData.ObserverName);
 
             // Button to start estimation
-            AssertFrame.Element(frames[13], "div", 8);
-            AssertFrame.Attribute(frames[14], "class", "actionsBar");
-            AssertFrame.Element(frames[15], "p", 6);
-            AssertFrame.Element(frames[16], "button", 5);
-            AssertFrame.Attribute(frames[17], "type", "button");
-            AssertFrame.Attribute(frames[18], "onclick");
-            AssertFrame.Attribute(frames[19], "class", "btn btn-secondary mr-3");
-            AssertFrame.Markup(frames[20], $"<span class=\"oi oi-calculator mr-1\" aria-hidden=\"true\"></span> Show average{_newLine}                    ");
+            AssertFrame.Element(frames[411], "div", 8);
+            AssertFrame.Attribute(frames[412], "class", "actionsBar");
+            AssertFrame.Element(frames[413], "p", 6);
+            AssertFrame.Element(frames[414], "button", 5);
+            AssertFrame.Attribute(frames[415], "type", "button");
+            AssertFrame.Attribute(frames[416], "onclick");
+            AssertFrame.Attribute(frames[417], "class", "btn btn-secondary mr-3");
+            AssertFrame.Markup(frames[418], $"<span class=\"oi oi-calculator mr-1\" aria-hidden=\"true\"></span> Show average{_newLine}                    ");
 
             // Estimations
-            AssertFrame.Element(frames[21], "div", 20);
-            AssertFrame.Attribute(frames[22], "class", "estimationResult");
-            AssertFrame.Markup(frames[23], $"<h3>Selected estimates</h3>");
-            AssertFrame.Element(frames[24], "ul", 17);
-            AssertSelectedEstimation(frames, 25, PlanningPokerData.MemberName, "3");
-            AssertSelectedEstimation(frames, 33, PlanningPokerData.ScrumMasterName, "8");
+            AssertFrame.Element(frames[419], "div", 20);
+            AssertFrame.Attribute(frames[420], "class", "estimationResult");
+            AssertFrame.Markup(frames[421], $"<h3>Selected estimates</h3>");
+            AssertFrame.Element(frames[422], "ul", 17);
+            AssertSelectedEstimation(frames, 423, PlanningPokerData.MemberName, "3");
+            AssertSelectedEstimation(frames, 431, PlanningPokerData.ScrumMasterName, "8");
         }
 
         private static IServiceProvider CreateServiceProvider()
@@ -203,6 +203,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             serviceCollection.AddSingleton(new Mock<IPlanningPokerClient>().Object);
             serviceCollection.AddSingleton(new Mock<IBusyIndicatorService>().Object);
             serviceCollection.AddSingleton(new Mock<IMemberCredentialsStore>().Object);
+            serviceCollection.AddSingleton(new Mock<ITimerFactory>().Object);
+            serviceCollection.AddSingleton<DateTimeProvider>(new DateTimeProviderMock());
+            serviceCollection.AddSingleton(new Mock<IServiceTimeProvider>().Object);
             return serviceCollection.BuildServiceProvider();
         }
 

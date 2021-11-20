@@ -39,11 +39,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerService = new Mock<IPlanningPokerClient>();
             planningPokerService.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(teamResult);
-            var target = CreateController(planningPokerService: planningPokerService.Object);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(planningPokerService: planningPokerService.Object, serviceTimeProvider: serviceTimeProvider.Object);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, deck);
 
             planningPokerService.Verify(o => o.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, deck, It.IsAny<CancellationToken>()));
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()));
         }
 
         [TestMethod]
@@ -189,6 +191,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             IMessageBoxService? messageBoxService = null,
             IBusyIndicatorService? busyIndicatorService = null,
             INavigationManager? navigationManager = null,
+            IServiceTimeProvider? serviceTimeProvider = null,
             TeamResult? teamResult = null,
             string? errorMessage = null)
         {
@@ -232,7 +235,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 navigationManager = navigationManagerMock.Object;
             }
 
-            return new CreateTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, navigationManager);
+            if (serviceTimeProvider == null)
+            {
+                var serviceTimeProviderMock = new Mock<IServiceTimeProvider>();
+                serviceTimeProvider = serviceTimeProviderMock.Object;
+            }
+
+            return new CreateTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, navigationManager, serviceTimeProvider);
         }
     }
 }

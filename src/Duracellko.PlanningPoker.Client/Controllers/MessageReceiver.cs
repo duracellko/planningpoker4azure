@@ -12,14 +12,17 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     public class MessageReceiver
     {
         private readonly IPlanningPokerClient _planningPokerClient;
+        private readonly IServiceTimeProvider _serviceTimeProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReceiver"/> class.
         /// </summary>
         /// <param name="planningPokerClient">Planning poker client to load messages from server.</param>
-        public MessageReceiver(IPlanningPokerClient planningPokerClient)
+        /// <param name="serviceTimeProvider">Service to update time from server.</param>
+        public MessageReceiver(IPlanningPokerClient planningPokerClient, IServiceTimeProvider serviceTimeProvider)
         {
             _planningPokerClient = planningPokerClient ?? throw new ArgumentNullException(nameof(planningPokerClient));
+            _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
         }
 
         /// <summary>
@@ -29,7 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <returns><see cref="IDisposable"/> object that can be used to stop receiving of messages.</returns>
         public IDisposable StartReceiving(PlanningPokerController planningPokerController)
         {
-            var result = new MessageController(planningPokerController, _planningPokerClient);
+            var result = new MessageController(planningPokerController, _planningPokerClient, _serviceTimeProvider);
             result.StartReceiving();
             return result;
         }
@@ -38,14 +41,16 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         {
             private readonly PlanningPokerController _planningPokerController;
             private readonly IPlanningPokerClient _planningPokerClient;
+            private readonly IServiceTimeProvider _serviceTimeProvider;
 
             [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "CancellationToken is disposed, when task ends.")]
             private CancellationTokenSource? _cancellationTokenSource;
 
-            public MessageController(PlanningPokerController planningPokerController, IPlanningPokerClient planningPokerClient)
+            public MessageController(PlanningPokerController planningPokerController, IPlanningPokerClient planningPokerClient, IServiceTimeProvider serviceTimeProvider)
             {
                 _planningPokerController = planningPokerController;
                 _planningPokerClient = planningPokerClient;
+                _serviceTimeProvider = serviceTimeProvider;
             }
 
             public void Dispose()
@@ -71,6 +76,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                         var cancellationToken = _cancellationTokenSource.Token;
                         while (!cancellationToken.IsCancellationRequested)
                         {
+                            await _serviceTimeProvider.UpdateServiceTimeOffset(cancellationToken);
                             var success = await ReceiveMessages(cancellationToken);
                             await Task.Delay(success ? 100 : 500, cancellationToken);
                         }

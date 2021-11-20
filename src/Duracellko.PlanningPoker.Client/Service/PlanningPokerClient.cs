@@ -120,7 +120,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to starts the estimation.
+        /// Signal from Scrum master to start the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -136,7 +136,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
-        /// Signal from Scrum master to cancels the estimation.
+        /// Signal from Scrum master to cancel the estimation.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
@@ -185,6 +185,44 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
+        /// Starts countdown timer for team with specified duration.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="duration">Duration of countdown timer.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        public Task StartTimer(string teamName, string memberName, TimeSpan duration, CancellationToken cancellationToken)
+        {
+            var encodedTeamName = _urlEncoder.Encode(teamName);
+            var encodedMemberName = _urlEncoder.Encode(memberName);
+            var encodedDuration = _urlEncoder.Encode(duration.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+            var uri = $"StartTimer?teamName={encodedTeamName}&memberName={encodedMemberName}&duration={encodedDuration}";
+
+            return SendAsync(uri, cancellationToken);
+        }
+
+        /// <summary>
+        /// Stops active countdown timer.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        public Task CancelTimer(string teamName, string memberName, CancellationToken cancellationToken)
+        {
+            var encodedTeamName = _urlEncoder.Encode(teamName);
+            var encodedMemberName = _urlEncoder.Encode(memberName);
+            var uri = $"CancelTimer?teamName={encodedTeamName}&memberName={encodedMemberName}";
+
+            return SendAsync(uri, cancellationToken);
+        }
+
+        /// <summary>
         /// Begins to get messages of specified member asynchronously.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>
@@ -207,6 +245,17 @@ namespace Duracellko.PlanningPoker.Client.Service
 
             ScrumTeamMapper.ConvertMessages(result);
             return result;
+        }
+
+        /// <summary>
+        /// Gets information about current time of service.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>Current time of service in UTC time zone.</returns>
+        public async Task<TimeResult> GetCurrentTime(CancellationToken cancellationToken)
+        {
+            var uri = "GetCurrentTime";
+            return await GetJsonAsync<TimeResult>(uri, cancellationToken);
         }
 
         private async Task<T> GetJsonAsync<T>(string requestUri, CancellationToken cancellationToken)

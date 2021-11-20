@@ -50,11 +50,36 @@
                 </li>
             }
         </ul>
+
+        @if (RemainingTimerTime != null)
+        {
+            <div class="card-header">Timer</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center">
+                    <p class="h2">@RemainingTimerTime</p>
+                </li>
+            </ul>
+        }
     </div>
 </div>
 
 @code
 {
+    private string? RemainingTimerTime
+    {
+        get
+        {
+            var remainingTimerTime = Controller.RemainingTimerTime;
+            if (remainingTimerTime == null)
+            {
+                return null;
+            }
+
+            var format = remainingTimerTime.Value.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss";
+            return remainingTimerTime.Value.ToString(format);
+        }
+    }
+
     public void Dispose()
     {
         Controller.PropertyChanged -= ControllerOnPropertyChanged;

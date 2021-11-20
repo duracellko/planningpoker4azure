@@ -194,6 +194,25 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         }
 
         [TestMethod]
+        public async Task GetMessages_TeamAndMemberName_ReturnsTimerStartedMessage()
+        {
+            var messageJson = PlanningPokerClientData.GetTimerStartedMessageJson("1");
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.When(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages")
+                .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
+            var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
+
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
+
+            Assert.AreEqual(1, result.Count);
+            Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
+            var message = (TimerMessage)result[0];
+            Assert.AreEqual(1, message.Id);
+            Assert.AreEqual(MessageType.TimerStarted, message.Type);
+            Assert.AreEqual(new DateTime(2021, 11, 17, 10, 3, 46, DateTimeKind.Utc), message.EndTime);
+        }
+
+        [TestMethod]
         public async Task GetMessages_TeamAndMemberName_Returns3Messages()
         {
             var estimationStartedMessageJson = PlanningPokerClientData.GetEstimationStartedMessageJson("8");

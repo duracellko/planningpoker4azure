@@ -197,9 +197,9 @@ namespace Duracellko.PlanningPoker.E2ETest
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
             var buttons = PlanningPokerDeskElement.FindElements(By.CssSelector("div.actionsBar button"));
-            Assert.AreEqual(isScrumMaster ? 2 : 1, buttons.Count);
+            Assert.AreEqual(isScrumMaster ? 4 : 3, buttons.Count);
 
-            var button = buttons.Last();
+            var button = buttons[isScrumMaster ? 1 : 0];
             Assert.AreEqual("Show average", button.Text);
             button.Click();
         }

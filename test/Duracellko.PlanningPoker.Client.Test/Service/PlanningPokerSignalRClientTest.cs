@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
@@ -528,6 +529,88 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             await fixture.ReceiveMessage(returnMessage);
 
             await resultTask;
+        }
+
+        [TestMethod]
+        public async Task StartTimer_TeamNameAndDuration_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.StartTimer(PlanningPokerData.TeamName, PlanningPokerData.MemberName, TimeSpan.FromSeconds(264), fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("StartTimer", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, TimeSpan.FromSeconds(264) };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task CancelTimer_TeamName_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.CancelTimer(PlanningPokerData.TeamName, PlanningPokerData.MemberName, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("CancelTimer", sentInvocationMessage.Target);
+            var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task GetCurrentTime_InvocationMessageIsSent()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.GetCurrentTime(fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("GetCurrentTime", sentInvocationMessage.Target);
+            Assert.AreEqual(0, sentInvocationMessage.Arguments.Length);
+
+            var timeResult = new TimeResult
+            {
+                CurrentUtcTime = new DateTime(2022, 5, 5, 0, 8, 30, DateTimeKind.Utc)
+            };
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, timeResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
+        [TestMethod]
+        public async Task GetCurrentTime_ReturnsCurrentTime()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.GetCurrentTime(fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var invocationId = GetInvocationId(sentMessage);
+
+            var timeResult = new TimeResult
+            {
+                CurrentUtcTime = new DateTime(2022, 5, 5, 0, 8, 30, DateTimeKind.Utc)
+            };
+            var returnMessage = new CompletionMessage(invocationId, null, timeResult, true);
+            await fixture.ReceiveMessage(returnMessage);
+
+            var result = await resultTask;
+
+            Assert.AreEqual(new DateTime(2022, 5, 5, 0, 8, 30, DateTimeKind.Utc), result.CurrentUtcTime);
         }
 
         private static string GetInvocationId([NotNull] HubMessage? message)

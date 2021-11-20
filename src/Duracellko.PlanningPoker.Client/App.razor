@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
+﻿@inject Duracellko.PlanningPoker.Client.Service.TimerFactory TimerFactory
+
+<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
@@ -9,3 +11,12 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        TimerFactory.SetDispatcherDelegate(InvokeAsync);
+    }
+}

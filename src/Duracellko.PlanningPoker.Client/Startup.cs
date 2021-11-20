@@ -1,3 +1,4 @@
+using System;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.UI;
@@ -10,9 +11,14 @@ namespace Duracellko.PlanningPoker.Client
         public static void ConfigureServices(IServiceCollection services, bool serverSide = false, bool useHttpClient = false)
         {
             // Services are scoped, because on server-side scope is created for each client session.
-            if (!serverSide)
+            if (serverSide)
+            {
+                services.AddScoped<IServiceTimeProvider, ServerSideServiceTimeProvider>();
+            }
+            else
             {
                 services.AddScoped<IPlanningPokerUriProvider, PlanningPokerUriProvider>();
+                services.AddScoped<IServiceTimeProvider, ServiceTimeProvider>();
             }
 
             if (useHttpClient)
@@ -23,6 +29,12 @@ namespace Duracellko.PlanningPoker.Client
             {
                 services.AddScoped<IPlanningPokerClient, PlanningPokerSignalRClient>();
             }
+
+            var timerInterval = TimeSpan.FromMilliseconds(serverSide ? 1000 : 500);
+            services.AddScoped(p => new TimerFactory(timerInterval));
+            services.AddScoped<ITimerFactory>(p => p.GetRequiredService<TimerFactory>());
+
+            services.AddSingleton<DateTimeProvider>();
 
             services.AddScoped<IMemberCredentialsStore, MemberCredentialsStore>();
             services.AddScoped<Microsoft.AspNetCore.SignalR.Client.IHubConnectionBuilder, PlanningPokerHubConnectionBuilder>();
