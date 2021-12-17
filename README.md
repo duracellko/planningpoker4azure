@@ -34,7 +34,7 @@ This guide assumes that you already know what planning poker is about and how to
 
 Requirements:
 
-- .NET 5.0 runtime
+- .NET 6.0 runtime
 
 Run: `dotnet Duracellko.PlanningPoker.Web.dll`
 
@@ -49,7 +49,7 @@ docker run -p 80:80 duracellko/planningpoker
 
 ## Architecture
 
-Application is implemented using [ASP.NET Core 5.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-5.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
+Application is implemented using [ASP.NET Core 6.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-6.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
 
 - Locally on Windows or Linux
 - In Docker container
@@ -60,7 +60,7 @@ The application does not have any dependencies to run in basic mode. However, th
 
 ### Blazor models
 
-Blazor supports 2 [hosting models](https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-5.0): Client-side and Server-side. It is possible to simply switch between the models by configuring **UseServerSide** setting.
+Blazor supports 2 [hosting models](https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-6.0): Client-side and Server-side. It is possible to simply switch between the models by configuring **UseServerSide** setting.
 
 ### Teams storage
 
@@ -124,7 +124,7 @@ The application has following configuration settings:
 
 Requirements:
 
-- .NET SDK 5.0
+- .NET SDK 6.0
 - Java SE Development Kit version 8 or higher (for end-2-end tests only)
 - Node.js and NPM (for end-2-end tests only)
 
