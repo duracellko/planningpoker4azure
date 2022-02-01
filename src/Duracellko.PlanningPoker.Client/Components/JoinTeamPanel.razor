@@ -58,11 +58,12 @@
     {
         base.OnParametersSet();
 
+        bool hasReconnected = false;
         if (!string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(MemberName))
         {
             try
             {
-                await Controller.TryReconnectTeam(TeamName, MemberName);
+                hasReconnected = await Controller.TryReconnectTeam(TeamName, MemberName);
             }
             catch (Exception)
             {
@@ -70,6 +71,11 @@
             }
 
             MemberName = null;
+        }
+
+        if (!hasReconnected)
+        {
+            await SetDefaultValues();
         }
     }
 
@@ -86,6 +92,23 @@
         }
 
         return TryRun(() => Controller.JoinTeam(TeamName, MemberName, AsObserver));
+    }
+
+    private async Task SetDefaultValues()
+    {
+        var memberCredentials = await Controller.GetCredentials();
+        if (memberCredentials != null)
+        {
+            if (string.IsNullOrEmpty(TeamName))
+            {
+                TeamName = memberCredentials.TeamName;
+            }
+
+            if (string.IsNullOrEmpty(MemberName))
+            {
+                MemberName = memberCredentials.MemberName;
+            }
+        }
     }
 
     private string GetFormControlCss(bool valid) => valid ? "form-control" : "form-control is-invalid";

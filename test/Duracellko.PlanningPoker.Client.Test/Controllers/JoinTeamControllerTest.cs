@@ -16,6 +16,33 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         private const string ErrorMessage = "Planning Poker Error";
         private const string ReconnectErrorMessage = "Member or observer named 'Test member' already exists in the team.";
 
+        [TestMethod]
+        public async Task GetCredentials_CredentialsAreStored_ReturnsMemberCredentials()
+        {
+            var memberCredentials = PlanningPokerData.GetMemberCredentials();
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true)).ReturnsAsync(memberCredentials);
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            var result = await target.GetCredentials();
+
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true));
+            Assert.AreEqual(memberCredentials, result);
+        }
+
+        [TestMethod]
+        public async Task GetCredentials_NoCredentialsAreStored_ReturnsNull()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true)).ReturnsAsync(default(MemberCredentials?));
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            var result = await target.GetCredentials();
+
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true));
+            Assert.IsNull(result);
+        }
+
         [DataTestMethod]
         [DataRow(PlanningPokerData.MemberName, false, DisplayName = "Member name")]
         [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
@@ -354,12 +381,12 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync()).ReturnsAsync(memberCredentials);
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false)).ReturnsAsync(memberCredentials);
             var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object, memberExistsError: true, reconnectTeamResult: reconnectTeamResult);
 
             await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
-            memberCredentialsStore.Verify(o => o.GetCredentialsAsync());
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false));
         }
 
         [DataTestMethod]
@@ -375,7 +402,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var result = await target.TryReconnectTeam(teamName, memberName);
 
             Assert.IsFalse(result);
-            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(), Times.Never());
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(It.IsAny<bool>()), Times.Never());
         }
 
         [DataTestMethod]
@@ -620,7 +647,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             if (memberCredentialsStore == null)
             {
                 var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
-                memberCredentialsStoreMock.Setup(o => o.GetCredentialsAsync()).ReturnsAsync(memberCredentials);
+                memberCredentialsStoreMock.Setup(o => o.GetCredentialsAsync(false)).ReturnsAsync(memberCredentials);
                 memberCredentialsStore = memberCredentialsStoreMock.Object;
             }
 

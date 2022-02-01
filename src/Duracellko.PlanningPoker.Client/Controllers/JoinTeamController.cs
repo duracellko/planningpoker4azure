@@ -52,6 +52,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         }
 
         /// <summary>
+        /// Gets permanent <see cref="MemberCredentials"/> from store to fill user's default values.
+        /// </summary>
+        /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
+        public async Task<MemberCredentials?> GetCredentials()
+        {
+            return await _memberCredentialsStore.GetCredentialsAsync(true);
+        }
+
+        /// <summary>
         /// Joins existing Scrum Team and initialize Planning Poker game.
         /// </summary>
         /// <param name="teamName">Name of the team.</param>
@@ -117,7 +126,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 return false;
             }
 
-            var memberCredentials = await _memberCredentialsStore.GetCredentialsAsync();
+            var memberCredentials = await _memberCredentialsStore.GetCredentialsAsync(false);
             if (memberCredentials != null &&
                 string.Equals(memberCredentials.TeamName, teamName, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(memberCredentials.MemberName, memberName, StringComparison.OrdinalIgnoreCase))

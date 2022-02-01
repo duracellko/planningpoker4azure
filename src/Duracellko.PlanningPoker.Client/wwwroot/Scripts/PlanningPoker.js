@@ -5,8 +5,8 @@
         function PlanningPoker() {
         }
 
-        PlanningPoker.credentialsCookieName = "PlanningPoker.Credentials";
-        PlanningPoker.cookieExpiration = 900000;
+        PlanningPoker.credentialsTeamNameKey = "PlanningPoker.Credentials.TeamName";
+        PlanningPoker.credentialsMemberNameKey = "PlanningPoker.Credentials.MemberName";
 
         // Shows message box using jQuery.
         PlanningPoker.showMessageBox = function (element) {
@@ -23,34 +23,41 @@
             $(element).modal('hide');
         };
 
-        // Loads member credentials of connected user from cookie.
-        PlanningPoker.getMemberCredentials = function () {
-            let cookie = document.cookie;
-            let cookiePairs = cookie.split(';');
-            for (let i = 0; i < cookiePairs.length; i++) {
-                let cookiePair = cookiePairs[i].trim();
-                let startText = PlanningPoker.credentialsCookieName + '=';
-                if (cookiePair.startsWith(startText)) {
-                    let value = cookiePair.substr(startText.length);
-                    return decodeURIComponent(value);
-                }
+        // Loads member credentials of connected user from Session or LocalStorage.
+        PlanningPoker.getMemberCredentials = function (permanentScope) {
+            let teamName = window.sessionStorage.getItem(PlanningPoker.credentialsTeamNameKey);
+            if (permanentScope && !teamName) {
+                teamName = window.localStorage.getItem(PlanningPoker.credentialsTeamNameKey);
+            }
+
+            let memberName = window.sessionStorage.getItem(PlanningPoker.credentialsMemberNameKey);
+            if (permanentScope && !memberName) {
+                memberName = window.localStorage.getItem(PlanningPoker.credentialsMemberNameKey);
+            }
+
+            if (teamName && memberName) {
+                return {
+                    teamName,
+                    memberName
+                };
             }
 
             return null;
         };
 
-        // Saves member credentials of connected user into cookie.
+        // Saves member credentials of connected user into Session and LocalStorage.
         PlanningPoker.setMemberCredentials = function (credentials) {
-            if (credentials === null) {
-                credentials = '';
+            if (credentials) {
+                window.sessionStorage.setItem(PlanningPoker.credentialsTeamNameKey, credentials.teamName);
+                window.sessionStorage.setItem(PlanningPoker.credentialsMemberNameKey, credentials.memberName);
+                window.localStorage.setItem(PlanningPoker.credentialsTeamNameKey, credentials.teamName);
+                window.localStorage.setItem(PlanningPoker.credentialsMemberNameKey, credentials.memberName);
             }
-            let cookie = PlanningPoker.credentialsCookieName + '=' + encodeURIComponent(credentials);
-
-            let expiration = new Date(Date.now() + PlanningPoker.cookieExpiration);
-            cookie += "; expires=" + expiration.toUTCString();
-            cookie += "; path=/";
-
-            document.cookie = cookie;
+            else {
+                // When user disconnects, only Session is removed. LocalStorage credentials are persisted for next session.
+                window.sessionStorage.removeItem(PlanningPoker.credentialsTeamNameKey);
+                window.sessionStorage.removeItem(PlanningPoker.credentialsMemberNameKey);
+            }
         };
 
         return PlanningPoker;
