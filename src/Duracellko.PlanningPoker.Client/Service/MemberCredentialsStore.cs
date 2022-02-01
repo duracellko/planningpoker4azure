@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
@@ -25,21 +24,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <summary>
         /// Loads member credentials from the store.
         /// </summary>
+        /// <param name="permanentScope">Specifies, whether to get credentials from permanent scope or session (browser tab) only.</param>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
-        public async Task<MemberCredentials?> GetCredentialsAsync()
+        public async Task<MemberCredentials?> GetCredentialsAsync(bool permanentScope)
         {
             try
             {
-                var credentialsString = await _jsRuntime.InvokeAsync<string>("Duracellko.PlanningPoker.getMemberCredentials");
-                if (string.IsNullOrEmpty(credentialsString))
-                {
-                    return null;
-                }
-                else
-                {
-                    return JsonSerializer.Deserialize<MemberCredentials>(credentialsString);
-                }
+                return await _jsRuntime.InvokeAsync<MemberCredentials?>("Duracellko.PlanningPoker.getMemberCredentials", permanentScope);
             }
             catch (Exception)
             {
@@ -58,8 +50,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         {
             try
             {
-                var credentialsString = credentials != null ? JsonSerializer.Serialize(credentials) : null;
-                await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.setMemberCredentials", credentialsString);
+                await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.setMemberCredentials", credentials);
             }
             catch (Exception)
             {

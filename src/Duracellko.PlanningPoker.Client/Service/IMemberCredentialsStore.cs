@@ -10,8 +10,9 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <summary>
         /// Loads member credentials from the store.
         /// </summary>
+        /// <param name="permanentScope">Specifies, whether to get credentials from permanent scope or session (browser tab) only.</param>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
-        Task<MemberCredentials?> GetCredentialsAsync();
+        Task<MemberCredentials?> GetCredentialsAsync(bool permanentScope);
 
         /// <summary>
         /// Saves member credentials into the store.
