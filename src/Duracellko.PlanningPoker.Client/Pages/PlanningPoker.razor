@@ -1,9 +1,10 @@
 ﻿@page "/PlanningPoker"
+@page "/PlanningPoker/{TeamName}"
 @page "/PlanningPoker/{TeamName}/{MemberName}"
 @implements IDisposable
 @inject PlanningPokerController Controller
 @inject MessageReceiver MessageReceiver
-@inject NavigationManager NavigationManager
+@inject Duracellko.PlanningPoker.Client.Service.INavigationManager NavigationManager
 
 @if (Controller.ScrumTeam != null)
 {
@@ -43,13 +44,7 @@
 
         if (Controller.ScrumTeam == null)
         {
-            string uri = "Index";
-            if (!string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(MemberName))
-            {
-                uri = $"{uri}/{TeamName}/{MemberName}";
-            }
-
-            NavigationManager.NavigateTo(uri);
+            ControllerHelper.OpenIndexPage(NavigationManager, TeamName, MemberName);
         }
         else
         {
