@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.5.1" />
-    <PackageReference Include="System.Linq.Async" Version="5.1.0" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
