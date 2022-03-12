@@ -1,6 +1,6 @@
 {
   "name": "duracellko-planningpoker",
   "devDependencies": {
-    "selenium-standalone": "^8.0.9"
+    "selenium-standalone": "^8.0.10"
   }
 }
