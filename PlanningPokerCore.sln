@@ -38,7 +38,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{30E235
 		src\stylecop.json = src\stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Redis", "src\Duracellko.PlanningPoker.Redis\Duracellko.PlanningPoker.Redis.csproj", "{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Redis", "src\Duracellko.PlanningPoker.Redis\Duracellko.PlanningPoker.Redis.csproj", "{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Redis.Test", "test\Duracellko.PlanningPoker.Redis.Test\Duracellko.PlanningPoker.Redis.Test.csproj", "{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +96,10 @@ Global
 		{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{04EBA544-0B81-463A-8949-542F28F031A5} = {6620FD4B-0154-46A5-A929-8326DB18769F}
 		{108112D4-6A84-4A45-8D2F-BAD38C9D4D11} = {6620FD4B-0154-46A5-A929-8326DB18769F}
 		{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF} = {9BE135A3-3D75-40BD-BA92-5961167FD719}
+		{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE} = {6620FD4B-0154-46A5-A929-8326DB18769F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C22E21A9-E10B-4324-BD51-350342EA8627}
