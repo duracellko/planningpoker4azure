@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Duracellko.PlanningPoker.Azure\Duracellko.PlanningPoker.Azure.csproj" />
     <ProjectReference Include="..\Duracellko.PlanningPoker.Client\Duracellko.PlanningPoker.Client.csproj" />
     <ProjectReference Include="..\Duracellko.PlanningPoker.Domain\Duracellko.PlanningPoker.Domain.csproj" />
+    <ProjectReference Include="..\Duracellko.PlanningPoker.Redis\Duracellko.PlanningPoker.Redis.csproj" />
     <ProjectReference Include="..\Duracellko.PlanningPoker.Service\Duracellko.PlanningPoker.Service.csproj" />
     <ProjectReference Include="..\Duracellko.PlanningPoker\Duracellko.PlanningPoker.csproj" />
   </ItemGroup>

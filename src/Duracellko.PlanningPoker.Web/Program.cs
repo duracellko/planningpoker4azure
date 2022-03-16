@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.Health;
@@ -9,6 +10,7 @@ using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Health;
+using Duracellko.PlanningPoker.Redis;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -77,11 +79,19 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
                 services.AddSingleton<IInitializationStatusProvider>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
                 services.AddSingleton<PlanningPokerAzureNode>();
-                services.AddSingleton<IServiceBus, AzureServiceBus>();
-                services.AddSingleton<IMessageConverter, MessageConverter>();
                 services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
+                services.AddSingleton<IMessageConverter, MessageConverter>();
+                services.AddSingleton<IRedisMessageConverter, RedisMessageConverter>();
 
-                healthChecks.AddCheck<AzureServiceBusHealthCheck>("AzureServiceBus");
+                if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("REDIS:", StringComparison.Ordinal))
+                {
+                    services.AddSingleton<IServiceBus, RedisServiceBus>();
+                }
+                else
+                {
+                    services.AddSingleton<IServiceBus, AzureServiceBus>();
+                    healthChecks.AddCheck<AzureServiceBusHealthCheck>("AzureServiceBus");
+                }
             }
             else
             {
