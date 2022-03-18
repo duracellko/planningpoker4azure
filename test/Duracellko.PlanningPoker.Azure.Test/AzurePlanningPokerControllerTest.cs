@@ -233,7 +233,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void CreateScrumteam_AfterInitialization_CreatesNewTeam()
+        public void CreateScrumTeam_AfterInitialization_CreatesNewTeam()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
@@ -243,6 +243,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var result = target.CreateScrumTeam("test", "master", Deck.Standard);
 
             // Verify
+            Assert.IsTrue(target.IsInitialized);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Team);
             Assert.AreEqual<string>("test", result.Team.Name);
@@ -251,7 +252,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void CreateScrumteam_InitializationTeamListIsNotSet_WaitForInitializationTeamList()
+        public void CreateScrumTeam_InitializationTeamListIsNotSet_WaitForInitializationTeamList()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
@@ -270,10 +271,11 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsNotNull(task.Result);
+            Assert.IsFalse(target.IsInitialized);
         }
 
         [TestMethod]
-        public void CreateScrumteam_TeamNameIsInInitializationTeamList_ArgumentException()
+        public void CreateScrumTeam_TeamNameIsInInitializationTeamList_ArgumentException()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
@@ -284,7 +286,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void CreateScrumteam_InitializationTimeout_Exception()
+        public void CreateScrumTeam_InitializationTimeout_Exception()
         {
             // Arrange
             var configuration = new AzurePlanningPokerConfiguration() { InitializationTimeout = 1 };
@@ -310,6 +312,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var result = target.GetScrumTeam("test team");
 
             // Verify
+            Assert.IsTrue(target.IsInitialized);
             Assert.AreEqual<ScrumTeam>(team, result.Team);
         }
 
@@ -330,6 +333,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsNotNull(task.Result);
+            Assert.IsFalse(target.IsInitialized);
         }
 
         [TestMethod]
@@ -371,6 +375,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             repository.Verify(r => r.DeleteAll());
+            Assert.IsFalse(target.IsInitialized);
         }
 
         [TestMethod]
@@ -386,6 +391,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             repository.Verify(r => r.DeleteAll(), Times.Never());
+            Assert.IsTrue(target.IsInitialized);
         }
 
         [TestMethod]
@@ -395,6 +401,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var target = CreateAzurePlanningPokerController();
             var team = new ScrumTeam("team");
             target.SetTeamsInitializingList(new string[] { "team" });
+            Assert.IsFalse(target.IsInitialized);
 
             // Act
             target.InitializeScrumTeam(team);
@@ -402,6 +409,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Verify
             var result = target.GetScrumTeam("team");
             Assert.AreEqual<ScrumTeam>(team, result.Team);
+            Assert.IsTrue(target.IsInitialized);
         }
 
         [TestMethod]
@@ -419,6 +427,21 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
             // Verify
             Assert.IsNull(message);
+        }
+
+        [TestMethod]
+        public void EndInitialization_TeamToInitialize_IsInitializedIsTrue()
+        {
+            // Arrange
+            var target = CreateAzurePlanningPokerController();
+            target.SetTeamsInitializingList(new string[] { "team" });
+            Assert.IsFalse(target.IsInitialized);
+
+            // Act
+            target.EndInitialization();
+
+            // Verify
+            Assert.IsTrue(target.IsInitialized);
         }
 
         private static AzurePlanningPokerController CreateAzurePlanningPokerController(

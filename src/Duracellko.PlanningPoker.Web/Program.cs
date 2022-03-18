@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
+﻿using System.Net.Http;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -8,6 +7,7 @@ using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Duracellko.PlanningPoker.Domain.Serialization;
+using Duracellko.PlanningPoker.Health;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +48,8 @@ namespace Duracellko.PlanningPoker.Web
             services.AddRazorPages()
                 .AddApplicationPart(typeof(Program).Assembly);
             services.AddSignalR();
+            services.AddHealthChecks()
+                .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker");
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
@@ -57,10 +59,11 @@ namespace Duracellko.PlanningPoker.Web
             services.AddSingleton<DeckProvider>();
             services.AddSingleton<ScrumTeamSerializer>();
             services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
+
             if (isAzure)
             {
                 services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
-                services.AddSingleton<IAzurePlanningPoker>(sp => new AzurePlanningPokerController(
+                services.AddSingleton(sp => new AzurePlanningPokerController(
                     sp.GetService<DateTimeProvider>(),
                     sp.GetService<GuidProvider>(),
                     sp.GetService<DeckProvider>(),
@@ -68,7 +71,9 @@ namespace Duracellko.PlanningPoker.Web
                     sp.GetService<IScrumTeamRepository>(),
                     sp.GetService<TaskProvider>(),
                     sp.GetRequiredService<ILogger<PlanningPokerController>>()));
-                services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<IAzurePlanningPoker>());
+                services.AddSingleton<IAzurePlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
+                services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
+                services.AddSingleton<IInitializationStatusProvider>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
                 services.AddSingleton<PlanningPokerAzureNode>();
                 services.AddSingleton<IServiceBus, AzureServiceBus>();
                 services.AddSingleton<IMessageConverter, MessageConverter>();
@@ -84,6 +89,7 @@ namespace Duracellko.PlanningPoker.Web
                     sp.GetService<IScrumTeamRepository>(),
                     sp.GetService<TaskProvider>(),
                     sp.GetRequiredService<ILogger<PlanningPokerController>>()));
+                services.AddSingleton<IInitializationStatusProvider, ReadyInitializationStatusProvider>();
             }
 
             if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
@@ -114,8 +120,6 @@ namespace Duracellko.PlanningPoker.Web
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "ASP.NET Core convention for Startup class.")]
-        [SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "ASP.NET Core convention for Startup class.")]
         private static void ConfigureApp(IApplicationBuilder app, IEndpointRouteBuilder endpoints, IWebHostEnvironment env)
         {
             var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
@@ -139,6 +143,7 @@ namespace Duracellko.PlanningPoker.Web
 
             app.UseRouting();
 
+            endpoints.MapHealthChecks("/health");
             endpoints.MapRazorPages();
             endpoints.MapControllers();
             endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
