@@ -49,7 +49,8 @@ namespace Duracellko.PlanningPoker.Web
                 .AddApplicationPart(typeof(Program).Assembly);
             services.AddSignalR();
             services.AddHealthChecks()
-                .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker");
+                .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
+                .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository");
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
