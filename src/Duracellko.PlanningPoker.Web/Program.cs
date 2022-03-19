@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
+using Duracellko.PlanningPoker.Azure.Health;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
@@ -48,7 +49,7 @@ namespace Duracellko.PlanningPoker.Web
             services.AddRazorPages()
                 .AddApplicationPart(typeof(Program).Assembly);
             services.AddSignalR();
-            services.AddHealthChecks()
+            var healthChecks = services.AddHealthChecks()
                 .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
                 .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository");
 
@@ -79,6 +80,8 @@ namespace Duracellko.PlanningPoker.Web
                 services.AddSingleton<IServiceBus, AzureServiceBus>();
                 services.AddSingleton<IMessageConverter, MessageConverter>();
                 services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
+
+                healthChecks.AddCheck<AzureServiceBusHealthCheck>("AzureServiceBus");
             }
             else
             {
