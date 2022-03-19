@@ -9,6 +9,7 @@ using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Health;
 using Microsoft.Extensions.Logging;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -17,7 +18,7 @@ namespace Duracellko.PlanningPoker.Azure
     /// Manager of all Scrum teams playing planning poker on Windows Azure platform.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Destructor is placed together with Dispose.")]
-    public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IDisposable
+    public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
     {
         private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
         private HashSet<string>? _teamsToInitialize;
@@ -50,6 +51,11 @@ namespace Duracellko.PlanningPoker.Azure
         /// Gets an observable object sending messages from all Scrum teams.
         /// </summary>
         public IObservable<ScrumTeamMessage> ObservableMessages => _observableMessages;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance of <see cref="AzurePlanningPokerController"/> is initialized.
+        /// </summary>
+        public bool IsInitialized => _initialized;
 
         /// <summary>
         /// Sets collection of Scrum team names, which exists in the Azure and need to be initialized in this node.

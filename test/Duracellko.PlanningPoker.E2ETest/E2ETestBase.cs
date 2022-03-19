@@ -75,6 +75,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             await Server.Start();
             await AssertServerSide(Context.ServerSide);
             await AssertClientConnectionType(Context.UseHttpClient);
+            await AssertServerIsHealthy();
         }
 
         protected void StartClients()
@@ -99,6 +100,15 @@ namespace Duracellko.PlanningPoker.E2ETest
                 Assert.IsNotNull(browserFixture.Browser);
                 ClientTests.Add(new ClientTest(browserFixture.Browser, Server));
             }
+        }
+
+        protected async Task AssertServerIsHealthy()
+        {
+            Assert.IsNotNull(Server);
+            var client = new HttpClient();
+            client.BaseAddress = Server.Uri;
+            var response = await client.GetStringAsync(new Uri("health", UriKind.Relative));
+            Assert.AreEqual("Healthy", response);
         }
 
         protected async Task AssertServerSide(bool serverSide)
