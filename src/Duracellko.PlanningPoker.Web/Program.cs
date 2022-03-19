@@ -86,6 +86,7 @@ namespace Duracellko.PlanningPoker.Web
                 if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("REDIS:", StringComparison.Ordinal))
                 {
                     services.AddSingleton<IServiceBus, RedisServiceBus>();
+                    healthChecks.AddCheck<RedisHealthCheck>("Redis");
                 }
                 else
                 {
