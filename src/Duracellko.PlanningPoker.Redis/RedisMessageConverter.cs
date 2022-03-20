@@ -20,7 +20,7 @@ namespace Duracellko.PlanningPoker.Redis
         };
 
         /// <summary>
-        /// Converts <see cref="T:NodeMessage"/> message to RedisValue  object.
+        /// Converts <see cref="T:NodeMessage"/> message to RedisValue object.
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of RedisValue type.</returns>
@@ -129,6 +129,11 @@ namespace Duracellko.PlanningPoker.Redis
             data = ReadString(data, out var senderNodeId);
             data = ReadString(data, out var recipientNodeId);
             var messageType = (NodeMessageType)data[0];
+
+            if (!Enum.IsDefined<NodeMessageType>(messageType))
+            {
+                throw new ArgumentException("Invalid message format.", nameof(message));
+            }
 
             return new NodeMessage(messageType)
             {

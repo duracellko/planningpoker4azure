@@ -98,17 +98,17 @@ namespace Duracellko.PlanningPoker.Redis
 
             var redis = await ConnectionMultiplexer.ConnectAsync(ConnectionString);
 
-            var disposeConnection = true;
+            var keepConnection = false;
             lock (_redisLock)
             {
                 if (_redis == null)
                 {
                     _redis = redis;
-                    disposeConnection = false;
+                    keepConnection = true;
                 }
             }
 
-            if (disposeConnection)
+            if (!keepConnection)
             {
                 await redis.CloseAsync();
                 redis.Dispose();

@@ -9,7 +9,7 @@ namespace Duracellko.PlanningPoker.Redis
     public interface IRedisMessageConverter
     {
         /// <summary>
-        /// Converts <see cref="T:NodeMessage"/> message to RedisValue  object.
+        /// Converts <see cref="T:NodeMessage"/> message to RedisValue object.
         /// </summary>
         /// <param name="message">The message to convert.</param>
         /// <returns>Converted message of RedisValue type.</returns>

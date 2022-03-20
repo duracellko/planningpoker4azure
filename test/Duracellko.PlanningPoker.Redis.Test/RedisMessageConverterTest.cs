@@ -208,6 +208,43 @@ namespace Duracellko.PlanningPoker.Redis.Test
             Assert.AreEqual(Team2Json, resultJson);
         }
 
+        [TestMethod]
+        public void GetMessageHeader_Null_ArgumentNullException()
+        {
+            var target = new RedisMessageConverter();
+            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.Null));
+        }
+
+        [TestMethod]
+        public void GetMessageHeader_EmptyString_ArgumentNullException()
+        {
+            var target = new RedisMessageConverter();
+            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.EmptyString));
+        }
+
+        [TestMethod]
+        public void GetMessageHeader_ScrumTeamMessage_ReturnsMessageTypeAndSenderAndRecipient()
+        {
+            var scrumTeamMessage = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
+            {
+                SenderNodeId = SenderId,
+                Data = scrumTeamMessage
+            };
+
+            var target = new RedisMessageConverter();
+            var redisMessage = target.ConvertToRedisMessage(nodeMessage);
+
+            var result = target.GetMessageHeader(redisMessage);
+
+            Assert.IsNotNull(result);
+            Assert.AreNotSame(nodeMessage, result);
+            Assert.AreEqual(nodeMessage.MessageType, result.MessageType);
+            Assert.AreEqual(nodeMessage.SenderNodeId, result.SenderNodeId);
+            Assert.AreEqual(nodeMessage.RecipientNodeId, result.RecipientNodeId);
+            Assert.IsNull(result.Data);
+        }
+
         private static NodeMessage ConvertToRedisMessageAndBack(NodeMessage nodeMessage)
         {
             var target = new RedisMessageConverter();
