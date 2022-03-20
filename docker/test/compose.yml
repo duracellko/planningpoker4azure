@@ -1,0 +1,44 @@
+name: planningpoker
+
+services:
+  planningpoker-r1:
+    image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
+    depends_on:
+      - redis
+    environment:
+      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__InitializationMessageTimeout: 3
+      PlanningPokerClient__UseHttpClient: true
+    ports:
+      - "${PLANNINGPOKER_APP1_PORT:-5001}:8080"
+
+  planningpoker-r2:
+    image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
+    depends_on:
+      - redis
+    environment:
+      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__InitializationMessageTimeout: 3
+      PlanningPokerClient__UseHttpClient: true
+    ports:
+      - "${PLANNINGPOKER_APP2_PORT:-5002}:8080"
+
+  planningpoker-r3:
+    image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
+    depends_on:
+      - redis
+    environment:
+      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__InitializationMessageTimeout: 3
+      PlanningPokerClient__UseHttpClient: true
+    ports:
+      - "${PLANNINGPOKER_APP3_PORT:-5003}:8080"
+
+  redis:
+    image: redis:${PLANNINGPOKER_REDIS_VERSION:-latest}
+    volumes:
+      - type: bind
+        source: ./redis.conf
+        target: /usr/local/etc/redis/redis.conf
+        read_only: true
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
