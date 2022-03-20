@@ -72,13 +72,29 @@ function RevertRedisConfiguration() {
 }
 
 function ComposeDockerUp() {
-    $composePath = Join-Path -Path $projectPath -ChildPath 'compose.yml'
-    & docker compose -f $composePath up -d
+    param (
+        [Parameter(Mandatory = $true)]
+        [string] $ComposePath
+    )
+
+    & docker compose -f $ComposePath up -d
+
+    if ($LastExitCode -ne 0) {
+        throw "Docker Compose Up failed."
+    }
 }
 
 function ComposeDockerDown() {
-    $composePath = Join-Path -Path $projectPath -ChildPath 'compose.yml'
-    & docker compose -f $composePath down
+    param (
+        [Parameter(Mandatory = $true)]
+        [string] $ComposePath
+    )
+
+    & docker compose -f $ComposePath down
+
+    if ($LastExitCode -ne 0) {
+        throw "Docker Compose Down failed."
+    }
 }
 
 # Install Pester
@@ -93,12 +109,14 @@ $pesterModule | Import-Module
 
 # Run tests
 
+$composeFilePath = Join-Path -Path $projectPath -ChildPath 'compose.yml'
+
 try {
     RandomizeApplicationPorts
     SetupEnvironmentVariables -AppImageTag $imageTag -ApplicationPorts $applicationPorts -AppPassword $redisAppPassword
     PrepareRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
 
-    ComposeDockerUp
+    ComposeDockerUp -ComposePath $composeFilePath
 
     # 3 seconds is configured timeout for looking for existing instance. So first initialization takes 3 seconds.
     Start-Sleep -Seconds 3
@@ -106,6 +124,7 @@ try {
     $testScriptPath = Join-Path -Path $projectPath -ChildPath 'PlanningPokerDocker.Tests.ps1'
     $pesterData = @{
         ServicePorts = $applicationPorts
+        DockerComposePath = $composeFilePath
         DockerComposeServiceNames = @(
             'planningpoker-r1'
             'planningpoker-r2'
@@ -133,5 +152,5 @@ try {
 }
 finally {
     RevertRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
-    ComposeDockerDown
+    ComposeDockerDown -ComposePath $composeFilePath
 }

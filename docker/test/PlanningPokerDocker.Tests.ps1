@@ -1,5 +1,6 @@
 Param (
     [int[]] $ServicePorts = $null,
+    [string] $DockerComposePath = $null,
     [string[]] $DockerComposeServiceNames = $null
 )
 
@@ -157,6 +158,26 @@ BeforeAll {
         }
 
         $healthStatus | Should -Be 'Healthy'
+    }
+
+    function StartPlanningPokerService([int] $Index) {
+        $session = $sessions[$Index]
+        $DockerComposePath | Should -Not -BeNullOrEmpty
+        $session.DockerComposeServiceName | Should -Not -BeNullOrEmpty
+
+        & docker compose -f $DockerComposePath start $session.DockerComposeServiceName
+
+        $LastExitCode | Should -Be 0
+    }
+
+    function StopPlanningPokerService([int] $Index) {
+        $session = $sessions[$Index]
+        $DockerComposePath | Should -Not -BeNullOrEmpty
+        $session.DockerComposeServiceName | Should -Not -BeNullOrEmpty
+
+        & docker compose -f $DockerComposePath stop $session.DockerComposeServiceName
+
+        $LastExitCode | Should -Be 0
     }
 }
 
@@ -516,6 +537,199 @@ Describe 'Planning Poker' {
 
         Disconnect-Team -Index 0
         Disconnect-Team -Index 2
+    }
+
+    It 'Should keep teams alive after container restart' {
+        VerifyServiceIsHealthy -Index 0
+        VerifyServiceIsHealthy -Index 1
+        VerifyServiceIsHealthy -Index 2
+
+        $response = Create-Team -Index 0
+        $response.ScrumTeam.EstimationResult | Should -BeNullOrEmpty
+        $response.ScrumTeam.EstimationParticipants | Should -BeNullOrEmpty
+
+        $response = Join-Team -Index 1
+        $response.ScrumTeam.State | Should -Be $TeamStates.Initial
+        $response.ScrumTeam.Members.Length | Should -Be 2
+        $member = $response.ScrumTeam.Members | Where-Object -Property Name -EQ -Value $sessions[0].Name
+        $member | Should -Not -BeNullOrEmpty
+        $member.Name | Should -Be $sessions[0].Name
+        $member.Type | Should -Be $MemberTypes.ScrumMaster
+        $member = $response.ScrumTeam.Members | Where-Object -Property Name -EQ -Value $sessions[1].Name
+        $member | Should -Not -BeNullOrEmpty
+        $member.Name | Should -Be $sessions[1].Name
+        $member.Type | Should -Be $MemberTypes.Member
+        $response.ScrumTeam.EstimationResult | Should -BeNullOrEmpty
+        $response.ScrumTeam.EstimationParticipants | Should -BeNullOrEmpty
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberJoined
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[1].Name
+
+        $response = Join-Team -Index 2
+        $response.ScrumTeam.State | Should -Be $TeamStates.Initial
+        $response.ScrumTeam.Members.Length | Should -Be 3
+        $member = $response.ScrumTeam.Members | Where-Object -Property Name -EQ -Value $sessions[0].Name
+        $member | Should -Not -BeNullOrEmpty
+        $member.Name | Should -Be $sessions[0].Name
+        $member.Type | Should -Be $MemberTypes.ScrumMaster
+        $member = $response.ScrumTeam.Members | Where-Object -Property Name -EQ -Value $sessions[1].Name
+        $member | Should -Not -BeNullOrEmpty
+        $member.Name | Should -Be $sessions[1].Name
+        $member.Type | Should -Be $MemberTypes.Member
+        $member = $response.ScrumTeam.Members | Where-Object -Property Name -EQ -Value $sessions[2].Name
+        $member | Should -Not -BeNullOrEmpty
+        $member.Name | Should -Be $sessions[2].Name
+        $member.Type | Should -Be $MemberTypes.Member
+        $response.ScrumTeam.EstimationResult | Should -BeNullOrEmpty
+        $response.ScrumTeam.EstimationParticipants | Should -BeNullOrEmpty
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberJoined
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[2].Name
+
+        $response = Get-Messages -Index 1
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberJoined
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[2].Name
+
+        Start-Estimation -Index 0
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.EstimationStarted
+
+        $response = Get-Messages -Index 1
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.EstimationStarted
+
+        $response = Get-Messages -Index 2
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.EstimationStarted
+
+        Submit-Estimation -Index 0 -Estimation 2
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $response[0].Member.Name | Should -Be $sessions[0].Name
+
+        $response = Get-Messages -Index 1
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $response[0].Member.Name | Should -Be $sessions[0].Name
+
+        $response = Get-Messages -Index 2
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $response[0].Member.Name | Should -Be $sessions[0].Name
+
+        Submit-Estimation -Index 2 -Estimation 3
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[2].Name
+
+        $response = Get-Messages -Index 1
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[2].Name
+
+        $response = Get-Messages -Index 2
+        $response.Length | Should -Be 1
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[2].Name
+
+        # Restart the service
+        StopPlanningPokerService -Index 0
+        StopPlanningPokerService -Index 2
+
+        Start-Sleep -Seconds 3
+
+        StartPlanningPokerService -Index 2
+        StartPlanningPokerService -Index 0
+
+        VerifyServiceIsHealthy -Index 0
+        VerifyServiceIsHealthy -Index 1
+        VerifyServiceIsHealthy -Index 2
+
+        # Continue estimation
+        Submit-Estimation -Index 1 -Estimation 1
+
+        $response = Get-Messages -Index 0
+        $response.Length | Should -Be 2
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[1].Name
+        $response[1].Type | Should -Be $MessageTypes.EstimationEnded
+        $response[1].EstimationResult | Should -Not -BeNullOrEmpty
+        $response[1].EstimationResult.Length | Should -Be 3
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[0].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[0].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $estimationResultItem.Estimation.Value | Should -Be 2
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[1].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[1].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 1
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 3
+
+        $response = Get-Messages -Index 1
+        $response.Length | Should -Be 2
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[1].Name
+        $response[1].Type | Should -Be $MessageTypes.EstimationEnded
+        $response[1].EstimationResult | Should -Not -BeNullOrEmpty
+        $response[1].EstimationResult.Length | Should -Be 3
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[0].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[0].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $estimationResultItem.Estimation.Value | Should -Be 2
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[1].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[1].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 1
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 3
+
+        $response = Get-Messages -Index 2
+        $response.Length | Should -Be 2
+        $response[0].Type | Should -Be $MessageTypes.MemberEstimated
+        $response[0].Member.Type | Should -Be $MemberTypes.Member
+        $response[0].Member.Name | Should -Be $sessions[1].Name
+        $response[1].Type | Should -Be $MessageTypes.EstimationEnded
+        $response[1].EstimationResult | Should -Not -BeNullOrEmpty
+        $response[1].EstimationResult.Length | Should -Be 3
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[0].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[0].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.ScrumMaster
+        $estimationResultItem.Estimation.Value | Should -Be 2
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[1].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[1].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 1
+        $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
+        $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
+        $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
+        $estimationResultItem.Estimation.Value | Should -Be 3
     }
 
     AfterEach {
