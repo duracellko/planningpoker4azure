@@ -1,6 +1,7 @@
 Param (
     [int[]] $ServicePorts = $null,
     [string] $DockerComposePath = $null,
+    [string] $DockerComposeProjectName = $null,
     [string[]] $DockerComposeServiceNames = $null
 )
 
@@ -163,9 +164,10 @@ BeforeAll {
     function StartPlanningPokerService([int] $Index) {
         $session = $sessions[$Index]
         $DockerComposePath | Should -Not -BeNullOrEmpty
+        $DockerComposeProjectName | Should -Not -BeNullOrEmpty
         $session.DockerComposeServiceName | Should -Not -BeNullOrEmpty
 
-        & docker compose -f $DockerComposePath start $session.DockerComposeServiceName
+        & docker compose -f $DockerComposePath -p $DockerComposeProjectName start $session.DockerComposeServiceName
 
         $LastExitCode | Should -Be 0
     }
@@ -173,9 +175,10 @@ BeforeAll {
     function StopPlanningPokerService([int] $Index) {
         $session = $sessions[$Index]
         $DockerComposePath | Should -Not -BeNullOrEmpty
+        $DockerComposeProjectName | Should -Not -BeNullOrEmpty
         $session.DockerComposeServiceName | Should -Not -BeNullOrEmpty
 
-        & docker compose -f $DockerComposePath stop $session.DockerComposeServiceName
+        & docker compose -f $DockerComposePath -p $DockerComposeProjectName stop $session.DockerComposeServiceName
 
         $LastExitCode | Should -Be 0
     }

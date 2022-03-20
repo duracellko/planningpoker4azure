@@ -12,6 +12,7 @@ if (![string]::IsNullOrEmpty($PlanningPokerImageTag)) {
     $imageTag = $PlanningPokerImageTag
 }
 
+$composeProjectName = 'planningpoker'
 $redisAppPassword = (New-Guid).ToString()
 $redisAdminPassword = (New-Guid).ToString()
 $applicationPorts = @(5001, 5002, 5003)
@@ -74,10 +75,12 @@ function RevertRedisConfiguration() {
 function ComposeDockerUp() {
     param (
         [Parameter(Mandatory = $true)]
-        [string] $ComposePath
+        [string] $ComposePath,
+        [Parameter(Mandatory = $true)]
+        [string] $ProjectName
     )
 
-    & docker compose -f $ComposePath up -d
+    & docker compose -f $ComposePath -p $ProjectName up -d
 
     if ($LastExitCode -ne 0) {
         throw "Docker Compose Up failed."
@@ -87,10 +90,12 @@ function ComposeDockerUp() {
 function ComposeDockerDown() {
     param (
         [Parameter(Mandatory = $true)]
-        [string] $ComposePath
+        [string] $ComposePath,
+        [Parameter(Mandatory = $true)]
+        [string] $ProjectName
     )
 
-    & docker compose -f $ComposePath down
+    & docker compose -f $ComposePath -p $ProjectName down
 
     if ($LastExitCode -ne 0) {
         throw "Docker Compose Down failed."
@@ -116,7 +121,7 @@ try {
     SetupEnvironmentVariables -AppImageTag $imageTag -ApplicationPorts $applicationPorts -AppPassword $redisAppPassword
     PrepareRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
 
-    ComposeDockerUp -ComposePath $composeFilePath
+    ComposeDockerUp -ComposePath $composeFilePath -ProjectName $composeProjectName
 
     # 3 seconds is configured timeout for looking for existing instance. So first initialization takes 3 seconds.
     Start-Sleep -Seconds 3
@@ -125,6 +130,7 @@ try {
     $pesterData = @{
         ServicePorts = $applicationPorts
         DockerComposePath = $composeFilePath
+        DockerComposeProjectName = $composeProjectName
         DockerComposeServiceNames = @(
             'planningpoker-r1'
             'planningpoker-r2'
@@ -152,5 +158,5 @@ try {
 }
 finally {
     RevertRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
-    ComposeDockerDown -ComposePath $composeFilePath
+    ComposeDockerDown -ComposePath $composeFilePath -ProjectName $composeProjectName
 }

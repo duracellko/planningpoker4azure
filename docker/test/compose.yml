@@ -1,5 +1,3 @@
-name: planningpoker
-
 services:
   planningpoker-r1:
     image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
