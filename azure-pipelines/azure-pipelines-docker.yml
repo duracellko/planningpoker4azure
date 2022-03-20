@@ -12,7 +12,7 @@ jobs:
     clean: all
 
   variables:
-    DockerImageTagPrefix: b
+    PlanningPokerDockerImageTag: 'b$(Build.BuildId)'
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -30,7 +30,27 @@ jobs:
   - task: Docker@2
     displayName: Build Docker image
     inputs:
-      containerRegistry: $(DockerRegistryEndpointName)
+      command: build
       Dockerfile: docker/Dockerfile
       repository: $(DockerRepositoryName)
-      tags: '$(DockerImageTagPrefix)$(Build.BuildId)'
+      tags: $(PlanningPokerDockerImageTag)
+
+  - pwsh: './docker/test/RunTests.ps1 -PlanningPokerImageTag $env:PLANNINGPOKERDOCKERIMAGETAG -TestResultPath "$env:BUILD_STAGINGDIRECTORY/PlanningPokerDocker.TestResult.xml"'
+    displayName: 'Run Docker container tests'
+
+  - task: PublishTestResults@2
+    displayName: Public Docker container test results
+    inputs:
+      testResultsFormat: NUnit
+      searchFolder: $(Build.StagingDirectory)
+      testResultsFiles: PlanningPokerDocker.TestResult.xml
+      testRunTitle: Planning Poker - Docker
+    condition: succeededOrFailed()
+
+  - task: Docker@2
+    displayName: Push Docker image
+    inputs:
+      command: push
+      containerRegistry: $(DockerRegistryEndpointName)
+      repository: $(DockerRepositoryName)
+      tags: $(PlanningPokerDockerImageTag)
