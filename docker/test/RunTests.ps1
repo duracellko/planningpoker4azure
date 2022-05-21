@@ -4,8 +4,8 @@ Param (
 )
 
 $projectPath = $PSScriptRoot
-$pesterVersion = '5.3.1'
-$redisVersion = '6.2'
+$pesterVersion = '5.3.3'
+$redisVersion = '7.0'
 
 $imageTag = 'local-test'
 if (![string]::IsNullOrEmpty($PlanningPokerImageTag)) {
