@@ -44,7 +44,7 @@ It is also possible to install the application using Docker image from [duracell
 
 ```
 docker pull duracellko/planningpoker
-docker run -p 80:80 duracellko/planningpoker
+docker run -p 80:8080 duracellko/planningpoker
 ```
 
 ## Architecture
