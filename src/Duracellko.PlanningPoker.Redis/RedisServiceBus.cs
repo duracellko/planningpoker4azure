@@ -108,7 +108,7 @@ namespace Duracellko.PlanningPoker.Redis
                 throw new ArgumentNullException(nameof(nodeId));
             }
 
-            SetupConnectionString();
+            _connectionString = GetConnectionString();
             _nodeId = nodeId;
             _channel = Configuration.ServiceBusTopic;
             if (string.IsNullOrEmpty(_channel))
@@ -213,13 +213,15 @@ namespace Duracellko.PlanningPoker.Redis
             }
         }
 
-        private void SetupConnectionString()
+        private string GetConnectionString()
         {
-            _connectionString = Configuration.ServiceBusConnectionString!;
-            if (_connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
+            var connectionString = Configuration.ServiceBusConnectionString!;
+            if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
             {
-                _connectionString = _connectionString.Substring(6);
+                connectionString = connectionString.Substring(6);
             }
+
+            return connectionString;
         }
     }
 }
