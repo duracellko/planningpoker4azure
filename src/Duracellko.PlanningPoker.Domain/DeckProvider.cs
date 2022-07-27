@@ -10,26 +10,23 @@ namespace Duracellko.PlanningPoker.Domain
     {
         private readonly IEnumerable<Estimation> _standardDeck = new Estimation[]
         {
-            new Estimation(0.0),
-            new Estimation(0.5),
-            new Estimation(1.0),
-            new Estimation(2.0),
-            new Estimation(3.0),
-            new Estimation(5.0),
             new Estimation(8.0),
-            new Estimation(13.0),
-            new Estimation(20.0),
+            new Estimation(16.0),
+            new Estimation(24.0),
+            new Estimation(32.0),
             new Estimation(40.0),
-            new Estimation(100.0),
+            new Estimation(48.0),
+            new Estimation(56.0),
+            new Estimation(64.0),
+            new Estimation(72.0),
+            new Estimation(80.0),
+            new Estimation(120.0),
             new Estimation(double.PositiveInfinity),
             new Estimation()
         };
 
         private readonly IEnumerable<Estimation> _fibonacciDeck = new Estimation[]
         {
-            new Estimation(0.0),
-            new Estimation(1.0),
-            new Estimation(2.0),
             new Estimation(3.0),
             new Estimation(5.0),
             new Estimation(8.0),
@@ -38,6 +35,9 @@ namespace Duracellko.PlanningPoker.Domain
             new Estimation(34.0),
             new Estimation(55.0),
             new Estimation(89.0),
+            new Estimation(144.0),
+            new Estimation(233.0),
+            new Estimation(377.0),
             new Estimation(double.PositiveInfinity),
             new Estimation()
         };
@@ -58,19 +58,19 @@ namespace Duracellko.PlanningPoker.Domain
 
         private readonly IEnumerable<Estimation> _tshirtSizes = new Estimation[]
         {
-            new Estimation(-999509.0), // XS
-            new Estimation(-999508.0), // S
+            new Estimation(-999509.0), // PP
+            new Estimation(-999508.0), // P
             new Estimation(-999507.0), // M
-            new Estimation(-999506.0), // L
-            new Estimation(-999505.0), // XL
+            new Estimation(-999506.0), // G
+            new Estimation(-999505.0), // GG
         };
 
         private readonly IEnumerable<Estimation> _rockPaperScissorsLizardSpock = new Estimation[]
         {
-            new Estimation(-999909.0), // Rock
-            new Estimation(-999908.0), // Paper
-            new Estimation(-999907.0), // Scissors
-            new Estimation(-999906.0), // Lizard
+            new Estimation(-999909.0), // Pedra
+            new Estimation(-999908.0), // Papel
+            new Estimation(-999907.0), // Tesoura
+            new Estimation(-999906.0), // Lagarto
             new Estimation(-999905.0), // Spock
         };
 
@@ -100,7 +100,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case Deck.RockPaperScissorsLizardSpock:
                     return _rockPaperScissorsLizardSpock;
                 default:
-                    throw new ArgumentException($"Deck '{deck}' is not supported.", nameof(deck));
+                    throw new ArgumentException($"O baralho '{deck}' não é suportado.", nameof(deck));
             }
         }
 

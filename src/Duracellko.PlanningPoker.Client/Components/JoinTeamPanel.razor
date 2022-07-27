@@ -2,40 +2,40 @@
 @inject JoinTeamController Controller
 
 <div class="card">
-    <h5 class="card-header">Join team</h5>
+    <h5 class="card-header">Junte-se à equipe</h5>
     <div class="card-body">
         <form name="joinTeam" action="." @onsubmit="JoinTeamCommand">
             <div class="form-group">
-                <label for="joinTeam$teamName">Team name:</label>
+                <label for="joinTeam$teamName">Nome da equipe:</label>
                 <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName"
                        class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
                 @if (!IsTeamNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">Requerido</span>
                 }
             </div>
             <div class="form-group">
-                <label for="joinTeam$memberName">Member name:</label>
+                <label for="joinTeam$memberName">Nome do participante:</label>
                 <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName"
                        class="@GetFormControlCss(IsMemberNameValid)" maxlength="50" />
                 @if (!IsMemberNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">Requerido</span>
                 }
             </div>
             <div class="form-group">
                 <div class="form-check">
                     <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" class="form-check-input" />
-                    <label for="joinTeam$asObserver" class="form-check-label">As observer only</label>
+                    <label for="joinTeam$asObserver" class="form-check-label">Apenas como observador</label>
                 </div>
             </div>
-            <button type="submit" id="joinTeam$submit" class="btn btn-primary">Join team</button>
+            <button type="submit" id="joinTeam$submit" class="btn btn-primary">Junte-se à equipe</button>
         </form>
     </div>
     <div class="card-footer">
         <small>
-            <strong>Tip:</strong> If you accidentally closed browser window and want to reconnect to your team,
-            simply enter your original team and member name here and click "Join team". You will get reconnected.
+            <strong>Dica:</strong> Se você fechou acidentalmente a janela do navegador e deseja se reconectar à sua equipe,
+            simplesmente insira sua equipe original e o nome do membro aqui e clique em "Entrar na equipe". Você vai se reconectar.
         </small>
     </div>
 </div>

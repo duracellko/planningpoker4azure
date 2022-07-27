@@ -9,13 +9,13 @@
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="timerSetupModalTitle">Timer</h5>
+                    <h5 class="modal-title" id="timerSetupModalTitle">Temporizador</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label>Timer duration</label>
+                            <label>Duração do temporizador</label>
                             <div class="input-group">
                                 <select class="custom-select form-control text-right" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
                                     @for (int i = 0; i < 60; i++)
@@ -54,7 +54,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
     @if (Controller.CanSelectEstimation)
     {
         <div class="availableEstimations">
-            <h3>Pick estimation</h3>
+            <h3>Escolha a estimativa</h3>
             <ul>
                 @foreach (var estimation in Controller.AvailableEstimations)
                 {
@@ -91,38 +91,38 @@
                 @if (Controller.CanStartEstimation)
                 {
                     <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary mr-3">
-                        <span class="oi oi-media-play mr-1" aria-hidden="true"></span> Start estimation
+                        <span class="oi oi-media-play mr-1" aria-hidden="true"></span> Iniciar estimativa
                     </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
                     <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-media-stop mr-1" aria-hidden="true"></span> Cancel estimation
+                        <span class="oi oi-media-stop mr-1" aria-hidden="true"></span> Cancelar estimativa
                     </button>
                 }
 
                 @if (Controller.CanShowEstimationSummary)
                 {
                     <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-calculator mr-1" aria-hidden="true"></span> Show average
+                        <span class="oi oi-calculator mr-1" aria-hidden="true"></span> Mostrar média
                     </button>
                 }
 
                 @if (Controller.CanStartTimer)
                 {
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Start timer
+                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Iniciar temporizador
                     </button>
                     <button type="button" class="btn btn-secondary mr-3" data-toggle="modal" data-target="#timerSetupModal">
-                        <span class="oi oi-cog mr-1" aria-hidden="true"></span> Setup timer
+                        <span class="oi oi-cog mr-1" aria-hidden="true"></span> Configurar temporizador
                     </button>
                 }
 
                 @if (Controller.CanStopTimer)
                 {
                     <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-action-undo mr-1" aria-hidden="true"></span> Stop timer
+                        <span class="oi oi-action-undo mr-1" aria-hidden="true"></span> Parar temporizador
                     </button>
                 }
             </p>
@@ -132,14 +132,14 @@
     @if (HasEstimationResult)
     {
         <div class="estimationResult">
-            <h3>Selected estimates</h3>
+            <h3>Estimativas selecionadas</h3>
 
             @if (Controller.EstimationSummary != null)
             {
                 <div class="estimationSummary row">
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Average</div>
+                            <div class="estimationSummaryTitle">Média</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Average)
                             </div>
@@ -147,7 +147,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Median</div>
+                            <div class="estimationSummaryTitle">Mediana</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Median)
                             </div>
@@ -155,7 +155,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Sum</div>
+                            <div class="estimationSummaryTitle">Soma</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Sum)
                             </div>
@@ -296,11 +296,11 @@
         }
         else if (value == -999509.0)
         {
-            return "XS";
+            return "PP";
         }
         else if (value == -999508.0)
         {
-            return "S";
+            return "P";
         }
         else if (value == -999507.0)
         {
@@ -308,30 +308,30 @@
         }
         else if (value == -999506.0)
         {
-            return "L";
+            return "G";
         }
         else if (value == -999505.0)
         {
-            return "XL";
+            return "GG";
         }
         else if (value == -999909.0)
         {
-            // 💎 Rock
+            // 💎 Pedra
             return "\uD83D\uDC8E";
         }
         else if (value == -999908.0)
         {
-            // 📜 Paper
+            // 📜 Papel
             return "\uD83D\uDCDC";
         }
         else if (value == -999907.0)
         {
-            // ✂ Scissors
+            // ✂ Tesoura
             return "\u2702";
         }
         else if (value == -999906.0)
         {
-            // 🦎 Lizard
+            // 🦎 Lagarto
             return "\uD83E\uDD8E";
         }
         else if (value == -999905.0)

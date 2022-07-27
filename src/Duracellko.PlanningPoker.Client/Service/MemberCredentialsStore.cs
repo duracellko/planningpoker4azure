@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="permanentScope">Specifies, whether to get credentials from permanent scope or session (browser tab) only.</param>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
+        [SuppressMessage("Microsoft.Design", "CA1031:Não captura tipos de exceção gerais", Justification = "Ignorar exceção. O usuário pode se conectar manualmente.")]
         public async Task<MemberCredentials?> GetCredentialsAsync(bool permanentScope)
         {
             try
@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="credentials"><see cref="MemberCredentials"/> object to be saved.</param>
         /// <returns>Asynchronous operation.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore exception. User can connect manually.")]
+        [SuppressMessage("Microsoft.Design", "CA1031:Não captura tipos de exceção gerais", Justification = "Ignorar exceção. O usuário pode se conectar manualmente.")]
         public async Task SetCredentialsAsync(MemberCredentials? credentials)
         {
             try

@@ -118,30 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Error_DeserializationFailed" xml:space="preserve">
-    <value>Deserialization of Scrum Team failed.</value>
+    <value>A desserialização do Time Scrum falhou.</value>
   </data>
   <data name="Error_EstimationIsInProgress" xml:space="preserve">
-    <value>Cannot start estimation. Estimation is already in progress.</value>
+    <value>Não é possível iniciar a estimativa. A estimativa já está em andamento.</value>
   </data>
   <data name="Error_EstimationIsNotAvailableInTeam" xml:space="preserve">
-    <value>Estimation of value {0} is not available in the team.</value>
+    <value>A estimativa do valor {0} não está disponível na equipe.</value>
   </data>
   <data name="Error_EstimationResultIsReadOnly" xml:space="preserve">
-    <value>Estimation result is read-only.</value>
+    <value>O resultado da estimativa é somente leitura.</value>
   </data>
   <data name="Error_InvalidSessionId" xml:space="preserve">
-    <value>Invalid session ID.</value>
+    <value>ID de sessão inválido.</value>
   </data>
   <data name="Error_InvalidTimerDuraction" xml:space="preserve">
-    <value>Timer duration must be more greater than 0 seconds.</value>
+    <value>A duração do temporizador deve ser superior a 0 segundos.</value>
   </data>
   <data name="Error_MemberAlreadyExists" xml:space="preserve">
-    <value>Member or observer named '{0}' already exists in the team.</value>
+    <value>O membro ou observador chamado '{0}' já existe na equipe.</value>
   </data>
   <data name="Error_MemberNotInResult" xml:space="preserve">
-    <value>The given member was not present in the estimation result.</value>
+    <value>O membro dado não estava presente no resultado da estimativa.</value>
   </data>
   <data name="Error_ScrumMasterAlreadyExists" xml:space="preserve">
-    <value>Scrum Master is already set for the team.</value>
+    <value>O Scrum Master já está definido para a equipe.</value>
   </data>
 </root>

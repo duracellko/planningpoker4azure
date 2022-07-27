@@ -46,7 +46,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <remarks>
         /// The value is updated only, when it is older than 5 minutes.
         /// </remarks>
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "On fail ServiceOffsetTime is updated next time.")]
+        [SuppressMessage("Design", "CA1031:Não captura tipos de exceção gerais", Justification = "Em caso de falha, ServiceOffsetTime é atualizado na próxima vez.")]
         public async Task UpdateServiceTimeOffset(CancellationToken cancellationToken)
         {
             if (_dateTimeProvider.UtcNow <= _lastUpdateTime.Add(UpdateInterval))

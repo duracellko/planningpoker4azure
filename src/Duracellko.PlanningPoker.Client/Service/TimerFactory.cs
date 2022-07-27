@@ -37,7 +37,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             var dispatcherDelegate = _dispatcherDelegate;
             if (dispatcherDelegate == null)
             {
-                throw new InvalidOperationException("Timer cannot be started without configured dispatcher.");
+                throw new InvalidOperationException("O temporizador não pode ser iniciado sem o dispatcher configurado.");
             }
 
             return new DisposableTimer(action, dispatcherDelegate, _interval);
@@ -78,7 +78,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                 }
             }
 
-            [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Log timer event errors.")]
+            [SuppressMessage("Design", "CA1031:Não captura tipos de exceção gerais", Justification = "Erros de evento do temporizador de registro.")]
             private async void TimerOnElapsed(object? sender, ElapsedEventArgs e)
             {
                 try

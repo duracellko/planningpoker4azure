@@ -118,36 +118,38 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EstimationDeck_Fibonacci" xml:space="preserve">
-    <value>0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89</value>
+    <value>3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377</value>
   </data>
   <data name="EstimationDeck_Rating" xml:space="preserve">
     <value>1, 2, 3, 4, 5, 6, 7, 8, 9, 10</value>
   </data>
   <data name="EstimationDeck_RockPaperScissorsLizardSpock" xml:space="preserve">
-    <value>Rock, Paper, Scissors, Lizard, Spock</value>
+    <value>Pedra, Papel, Tesoura, Lagarto, Spock</value>
   </data>
   <data name="EstimationDeck_Standard" xml:space="preserve">
-    <value>0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100</value>
+    <value>8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 120</value>
   </data>
   <data name="EstimationDeck_Tshirt" xml:space="preserve">
-    <value>T-shirt: XS, S, M, L, XL</value>
+    <value>T-shirt: PP, P, M, G, GG</value>
   </data>
   <data name="JoinTeam_ReconnectButton" xml:space="preserve">
-    <value>Reconnect</value>
+    <value>Reconectar</value>
   </data>
   <data name="JoinTeam_ReconnectMessage" xml:space="preserve">
-    <value>Do you want to reconnect?</value>
+    <value>Você quer se reconectar?</value>
   </data>
   <data name="JoinTeam_ReconnectTitle" xml:space="preserve">
-    <value>Reconnect</value>
+    <value>Reconectar</value>
   </data>
   <data name="MessagePanel_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>Erro</value>
   </data>
   <data name="PlanningPokerService_ConnectionError" xml:space="preserve">
-    <value>Connection failed. Please, check your internet connection.</value>
+    <value>58 / 5.000
+Resultados de tradução
+Falha na conexão. Por favor, verifique sua conexão à internet.</value>
   </data>
   <data name="PlanningPokerService_UnexpectedError" xml:space="preserve">
-    <value>Service is temporarily not available. Please, try again later.</value>
+    <value>O serviço está temporariamente indisponível. Por favor, tente novamente mais tarde.</value>
   </data>
 </root>

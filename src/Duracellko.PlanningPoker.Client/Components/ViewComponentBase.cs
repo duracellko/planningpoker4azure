@@ -22,7 +22,7 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// </summary>
         /// <param name="action">Action to execute.</param>
         /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Error is displayed to user.")]
+        [SuppressMessage("Microsoft.Design", "CA1031:Não capturar tipos de exceção gerais", Justification = "O erro é exibido ao usuário.")]
         protected async Task TryRun(Func<Task> action)
         {
             if (action == null)

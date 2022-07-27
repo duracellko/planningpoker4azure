@@ -12,8 +12,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// </summary>
     public class JoinTeamController
     {
-        private const string MemberExistsError1 = "Member or observer named";
-        private const string MemberExistsError2 = "already exists in the team.";
+        private const string MemberExistsError1 = "Membro ou observador nomeado";
+        private const string MemberExistsError2 = "já existe na equipe.";
 
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IPlanningPokerInitializer _planningPokerInitializer;

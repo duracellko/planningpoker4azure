@@ -203,7 +203,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 if (value <= TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "Timer duration must be greater than 0 seconds.");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "A duração do temporizador deve ser superior a 0 segundos.");
                 }
 
                 _timerDuration = value;
@@ -345,7 +345,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             if (string.Equals(member, User.Name, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("ScrumMaster cannot disconnect himself.", nameof(member));
+                throw new ArgumentException("ScrumMaster não pode se desconectar.", nameof(member));
             }
 
             using (_busyIndicator.Show())

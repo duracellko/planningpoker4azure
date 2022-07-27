@@ -43,7 +43,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             private readonly IPlanningPokerClient _planningPokerClient;
             private readonly IServiceTimeProvider _serviceTimeProvider;
 
-            [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "CancellationToken is disposed, when task ends.")]
+            [SuppressMessage("Usage", "CA2213:Campos descartáveis devem ser descartados", Justification = "CancellationToken é descartado, quando a tarefa termina.")]
             private CancellationTokenSource? _cancellationTokenSource;
 
             public MessageController(PlanningPokerController planningPokerController, IPlanningPokerClient planningPokerClient, IServiceTimeProvider serviceTimeProvider)
@@ -66,7 +66,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 }
             }
 
-            [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error, when application is closing.")]
+            [SuppressMessage("Microsoft.Design", "CA1031:Não captura tipos de exceção gerais", Justification = "Ignorar erro, quando o aplicativo está fechando.")]
             public async void StartReceiving()
             {
                 try

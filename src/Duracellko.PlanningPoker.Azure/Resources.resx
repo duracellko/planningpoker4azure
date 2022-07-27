@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Error_InitializationIsNotStarted" xml:space="preserve">
-    <value>Planning Poker controller initialization must be started before initializing a scrum team.</value>
+    <value>A inicialização do controlador do Planning Poker deve ser iniciada antes de inicializar uma equipe scrum.</value>
   </data>
   <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
-    <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
+    <value>Não é possível criar a Equipe Scrum "{0}". A equipe com esse nome já existe.</value>
   </data>
 </root>
