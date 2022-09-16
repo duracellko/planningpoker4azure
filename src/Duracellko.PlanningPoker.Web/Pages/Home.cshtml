@@ -3,6 +3,7 @@
 @model Duracellko.PlanningPoker.Web.Model.HomeModel
 @{
     Layout = null;
+    await Model.ClientScripts.Load();
 }
 
 <!DOCTYPE html>
@@ -14,8 +15,10 @@
     <base href="/" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="//cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet" />
+    @foreach (var cssScript in Model.ClientScripts.CascadingStyleSheets)
+    {
+        <link href="//cdnjs.cloudflare.com/ajax/libs/@cssScript" rel="stylesheet" />
+    }
     <link href="Content/Site.css" rel="stylesheet" />
 </head>
 <body>
@@ -45,10 +48,12 @@
         </button>
     </div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+    @foreach (var jsScript in Model.ClientScripts.JavaScripts)
+    {
+        <script src="//cdnjs.cloudflare.com/ajax/libs/@jsScript"></script>
+    }
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
     <script>window.jQuery.fn.modal || document.write('<script src="js/bootstrap.bundle.min.js"><\/script>')</script>
 
     <script>
