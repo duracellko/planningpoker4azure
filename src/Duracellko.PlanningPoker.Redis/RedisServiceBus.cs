@@ -148,7 +148,7 @@ namespace Duracellko.PlanningPoker.Redis
             if (_redis != null)
             {
                 await _redis.CloseAsync();
-                _redis.Dispose();
+                await _redis.DisposeAsync();
                 _redis = null;
             }
         }
