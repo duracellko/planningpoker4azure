@@ -16,11 +16,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
     [TestClass]
     public sealed class CreateTeamPanelTest : IDisposable
     {
-        private Bunit.TestContext context = new Bunit.TestContext();
+        private Bunit.TestContext _context = new Bunit.TestContext();
 
         public void Dispose()
         {
-            context.Dispose();
+            _context.Dispose();
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = CreateCreateTeamController();
             InitializeContext(controller);
 
-            using var target = context.RenderComponent<CreateTeamPanel>();
+            using var target = _context.RenderComponent<CreateTeamPanel>();
 
             var teamNameElement = target.Find("input[name=teamName]");
             Assert.AreEqual("form-control", teamNameElement.ClassName);
@@ -48,7 +48,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = CreateCreateTeamController();
             InitializeContext(controller);
 
-            using var target = context.RenderComponent<CreateTeamPanel>();
+            using var target = _context.RenderComponent<CreateTeamPanel>();
 
             var teamNameElement = target.Find("input[name=teamName]");
             teamNameElement.Change(PlanningPokerData.TeamName);
@@ -72,7 +72,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = CreateCreateTeamController();
             InitializeContext(controller);
 
-            using var target = context.RenderComponent<CreateTeamPanel>();
+            using var target = _context.RenderComponent<CreateTeamPanel>();
 
             var teamNameElement = target.Find("input[name=teamName]");
             teamNameElement.Change(PlanningPokerData.TeamName);
@@ -100,7 +100,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = CreateCreateTeamController();
             InitializeContext(controller);
 
-            using var target = context.RenderComponent<CreateTeamPanel>();
+            using var target = _context.RenderComponent<CreateTeamPanel>();
 
             var teamNameElement = target.Find("input[name=teamName]");
             teamNameElement.Change(PlanningPokerData.TeamName);
@@ -129,7 +129,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var controller = CreateCreateTeamController(planningPokerClient: planningPokerClient.Object);
             InitializeContext(controller);
 
-            using var target = context.RenderComponent<CreateTeamPanel>();
+            using var target = _context.RenderComponent<CreateTeamPanel>();
 
             var teamNameElement = target.Find("input[name=teamName]");
             teamNameElement.Change(PlanningPokerData.TeamName);
@@ -172,8 +172,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 messageBoxService = messageBoxServiceMock.Object;
             }
 
-            context.Services.AddSingleton(controller);
-            context.Services.AddSingleton(messageBoxService);
+            _context.Services.AddSingleton(controller);
+            _context.Services.AddSingleton(messageBoxService);
         }
     }
 }

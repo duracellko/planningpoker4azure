@@ -20,11 +20,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
     [TestClass]
     public sealed class PlanningPokerDeskTest : IDisposable
     {
-        private Bunit.TestContext context = new Bunit.TestContext();
+        private Bunit.TestContext _context = new Bunit.TestContext();
 
         public void Dispose()
         {
-            context.Dispose();
+            _context.Dispose();
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             InitializeContext(controller);
             await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
             var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -70,7 +70,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
             var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -138,7 +138,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
             var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -186,7 +186,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Available estimations
             var h3Element = target.Find("div.availableEstimations > h3");
@@ -240,7 +240,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Estimations
             var h3Element = target.Find("div.estimationResult > h3");
@@ -259,7 +259,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             InitializeContext(controller);
             await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
             var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
@@ -284,7 +284,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             InitializeContext(controller);
             await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
             var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
@@ -308,7 +308,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             InitializeContext(controller);
             await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
 
-            using var target = context.RenderComponent<PlanningPokerDesk>();
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
             var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
@@ -376,8 +376,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 messageBoxService = messageBoxServiceMock.Object;
             }
 
-            context.Services.AddSingleton(controller);
-            context.Services.AddSingleton(messageBoxService);
+            _context.Services.AddSingleton(controller);
+            _context.Services.AddSingleton(messageBoxService);
         }
     }
 }
