@@ -273,6 +273,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var secondsElement = (IHtmlSelectElement)selectElements[1];
             Assert.AreEqual("seconds", secondsElement.GetAttribute("aria-label"));
             Assert.AreEqual("0", secondsElement.Value);
+
+            Assert.AreEqual(TimeSpan.FromMinutes(5), controller.TimerDuration);
         }
 
         [TestMethod]
@@ -296,6 +298,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual("0", minutesElement.Value);
             Assert.AreEqual("1", secondsElement.Value);
+            Assert.AreEqual(TimeSpan.FromSeconds(1), controller.TimerDuration);
         }
 
         [TestMethod]
@@ -323,6 +326,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             Assert.AreEqual("1", minutesElement.Value);
             Assert.AreEqual("0", secondsElement.Value);
+            Assert.AreEqual(TimeSpan.FromMinutes(1), controller.TimerDuration);
         }
 
         private static PlanningPokerController CreatePlanningPokerController()
