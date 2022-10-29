@@ -22,7 +22,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ShowBusyIndicator_RunShowBusyIndicator()
+        public async Task ShowBusyIndicator_RunShowBusyIndicatorFunction()
         {
             var busyIndicatorService = new BusyIndicatorService();
             var jsRuntime = new Mock<IJSRuntime>();
@@ -36,7 +36,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task DisposeBusyIndicator_RunHide()
+        public async Task DisposeBusyIndicator_RunHideFunction()
         {
             var busyIndicatorService = new BusyIndicatorService();
             var jsRuntime = new Mock<IJSRuntime>();

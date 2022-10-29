@@ -23,7 +23,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ShowMessage_MessageIsDisplayed()
+        public async Task ShowMessage_NoTitle_MessageIsDisplayed()
         {
             var messageBoxService = new MessageBoxService();
             InitializeContext(messageBoxService);
@@ -47,7 +47,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ShowMessageWithPrimaryButton_MessageIsDisplayed()
+        public async Task ShowMessage_PrimaryButtonText_MessageAndButtonAreDisplayed()
         {
             var messageBoxService = new MessageBoxService();
             InitializeContext(messageBoxService);
@@ -73,7 +73,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ShowMessage_RunShowMessageBox()
+        public async Task ShowMessage_RunShowMessageBoxFunction()
         {
             var messageBoxService = new MessageBoxService();
             var jsRuntime = new Mock<IJSRuntime>();
@@ -91,7 +91,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task CloseDialog_EndShowDialogTask()
+        public async Task ClickCloseDialogButton_ShowDialogTaskIsCompleted()
         {
             var messageBoxService = new MessageBoxService();
             var jsRuntime = new Mock<IJSRuntime>();
@@ -116,7 +116,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ConfirmDialog_EndShowDialogTask()
+        public async Task ClickPrimaryDialogButton_ShowDialogTaskIsCompleted()
         {
             var messageBoxService = new MessageBoxService();
             var jsRuntime = new Mock<IJSRuntime>();
@@ -141,7 +141,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task CloseDialog_RunHide()
+        public async Task ClickCloseDialogButton_RunHideFunction()
         {
             var messageBoxService = new MessageBoxService();
             var jsRuntime = new Mock<IJSRuntime>();
@@ -162,7 +162,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public async Task ConfirmMessage_RunHide()
+        public async Task ClickPrimaryDialogButton_RunHideFunction()
         {
             var messageBoxService = new MessageBoxService();
             var jsRuntime = new Mock<IJSRuntime>();

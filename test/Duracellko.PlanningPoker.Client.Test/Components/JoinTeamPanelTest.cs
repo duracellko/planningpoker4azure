@@ -126,7 +126,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         [DataTestMethod]
         [DataRow(false)]
         [DataRow(true)]
-        public void ClickCreate_SendsJoinTeamRequest(bool asObserver)
+        public void ClickJoinButton_SendsJoinTeamRequest(bool asObserver)
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
             var controller = CreateJoinTeamController(planningPokerClient: planningPokerClient.Object);

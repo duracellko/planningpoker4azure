@@ -123,7 +123,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
-        public void ClickCreate_SendsCreateTeamRequest()
+        public void ClickCreateButton_SendsCreateTeamRequest()
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
             var controller = CreateCreateTeamController(planningPokerClient: planningPokerClient.Object);
