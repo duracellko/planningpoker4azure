@@ -3,33 +3,41 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "jquery@3.6.0",
-      "destination": "wwwroot/js"
+      "library": "jquery@3.6.1",
+      "destination": "wwwroot/js",
+      "files": [
+          "jquery.min.js",
+          "jquery.js",
+          "jquery.min.map",
+          "jquery.slim.js",
+          "jquery.slim.min.js",
+          "jquery.slim.min.map"
+      ]
     },
     {
       "library": "twitter-bootstrap@5.2.0",
       "destination": "wwwroot",
       "files": [
-        "css/bootstrap.css",
         "css/bootstrap.min.css",
+        "js/bootstrap.bundle.min.js",
+        "css/bootstrap.css",
         "css/bootstrap-grid.css",
         "css/bootstrap-grid.min.css",
         "css/bootstrap-reboot.css",
         "css/bootstrap-reboot.min.css",
         "js/bootstrap.js",
         "js/bootstrap.min.js",
-        "js/bootstrap.bundle.js",
-        "js/bootstrap.bundle.min.js"
+        "js/bootstrap.bundle.js"
       ]
     },
     {
       "library": "open-iconic@1.1.1",
       "destination": "wwwroot",
       "files": [
+        "font/css/open-iconic-bootstrap.min.css",
         "font/css/open-iconic.css",
         "font/css/open-iconic.min.css",
         "font/css/open-iconic-bootstrap.css",
-        "font/css/open-iconic-bootstrap.min.css",
         "font/fonts/open-iconic.eot",
         "font/fonts/open-iconic.otf",
         "font/fonts/open-iconic.svg",

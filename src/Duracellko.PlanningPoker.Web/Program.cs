@@ -12,6 +12,7 @@ using Duracellko.PlanningPoker.Domain.Serialization;
 using Duracellko.PlanningPoker.Health;
 using Duracellko.PlanningPoker.Redis;
 using Duracellko.PlanningPoker.Service;
+using Duracellko.PlanningPoker.Web.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -53,7 +54,8 @@ namespace Duracellko.PlanningPoker.Web
             services.AddSignalR();
             var healthChecks = services.AddHealthChecks()
                 .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
-                .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository");
+                .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository")
+                .AddApplicationInsightsPublisher();
 
             var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
             var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
@@ -118,6 +120,7 @@ namespace Duracellko.PlanningPoker.Web
             }
 
             services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
+            services.AddSingleton<ClientScriptsLibrary>();
 
             var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
             services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);

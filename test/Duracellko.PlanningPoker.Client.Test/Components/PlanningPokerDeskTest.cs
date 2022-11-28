@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+using Bunit;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.Test.Controllers;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
-using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -15,59 +18,48 @@ using Moq;
 namespace Duracellko.PlanningPoker.Client.Test.Components
 {
     [TestClass]
-    public class PlanningPokerDeskTest
+    public sealed class PlanningPokerDeskTest : IDisposable
     {
-        private static readonly string _newLine = Environment.NewLine;
+        private Bunit.TestContext _context = new Bunit.TestContext();
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
 
         [TestMethod]
         public async Task InitializedTeamWithScrumMaster_ShowStartEstimationButton()
         {
-            var serviceProvider = CreateServiceProvider();
-            var renderer = serviceProvider.GetRequiredService<TestRenderer>();
-            var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
-
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
             await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
-            var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
-            var componentId = renderer.AssignRootComponentId(target);
-            await renderer.RenderRootComponentAsync(componentId);
-
-            Assert.AreEqual(1, renderer.Batches.Count);
-            var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.IsNotNull(frames);
-            Assert.AreEqual(426, frames.Count);
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 426);
-            AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[400], "div", 11);
-            AssertFrame.Attribute(frames[401], "class", "team-title");
-            AssertFrame.Element(frames[402], "h2", 4);
-            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[404], "span", 2);
-            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[407], "h3", 4);
-            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[409], "span", 2);
-            AssertFrame.Text(frames[410], PlanningPokerData.ScrumMasterName);
+            var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
+            Assert.AreEqual(2, h2Element.GetElementCount());
+            var spanElement = h2Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.TeamName, spanElement.TextContent);
+
+            var h3Element = target.Find("div.pokerDeskPanel > div.team-title > h3");
+            Assert.AreEqual(2, h3Element.GetElementCount());
+            spanElement = h3Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.ScrumMasterName, spanElement.TextContent);
 
             // Button to start estimation
-            AssertFrame.Element(frames[411], "div", 15);
-            AssertFrame.Attribute(frames[412], "class", "actionsBar");
-            AssertFrame.Element(frames[413], "p", 13);
-            AssertFrame.Element(frames[414], "button", 5);
-            AssertFrame.Attribute(frames[415], "type", "button");
-            AssertFrame.Attribute(frames[416], "onclick");
-            AssertFrame.Attribute(frames[417], "class", "btn btn-primary mr-3");
-            AssertFrame.Markup(frames[418], $"<span class=\"oi oi-media-play mr-1\" aria-hidden=\"true\"></span> Start estimation{_newLine}                    ");
+            var buttonElement = target.Find("div.actionsBar > p > button");
+            CollectionAssert.AreEqual(new[] { "btn", "btn-primary", "mr-3" }, buttonElement.ClassList.ToList());
+            Assert.AreEqual("Start estimation", buttonElement.TextContent.Trim());
         }
 
         [TestMethod]
         public async Task PlanningPokerStartedWithMember_ShowsAvailableEstimations()
         {
-            var serviceProvider = CreateServiceProvider();
-            var renderer = serviceProvider.GetRequiredService<TestRenderer>();
-            var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
 
             var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
             reconnectResult.ScrumTeam!.State = TeamState.EstimationInProgress;
@@ -77,63 +69,57 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
-            var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
-            var componentId = renderer.AssignRootComponentId(target);
-            await renderer.RenderRootComponentAsync(componentId);
-
-            Assert.AreEqual(1, renderer.Batches.Count);
-            var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.IsNotNull(frames);
-            Assert.AreEqual(489, frames.Count);
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 489);
-            AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[400], "div", 11);
-            AssertFrame.Attribute(frames[401], "class", "team-title");
-            AssertFrame.Element(frames[402], "h2", 4);
-            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[404], "span", 2);
-            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[407], "h3", 4);
-            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[409], "span", 2);
-            AssertFrame.Text(frames[410], PlanningPokerData.MemberName);
+            var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
+            Assert.AreEqual(2, h2Element.GetElementCount());
+            var spanElement = h2Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.TeamName, spanElement.TextContent);
+
+            var h3Element = target.Find("div.pokerDeskPanel > div.team-title > h3");
+            Assert.AreEqual(2, h3Element.GetElementCount());
+            spanElement = h3Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.MemberName, spanElement.TextContent);
 
             // Available estimations
-            AssertFrame.Element(frames[411], "div", 56);
-            AssertFrame.Attribute(frames[412], "class", "availableEstimations");
-            AssertFrame.Markup(frames[413], $"<h3>Pick estimation</h3>{_newLine}            ");
-            AssertFrame.Element(frames[414], "ul", 53);
-            AssertAvailableEstimation(frames, 415, "0");
-            AssertAvailableEstimation(frames, 419, "½");
-            AssertAvailableEstimation(frames, 423, "1");
-            AssertAvailableEstimation(frames, 427, "2");
-            AssertAvailableEstimation(frames, 431, "3");
-            AssertAvailableEstimation(frames, 435, "5");
-            AssertAvailableEstimation(frames, 439, "8");
-            AssertAvailableEstimation(frames, 443, "13");
-            AssertAvailableEstimation(frames, 447, "20");
-            AssertAvailableEstimation(frames, 451, "40");
-            AssertAvailableEstimation(frames, 455, "100");
-            AssertAvailableEstimation(frames, 459, "∞");
-            AssertAvailableEstimation(frames, 463, "?");
+            h3Element = target.Find("div.availableEstimations > h3");
+            Assert.AreEqual("Pick estimation", h3Element.TextContent);
+
+            var ulElement = target.Find("div.availableEstimations > ul");
+            var liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(13, liElements.Length);
+            AssertAvailableEstimation(liElements[0], "0");
+            AssertAvailableEstimation(liElements[1], "½");
+            AssertAvailableEstimation(liElements[2], "1");
+            AssertAvailableEstimation(liElements[3], "2");
+            AssertAvailableEstimation(liElements[4], "3");
+            AssertAvailableEstimation(liElements[5], "5");
+            AssertAvailableEstimation(liElements[6], "8");
+            AssertAvailableEstimation(liElements[7], "13");
+            AssertAvailableEstimation(liElements[8], "20");
+            AssertAvailableEstimation(liElements[9], "40");
+            AssertAvailableEstimation(liElements[10], "100");
+            AssertAvailableEstimation(liElements[11], "∞");
+            AssertAvailableEstimation(liElements[12], "?");
 
             // Members, who estimated already
-            AssertFrame.Element(frames[477], "div", 12);
-            AssertFrame.Attribute(frames[478], "class", "estimationResult");
-            AssertFrame.Markup(frames[479], $"<h3>Selected estimates</h3>");
-            AssertFrame.Element(frames[480], "ul", 9);
-            AssertSelectedEstimation(frames, 481, PlanningPokerData.ScrumMasterName, string.Empty);
+            h3Element = target.Find("div.estimationResult > h3");
+            Assert.AreEqual("Selected estimates", h3Element.TextContent);
+            ulElement = target.Find("div.estimationResult > ul");
+            liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(1, liElements.Length);
+            AssertSelectedEstimation(liElements[0], PlanningPokerData.ScrumMasterName, string.Empty);
         }
 
         [TestMethod]
         public async Task PlanningPokerEstimatedWithObserver_ShowsEstimations()
         {
-            var serviceProvider = CreateServiceProvider();
-            var renderer = serviceProvider.GetRequiredService<TestRenderer>();
-            var controller = serviceProvider.GetRequiredService<PlanningPokerController>();
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
 
             var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
             reconnectResult.ScrumTeam!.State = TeamState.EstimationFinished;
@@ -151,81 +137,247 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 }
             };
             await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
-            var target = renderer.InstantiateComponent<PlanningPokerDesk>();
 
-            var componentId = renderer.AssignRootComponentId(target);
-            await renderer.RenderRootComponentAsync(componentId);
-
-            Assert.AreEqual(1, renderer.Batches.Count);
-            var frames = renderer.Batches[0].ReferenceFrames;
-            Assert.IsNotNull(frames);
-            Assert.AreEqual(439, frames.Count);
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Team name and user name
-            AssertFrame.Element(frames[0], "div", 439);
-            AssertFrame.Attribute(frames[1], "class", "pokerDeskPanel");
-            AssertFrame.Element(frames[400], "div", 11);
-            AssertFrame.Attribute(frames[401], "class", "team-title");
-            AssertFrame.Element(frames[402], "h2", 4);
-            AssertFrame.Markup(frames[403], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-people\" title=\"Team\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[404], "span", 2);
-            AssertFrame.Text(frames[405], PlanningPokerData.TeamName);
-            AssertFrame.Element(frames[407], "h3", 4);
-            AssertFrame.Markup(frames[408], $"<span class=\"badge badge-secondary\"><span class=\"oi oi-person\" title=\"User\" aria-hidden=\"true\"></span></span>{_newLine}            ");
-            AssertFrame.Element(frames[409], "span", 2);
-            AssertFrame.Text(frames[410], PlanningPokerData.ObserverName);
+            var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
+            Assert.AreEqual(2, h2Element.GetElementCount());
+            var spanElement = h2Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.TeamName, spanElement.TextContent);
 
-            // Button to start estimation
-            AssertFrame.Element(frames[411], "div", 8);
-            AssertFrame.Attribute(frames[412], "class", "actionsBar");
-            AssertFrame.Element(frames[413], "p", 6);
-            AssertFrame.Element(frames[414], "button", 5);
-            AssertFrame.Attribute(frames[415], "type", "button");
-            AssertFrame.Attribute(frames[416], "onclick");
-            AssertFrame.Attribute(frames[417], "class", "btn btn-secondary mr-3");
-            AssertFrame.Markup(frames[418], $"<span class=\"oi oi-calculator mr-1\" aria-hidden=\"true\"></span> Show average{_newLine}                    ");
+            var h3Element = target.Find("div.pokerDeskPanel > div.team-title > h3");
+            Assert.AreEqual(2, h3Element.GetElementCount());
+            spanElement = h3Element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual(PlanningPokerData.ObserverName, spanElement.TextContent);
 
             // Estimations
-            AssertFrame.Element(frames[419], "div", 20);
-            AssertFrame.Attribute(frames[420], "class", "estimationResult");
-            AssertFrame.Markup(frames[421], $"<h3>Selected estimates</h3>");
-            AssertFrame.Element(frames[422], "ul", 17);
-            AssertSelectedEstimation(frames, 423, PlanningPokerData.MemberName, "3");
-            AssertSelectedEstimation(frames, 431, PlanningPokerData.ScrumMasterName, "8");
+            h3Element = target.Find("div.estimationResult > h3");
+            Assert.AreEqual("Selected estimates", h3Element.TextContent);
+            var ulElement = target.Find("div.estimationResult > ul");
+            var liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(2, liElements.Length);
+            AssertSelectedEstimation(liElements[0], PlanningPokerData.MemberName, "3");
+            AssertSelectedEstimation(liElements[1], PlanningPokerData.ScrumMasterName, "8");
         }
 
-        private static IServiceProvider CreateServiceProvider()
+        [TestMethod]
+        public async Task PlanningPokerStartedWithTshirtDeck_ShowsAvailableEstimations()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<TestRenderer>();
-            serviceCollection.AddSingleton<PlanningPokerController>();
-            serviceCollection.AddSingleton(new Mock<IMessageBoxService>().Object);
-            serviceCollection.AddSingleton(new Mock<IPlanningPokerClient>().Object);
-            serviceCollection.AddSingleton(new Mock<IBusyIndicatorService>().Object);
-            serviceCollection.AddSingleton(new Mock<IMemberCredentialsStore>().Object);
-            serviceCollection.AddSingleton(new Mock<ITimerFactory>().Object);
-            serviceCollection.AddSingleton<DateTimeProvider>(new DateTimeProviderMock());
-            serviceCollection.AddSingleton(new Mock<IServiceTimeProvider>().Object);
-            return serviceCollection.BuildServiceProvider();
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
+            reconnectResult.ScrumTeam!.AvailableEstimations = new List<Estimation>
+            {
+                new Estimation() { Value = -999509 },
+                new Estimation() { Value = -999508 },
+                new Estimation() { Value = -999507 },
+                new Estimation() { Value = -999506 },
+                new Estimation() { Value = -999505 }
+            };
+            reconnectResult.ScrumTeam.State = TeamState.EstimationInProgress;
+            reconnectResult.ScrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
+            {
+                new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = false },
+                new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
+            };
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
+
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
+
+            // Available estimations
+            var h3Element = target.Find("div.availableEstimations > h3");
+            Assert.AreEqual("Pick estimation", h3Element.TextContent);
+
+            var ulElement = target.Find("div.availableEstimations > ul");
+            var liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(5, liElements.Length);
+            AssertAvailableEstimation(liElements[0], "XS");
+            AssertAvailableEstimation(liElements[1], "S");
+            AssertAvailableEstimation(liElements[2], "M");
+            AssertAvailableEstimation(liElements[3], "L");
+            AssertAvailableEstimation(liElements[4], "XL");
+
+            // Members, who estimated already
+            h3Element = target.Find("div.estimationResult > h3");
+            Assert.AreEqual("Selected estimates", h3Element.TextContent);
+            ulElement = target.Find("div.estimationResult > ul");
+            liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(0, liElements.Length);
         }
 
-        private static void AssertAvailableEstimation(IList<RenderTreeFrame> frames, int index, string estimationText)
+        [TestMethod]
+        public async Task PlanningPokerEstimatedWithRockPaperScissorsLizardSpockDeck_ShowsEstimations()
         {
-            AssertFrame.Element(frames[index], "li", 4);
-            AssertFrame.Element(frames[index + 1], "a", 3);
-            AssertFrame.Attribute(frames[index + 2], "onclick");
-            AssertFrame.Text(frames[index + 3], estimationText);
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+
+            var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
+            reconnectResult.ScrumTeam!.AvailableEstimations = new List<Estimation>
+            {
+                new Estimation() { Value = -999909 },
+                new Estimation() { Value = -999908 },
+                new Estimation() { Value = -999907 },
+                new Estimation() { Value = -999906 },
+                new Estimation() { Value = -999905 }
+            };
+            reconnectResult.ScrumTeam.State = TeamState.EstimationFinished;
+            reconnectResult.ScrumTeam.EstimationResult = new List<EstimationResultItem>
+            {
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
+                    Estimation = new Estimation { Value = -999906 }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
+                    Estimation = new Estimation { Value = -999909 }
+                }
+            };
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
+
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
+
+            // Estimations
+            var h3Element = target.Find("div.estimationResult > h3");
+            Assert.AreEqual("Selected estimates", h3Element.TextContent);
+            var ulElement = target.Find("div.estimationResult > ul");
+            var liElements = ulElement.GetElementsByTagName("li");
+            Assert.AreEqual(2, liElements.Length);
+            AssertSelectedEstimation(liElements[0], PlanningPokerData.MemberName, "💎");
+            AssertSelectedEstimation(liElements[1], PlanningPokerData.ScrumMasterName, "🦎");
         }
 
-        private static void AssertSelectedEstimation(IList<RenderTreeFrame> frames, int index, string memberName, string estimationText)
+        [TestMethod]
+        public async Task Initialized_TimerIsSetTo5Minutes()
         {
-            AssertFrame.Element(frames[index], "li", 8);
-            AssertFrame.Element(frames[index + 1], "span", 3);
-            AssertFrame.Attribute(frames[index + 2], "class", "estimationItemValue");
-            AssertFrame.Text(frames[index + 3], estimationText);
-            AssertFrame.Element(frames[index + 5], "span", 3);
-            AssertFrame.Attribute(frames[index + 6], "class", "estimationItemName");
-            AssertFrame.Text(frames[index + 7], memberName);
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
+
+            // Timer input
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var selectElements = inputGroupElement.GetElementsByTagName("select");
+            Assert.AreEqual(2, selectElements.Length);
+
+            var minutesElement = (IHtmlSelectElement)selectElements[0];
+            Assert.AreEqual("minutes", minutesElement.GetAttribute("aria-label"));
+            Assert.AreEqual("5", minutesElement.Value);
+
+            var secondsElement = (IHtmlSelectElement)selectElements[1];
+            Assert.AreEqual("seconds", secondsElement.GetAttribute("aria-label"));
+            Assert.AreEqual("0", secondsElement.Value);
+
+            Assert.AreEqual(TimeSpan.FromMinutes(5), controller.TimerDuration);
+        }
+
+        [TestMethod]
+        public async Task SetMinutesTo0_TimerIsSetTo1Second()
+        {
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
+
+            // Timer input
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var selectElements = inputGroupElement.GetElementsByTagName("select");
+            var minutesElement = (IHtmlSelectElement)selectElements[0];
+            minutesElement.Change("0");
+
+            selectElements = inputGroupElement.GetElementsByTagName("select");
+            minutesElement = (IHtmlSelectElement)selectElements[0];
+            var secondsElement = (IHtmlSelectElement)selectElements[1];
+
+            Assert.AreEqual("0", minutesElement.Value);
+            Assert.AreEqual("1", secondsElement.Value);
+            Assert.AreEqual(TimeSpan.FromSeconds(1), controller.TimerDuration);
+        }
+
+        [TestMethod]
+        public async Task SetSecondsTo0_TimerIsSetTo1Minute()
+        {
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            using var target = _context.RenderComponent<PlanningPokerDesk>();
+
+            // Timer input
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var selectElements = inputGroupElement.GetElementsByTagName("select");
+            var minutesElement = (IHtmlSelectElement)selectElements[0];
+            minutesElement.Change("0");
+
+            selectElements = inputGroupElement.GetElementsByTagName("select");
+            var secondsElement = (IHtmlSelectElement)selectElements[1];
+            secondsElement.Change("0");
+
+            selectElements = inputGroupElement.GetElementsByTagName("select");
+            minutesElement = (IHtmlSelectElement)selectElements[0];
+            secondsElement = (IHtmlSelectElement)selectElements[1];
+
+            Assert.AreEqual("1", minutesElement.Value);
+            Assert.AreEqual("0", secondsElement.Value);
+            Assert.AreEqual(TimeSpan.FromMinutes(1), controller.TimerDuration);
+        }
+
+        private static PlanningPokerController CreatePlanningPokerController()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var busyIndicatorService = new Mock<IBusyIndicatorService>();
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var timerFactory = new Mock<ITimerFactory>();
+            var dateTimeProvider = new DateTimeProviderMock();
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            return new PlanningPokerController(
+                planningPokerClient.Object,
+                busyIndicatorService.Object,
+                memberCredentialsStore.Object,
+                timerFactory.Object,
+                dateTimeProvider,
+                serviceTimeProvider.Object);
+        }
+
+        private static void AssertAvailableEstimation(IElement element, string estimationText)
+        {
+            var aElement = element.Children.Single();
+            Assert.AreEqual("a", aElement.LocalName);
+            Assert.AreEqual(estimationText, aElement.TextContent);
+        }
+
+        private static void AssertSelectedEstimation(IElement element, string memberName, string estimationText)
+        {
+            Assert.AreEqual(2, element.ChildElementCount);
+
+            var spanElement = element.Children[0];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual("estimationItemValue", spanElement.ClassName);
+            Assert.AreEqual(estimationText, spanElement.TextContent);
+
+            spanElement = element.Children[1];
+            Assert.AreEqual("span", spanElement.LocalName);
+            Assert.AreEqual("estimationItemName", spanElement.ClassName);
+            Assert.AreEqual(memberName, spanElement.TextContent);
+        }
+
+        private void InitializeContext(PlanningPokerController controller, IMessageBoxService? messageBoxService = null)
+        {
+            if (messageBoxService == null)
+            {
+                var messageBoxServiceMock = new Mock<IMessageBoxService>();
+                messageBoxService = messageBoxServiceMock.Object;
+            }
+
+            _context.Services.AddSingleton(controller);
+            _context.Services.AddSingleton(messageBoxService);
         }
     }
 }
