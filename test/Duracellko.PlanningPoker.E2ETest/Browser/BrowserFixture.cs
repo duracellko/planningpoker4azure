@@ -91,11 +91,16 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
                 var assemblyLocation = Path.GetDirectoryName(typeof(BrowserFixture).Assembly.Location);
                 var seleniumFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(assemblyLocation))));
                 seleniumFolder = Path.Combine(seleniumFolder!, "node_modules", "selenium-standalone", ".selenium");
-                driverLocation = Path.Combine(seleniumFolder, driverName);
+
+                driverLocation = Path.Combine(seleniumFolder, driverName, "latest-x64");
+                if (!Directory.Exists(driverLocation))
+                {
+                    driverLocation = Path.Combine(seleniumFolder, driverName);
+                }
 
                 var driverFile = Directory.GetFiles(driverLocation)
                     .Select(p => Path.GetFileName(p))
-                    .Where(f => !f.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    .Where(f => !f.Contains(".zip", StringComparison.OrdinalIgnoreCase)) // Ignore also *.zip.etag
                     .OrderByDescending(f => f, StringComparer.OrdinalIgnoreCase)
                     .First();
                 driverFile = Path.Combine(driverLocation, driverFile);
@@ -104,7 +109,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
                 var isWindows = !string.IsNullOrEmpty(windir) && Directory.Exists(windir);
                 var targetFile = isWindows ? (driverName + ".exe") : driverName;
                 targetFile = Path.Combine(driverLocation, targetFile);
-                if (!File.Exists(targetFile) || File.GetLastWriteTimeUtc(targetFile) != File.GetLastWriteTimeUtc(driverFile))
+                if (targetFile != driverFile &&
+                    (!File.Exists(targetFile) || File.GetLastWriteTimeUtc(targetFile) != File.GetLastWriteTimeUtc(driverFile)))
                 {
                     File.Copy(driverFile, targetFile, true);
                 }
