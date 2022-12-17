@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR.Protocol;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    internal class MessageStoreHubProtocol : IHubProtocol
+    internal sealed class MessageStoreHubProtocol : IHubProtocol
     {
         private readonly HubMessageStore _messageStore;
 

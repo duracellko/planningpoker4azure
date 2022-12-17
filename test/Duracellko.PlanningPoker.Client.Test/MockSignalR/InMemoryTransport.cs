@@ -127,7 +127,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             _sentMessagesSubscription.Dispose();
         }
 
-        private class HubMessageHandler : IObserver<HubMessage>
+        private sealed class HubMessageHandler : IObserver<HubMessage>
         {
             private readonly InMemoryTransport _parent;
 

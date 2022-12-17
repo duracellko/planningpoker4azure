@@ -727,7 +727,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
-        private class EstimationComparer : IComparer<double?>
+        private sealed class EstimationComparer : IComparer<double?>
         {
             public static EstimationComparer Default { get; } = new EstimationComparer();
 

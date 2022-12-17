@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -78,6 +79,7 @@ namespace Duracellko.PlanningPoker.Web.Model
             return clientScripts;
         }
 
+        [SuppressMessage("Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Do not create full list to find first item only.")]
         private static IEnumerable<string> GetLibraryClientScripts(JsonElement libraryElement)
         {
             var libraryFullName = libraryElement.GetProperty("library").GetString();
