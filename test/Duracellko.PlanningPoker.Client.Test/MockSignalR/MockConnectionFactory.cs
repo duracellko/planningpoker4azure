@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Connections;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    internal class MockConnectionFactory : IConnectionFactory
+    internal sealed class MockConnectionFactory : IConnectionFactory
     {
         private readonly InMemoryTransport _transport;
 

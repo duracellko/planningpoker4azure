@@ -90,7 +90,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             }
         }
 
-        private class HubMessageHandler : IObserver<HubMessage>
+        private sealed class HubMessageHandler : IObserver<HubMessage>
         {
             private readonly HubMessageQueue _parent;
 

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
-    internal class MockHubConnectionBuilder : IHubConnectionBuilder
+    internal sealed class MockHubConnectionBuilder : IHubConnectionBuilder
     {
         private readonly MockHubConnection _mockHubConnection;
 

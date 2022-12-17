@@ -132,6 +132,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             Assert.AreEqual(expected.EndTime, actual.EndTime);
         }
 
+        [SuppressMessage("Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Enumerating objects, not query.")]
         private static void AssertEsimationParticipantsAreEqual(IEnumerable<EstimationParticipantStatus>? expected, IEnumerable<EstimationParticipantStatus>? actual)
         {
             if (expected == null)

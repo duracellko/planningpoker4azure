@@ -106,7 +106,7 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             return result;
         }
 
-        private class BusyIndicatorHandler
+        private sealed class BusyIndicatorHandler
         {
             public bool IsVisible { get; private set; }
 

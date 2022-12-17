@@ -186,7 +186,7 @@ namespace Duracellko.PlanningPoker.Client.Test.UI
             return result;
         }
 
-        private class MessageHandler
+        private sealed class MessageHandler
         {
             public bool Result { get; set; } = true;
 

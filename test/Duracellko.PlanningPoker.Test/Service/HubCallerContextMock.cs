@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Duracellko.PlanningPoker.Test.Service
 {
-    internal class HubCallerContextMock : HubCallerContext
+    internal sealed class HubCallerContextMock : HubCallerContext
     {
         private string _connectionId = string.Empty;
 

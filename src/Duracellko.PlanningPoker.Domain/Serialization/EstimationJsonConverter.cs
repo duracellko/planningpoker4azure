@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Duracellko.PlanningPoker.Domain.Serialization
 {
-    internal class EstimationJsonConverter : JsonConverter<Estimation>
+    internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
     {
         private const string PositiveInfinity = "Infinity";
 
