@@ -3,7 +3,7 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "jquery@3.6.2",
+      "library": "jquery@3.6.3",
       "destination": "wwwroot/js",
       "files": [
           "jquery.min.js",

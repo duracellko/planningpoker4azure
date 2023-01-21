@@ -101,6 +101,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
                 var driverFile = Directory.GetFiles(driverLocation)
                     .Select(p => Path.GetFileName(p))
                     .Where(f => !f.Contains(".zip", StringComparison.OrdinalIgnoreCase)) // Ignore also *.zip.etag
+                    .Where(f => !f.Contains("LICENSE.", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(f => f, StringComparer.OrdinalIgnoreCase)
                     .First();
                 driverFile = Path.Combine(driverLocation, driverFile);
