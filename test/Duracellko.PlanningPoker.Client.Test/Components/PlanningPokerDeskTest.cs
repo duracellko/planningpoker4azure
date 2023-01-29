@@ -51,7 +51,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             // Button to start estimation
             var buttonElement = target.Find("div.actionsBar > p > button");
-            CollectionAssert.AreEqual(new[] { "btn", "btn-primary", "mr-3" }, buttonElement.ClassList.ToList());
+            CollectionAssert.AreEqual(new[] { "btn", "btn-primary", "me-3" }, buttonElement.ClassList.ToList());
             Assert.AreEqual("Start estimation", buttonElement.TextContent.Trim());
         }
 

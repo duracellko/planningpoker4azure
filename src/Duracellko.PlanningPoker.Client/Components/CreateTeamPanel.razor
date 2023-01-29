@@ -6,8 +6,8 @@
     <h5 class="card-header">Create team</h5>
     <div class="card-body">
         <form name="createTeam" action="." @onsubmit="CreateTeamCommand">
-            <div class="form-group">
-                <label for="createTeam$teamName">Team name:</label>
+            <div class="mb-3">
+                <label for="createTeam$teamName" class="form-label">Team name:</label>
                 <input type="text" id="createTeam$teamName" name="teamName" @bind="TeamName"
                        class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
                 @if (!IsTeamNameValid)
@@ -15,8 +15,8 @@
                     <span class="invalid-feedback">Required</span>
                 }
             </div>
-            <div class="form-group">
-                <label for="createTeam$scrumMasterName">Scrum Master name:</label>
+            <div class="mb-3">
+                <label for="createTeam$scrumMasterName" class="form-label">Scrum Master name:</label>
                 <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" @bind="ScrumMasterName"
                        class="@GetFormControlCss(IsScrumMasterNameValid)" maxlength="50" />
                 @if (!IsScrumMasterNameValid)
@@ -24,9 +24,9 @@
                     <span class="invalid-feedback">Required</span>
                 }
             </div>
-            <div class="form-group">
-                <label for="createTeam$selectedDeck">Deck of cards:</label>
-                <select id="createTeam$selectedDeck" name="deck" class="form-control"
+            <div class="mb-3">
+                <label for="createTeam$selectedDeck" class="form-label">Deck of cards:</label>
+                <select id="createTeam$selectedDeck" name="deck" class="form-select"
                         @bind="SelectedDeck">
                     @foreach (var deckOption in EstimationDecks)
                     {

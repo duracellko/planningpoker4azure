@@ -5,8 +5,8 @@
     <h5 class="card-header">Join team</h5>
     <div class="card-body">
         <form name="joinTeam" action="." @onsubmit="JoinTeamCommand">
-            <div class="form-group">
-                <label for="joinTeam$teamName">Team name:</label>
+            <div class="mb-3">
+                <label for="joinTeam$teamName" class="form-label">Team name:</label>
                 <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName"
                        class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
                 @if (!IsTeamNameValid)
@@ -14,8 +14,8 @@
                     <span class="invalid-feedback">Required</span>
                 }
             </div>
-            <div class="form-group">
-                <label for="joinTeam$memberName">Member name:</label>
+            <div class="mb-3">
+                <label for="joinTeam$memberName" class="form-label">Member name:</label>
                 <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName"
                        class="@GetFormControlCss(IsMemberNameValid)" maxlength="50" />
                 @if (!IsMemberNameValid)
@@ -23,11 +23,9 @@
                     <span class="invalid-feedback">Required</span>
                 }
             </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" class="form-check-input" />
-                    <label for="joinTeam$asObserver" class="form-check-label">As observer only</label>
-                </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" class="form-check-input" />
+                <label for="joinTeam$asObserver" class="form-check-label">As observer only</label>
             </div>
             <button type="submit" id="joinTeam$submit" class="btn btn-primary">Join team</button>
         </form>

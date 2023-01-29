@@ -8,19 +8,24 @@
         PlanningPoker.credentialsTeamNameKey = "PlanningPoker.Credentials.TeamName";
         PlanningPoker.credentialsMemberNameKey = "PlanningPoker.Credentials.MemberName";
 
-        // Shows message box using jQuery.
+        // Shows message box using Bootstrap.
         PlanningPoker.showMessageBox = function (element) {
-            $(element).modal({ backdrop: 'static' });
+            var options = { backdrop: 'static' };
+            var modal = bootstrap.Modal.getOrCreateInstance(element, options);
+            modal.show();
         };
 
-        // Shows busy indicator using jQuery.
+        // Shows busy indicator using Bootstrap.
         PlanningPoker.showBusyIndicator = function (element) {
-            $(element).modal({ backdrop: 'static', keyboard: false });
+            var options = { backdrop: 'static', keyboard: false };
+            var modal = bootstrap.Modal.getOrCreateInstance(element, options);
+            modal.show();
         };
 
-        // Hides element using jQuery.
+        // Hides modal component using Bootstrap.
         PlanningPoker.hide = function (element) {
-            $(element).modal('hide');
+            var modal = bootstrap.Modal.getOrCreateInstance(element);
+            modal.hide();
         };
 
         // Loads member credentials of connected user from Session or LocalStorage.
