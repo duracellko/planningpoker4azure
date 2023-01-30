@@ -12,15 +12,15 @@ namespace Duracellko.PlanningPoker.Web.Model
     {
         private const string LibManFileName = "libman.json";
 
-        private readonly List<string> _cascadingStyleSheets = new List<string>();
-        private readonly List<string> _javaScripts = new List<string>();
+        private readonly List<ClientScriptReference> _cascadingStyleSheets = new List<ClientScriptReference>();
+        private readonly List<ClientScriptReference> _javaScripts = new List<ClientScriptReference>();
         private readonly object _initializationLock = new object();
 
         private bool _initialized;
 
-        public IEnumerable<string> CascadingStyleSheets => _cascadingStyleSheets;
+        public IEnumerable<ClientScriptReference> CascadingStyleSheets => _cascadingStyleSheets;
 
-        public IEnumerable<string> JavaScripts => _javaScripts;
+        public IEnumerable<ClientScriptReference> JavaScripts => _javaScripts;
 
         private static string LibManPath
         {
@@ -53,14 +53,14 @@ namespace Duracellko.PlanningPoker.Web.Model
             {
                 if (!_initialized)
                 {
-                    _cascadingStyleSheets.AddRange(clientScripts.Where(IsCascadingStyleSheet));
-                    _javaScripts.AddRange(clientScripts.Where(IsJavaScript));
+                    _cascadingStyleSheets.AddRange(clientScripts.Where(r => IsCascadingStyleSheet(r.ToString())));
+                    _javaScripts.AddRange(clientScripts.Where(r => IsJavaScript(r.ToString())));
                     _initialized = true;
                 }
             }
         }
 
-        private static async Task<List<string>> GetClientScripts()
+        private static async Task<List<ClientScriptReference>> GetClientScripts()
         {
             JsonDocument libManDocument;
             using (var stream = File.OpenRead(LibManPath))
@@ -70,7 +70,7 @@ namespace Duracellko.PlanningPoker.Web.Model
             }
 
             var libraries = libManDocument.RootElement.GetProperty("libraries");
-            var clientScripts = new List<string>();
+            var clientScripts = new List<ClientScriptReference>();
             foreach (var library in libraries.EnumerateArray())
             {
                 clientScripts.AddRange(GetLibraryClientScripts(library));
@@ -80,7 +80,7 @@ namespace Duracellko.PlanningPoker.Web.Model
         }
 
         [SuppressMessage("Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Do not create full list to find first item only.")]
-        private static IEnumerable<string> GetLibraryClientScripts(JsonElement libraryElement)
+        private static IEnumerable<ClientScriptReference> GetLibraryClientScripts(JsonElement libraryElement)
         {
             var libraryFullName = libraryElement.GetProperty("library").GetString();
             if (string.IsNullOrEmpty(libraryFullName))
@@ -98,13 +98,13 @@ namespace Duracellko.PlanningPoker.Web.Model
             var cssFile = libraryFiles.FirstOrDefault(f => IsCascadingStyleSheet(f));
             if (cssFile != null)
             {
-                yield return libraryName + '/' + libraryVersion + '/' + cssFile;
+                yield return new ClientScriptReference(libraryName, libraryVersion, cssFile);
             }
 
             var jsFile = libraryFiles.FirstOrDefault(f => IsJavaScript(f));
             if (jsFile != null)
             {
-                yield return libraryName + '/' + libraryVersion + '/' + jsFile;
+                yield return new ClientScriptReference(libraryName, libraryVersion, jsFile);
             }
         }
 

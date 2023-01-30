@@ -3,18 +3,6 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "jquery@3.6.3",
-      "destination": "wwwroot/lib/js",
-      "files": [
-          "jquery.min.js",
-          "jquery.js",
-          "jquery.min.map",
-          "jquery.slim.js",
-          "jquery.slim.min.js",
-          "jquery.slim.min.map"
-      ]
-    },
-    {
       "library": "twitter-bootstrap@5.2.3",
       "destination": "wwwroot/lib",
       "files": [
