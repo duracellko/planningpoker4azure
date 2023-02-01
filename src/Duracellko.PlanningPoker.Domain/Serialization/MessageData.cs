@@ -31,6 +31,12 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         public IDictionary<string, Estimation?>? EstimationResult { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of estimations, when type of message is Available Estimations Changed Message.
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
+        public IList<Estimation>? Estimations { get; set; }
+
+        /// <summary>
         /// Gets or sets the time in UTC time zone that specifies, when countdown ends. This is specified for Timer Started message.
         /// </summary>
         public DateTime? EndTime { get; set; }

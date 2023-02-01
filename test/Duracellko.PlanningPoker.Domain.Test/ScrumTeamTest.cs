@@ -1439,6 +1439,252 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
+        public void ChangeAvailableEstimations_RatingDeck_AvailableEstimationsAreSet()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            target.SetScrumMaster("master");
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_DefaultDeck_AvailableEstimationsAreNotChanged()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            target.SetScrumMaster("master");
+            var newEstimationsSet = DeckProvider.Default.GetDefaultDeck();
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_EstimationIsFinished_AvailableEstimationsAreSet()
+        {
+            // Arrange
+            var target = ScrumTeamTestData.CreateScrumTeam("test team", DeckProvider.Default.GetDeck(Deck.Rating));
+            var master = target.SetScrumMaster("master");
+            var member = (Member)target.Join("member", false);
+            master.StartEstimation();
+            member.Estimation = new Estimation(2);
+            master.Estimation = new Estimation(10);
+
+            var newEstimationsSet = ScrumTeamTestData.GetCustomEstimationDeck();
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_EstimationIsCanceled_AvailableEstimationsAreSet()
+        {
+            // Arrange
+            var target = ScrumTeamTestData.CreateScrumTeam("test team", DeckProvider.Default.GetDeck(Deck.Tshirt));
+            var master = target.SetScrumMaster("master");
+            var member = (Member)target.Join("member", false);
+            master.StartEstimation();
+            member.Estimation = new Estimation(-999506.0);
+            master.CancelEstimation();
+
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.RockPaperScissorsLizardSpock);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_EstimationIsStarted_InvalidOperationException()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            master.StartEstimation();
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
+
+            // Act
+            Assert.ThrowsException<InvalidOperationException>(() => target.ChangeAvailableEstimations(newEstimationsSet));
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_Null_ArgumentNullException()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.ChangeAvailableEstimations(null!));
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_RatingDeck_ScrumTeamGotMessageEstimationStarted()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            master.StartEstimation();
+            master.Estimation = new Estimation(20.0);
+
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
+            MessageReceivedEventArgs? eventArgs = null;
+            target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+            var message = eventArgs.Message;
+            Assert.IsNotNull(message);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)message;
+            Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_RatingDeck_ScrumMasterGetMessageEstimationStarted()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            target.Join("member", false);
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsTrue(master.HasMessage);
+            Assert.AreEqual(2, master.Messages.Count());
+            var message = master.Messages.Last();
+            Assert.IsNotNull(message);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)message;
+            Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_RatingDeck_ScrumMasterMessageReceived()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            target.Join("member", false);
+
+            var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
+            EventArgs? eventArgs = null;
+            master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_CustomEstimationDeck_MemberGetMessageEstimationStarted()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = target.Join("member", false);
+            var newEstimationsSet = ScrumTeamTestData.GetCustomEstimationDeck();
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsTrue(member.HasMessage);
+            Assert.AreEqual(1, member.Messages.Count());
+            var message = member.Messages.Last();
+            Assert.IsNotNull(message);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)message;
+            Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_CustomEstimationDeck_MemberMessageReceived()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var member = target.Join("member", false);
+
+            var newEstimationsSet = ScrumTeamTestData.GetCustomEstimationDeck();
+            EventArgs? eventArgs = null;
+            member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_DefaultEstimationDeck_ObserverGetMessageEstimationStarted()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var observer = target.Join("observer", true);
+            var newEstimationsSet = DeckProvider.Default.GetDefaultDeck();
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsTrue(observer.HasMessage);
+            Assert.AreEqual(1, observer.Messages.Count());
+            var message = observer.Messages.Last();
+            Assert.IsNotNull(message);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+            Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)message;
+            Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        }
+
+        [TestMethod]
+        public void ChangeAvailableEstimations_DefaultEstimationDeck_ObserverMessageReceived()
+        {
+            // Arrange
+            var target = new ScrumTeam("test team");
+            var master = target.SetScrumMaster("master");
+            var observer = target.Join("observer", true);
+
+            var newEstimationsSet = DeckProvider.Default.GetDefaultDeck();
+            EventArgs? eventArgs = null;
+            observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
+
+            // Act
+            target.ChangeAvailableEstimations(newEstimationsSet);
+
+            // Verify
+            Assert.IsNotNull(eventArgs);
+        }
+
+        [TestMethod]
         public void DisconnectInactiveObservers_ScrumMasterIsActive_TeamIsUnchanged()
         {
             // Arrange

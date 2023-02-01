@@ -111,6 +111,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
                 AssertEstimationResultMessagesAreEqual(expectedEstimationResultMessage, (EstimationResultMessage)actual);
             }
 
+            if (expected is EstimationSetMessage expectedEstimationSetMessage)
+            {
+                AssertEstimationSetMessagesAreEqual(expectedEstimationSetMessage, (EstimationSetMessage)actual);
+            }
+
             if (expected is TimerMessage expectedTimerMessage)
             {
                 AssertTimerMessagesAreEqual(expectedTimerMessage, (TimerMessage)actual);
@@ -125,6 +130,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
         private static void AssertEstimationResultMessagesAreEqual(EstimationResultMessage expected, EstimationResultMessage actual)
         {
             AssertEstimationResultsAreEqual(expected.EstimationResult, actual.EstimationResult);
+        }
+
+        private static void AssertEstimationSetMessagesAreEqual(EstimationSetMessage expected, EstimationSetMessage actual)
+        {
+            CollectionAssert.AreEqual(expected.Estimations.ToList(), actual.Estimations.ToList());
         }
 
         private static void AssertTimerMessagesAreEqual(TimerMessage expected, TimerMessage actual)

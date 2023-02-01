@@ -219,6 +219,23 @@ namespace Duracellko.PlanningPoker.Domain.Test.Serialization
         }
 
         [TestMethod]
+        public void SerializeAndDeserialize_AvailableEstimationsAreChanged_CopyOfTheTeam()
+        {
+            // Arrange
+            var team = new ScrumTeam("test");
+            var master = team.SetScrumMaster("master");
+            team.Join("member", false);
+            team.Join("observer", true);
+            master.StartEstimation();
+            master.CancelEstimation();
+            team.ChangeAvailableEstimations(DeckProvider.Default.GetDeck(Deck.RockPaperScissorsLizardSpock));
+
+            // Act
+            // Verify
+            VerifySerialization(team);
+        }
+
+        [TestMethod]
         public void SerializeAndDeserialize_TimerStarted_CopyOfTheTeam()
         {
             // Arrange
