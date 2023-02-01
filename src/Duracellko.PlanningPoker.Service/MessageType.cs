@@ -41,6 +41,11 @@
         MemberEstimated,
 
         /// <summary>
+        /// Message specifies that the set of available estimations has changed.
+        /// </summary>
+        AvailableEstimationsChanged,
+
+        /// <summary>
         /// Message specifies that a countdown timer for team has started.
         /// </summary>
         TimerStarted,

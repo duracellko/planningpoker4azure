@@ -1168,6 +1168,50 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void ChangeDeck_TeamNameAndFibonacci_AvailableEstimationsAreChanged()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            var target = CreatePlanningPokerService(planningPoker.Object);
+
+            // Act
+            target.ChangeDeck(TeamName, Deck.Fibonacci);
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+            teamLock.Verify(l => l.Team);
+
+            var fibonacciDeck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
+            Assert.AreEqual(fibonacciDeck, team.AvailableEstimations);
+        }
+
+        [TestMethod]
+        public void ChangeDeck_TeamNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = CreatePlanningPokerService(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
+        }
+
+        [TestMethod]
+        public void ChangeDeck_TeamNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            var target = CreatePlanningPokerService(planningPoker.Object);
+
+            // Act
+            Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
+        }
+
+        [TestMethod]
         public void StartTimer_Duration_ScrumTeamTimerIsSet()
         {
             // Arrange
@@ -1403,6 +1447,56 @@ namespace Duracellko.PlanningPoker.Test.Service
 
             Assert.AreEqual(4, team.ScrumMaster!.Messages.Count());
             Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
+        }
+
+        [TestMethod]
+        public async Task GetMessages_AvailableEstimationsChanged_MemberGetsMessages()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var team = CreateBasicTeam(new GuidProviderMock(guid));
+            var member = (D.Member)team.Join(MemberName, false);
+            var deck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
+            team.ChangeAvailableEstimations(deck);
+
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(member, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => member.Messages.ToList()).Verifiable();
+            var target = CreatePlanningPokerService(planningPoker.Object);
+
+            // Act
+            var resultAction = await target.GetMessages(TeamName, MemberName, guid, 0, default(CancellationToken));
+            var result = resultAction.Value;
+
+            // Verify
+            planningPoker.Verify();
+            teamLock.Verify();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual<int>(1, result.Count);
+            Assert.AreEqual<long>(1, result[0].Id);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
+            Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)result[0];
+
+            var estimations = estimationSetMessage.Estimations;
+            Assert.IsNotNull(estimations);
+            Assert.AreEqual(13, estimations.Count);
+            Assert.AreEqual(0, estimations[0].Value);
+            Assert.AreEqual(1, estimations[1].Value);
+            Assert.AreEqual(2, estimations[2].Value);
+            Assert.AreEqual(3, estimations[3].Value);
+            Assert.AreEqual(5, estimations[4].Value);
+            Assert.AreEqual(8, estimations[5].Value);
+            Assert.AreEqual(13, estimations[6].Value);
+            Assert.AreEqual(21, estimations[7].Value);
+            Assert.AreEqual(34, estimations[8].Value);
+            Assert.AreEqual(55, estimations[9].Value);
+            Assert.AreEqual(89, estimations[10].Value);
+            Assert.AreEqual(Estimation.PositiveInfinity, estimations[11].Value);
+            Assert.IsNull(estimations[12].Value);
         }
 
         [TestMethod]
@@ -1670,7 +1764,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 dateTimeProvider = D.DateTimeProvider.Default;
             }
 
-            return new PlanningPokerService(planningPoker, dateTimeProvider);
+            return new PlanningPokerService(planningPoker, dateTimeProvider, D.DeckProvider.Default);
         }
     }
 }

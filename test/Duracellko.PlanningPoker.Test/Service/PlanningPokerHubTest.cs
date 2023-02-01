@@ -45,7 +45,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Act
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
-            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, logger));
+            Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, null!, logger));
         }
 
         [DataTestMethod]
@@ -1226,6 +1226,53 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void ChangeDeck_TeamNameAndFibonacci_AvailableEstimationsAreChanged()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                target.ChangeDeck(TeamName, Deck.Fibonacci);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                teamLock.Verify(l => l.Team);
+
+                var fibonacciDeck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
+                Assert.AreEqual(fibonacciDeck, team.AvailableEstimations);
+            }
+        }
+
+        [TestMethod]
+        public void ChangeDeck_TeamNameIsEmpty_ArgumentNullException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
+            }
+        }
+
+        [TestMethod]
+        public void ChangeDeck_TeamNameTooLong_ArgumentException()
+        {
+            // Arrange
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
+            }
+        }
+
+        [TestMethod]
         public void StartTimer_Duration_ScrumTeamTimerIsSet()
         {
             // Arrange
@@ -1476,6 +1523,64 @@ namespace Duracellko.PlanningPoker.Test.Service
 
                 Assert.AreEqual(4, team.ScrumMaster!.Messages.Count());
                 Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
+            }
+        }
+
+        [TestMethod]
+        public void GetMessages_AvailableEstimationsChanged_MemberGetsMessages()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var team = CreateBasicTeam(new GuidProviderMock(guid));
+            var member = (D.Member)team.Join(MemberName, false);
+            var deck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
+            team.ChangeAvailableEstimations(deck);
+
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            planningPoker.Setup(p => p.GetMessagesAsync(member, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => member.Messages.ToList()).Verifiable();
+
+            IList<Message>? result = null;
+            var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
+            clientContext.Setup(o => o.Notify(It.IsAny<IList<Message>>()))
+                .Callback<IList<Message>>(m => result = m)
+                .Returns(Task.CompletedTask);
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+            {
+                // Act
+                target.GetMessages(TeamName, MemberName, guid, 0);
+
+                // Verify
+                planningPoker.Verify();
+                teamLock.Verify();
+                clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual<int>(1, result.Count);
+                Assert.AreEqual<long>(1, result[0].Id);
+                Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
+                Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
+                var estimationSetMessage = (EstimationSetMessage)result[0];
+
+                var estimations = estimationSetMessage.Estimations;
+                Assert.IsNotNull(estimations);
+                Assert.AreEqual(13, estimations.Count);
+                Assert.AreEqual(0, estimations[0].Value);
+                Assert.AreEqual(1, estimations[1].Value);
+                Assert.AreEqual(2, estimations[2].Value);
+                Assert.AreEqual(3, estimations[3].Value);
+                Assert.AreEqual(5, estimations[4].Value);
+                Assert.AreEqual(8, estimations[5].Value);
+                Assert.AreEqual(13, estimations[6].Value);
+                Assert.AreEqual(21, estimations[7].Value);
+                Assert.AreEqual(34, estimations[8].Value);
+                Assert.AreEqual(55, estimations[9].Value);
+                Assert.AreEqual(89, estimations[10].Value);
+                Assert.AreEqual(Estimation.PositiveInfinity, estimations[11].Value);
+                Assert.IsNull(estimations[12].Value);
             }
         }
 
@@ -1797,7 +1902,7 @@ namespace Duracellko.PlanningPoker.Test.Service
 
             var logger = new Logger<PlanningPokerHub>(_loggerFactory);
 
-            var result = new PlanningPokerHub(planningPoker, clientContext.Object, dateTimeProvider, logger);
+            var result = new PlanningPokerHub(planningPoker, clientContext.Object, dateTimeProvider, D.DeckProvider.Default, logger);
 
             var context = new HubCallerContextMock();
             context.SetConnectionId(connectionId);

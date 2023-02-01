@@ -42,6 +42,11 @@ namespace Duracellko.PlanningPoker.Service
             new EventId(BaseEventId + 7, nameof(SubmitEstimation)),
             "{Action}(\"{TeamName}\", \"{MemberName}\", {Estimation})");
 
+        private static readonly Action<ILogger, string, string, Deck, Exception?> _changeDeck = LoggerMessage.Define<string, string, Deck>(
+            LogLevel.Information,
+            new EventId(BaseEventId + 12, nameof(ChangeDeck)),
+            "{Action}(\"{TeamName}\", {Deck})");
+
         private static readonly Action<ILogger, string, string, string, TimeSpan, Exception?> _startTimer = LoggerMessage.Define<string, string, string, TimeSpan>(
             LogLevel.Information,
             new EventId(BaseEventId + 10, nameof(StartTimer)),
@@ -95,6 +100,11 @@ namespace Duracellko.PlanningPoker.Service
         public static void SubmitEstimation(this ILogger logger, string teamName, string memberName, double? estimation)
         {
             _submitEstimation(logger, nameof(SubmitEstimation), teamName, memberName, estimation, null);
+        }
+
+        public static void ChangeDeck(this ILogger logger, string teamName, Deck deck)
+        {
+            _changeDeck(logger, nameof(ChangeDeck), teamName, deck, null);
         }
 
         public static void StartTimer(this ILogger logger, string teamName, string memberName, TimeSpan duration)
