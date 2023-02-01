@@ -3,28 +3,26 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "jquery@3.6.3",
-      "destination": "wwwroot/js",
-      "files": [
-          "jquery.min.js",
-          "jquery.js",
-          "jquery.min.map",
-          "jquery.slim.js",
-          "jquery.slim.min.js",
-          "jquery.slim.min.map"
-      ]
-    },
-    {
-      "library": "twitter-bootstrap@4.6.2",
-      "destination": "wwwroot",
+      "library": "twitter-bootstrap@5.2.3",
+      "destination": "wwwroot/lib",
       "files": [
         "css/bootstrap.min.css",
         "js/bootstrap.bundle.min.js",
         "css/bootstrap.css",
         "css/bootstrap-grid.css",
         "css/bootstrap-grid.min.css",
+        "css/bootstrap-grid.rtl.css",
+        "css/bootstrap-grid.rtl.min.css",
         "css/bootstrap-reboot.css",
         "css/bootstrap-reboot.min.css",
+        "css/bootstrap-reboot.rtl.css",
+        "css/bootstrap-reboot.rtl.min.css",
+        "css/bootstrap-utilities.css",
+        "css/bootstrap-utilities.min.css",
+        "css/bootstrap-utilities.rtl.css",
+        "css/bootstrap-utilities.rtl.min.css",
+        "css/bootstrap.rtl.css",
+        "css/bootstrap.rtl.min.css",
         "js/bootstrap.js",
         "js/bootstrap.min.js",
         "js/bootstrap.bundle.js"
@@ -32,7 +30,7 @@
     },
     {
       "library": "open-iconic@1.1.1",
-      "destination": "wwwroot",
+      "destination": "wwwroot/lib",
       "files": [
         "font/css/open-iconic-bootstrap.min.css",
         "font/css/open-iconic.css",

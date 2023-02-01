@@ -60,6 +60,19 @@ main a:focus, main a:hover, main a:not([href]):not([tabindex]):focus, main a:not
     display: none;
 }
 
+/* Members panel */
+
+.remove-member-btn {
+    --bs-btn-border-width: 0;
+    --bs-btn-padding-x: 0.25rem;
+    --bs-btn-padding-y: 0;
+    --bs-btn-color: #e7727d;
+    --bs-btn-hover-color: #dc3545;
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-active-color: #dc3545;
+    --bs-btn-active-bg: transparent;
+}
+
 /* Poker desk */
 
 .pageContent {

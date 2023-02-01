@@ -10,14 +10,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="timerSetupModalTitle">Timer</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group">
-                            <label>Timer duration</label>
+                        <div class="mb-3">
+                            <label class="form-label">Timer duration</label>
                             <div class="input-group">
-                                <select class="custom-select form-control text-right" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
+                                <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
                                     @for (int i = 0; i < 60; i++)
                                     {
                                         @if (i == TimerDurationMinutes)
@@ -30,10 +30,9 @@
                                         }
                                     }
                                 </select>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">m</span>
-                                </div>
-                                <select class="custom-select form-control text-right" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
+                                <span class="input-group-text">m</span>
+
+                                <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
                                     @for (int i = 0; i < 60; i++)
                                     {
                                         @if (i == TimerDurationSeconds)
@@ -46,15 +45,13 @@
                                         }
                                     }
                                 </select>
-                                <div class="input-group-append">
-                                    <span class="input-group-text">s</span>
-                                </div>
+                                <span class="input-group-text">s</span>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -62,11 +59,11 @@
 
     <div class="team-title">
         <h2>
-            <span class="badge badge-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
             <span>@Controller.TeamName</span>
         </h2>
         <h3>
-            <span class="badge badge-secondary"><span class="oi oi-person" title="User" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary"><span class="oi oi-person" title="User" aria-hidden="true"></span></span>
             <span>@Controller.User?.Name</span>
         </h3>
     </div>
@@ -86,43 +83,43 @@
 
     @if (Controller.IsScrumMaster || Controller.CanShowEstimationSummary || Controller.CanStartTimer || Controller.CanStopTimer)
     {
-        <div class="actionsBar">
-            <p>
+        <div class="actionsBar container">
+            <p class="row justify-content-md-start gy-3">
                 @if (Controller.CanStartEstimation)
                 {
-                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary mr-3">
-                        <span class="oi oi-media-play mr-1" aria-hidden="true"></span> Start estimation
+                    <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary col-md-auto me-3">
+                        <span class="oi oi-media-play me-1" aria-hidden="true"></span> Start estimation
                     </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
-                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-media-stop mr-1" aria-hidden="true"></span> Cancel estimation
+                    <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary col-md-auto me-3">
+                        <span class="oi oi-media-stop me-1" aria-hidden="true"></span> Cancel estimation
                     </button>
                 }
 
                 @if (Controller.CanShowEstimationSummary)
                 {
-                    <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-calculator mr-1" aria-hidden="true"></span> Show average
+                    <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary col-md-auto me-3">
+                        <span class="oi oi-calculator me-1" aria-hidden="true"></span> Show average
                     </button>
                 }
 
                 @if (Controller.CanStartTimer)
                 {
-                    <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-timer mr-1" aria-hidden="true"></span> Start timer
+                    <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary col-md-auto me-3">
+                        <span class="oi oi-timer me-1" aria-hidden="true"></span> Start timer
                     </button>
-                    <button type="button" class="btn btn-secondary mr-3" data-toggle="modal" data-target="#timerSetupModal">
-                        <span class="oi oi-cog mr-1" aria-hidden="true"></span> Setup timer
+                    <button type="button" class="btn btn-secondary col-md-auto me-3" data-bs-toggle="modal" data-bs-target="#timerSetupModal">
+                        <span class="oi oi-cog me-1" aria-hidden="true"></span> Setup timer
                     </button>
                 }
 
                 @if (Controller.CanStopTimer)
                 {
-                    <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary mr-3">
-                        <span class="oi oi-action-undo mr-1" aria-hidden="true"></span> Stop timer
+                    <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary col-md-auto me-3">
+                        <span class="oi oi-action-undo me-1" aria-hidden="true"></span> Stop timer
                     </button>
                 }
             </p>

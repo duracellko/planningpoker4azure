@@ -155,7 +155,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 messageBoxService.ShowMessage("Test", null);
             });
 
-            var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-header > button.close");
+            var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-header > button.btn-close");
             buttonElement.Click();
 
             jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));

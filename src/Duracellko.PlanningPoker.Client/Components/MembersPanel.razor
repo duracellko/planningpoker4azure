@@ -10,7 +10,7 @@
                 <span>@Controller.ScrumMaster?.Name</span>
                 @if ((Controller.ScrumMaster?.HasEstimated).GetValueOrDefault())
                 {
-                    <span class="text-success ml-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
+                    <span class="text-success ms-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
                 }
             </li>
         </ul>
@@ -23,12 +23,12 @@
                     <span>@member.Name</span>
                     @if (member.HasEstimated)
                     {
-                        <span class="text-success ml-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
+                        <span class="text-success ms-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
                     }
                     @if (Controller.IsScrumMaster)
                     {
-                        <button type="button" @onclick="@(e => KickoffMemberCommand(member.Name))" class="close text-danger float-right" aria-label="Remove">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(member.Name))" class="btn btn-outline-danger float-end remove-member-btn" aria-label="Remove">
+                            <span class="fw-bold" aria-hidden="true">&times;</span>
                         </button>
                     }
                 </li>
@@ -43,8 +43,8 @@
                     <span>@observer.Name</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <button type="button" @onclick="@(e => KickoffMemberCommand(observer.Name))" class="close text-danger float-right" aria-label="Remove">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(observer.Name))" class="btn btn-outline-danger float-end remove-member-btn" aria-label="Remove">
+                            <span class="fw-bold" aria-hidden="true">&times;</span>
                         </button>
                     }
                 </li>

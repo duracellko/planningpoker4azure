@@ -51,7 +51,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
 
             // Button to start estimation
             var buttonElement = target.Find("div.actionsBar > p > button");
-            CollectionAssert.AreEqual(new[] { "btn", "btn-primary", "mr-3" }, buttonElement.ClassList.ToList());
+            CollectionAssert.AreEqual(new[] { "btn", "btn-primary", "col-md-auto", "me-3" }, buttonElement.ClassList.ToList());
             Assert.AreEqual("Start estimation", buttonElement.TextContent.Trim());
         }
 
@@ -262,7 +262,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
-            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.mb-3 > div.input-group");
             var selectElements = inputGroupElement.GetElementsByTagName("select");
             Assert.AreEqual(2, selectElements.Length);
 
@@ -287,7 +287,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
-            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.mb-3 > div.input-group");
             var selectElements = inputGroupElement.GetElementsByTagName("select");
             var minutesElement = (IHtmlSelectElement)selectElements[0];
             minutesElement.Change("0");
@@ -311,7 +311,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
             // Timer input
-            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.form-group > div.input-group");
+            var inputGroupElement = target.Find("div.pokerDeskPanel > div#timerSetupModal > div.modal-dialog > div.modal-content > div.modal-body > form > div.mb-3 > div.input-group");
             var selectElements = inputGroupElement.GetElementsByTagName("select");
             var minutesElement = (IHtmlSelectElement)selectElements[0];
             minutesElement.Change("0");
