@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using Azure.Messaging.ServiceBus;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -99,6 +100,28 @@ namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus
             Assert.AreEqual(TeamName, resultData.TeamName);
             Assert.AreEqual(scrumTeamMessage.MemberName, resultData.MemberName);
             Assert.AreEqual(scrumTeamMessage.Estimation, resultData.Estimation);
+        }
+
+        [TestMethod]
+        public void ConvertToServiceBusMessageAndBack_ScrumTeamEstimationSetMessage()
+        {
+            var deck = DeckProvider.Default.GetDefaultDeck().Select(e => e.Value).ToList();
+            var scrumTeamMessage = new ScrumTeamEstimationSetMessage(TeamName, MessageType.AvailableEstimationsChanged)
+            {
+                Estimations = deck
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage)
+            {
+                SenderNodeId = SenderId,
+                Data = scrumTeamMessage
+            };
+
+            var result = ConvertToServiceBusMessageAndBack(nodeMessage);
+            var resultData = (ScrumTeamEstimationSetMessage)result.Data!;
+
+            Assert.AreEqual(MessageType.AvailableEstimationsChanged, resultData.MessageType);
+            Assert.AreEqual(TeamName, resultData.TeamName);
+            CollectionAssert.AreEqual(deck, resultData.Estimations.ToList());
         }
 
         [TestMethod]

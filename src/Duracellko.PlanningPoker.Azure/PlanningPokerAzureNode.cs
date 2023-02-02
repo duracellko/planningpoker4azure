@@ -320,6 +320,9 @@ namespace Duracellko.PlanningPoker.Azure
                         case MessageType.MemberEstimated:
                             OnMemberEstimatedMessage(message.TeamName, (ScrumTeamMemberEstimationMessage)message);
                             break;
+                        case MessageType.AvailableEstimationsChanged:
+                            OnAvailableEstimationsChangedMessage(message.TeamName, (ScrumTeamEstimationSetMessage)message);
+                            break;
                         case MessageType.TimerStarted:
                             OnTimerStartedMessage(message.TeamName, (ScrumTeamTimerMessage)message);
                             break;
@@ -426,6 +429,25 @@ namespace Duracellko.PlanningPoker.Azure
                     {
                         member.Estimation = new Estimation(message.Estimation);
                     }
+                }
+                finally
+                {
+                    _processingScrumTeamName = null;
+                }
+            }
+        }
+
+        private void OnAvailableEstimationsChangedMessage(string teamName, ScrumTeamEstimationSetMessage message)
+        {
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                try
+                {
+                    _processingScrumTeamName = team.Name;
+                    var newAvailableEstimations = message.Estimations.Select(e => new Estimation(e)).ToList();
+                    team.ChangeAvailableEstimations(newAvailableEstimations);
                 }
                 finally
                 {
