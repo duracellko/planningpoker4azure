@@ -978,6 +978,56 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public async Task ProcessMessages_AvailableEstimationsChanged_AvailableEstimationsAreChanged()
+        {
+            var propertyChangedCounter = new PropertyChangedCounter();
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            using var target = CreateController(propertyChangedCounter);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+
+            var message = new EstimationSetMessage
+            {
+                Id = 5,
+                Type = MessageType.AvailableEstimationsChanged,
+                Estimations = new List<Estimation>
+                {
+                    new Estimation { Value = 0 },
+                    new Estimation { Value = 0.5 },
+                    new Estimation { Value = 1 },
+                    new Estimation { Value = 2 },
+                    new Estimation { Value = 3 },
+                    new Estimation { Value = 5 },
+                    new Estimation { Value = 100 },
+                    new Estimation { Value = double.PositiveInfinity },
+                    new Estimation()
+                }
+            };
+            target.ProcessMessages(new Message[] { message });
+
+            Assert.AreEqual(1, propertyChangedCounter.Count);
+            Assert.AreEqual(5, target.LastMessageId);
+
+            var availableEstimations = target.ScrumTeam!.AvailableEstimations;
+            Assert.AreEqual(9, availableEstimations.Count);
+            Assert.AreEqual(0.0, availableEstimations[0].Value);
+            Assert.AreEqual(0.5, availableEstimations[1].Value);
+            Assert.AreEqual(1.0, availableEstimations[2].Value);
+            Assert.AreEqual(2.0, availableEstimations[3].Value);
+            Assert.AreEqual(3.0, availableEstimations[4].Value);
+            Assert.AreEqual(5.0, availableEstimations[5].Value);
+            Assert.AreEqual(100.0, availableEstimations[6].Value);
+            Assert.AreEqual(double.PositiveInfinity, availableEstimations[7].Value);
+            Assert.IsNull(availableEstimations[8].Value);
+
+            Assert.AreEqual(TeamState.Initial, target.ScrumTeam.State);
+            Assert.IsFalse(target.CanSelectEstimation);
+            Assert.IsFalse(target.CanStartEstimation);
+            Assert.IsFalse(target.CanCancelEstimation);
+            Assert.IsFalse(target.CanShowEstimationSummary);
+            Assert.IsNull(target.EstimationSummary);
+        }
+
+        [TestMethod]
         public async Task ProcessMessages_TimerStartedAndCountdownTimerIsNotActive_RunsTimerFor2Seconds()
         {
             var propertyChangedCounter = new PropertyChangedCounter();

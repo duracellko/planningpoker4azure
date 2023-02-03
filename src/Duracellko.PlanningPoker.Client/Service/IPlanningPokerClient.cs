@@ -93,6 +93,17 @@ namespace Duracellko.PlanningPoker.Client.Service
         Task SubmitEstimation(string teamName, string memberName, double? estimation, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Changes deck of estimation cards, if estimation is not in progress.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="deck">New deck of estimation cards to use in the team.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>
+        /// Asynchronous operation.
+        /// </returns>
+        Task ChangeDeck(string teamName, Deck deck, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Starts countdown timer for team with specified duration.
         /// </summary>
         /// <param name="teamName">Name of the Scrum team.</param>

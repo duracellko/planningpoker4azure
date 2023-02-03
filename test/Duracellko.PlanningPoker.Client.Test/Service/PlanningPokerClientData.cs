@@ -309,11 +309,48 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
 }";
         }
 
-        public static string GetTimerStartedMessageJson(string id = "0")
+        public static string GetAvailableEstimationsChangedMessageJson(string id = "0")
         {
             return @"{
             ""id"": " + id + @",
             ""type"": 7,
+            ""estimations"": [
+                {
+                    ""value"": 0
+                },
+                {
+                    ""value"": 0.5
+                },
+                {
+                    ""value"": 1
+                },
+                {
+                    ""value"": 2
+                },
+                {
+                    ""value"": 3
+                },
+                {
+                    ""value"": 5
+                },
+                {
+                    ""value"": 100
+                },
+                {
+                    ""value"": -1111100
+                },
+                {
+                    ""value"": null
+                }
+            ]
+}";
+        }
+
+        public static string GetTimerStartedMessageJson(string id = "0")
+        {
+            return @"{
+            ""id"": " + id + @",
+            ""type"": 8,
             ""endTime"": ""2021-11-17T10:03:46Z""
 }";
         }

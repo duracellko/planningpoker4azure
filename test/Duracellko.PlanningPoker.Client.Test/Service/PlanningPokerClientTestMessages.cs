@@ -194,6 +194,34 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         }
 
         [TestMethod]
+        public async Task GetMessages_TeamAndMemberName_ReturnsAvailableEstimationsChangedMessage()
+        {
+            var messageJson = PlanningPokerClientData.GetAvailableEstimationsChangedMessageJson("8");
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.When(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages")
+                .Respond(PlanningPokerClientTest.JsonType, PlanningPokerClientData.GetMessagesJson(messageJson));
+            var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
+
+            var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
+
+            Assert.AreEqual(1, result.Count);
+            Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
+            var message = (EstimationSetMessage)result[0];
+            Assert.AreEqual(8, message.Id);
+            Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.Type);
+            var estimations = message.Estimations;
+            Assert.AreEqual(0.0, estimations[0].Value);
+            Assert.AreEqual(0.5, estimations[1].Value);
+            Assert.AreEqual(1.0, estimations[2].Value);
+            Assert.AreEqual(2.0, estimations[3].Value);
+            Assert.AreEqual(3.0, estimations[4].Value);
+            Assert.AreEqual(5.0, estimations[5].Value);
+            Assert.AreEqual(100.0, estimations[6].Value);
+            Assert.IsTrue(double.IsPositiveInfinity(estimations[7].Value!.Value));
+            Assert.IsNull(estimations[8].Value);
+        }
+
+        [TestMethod]
         public async Task GetMessages_TeamAndMemberName_ReturnsTimerStartedMessage()
         {
             var messageJson = PlanningPokerClientData.GetTimerStartedMessageJson("1");

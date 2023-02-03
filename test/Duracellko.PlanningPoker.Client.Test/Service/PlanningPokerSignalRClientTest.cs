@@ -531,6 +531,28 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             await resultTask;
         }
 
+        [DataTestMethod]
+        [DataRow(Deck.Standard)]
+        [DataRow(Deck.Rating)]
+        [DataRow(Deck.Tshirt)]
+        public async Task ChangeDeck_SelectedDeck_InvocationMessageIsSent(Deck deck)
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.ChangeDeck(PlanningPokerData.TeamName, deck, fixture.CancellationToken);
+
+            var sentMessage = await fixture.GetSentMessage();
+            var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+            Assert.AreEqual("ChangeDeck", sentInvocationMessage.Target);
+            var expectedArguments = new object?[] { PlanningPokerData.TeamName, deck };
+            CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+            var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
+            await fixture.ReceiveMessage(returnMessage);
+
+            await resultTask;
+        }
+
         [TestMethod]
         public async Task StartTimer_TeamNameAndDuration_InvocationMessageIsSent()
         {

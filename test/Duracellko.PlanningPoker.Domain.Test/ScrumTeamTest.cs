@@ -1533,7 +1533,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void ChangeAvailableEstimations_RatingDeck_ScrumTeamGotMessageEstimationStarted()
+        public void ChangeAvailableEstimations_RatingDeck_ScrumTeamGotMessageAvailableEstimationsChanged()
         {
             // Arrange
             var target = new ScrumTeam("test team");
@@ -1559,7 +1559,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void ChangeAvailableEstimations_RatingDeck_ScrumMasterGetMessageEstimationStarted()
+        public void ChangeAvailableEstimations_RatingDeck_ScrumMasterGetMessageAvailableEstimationsChanged()
         {
             // Arrange
             var target = new ScrumTeam("test team");
@@ -1601,7 +1601,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void ChangeAvailableEstimations_CustomEstimationDeck_MemberGetMessageEstimationStarted()
+        public void ChangeAvailableEstimations_CustomEstimationDeck_MemberGetMessageAvailableEstimationsChanged()
         {
             // Arrange
             var target = new ScrumTeam("test team");
@@ -1643,7 +1643,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void ChangeAvailableEstimations_DefaultEstimationDeck_ObserverGetMessageEstimationStarted()
+        public void ChangeAvailableEstimations_DefaultEstimationDeck_ObserverGetMessageAvailableEstimationsChanged()
         {
             // Arrange
             var target = new ScrumTeam("test team");

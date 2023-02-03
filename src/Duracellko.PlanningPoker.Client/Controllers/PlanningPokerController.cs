@@ -538,6 +538,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 case MessageType.MemberEstimated:
                     OnMemberEstimated((MemberMessage)message);
                     break;
+                case MessageType.AvailableEstimationsChanged:
+                    OnAvailableEstimationsChanged((EstimationSetMessage)message);
+                    break;
                 case MessageType.TimerStarted:
                     OnTimerStarted((TimerMessage)message);
                     break;
@@ -642,6 +645,16 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 _memberEstimations.Add(new MemberEstimation(memberName));
             }
+        }
+
+        private void OnAvailableEstimationsChanged(EstimationSetMessage message)
+        {
+            if (ScrumTeam == null)
+            {
+                return;
+            }
+
+            ScrumTeam.AvailableEstimations = message.Estimations;
         }
 
         private void OnTimerStarted(TimerMessage message)

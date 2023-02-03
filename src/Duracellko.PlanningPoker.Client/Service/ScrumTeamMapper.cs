@@ -57,10 +57,16 @@ namespace Duracellko.PlanningPoker.Client.Service
 
         private static void ConvertMessage(Message message)
         {
-            if (message.Type == MessageType.EstimationEnded)
+            switch (message.Type)
             {
-                var estimationResultMessage = (EstimationResultMessage)message;
-                ConvertEstimations(estimationResultMessage.EstimationResult);
+                case MessageType.EstimationEnded:
+                    var estimationResultMessage = (EstimationResultMessage)message;
+                    ConvertEstimations(estimationResultMessage.EstimationResult);
+                    break;
+                case MessageType.AvailableEstimationsChanged:
+                    var estimationSetMessage = (EstimationSetMessage)message;
+                    ConvertEstimations(estimationSetMessage.Estimations);
+                    break;
             }
         }
 
