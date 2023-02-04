@@ -19,16 +19,19 @@ namespace Duracellko.PlanningPoker.Service
     public class PlanningPokerService : ControllerBase
     {
         private readonly D.DateTimeProvider _dateTimeProvider;
+        private readonly D.DeckProvider _deckProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerService"/> class.
         /// </summary>
         /// <param name="planningPoker">The planning poker controller.</param>
         /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
-        public PlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider dateTimeProvider)
+        /// <param name="deckProvider">The provider to get estimation cards deck.</param>
+        public PlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider dateTimeProvider, D.DeckProvider deckProvider)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _deckProvider = deckProvider ?? throw new ArgumentNullException(nameof(deckProvider));
         }
 
         /// <summary>
@@ -250,6 +253,26 @@ namespace Duracellko.PlanningPoker.Service
                 {
                     member.Estimation = new D.Estimation(domainEstimation);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Changes deck of estimation cards, if estimation is not in progress.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="deck">New deck of estimation cards to use in the team.</param>
+        [HttpGet("ChangeDeck")]
+        public void ChangeDeck(string teamName, Deck deck)
+        {
+            ValidateTeamName(teamName);
+
+            var domainDeck = ServiceEntityMapper.Map(deck);
+            var availableEstimations = _deckProvider.GetDeck(domainDeck);
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                team.ChangeAvailableEstimations(availableEstimations);
             }
         }
 

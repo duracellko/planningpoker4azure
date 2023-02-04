@@ -117,7 +117,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets the available estimations the members can pick from.
         /// </summary>
         /// <value>The collection of available estimations.</value>
-        public IEnumerable<Estimation> AvailableEstimations { get; }
+        public IEnumerable<Estimation> AvailableEstimations { get; private set; }
 
         /// <summary>
         /// Gets the current Scrum team state.
@@ -303,6 +303,28 @@ namespace Duracellko.PlanningPoker.Domain
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Changes the set of available estimations, if estimation is not in progress.
+        /// </summary>
+        /// <param name="availableEstimations">The collection of available stimations.</param>
+        public void ChangeAvailableEstimations(IEnumerable<Estimation> availableEstimations)
+        {
+            if (availableEstimations == null)
+            {
+                throw new ArgumentNullException(nameof(availableEstimations));
+            }
+
+            if (State == TeamState.EstimationInProgress)
+            {
+                throw new InvalidOperationException(Resources.Error_ChangeAvailableEstimationsInProgress);
+            }
+
+            AvailableEstimations = availableEstimations;
+
+            var recipients = UnionMembersAndObservers();
+            SendMessage(recipients, () => new EstimationSetMessage(MessageType.AvailableEstimationsChanged, availableEstimations));
         }
 
         /// <summary>

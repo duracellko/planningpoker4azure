@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Domain.Test
@@ -19,6 +20,16 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Verify
             Assert.AreEqual<MessageType>(type, result.MessageType);
             Assert.AreEqual<EstimationResult>(estimationResult, result.EstimationResult);
+        }
+
+        [TestMethod]
+        public void Constructor_EstimationResultIsNull_ArgumentNullException()
+        {
+            // Arrange
+            var type = MessageType.EstimationEnded;
+
+            // Act
+            Assert.ThrowsException<ArgumentNullException>(() => new EstimationResultMessage(type, null!));
         }
     }
 }

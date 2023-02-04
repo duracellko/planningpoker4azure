@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -15,7 +16,7 @@ namespace Duracellko.PlanningPoker.Domain
         public EstimationResultMessage(MessageType type, EstimationResult estimationResult)
             : base(type)
         {
-            EstimationResult = estimationResult;
+            EstimationResult = estimationResult ?? throw new ArgumentNullException(nameof(estimationResult));
         }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace Duracellko.PlanningPoker.Domain
         internal EstimationResultMessage(Serialization.MessageData messageData, EstimationResult estimationResult)
             : base(messageData)
         {
-            EstimationResult = estimationResult;
+            EstimationResult = estimationResult ?? throw new ArgumentNullException(nameof(estimationResult));
         }
 
         /// <summary>

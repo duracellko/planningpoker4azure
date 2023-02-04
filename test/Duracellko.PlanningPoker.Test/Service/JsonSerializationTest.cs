@@ -369,6 +369,62 @@ namespace Duracellko.PlanningPoker.Test.Service
 
         [DataTestMethod]
         [DynamicData(nameof(JsonTestData))]
+        public void JsonSerialize_Message_AvailableEstimationsChanged(JsonSerializerDefaults jsonSerializerDefaults)
+        {
+            var message = new EstimationSetMessage
+            {
+                Id = 11,
+                Type = MessageType.AvailableEstimationsChanged,
+                Estimations = new List<Estimation>
+                {
+                    new Estimation
+                    {
+                        Value = 0
+                    },
+                    new Estimation
+                    {
+                        Value = 0.5
+                    },
+                    new Estimation
+                    {
+                        Value = 1
+                    },
+                    new Estimation
+                    {
+                        Value = 2
+                    },
+                    new Estimation
+                    {
+                        Value = 20
+                    },
+                    new Estimation
+                    {
+                        Value = Estimation.PositiveInfinity
+                    },
+                    new Estimation()
+                }
+            };
+
+            var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(message.Id, result.Id);
+            Assert.AreEqual(message.Type, result.Type);
+
+            Assert.IsInstanceOfType(result, typeof(EstimationSetMessage));
+            var estimationSetMessage = (EstimationSetMessage)result;
+            Assert.AreEqual(7, estimationSetMessage.Estimations.Count);
+            Assert.AreEqual(0.0, estimationSetMessage.Estimations[0].Value);
+            Assert.AreEqual(0.5, estimationSetMessage.Estimations[1].Value);
+            Assert.AreEqual(1.0, estimationSetMessage.Estimations[2].Value);
+            Assert.AreEqual(2.0, estimationSetMessage.Estimations[3].Value);
+            Assert.AreEqual(20.0, estimationSetMessage.Estimations[4].Value);
+            Assert.AreEqual(Estimation.PositiveInfinity, estimationSetMessage.Estimations[5].Value);
+            Assert.IsNull(estimationSetMessage.Estimations[6].Value);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(JsonTestData))]
         public void JsonSerialize_Message_TimerStarted(JsonSerializerDefaults jsonSerializerDefaults)
         {
             var message = new TimerMessage

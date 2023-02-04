@@ -196,6 +196,48 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         }
 
         [TestMethod]
+        public async Task GetMessages_TeamAndMemberName_ReturnsAvailableEstimationsChangedMessage()
+        {
+            await using var fixture = new PlanningPokerSignalRClientFixture();
+
+            var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0, fixture.CancellationToken);
+
+            var message = new EstimationSetMessage
+            {
+                Id = 22,
+                Type = MessageType.AvailableEstimationsChanged,
+                Estimations = new List<Estimation>
+                {
+                    new Estimation { Value = 0 },
+                    new Estimation { Value = 0.5 },
+                    new Estimation { Value = 1 },
+                    new Estimation { Value = 2 },
+                    new Estimation { Value = 3 },
+                    new Estimation { Value = 5 },
+                    new Estimation { Value = 100 },
+                    new Estimation { Value = Estimation.PositiveInfinity },
+                    new Estimation()
+                }
+            };
+            await ProvideMessages(fixture, message);
+
+            var result = await resultTask;
+            await Task.Yield();
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(message, result[0]);
+            var estimations = ((EstimationSetMessage)result[0]).Estimations;
+            Assert.AreEqual(0.0, estimations[0].Value);
+            Assert.AreEqual(0.5, estimations[1].Value);
+            Assert.AreEqual(1.0, estimations[2].Value);
+            Assert.AreEqual(2.0, estimations[3].Value);
+            Assert.AreEqual(3.0, estimations[4].Value);
+            Assert.AreEqual(5.0, estimations[5].Value);
+            Assert.AreEqual(100.0, estimations[6].Value);
+            Assert.IsTrue(double.IsPositiveInfinity(estimations[7].Value!.Value));
+            Assert.IsNull(estimations[8].Value);
+        }
+
+        [TestMethod]
         public async Task GetMessages_TeamAndMemberName_ReturnsTimerStartedMessage()
         {
             await using var fixture = new PlanningPokerSignalRClientFixture();

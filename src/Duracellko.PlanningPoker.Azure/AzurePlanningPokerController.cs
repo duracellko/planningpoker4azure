@@ -317,6 +317,13 @@ namespace Duracellko.PlanningPoker.Azure
                     }
 
                     break;
+                case MessageType.AvailableEstimationsChanged:
+                    var estimationSetMessage = (EstimationSetMessage)e.Message;
+                    scrumTeamMessage = new ScrumTeamEstimationSetMessage(team.Name, estimationSetMessage.MessageType)
+                    {
+                        Estimations = estimationSetMessage.Estimations.Select(e => e.Value).ToList()
+                    };
+                    break;
                 case MessageType.TimerStarted:
                     var timerMessage = (TimerMessage)e.Message;
                     scrumTeamMessage = new ScrumTeamTimerMessage(team.Name, timerMessage.MessageType)

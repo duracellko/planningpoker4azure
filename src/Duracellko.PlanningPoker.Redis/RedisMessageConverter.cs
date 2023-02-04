@@ -90,6 +90,10 @@ namespace Duracellko.PlanningPoker.Redis
                     {
                         result.Data = ReadObject<ScrumTeamMemberEstimationMessage>(data);
                     }
+                    else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Data = ReadObject<ScrumTeamEstimationSetMessage>(data);
+                    }
                     else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
                     {
                         result.Data = ReadObject<ScrumTeamTimerMessage>(data);

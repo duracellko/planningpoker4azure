@@ -241,6 +241,8 @@ namespace Duracellko.PlanningPoker.Domain
                     var estimationResult = new EstimationResult(Team, messageData.EstimationResult!);
                     estimationResult.SetReadOnly();
                     return new EstimationResultMessage(messageData, estimationResult);
+                case MessageType.AvailableEstimationsChanged:
+                    return new EstimationSetMessage(messageData);
                 case MessageType.TimerStarted:
                     return new TimerMessage(messageData);
                 default:

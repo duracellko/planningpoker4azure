@@ -61,6 +61,15 @@ namespace Duracellko.PlanningPoker.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Available estimations cannot be changed, when estimation is in progress..
+        /// </summary>
+        internal static string Error_ChangeAvailableEstimationsInProgress {
+            get {
+                return ResourceManager.GetString("Error_ChangeAvailableEstimationsInProgress", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Deserialization of Scrum Team failed..
         /// </summary>
         internal static string Error_DeserializationFailed {

@@ -183,6 +183,31 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public void ObservableMessages_AvailableEstimationsChanged_ScrumTeamEstimationSetMessage()
+        {
+            // Arrange
+            var target = CreateAzurePlanningPokerController();
+            target.EndInitialization();
+            var messages = new List<ScrumTeamMessage>();
+            var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
+            var deck = DeckProvider.Default.GetDeck(Deck.Fibonacci);
+
+            // Act
+            target.ObservableMessages.Subscribe(m => messages.Add(m));
+            teamLock.Team.ChangeAvailableEstimations(deck);
+            target.Dispose();
+
+            // Verify
+            Assert.AreEqual<int>(1, messages.Count);
+            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, messages[0].MessageType);
+            Assert.AreEqual<string>("test", messages[0].TeamName);
+            Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamEstimationSetMessage));
+            var estimationSetMessage = (ScrumTeamEstimationSetMessage)messages[0];
+            var expectedEstimations = new double?[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, double.PositiveInfinity, null };
+            CollectionAssert.AreEqual(expectedEstimations, estimationSetMessage.Estimations.ToList());
+        }
+
+        [TestMethod]
         public void ObservableMessages_TimerStarted_ScrumTeamTimerMessage()
         {
             // Arrange

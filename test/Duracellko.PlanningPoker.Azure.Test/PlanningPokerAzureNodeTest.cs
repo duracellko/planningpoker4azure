@@ -220,6 +220,40 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
+        public async Task Start_AvailableEstimationsChanged_MessageIsSentToServiceBus()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));
+            planningPoker.Setup(p => p.EndInitialization());
+            var deck = DeckProvider.Default.GetDeck(Deck.Rating).Select(e => e.Value).ToList();
+            var message = new ScrumTeamEstimationSetMessage(TeamName, MessageType.AvailableEstimationsChanged) { Estimations = deck };
+            var startPlanningPokerMsg = SetupPlanningPokerMsg(planningPoker, message);
+
+            var sendServiceBusMsg = SetupServiceBus(serviceBus, target.NodeId);
+            NodeMessage? nodeMessage = null;
+            serviceBus.Setup(b => b.SendMessage(It.Is<NodeMessage>(m => m.MessageType == NodeMessageType.ScrumTeamMessage)))
+                .Callback<NodeMessage>(m => nodeMessage = m).Returns(Task.CompletedTask).Verifiable();
+
+            // Act
+            await target.Start();
+            sendServiceBusMsg();
+            startPlanningPokerMsg();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            Assert.IsNotNull(nodeMessage);
+            Assert.AreEqual<NodeMessageType>(NodeMessageType.ScrumTeamMessage, nodeMessage.MessageType);
+            Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
+            Assert.AreEqual(message, nodeMessage.Data);
+        }
+
+        [TestMethod]
         public async Task Start_TimerStarted_MessageIsSentToServiceBus()
         {
             // Arrange
@@ -607,6 +641,69 @@ namespace Duracellko.PlanningPoker.Azure.Test
             {
                 MemberName = ScrumMasterName,
                 Estimation = 5.0
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+
+            SetupPlanningPoker(planningPoker, null, true);
+            planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify(p => p.GetScrumTeam(It.IsAny<string>()), Times.Never());
+            planningPoker.Verify();
+            serviceBus.Verify();
+        }
+
+        [TestMethod]
+        public async Task Start_AvailableEstimationsChangedFromServiceBus_AvailableEstimationsAreSet()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var deck = DeckProvider.Default.GetDeck(Deck.Tshirt).ToList();
+            var message = new ScrumTeamEstimationSetMessage(TeamName, MessageType.AvailableEstimationsChanged)
+            {
+                Estimations = deck.Select(e => e.Value).ToList()
+            };
+            var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
+            var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
+
+            var team = CreateBasicTeam();
+            team.ScrumMaster!.StartEstimation();
+            team.ScrumMaster.CancelEstimation();
+            var teamLock = SetupPlanningPoker(planningPoker, team);
+
+            // Act
+            await target.Start();
+            sendMessages();
+            await target.Stop();
+
+            // Verify
+            planningPoker.Verify();
+            serviceBus.Verify();
+            teamLock.Verify();
+            CollectionAssert.AreEqual(deck, team.AvailableEstimations.ToList());
+        }
+
+        [TestMethod]
+        public async Task Start_NotInitAndAvailableEstimationsChangedFromServiceBus_MessageIgnored()
+        {
+            // Arrange
+            var planningPoker = CreatePlanningPokerMock();
+            var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
+            var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
+
+            var deck = DeckProvider.Default.GetDeck(Deck.Tshirt);
+            var message = new ScrumTeamEstimationSetMessage(TeamName, MessageType.AvailableEstimationsChanged)
+            {
+                Estimations = deck.Select(e => e.Value).ToList()
             };
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);

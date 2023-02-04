@@ -17,6 +17,7 @@ namespace Duracellko.PlanningPoker.Service
     {
         private readonly IHubContext<PlanningPokerHub, IPlanningPokerClient> _clientContext;
         private readonly D.DateTimeProvider _dateTimeProvider;
+        private readonly D.DeckProvider _deckProvider;
         private readonly ILogger<PlanningPokerHub> _logger;
 
         /// <summary>
@@ -25,16 +26,19 @@ namespace Duracellko.PlanningPoker.Service
         /// <param name="planningPoker">The planning poker controller.</param>
         /// <param name="clientContext">Interface to send messages to client.</param>
         /// <param name="dateTimeProvider">The date time provider to provide current time.</param>
+        /// <param name="deckProvider">The provider to get estimation cards deck.</param>
         /// <param name="logger">Logger instance to log events.</param>
         public PlanningPokerHub(
             D.IPlanningPoker planningPoker,
             IHubContext<PlanningPokerHub, IPlanningPokerClient> clientContext,
             D.DateTimeProvider dateTimeProvider,
+            D.DeckProvider deckProvider,
             ILogger<PlanningPokerHub> logger)
         {
             PlanningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
             _clientContext = clientContext ?? throw new ArgumentNullException(nameof(clientContext));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
+            _deckProvider = deckProvider ?? throw new ArgumentNullException(nameof(deckProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -248,6 +252,26 @@ namespace Duracellko.PlanningPoker.Service
                 {
                     member.Estimation = new D.Estimation(estimation);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Changes deck of estimation cards, if estimation is not in progress.
+        /// </summary>
+        /// <param name="teamName">Name of the Scrum team.</param>
+        /// <param name="deck">New deck of estimation cards to use in the team.</param>
+        public void ChangeDeck(string teamName, Deck deck)
+        {
+            _logger.ChangeDeck(teamName, deck);
+            ValidateTeamName(teamName);
+
+            var domainDeck = ServiceEntityMapper.Map(deck);
+            var availableEstimations = _deckProvider.GetDeck(domainDeck);
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            {
+                teamLock.Lock();
+                var team = teamLock.Team;
+                team.ChangeAvailableEstimations(availableEstimations);
             }
         }
 

@@ -800,6 +800,22 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             httpMock.VerifyNoOutstandingExpectation();
         }
 
+        [DataTestMethod]
+        [DataRow(Deck.Standard, nameof(Deck.Standard))]
+        [DataRow(Deck.Rating, nameof(Deck.Rating))]
+        [DataRow(Deck.Tshirt, nameof(Deck.Tshirt))]
+        public async Task ChangeDeck_SelectedDeck_InvocationMessageIsSent(Deck deck, string deckValue)
+        {
+            var httpMock = new MockHttpMessageHandler();
+            httpMock.Expect(BaseUrl + $"api/PlanningPokerService/ChangeDeck?teamName={PlanningPokerClientData.TeamName}&deck={deckValue}")
+                .Respond(TextType, string.Empty);
+            var target = CreatePlanningPokerClient(httpMock);
+
+            await target.ChangeDeck(PlanningPokerClientData.TeamName, deck, CancellationToken.None);
+
+            httpMock.VerifyNoOutstandingExpectation();
+        }
+
         [TestMethod]
         public async Task StartTimer_TeamNameAndDuration_RequestsStartEstimationUrl()
         {
