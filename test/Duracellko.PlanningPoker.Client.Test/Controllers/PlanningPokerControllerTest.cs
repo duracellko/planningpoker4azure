@@ -60,6 +60,21 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public void EstimationDecks_Get_ReturnsEstimationDecks()
+        {
+            using var target = CreateController();
+
+            var result = target.EstimationDecks;
+
+            Assert.AreEqual(5, result.Count);
+            Assert.AreEqual("0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100", result[Deck.Standard]);
+            Assert.AreEqual("0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89", result[Deck.Fibonacci]);
+            Assert.AreEqual("1, 2, 3, 4, 5, 6, 7, 8, 9, 10", result[Deck.Rating]);
+            Assert.AreEqual("T-shirt: XS, S, M, L, XL", result[Deck.Tshirt]);
+            Assert.AreEqual("Rock, Paper, Scissors, Lizard, Spock", result[Deck.RockPaperScissorsLizardSpock]);
+        }
+
+        [TestMethod]
         public async Task InitializeTeam_ScrumTeam_TeamNameIsSet()
         {
             var scrumTeam = PlanningPokerData.GetScrumTeam();

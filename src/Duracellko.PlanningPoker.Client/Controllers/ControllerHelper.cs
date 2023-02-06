@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
@@ -10,6 +11,18 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// </summary>
     internal static class ControllerHelper
     {
+        /// <summary>
+        /// Gets collection of available estimation decks, which can be selected, when creating new team.
+        /// </summary>
+        public static IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = new SortedDictionary<Deck, string>
+        {
+            { Deck.Standard, Resources.EstimationDeck_Standard },
+            { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
+            { Deck.Rating, Resources.EstimationDeck_Rating },
+            { Deck.Tshirt, Resources.EstimationDeck_Tshirt },
+            { Deck.RockPaperScissorsLizardSpock, Resources.EstimationDeck_RockPaperScissorsLizardSpock },
+        };
+
         /// <summary>
         /// Gets user friendly message from <see cref="PlanningPokerException"/> object.
         /// </summary>

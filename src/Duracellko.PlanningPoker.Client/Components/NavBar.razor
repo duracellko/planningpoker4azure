@@ -15,8 +15,13 @@
             {
                 <ul class="navbar-nav flex-grow-1 justify-content-end">
                     <li class="nav-item">
-                        <a @onclick="DisconnectCommand">
-                            <span class="oi oi-account-logout"></span> Disconnect
+                        <a href="#" class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#planningPokerSettingsModal">
+                            <span class="oi oi-cog" aria-hidden="true"></span> Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a @onclick="DisconnectCommand" class="nav-link">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> Disconnect
                         </a>
                     </li>
                 </ul>

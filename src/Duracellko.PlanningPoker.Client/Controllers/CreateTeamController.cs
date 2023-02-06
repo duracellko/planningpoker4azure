@@ -48,14 +48,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <summary>
         /// Gets collection of available estimation decks, which can be selected, when creating new team.
         /// </summary>
-        public IDictionary<Deck, string> EstimationDecks { get; } = new SortedDictionary<Deck, string>
-        {
-            { Deck.Standard, Resources.EstimationDeck_Standard },
-            { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
-            { Deck.Rating, Resources.EstimationDeck_Rating },
-            { Deck.Tshirt, Resources.EstimationDeck_Tshirt },
-            { Deck.RockPaperScissorsLizardSpock, Resources.EstimationDeck_RockPaperScissorsLizardSpock },
-        };
+        public IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = ControllerHelper.EstimationDecks;
 
         /// <summary>
         /// Creates new Scrum Team and initialize Planning Poker game.

@@ -182,6 +182,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public bool CanChangeDeck => CanStartEstimation;
 
         /// <summary>
+        /// Gets collection of available estimation decks, which can be selected, when creating new team.
+        /// </summary>
+        public IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = ControllerHelper.EstimationDecks;
+
+        /// <summary>
         /// Gets a remaining time until end of timer.
         /// </summary>
         public TimeSpan? RemainingTimerTime

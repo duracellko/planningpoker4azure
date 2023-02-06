@@ -5,58 +5,6 @@
 
 <div class="pokerDeskPanel">
 
-    <div id="timerSetupModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="timerSetupModalTitle">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="timerSetupModalTitle">Timer</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label">Timer duration</label>
-                            <div class="input-group">
-                                <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
-                                    @for (int i = 0; i < 60; i++)
-                                    {
-                                        @if (i == TimerDurationMinutes)
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
-                                        }
-                                    }
-                                </select>
-                                <span class="input-group-text">m</span>
-
-                                <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
-                                    @for (int i = 0; i < 60; i++)
-                                    {
-                                        @if (i == TimerDurationSeconds)
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
-                                        }
-                                    }
-                                </select>
-                                <span class="input-group-text">s</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="team-title">
         <h2>
             <span class="badge bg-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
@@ -67,19 +15,6 @@
             <span>@Controller.User?.Name</span>
         </h3>
     </div>
-
-    @if (Controller.CanSelectEstimation)
-    {
-        <div class="availableEstimations">
-            <h3>Pick estimation</h3>
-            <ul>
-                @foreach (var estimation in Controller.AvailableEstimations)
-                {
-                    <li><a @onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
-                }
-            </ul>
-        </div>
-    }
 
     @if (Controller.IsScrumMaster || Controller.CanShowEstimationSummary || Controller.CanStartTimer || Controller.CanStopTimer)
     {
@@ -111,9 +46,6 @@
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary col-md-auto me-3">
                         <span class="oi oi-timer me-1" aria-hidden="true"></span> Start timer
                     </button>
-                    <button type="button" class="btn btn-secondary col-md-auto me-3" data-bs-toggle="modal" data-bs-target="#timerSetupModal">
-                        <span class="oi oi-cog me-1" aria-hidden="true"></span> Setup timer
-                    </button>
                 }
 
                 @if (Controller.CanStopTimer)
@@ -124,6 +56,24 @@
                 }
             </p>
         </div>
+    }
+
+    @if (Controller.CanSelectEstimation)
+    {
+        <div class="availableEstimations">
+            <h3>Pick estimation</h3>
+            <ul>
+                @foreach (var estimation in Controller.AvailableEstimations)
+                {
+                    <li><a @onclick="@(e => SelectEstimationCommand(estimation))">@GetEstimationText(estimation)</a></li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Controller.CanSelectEstimation || HasEstimationResult)
+    {
+        <hr class="border border-primary border-2 opacity-75">
     }
 
     @if (HasEstimationResult)
@@ -176,40 +126,7 @@
 
 @code
 {
-    private int _timerDuractionMinutes = 5;
-    private int _timerDurationSeconds = 0;
-
     private bool HasEstimationResult => Controller.Estimations != null;
-
-    private int TimerDurationMinutes
-    {
-        get => _timerDuractionMinutes;
-        set
-        {
-            value = EnsureTimePartIsInRange(value);
-            if (value == 0 && _timerDurationSeconds == 0)
-            {
-                _timerDurationSeconds = 1;
-            }
-
-            _timerDuractionMinutes = value;
-        }
-    }
-
-    private int TimerDurationSeconds
-    {
-        get => _timerDurationSeconds;
-        set
-        {
-            value = EnsureTimePartIsInRange(value);
-            if (value == 0 && _timerDuractionMinutes == 0)
-            {
-                _timerDuractionMinutes = 1;
-            }
-
-            _timerDurationSeconds = value;
-        }
-    }
 
     public void Dispose()
     {
@@ -220,9 +137,6 @@
     {
         base.OnInitialized();
         Controller.PropertyChanged += ControllerOnPropertyChanged;
-
-        TimerDurationMinutes = Controller.TimerDuration.Minutes;
-        TimerDurationSeconds = Controller.TimerDuration.Seconds;
     }
 
     private Task SelectEstimationCommand(double? estimation)
@@ -255,23 +169,8 @@
         return TryRun(() => Controller.CancelTimer());
     }
 
-    private void OnTimerDurationMinutesSelectChanged(ChangeEventArgs e)
-    {
-        TimerDurationMinutes = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 5;
-        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
-    }
-
-    private void OnTimerDurationSecondsSelectChanged(ChangeEventArgs e)
-    {
-        TimerDurationSeconds = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 0;
-        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
-    }
-
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        TimerDurationMinutes = Controller.TimerDuration.Minutes;
-        TimerDurationSeconds = Controller.TimerDuration.Seconds;
-
         StateHasChanged();
     }
 
@@ -350,19 +249,5 @@
         }
 
         return value.Value.ToString("N2");
-    }
-
-    private static int EnsureTimePartIsInRange(int value)
-    {
-        if (value < 0)
-        {
-            value = 0;
-        }
-        else if (value > 59)
-        {
-            value = 59;
-        }
-
-        return value;
     }
 }
