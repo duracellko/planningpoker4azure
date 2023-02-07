@@ -197,7 +197,7 @@ namespace Duracellko.PlanningPoker.E2ETest
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
             var buttons = PlanningPokerDeskElement.FindElements(By.CssSelector("div.actionsBar button"));
-            Assert.AreEqual(isScrumMaster ? 4 : 3, buttons.Count);
+            Assert.AreEqual(isScrumMaster ? 3 : 2, buttons.Count);
 
             var button = buttons[isScrumMaster ? 1 : 0];
             Assert.AreEqual("Show average", button.Text);
@@ -283,7 +283,7 @@ namespace Duracellko.PlanningPoker.E2ETest
         {
             Assert.IsNotNull(PlanningPokerContainerElement);
             var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.TagName("nav"));
-            var disconnectElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul a"));
+            var disconnectElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul li.nav-item:last-child a.nav-link"));
             Assert.AreEqual("Disconnect", disconnectElement.Text);
 
             disconnectElement.Click();
