@@ -42,6 +42,8 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public IWebElement? MembersPanelElement { get; private set; }
 
+        public IWebElement? SettingsDialogElement { get; private set; }
+
         public Task OpenApplication()
         {
             Browser.Navigate().GoToUrl(Server.Uri);
@@ -277,6 +279,67 @@ namespace Duracellko.PlanningPoker.E2ETest
                 Assert.AreEqual(summaryItem.Key, nameElement.Text);
                 Assert.AreEqual(summaryItem.Value.ToString("N2"), valueElement.Text);
             }
+        }
+
+        public void OpenSettingsDialog()
+        {
+            Assert.IsNotNull(PlanningPokerContainerElement);
+            var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.TagName("nav"));
+            var settingsElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul li.nav-item:first-child a.nav-link"));
+            Assert.AreEqual("Settings", settingsElement.Text);
+
+            settingsElement.Click();
+
+            SettingsDialogElement = PlanningPokerContainerElement.FindElement(By.Id("planningPokerSettingsModal"));
+        }
+
+        public void AssertSettingsDialogIsOpen()
+        {
+            Assert.IsNotNull(SettingsDialogElement);
+            Assert.AreEqual("block", SettingsDialogElement.GetCssValue("display"));
+
+            var modalContentElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content"));
+            Assert.AreEqual("block", SettingsDialogElement.GetCssValue("display"));
+
+            var modalTitleElement = modalContentElement.FindElement(By.CssSelector("div.modal-header h5.modal-title"));
+            Assert.AreEqual("Settings", modalTitleElement.Text);
+        }
+
+        public void AssertSelectedDeckSetting(string deckText, bool isEnabled)
+        {
+            Assert.IsNotNull(SettingsDialogElement);
+            var modalBodyElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content div.modal-body"));
+            var formElement = modalBodyElement.FindElement(By.TagName("form"));
+            var selectedDeckInput = formElement.FindElement(By.Id("planningPokerSettings$selectedDeck"));
+
+            var selectedDeckElement = new SelectElement(selectedDeckInput);
+            Assert.IsNotNull(selectedDeckElement.SelectedOption);
+            Assert.AreEqual(deckText, selectedDeckElement.SelectedOption.Text);
+            Assert.AreEqual(isEnabled, selectedDeckInput.Enabled);
+
+            var changeDeckButton = formElement.FindElement(By.Id("planningPokerSettings$changeDeckButton"));
+            Assert.AreEqual(isEnabled, changeDeckButton.Enabled);
+        }
+
+        public void ChangeDeck(string deck, string deckText)
+        {
+            Assert.IsNotNull(SettingsDialogElement);
+            var modalBodyElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content div.modal-body"));
+            var formElement = modalBodyElement.FindElement(By.TagName("form"));
+            var selectedDeckInput = formElement.FindElement(By.Id("planningPokerSettings$selectedDeck"));
+            var changeDeckButton = formElement.FindElement(By.Id("planningPokerSettings$changeDeckButton"));
+
+            var selectedDeckElement = new SelectElement(selectedDeckInput);
+            selectedDeckElement.SelectByValue(deck);
+            changeDeckButton.Click();
+        }
+
+        public void CloseSettingsDialog()
+        {
+            Assert.IsNotNull(SettingsDialogElement);
+            var modalContentElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content"));
+            var closeModalButton = modalContentElement.FindElement(By.CssSelector("div.modal-header button.btn-close"));
+            closeModalButton.Click();
         }
 
         public void Disconnect()

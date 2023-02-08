@@ -162,5 +162,73 @@ namespace Duracellko.PlanningPoker.E2ETest
             TakeScreenshot("04-Error");
             ClientTest.AssertMessageBox("Scrum Team \"My team\" does not exist. (Parameter 'teamName')");
         }
+
+        [DataTestMethod]
+        [EnvironmentDataSource]
+        public async Task ScrumMaster_Can_Change_Deck(bool serverSide, BrowserType browserType, bool useHttpClient)
+        {
+            Contexts.Add(new BrowserTestContext(
+                nameof(ScrumMasterTest),
+                nameof(ScrumMaster_Can_Change_Deck),
+                browserType,
+                serverSide,
+                useHttpClient));
+
+            await StartServer();
+            StartClients();
+
+            string team = "My team";
+            string scrumMaster = "Test ScrumMaster";
+            string deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
+            string newDeckText = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10";
+            var availableEstimations = new string[]
+            {
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
+            };
+
+            await ClientTest.OpenApplication();
+            TakeScreenshot("01-Loading");
+            ClientTest.AssertIndexPage();
+            TakeScreenshot("02-Index");
+            ClientTest.FillCreateTeamForm(team, scrumMaster, "Standard", deckText);
+            TakeScreenshot("03-CreateTeamForm");
+            ClientTest.SubmitCreateTeamForm();
+            ClientTest.AssertPlanningPokerPage("My%20team", "Test%20ScrumMaster");
+            TakeScreenshot("04-PlanningPoker");
+            ClientTest.AssertTeamName(team, scrumMaster);
+            ClientTest.AssertScrumMasterInTeam(scrumMaster);
+            ClientTest.AssertMembersInTeam();
+            ClientTest.AssertObserversInTeam();
+
+            ClientTest.OpenSettingsDialog();
+            await Task.Delay(200);
+            TakeScreenshot("05-Settings");
+            ClientTest.AssertSettingsDialogIsOpen();
+            ClientTest.AssertSelectedDeckSetting(deckText, true);
+            ClientTest.ChangeDeck("Rating", newDeckText);
+            TakeScreenshot("06-ChangingDeck");
+            await Task.Delay(500);
+            ClientTest.CloseSettingsDialog();
+            await Task.Delay(200);
+
+            ClientTest.StartEstimation();
+            TakeScreenshot("07-EstimationStarted");
+            ClientTest.AssertAvailableEstimations(availableEstimations);
+
+            ClientTest.OpenSettingsDialog();
+            await Task.Delay(200);
+            TakeScreenshot("08-Settings");
+            ClientTest.AssertSettingsDialogIsOpen();
+            ClientTest.AssertSelectedDeckSetting(newDeckText, false);
+            ClientTest.CloseSettingsDialog();
+            await Task.Delay(200);
+
+            ClientTest.SelectEstimation(9);
+            await Task.Delay(500);
+            TakeScreenshot("09-Estimated");
+            ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, "10"));
+            ClientTest.Disconnect();
+            TakeScreenshot("10-Disconnected");
+        }
     }
 }

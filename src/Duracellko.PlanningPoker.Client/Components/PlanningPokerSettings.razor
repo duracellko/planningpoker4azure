@@ -42,13 +42,14 @@
                             <label for="planningPokerSettings$selectedDeck" class="form-label">Change deck</label>
                             <div class="input-group">
                                 <select id="planningPokerSettings$selectedDeck" name="deck" class="form-select"
-                                        @bind="SelectedDeck" aria-describedby="changeDeckButton">
+                                        @bind="SelectedDeck" aria-describedby="planningPokerSettings$changeDeckButton">
                                     @foreach (var deckOption in EstimationDecks)
                                     {
                                         <option value="@deckOption.Key">@deckOption.Value</option>
                                     }
                                 </select>
-                                <button type="button" id="changeDeckButton" @onclick="ChangeDeckCommand" class="btn btn-primary">Change</button>
+                                <button type="button" id="planningPokerSettings$changeDeckButton"
+                                        @onclick="ChangeDeckCommand" class="btn btn-primary">Change</button>
                             </div>
                         </div>
                     </fieldset>
