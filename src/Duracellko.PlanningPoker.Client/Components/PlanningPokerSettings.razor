@@ -13,21 +13,15 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <fieldset disabled="@(Controller.CanChangeTimer ? null : "")">
+                    <fieldset disabled="@(Controller.CanChangeTimer ? null : string.Empty)">
                         <div class="mb-3">
                             <label class="form-label">Timer duration</label>
                             <div class="input-group">
                                 <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
                                     @for (int i = 0; i < 60; i++)
                                     {
-                                        @if (i == TimerDurationMinutes)
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
-                                        }
+                                        <option value="@i.ToString(CultureInfo.InvariantCulture)"
+                                                selected="@(i == TimerDurationMinutes ? string.Empty : null)">@i</option>
                                     }
                                 </select>
                                 <span class="input-group-text">m</span>
@@ -35,21 +29,15 @@
                                 <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
                                     @for (int i = 0; i < 60; i++)
                                     {
-                                        @if (i == TimerDurationSeconds)
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i.ToString(CultureInfo.InvariantCulture)">@i</option>
-                                        }
+                                        <option value="@i.ToString(CultureInfo.InvariantCulture)"
+                                                selected="@(i == TimerDurationSeconds ? string.Empty : null)">@i</option>
                                     }
                                 </select>
                                 <span class="input-group-text">s</span>
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset disabled="@(Controller.CanChangeDeck ? null : "")">
+                    <fieldset disabled="@(Controller.CanChangeDeck ? null : string.Empty)">
                         <div class="mb-3">
                             <label for="planningPokerSettings$selectedDeck" class="form-label">Change deck</label>
                             <div class="input-group">
