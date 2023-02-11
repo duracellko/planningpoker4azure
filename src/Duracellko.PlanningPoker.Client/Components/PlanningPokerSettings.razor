@@ -24,7 +24,7 @@
                                                 selected="@(i == TimerDurationMinutes ? string.Empty : null)">@i</option>
                                     }
                                 </select>
-                                <span class="input-group-text">m</span>
+                                <span class="input-group-text">min</span>
 
                                 <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
                                     @for (int i = 0; i < 60; i++)
@@ -33,7 +33,7 @@
                                                 selected="@(i == TimerDurationSeconds ? string.Empty : null)">@i</option>
                                     }
                                 </select>
-                                <span class="input-group-text">s</span>
+                                <span class="input-group-text">sec</span>
                             </div>
                         </div>
                     </fieldset>
