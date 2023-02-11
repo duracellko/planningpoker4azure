@@ -3,8 +3,9 @@
 @inherits ViewComponentBase
 @implements IDisposable
 @inject PlanningPokerController Controller
+@inject IJSRuntime _jsRuntime
 
-<div id="planningPokerSettingsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="planningPokerSettingsModalTitle">
+<div @ref="settingsModalElement" id="planningPokerSettingsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="planningPokerSettingsModalTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -51,6 +52,12 @@
                                 <button type="button" id="planningPokerSettings$changeDeckButton"
                                         @onclick="ChangeDeckCommand" class="btn btn-primary">Change</button>
                             </div>
+                            @if (DeckHasChanged)
+                            {
+                                <p class="text-success">
+                                    <small>Estimation deck has been changed.</small>
+                                </p>
+                            }
                         </div>
                     </fieldset>
                 </form>
@@ -64,8 +71,12 @@
 
 @code
 {
+    private ElementReference settingsModalElement;
+    private DotNetObjectReference<PlanningPokerSettings>? _modalEventHandler;
+
     private int _timerDuractionMinutes = 5;
     private int _timerDurationSeconds = 0;
+    private Deck _selectedDeck;
 
     private int TimerDurationMinutes
     {
@@ -99,11 +110,29 @@
 
     private IEnumerable<KeyValuePair<Deck, string>> EstimationDecks => Controller.EstimationDecks;
 
-    private Deck SelectedDeck { get; set; }
+    private Deck SelectedDeck
+    {
+        get => _selectedDeck;
+        set
+        {
+            _selectedDeck = value;
+            DeckHasChanged = false;
+        }
+    }
+
+    private bool DeckHasChanged { get; set; }
+
+    [JSInvokable]
+    public void OnModalHidden()
+    {
+        DeckHasChanged = false;
+        StateHasChanged();
+    }
 
     public void Dispose()
     {
         Controller.PropertyChanged -= ControllerOnPropertyChanged;
+        _modalEventHandler?.Dispose();
     }
 
     protected override void OnInitialized()
@@ -113,6 +142,15 @@
 
         TimerDurationMinutes = Controller.TimerDuration.Minutes;
         TimerDurationSeconds = Controller.TimerDuration.Seconds;
+    }
+
+    private async Task InitializeModalElement()
+    {
+        if (_modalEventHandler == null)
+        {
+            _modalEventHandler = DotNetObjectReference.Create(this);
+            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.registerOnModalHidden", settingsModalElement, _modalEventHandler);
+        }
     }
 
     private void OnTimerDurationMinutesSelectChanged(ChangeEventArgs e)
@@ -127,9 +165,16 @@
         Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
     }
 
-    private Task ChangeDeckCommand()
+    private async Task ChangeDeckCommand()
     {
-        return TryRun(() => Controller.ChangeDeck(SelectedDeck));
+        await InitializeModalElement();
+        await TryRun(ChangeDeck);
+
+        async Task ChangeDeck()
+        {
+            await Controller.ChangeDeck(SelectedDeck);
+            DeckHasChanged = true;
+        }
     }
 
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

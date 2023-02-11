@@ -28,6 +28,13 @@
             modal.hide();
         };
 
+        // Registers event handler object for Bootstrap Modal Hidden event.
+        PlanningPoker.registerOnModalHidden = function (element, handler) {
+            element.addEventListener('hidden.bs.modal', function () {
+                handler.invokeMethodAsync('OnModalHidden');
+            });
+        }
+
         // Loads member credentials of connected user from Session or LocalStorage.
         PlanningPoker.getMemberCredentials = function (permanentScope) {
             let teamName = window.sessionStorage.getItem(PlanningPoker.credentialsTeamNameKey);
