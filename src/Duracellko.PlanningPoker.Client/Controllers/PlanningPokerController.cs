@@ -177,6 +177,16 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         public EstimationSummary? EstimationSummary { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether user can change deck of estimation cards.
+        /// </summary>
+        public bool CanChangeDeck => CanStartEstimation;
+
+        /// <summary>
+        /// Gets collection of available estimation decks, which can be selected, when creating new team.
+        /// </summary>
+        public IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = ControllerHelper.EstimationDecks;
+
+        /// <summary>
         /// Gets a remaining time until end of timer.
         /// </summary>
         public TimeSpan? RemainingTimerTime
@@ -221,6 +231,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         public bool CanStopTimer => ScrumTeam != null && User != null && User.Type != ObserverType &&
             RemainingTimerTime.GetValueOrDefault() > TimeSpan.Zero;
+
+        /// <summary>
+        /// Gets a value indicating whether user can change duration of the timer.
+        /// </summary>
+        public bool CanChangeTimer => CanStartTimer;
 
         public void Dispose()
         {
@@ -440,6 +455,22 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             if (CanShowEstimationSummary)
             {
                 EstimationSummary = new EstimationSummary(Estimations!);
+            }
+        }
+
+        /// <summary>
+        /// Changes deck of estimation cards, if estimation is not in progress.
+        /// </summary>
+        /// <param name="deck">New deck of estimation cards to use in the team.</param>
+        /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+        public async Task ChangeDeck(Deck deck)
+        {
+            if (TeamName != null && CanChangeDeck)
+            {
+                using (_busyIndicator.Show())
+                {
+                    await _planningPokerService.ChangeDeck(TeamName, deck, CancellationToken.None);
+                }
             }
         }
 

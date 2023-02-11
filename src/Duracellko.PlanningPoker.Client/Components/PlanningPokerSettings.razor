@@ -1,0 +1,156 @@
+﻿@using System.Globalization
+@using Duracellko.PlanningPoker.Service
+@inherits ViewComponentBase
+@implements IDisposable
+@inject PlanningPokerController Controller
+
+<div id="planningPokerSettingsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="planningPokerSettingsModalTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="planningPokerSettingsModalTitle">Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <fieldset disabled="@(Controller.CanChangeTimer ? null : string.Empty)">
+                        <div class="mb-3">
+                            <label class="form-label">Timer duration</label>
+                            <div class="input-group">
+                                <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
+                                    @for (int i = 0; i < 60; i++)
+                                    {
+                                        <option value="@i.ToString(CultureInfo.InvariantCulture)"
+                                                selected="@(i == TimerDurationMinutes ? string.Empty : null)">@i</option>
+                                    }
+                                </select>
+                                <span class="input-group-text">m</span>
+
+                                <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
+                                    @for (int i = 0; i < 60; i++)
+                                    {
+                                        <option value="@i.ToString(CultureInfo.InvariantCulture)"
+                                                selected="@(i == TimerDurationSeconds ? string.Empty : null)">@i</option>
+                                    }
+                                </select>
+                                <span class="input-group-text">s</span>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset disabled="@(Controller.CanChangeDeck ? null : string.Empty)">
+                        <div class="mb-3">
+                            <label for="planningPokerSettings$selectedDeck" class="form-label">Change deck</label>
+                            <div class="input-group">
+                                <select id="planningPokerSettings$selectedDeck" name="deck" class="form-select"
+                                        @bind="SelectedDeck" aria-describedby="planningPokerSettings$changeDeckButton">
+                                    @foreach (var deckOption in EstimationDecks)
+                                    {
+                                        <option value="@deckOption.Key">@deckOption.Value</option>
+                                    }
+                                </select>
+                                <button type="button" id="planningPokerSettings$changeDeckButton"
+                                        @onclick="ChangeDeckCommand" class="btn btn-primary">Change</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    private int _timerDuractionMinutes = 5;
+    private int _timerDurationSeconds = 0;
+
+    private int TimerDurationMinutes
+    {
+        get => _timerDuractionMinutes;
+        set
+        {
+            value = EnsureTimePartIsInRange(value);
+            if (value == 0 && _timerDurationSeconds == 0)
+            {
+                _timerDurationSeconds = 1;
+            }
+
+            _timerDuractionMinutes = value;
+        }
+    }
+
+    private int TimerDurationSeconds
+    {
+        get => _timerDurationSeconds;
+        set
+        {
+            value = EnsureTimePartIsInRange(value);
+            if (value == 0 && _timerDuractionMinutes == 0)
+            {
+                _timerDuractionMinutes = 1;
+            }
+
+            _timerDurationSeconds = value;
+        }
+    }
+
+    private IEnumerable<KeyValuePair<Deck, string>> EstimationDecks => Controller.EstimationDecks;
+
+    private Deck SelectedDeck { get; set; }
+
+    public void Dispose()
+    {
+        Controller.PropertyChanged -= ControllerOnPropertyChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Controller.PropertyChanged += ControllerOnPropertyChanged;
+
+        TimerDurationMinutes = Controller.TimerDuration.Minutes;
+        TimerDurationSeconds = Controller.TimerDuration.Seconds;
+    }
+
+    private void OnTimerDurationMinutesSelectChanged(ChangeEventArgs e)
+    {
+        TimerDurationMinutes = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 5;
+        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
+    }
+
+    private void OnTimerDurationSecondsSelectChanged(ChangeEventArgs e)
+    {
+        TimerDurationSeconds = e.Value != null ? int.Parse(e.Value.ToString()!, CultureInfo.InvariantCulture) : 0;
+        Controller.TimerDuration = new TimeSpan(0, TimerDurationMinutes, TimerDurationSeconds);
+    }
+
+    private Task ChangeDeckCommand()
+    {
+        return TryRun(() => Controller.ChangeDeck(SelectedDeck));
+    }
+
+    private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        TimerDurationMinutes = Controller.TimerDuration.Minutes;
+        TimerDurationSeconds = Controller.TimerDuration.Seconds;
+
+        StateHasChanged();
+    }
+
+    private static int EnsureTimePartIsInRange(int value)
+    {
+        if (value < 0)
+        {
+            value = 0;
+        }
+        else if (value > 59)
+        {
+            value = 59;
+        }
+
+        return value;
+    }
+}
