@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Bunit;
 using Duracellko.PlanningPoker.Client.Components;
@@ -7,7 +8,10 @@ using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.Test.Controllers;
 using Duracellko.PlanningPoker.Client.UI;
+using Duracellko.PlanningPoker.Service;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -100,6 +104,88 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(TimeSpan.FromMinutes(1), controller.TimerDuration);
         }
 
+        [TestMethod]
+        public async Task ChangeDeckCommand_DeckIsChangedMessageIsDisplayed()
+        {
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
+                .SetVoidResult();
+
+            using var target = _context.RenderComponent<PlanningPokerSettings>();
+
+            var selectDeckElement = GetSelectDeckElement(target);
+            var changeDeckButtonElement = GetChangeDeckButtonElement(target);
+            AssertSuccessMessageElement(target, false);
+
+            Assert.AreEqual(nameof(Deck.Standard), selectDeckElement.Value);
+            selectDeckElement.Change(nameof(Deck.Fibonacci));
+            await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
+
+            AssertSuccessMessageElement(target, true);
+            _context.JSInterop.VerifyInvoke("Duracellko.PlanningPoker.registerOnModalHidden");
+        }
+
+        [TestMethod]
+        public async Task SelectedDeckIsChanged_DeckIsChangedMessageIsHidden()
+        {
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
+                .SetVoidResult();
+
+            using var target = _context.RenderComponent<PlanningPokerSettings>();
+
+            var selectDeckElement = GetSelectDeckElement(target);
+            var changeDeckButtonElement = GetChangeDeckButtonElement(target);
+            selectDeckElement.Change(nameof(Deck.Fibonacci));
+            await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
+
+            AssertSuccessMessageElement(target, true);
+
+            selectDeckElement = GetSelectDeckElement(target);
+            Assert.AreEqual(nameof(Deck.Fibonacci), selectDeckElement.Value);
+            selectDeckElement.Change(nameof(Deck.Standard));
+
+            AssertSuccessMessageElement(target, false);
+        }
+
+        [TestMethod]
+        public async Task ModalDialogIsHidden_DeckIsChangedMessageIsHidden()
+        {
+            using var controller = CreatePlanningPokerController();
+            InitializeContext(controller);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+
+            DotNetObjectReference<PlanningPokerSettings>? modalEventHandler = null;
+            _context.JSInterop.SetupVoid(
+                "Duracellko.PlanningPoker.registerOnModalHidden",
+                invocation =>
+                {
+                    modalEventHandler = (DotNetObjectReference<PlanningPokerSettings>?)invocation.Arguments[1];
+                    return true;
+                }).SetVoidResult();
+
+            using var target = _context.RenderComponent<PlanningPokerSettings>();
+
+            var selectDeckElement = GetSelectDeckElement(target);
+            var changeDeckButtonElement = GetChangeDeckButtonElement(target);
+            selectDeckElement.Change(nameof(Deck.Fibonacci));
+            await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
+
+            AssertSuccessMessageElement(target, true);
+            _context.JSInterop.VerifyInvoke("Duracellko.PlanningPoker.registerOnModalHidden");
+            Assert.IsNotNull(modalEventHandler);
+
+            await target.InvokeAsync(() => modalEventHandler.Value.OnModalHidden());
+
+            AssertSuccessMessageElement(target, false);
+        }
+
         private static PlanningPokerController CreatePlanningPokerController()
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
@@ -115,6 +201,52 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 timerFactory.Object,
                 dateTimeProvider,
                 serviceTimeProvider.Object);
+        }
+
+        private static IHtmlSelectElement GetSelectDeckElement(IRenderedComponent<PlanningPokerSettings> component)
+        {
+            var formElement = component.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form");
+            var fieldsetElements = formElement.GetElementsByTagName("fieldset");
+            Assert.AreEqual(2, fieldsetElements.Length);
+
+            var fieldsetElement = fieldsetElements[1];
+            var selectDeckElement = fieldsetElement.QuerySelector<IHtmlSelectElement>("select[name=deck]");
+            Assert.IsNotNull(selectDeckElement);
+            Assert.AreEqual("planningPokerSettings$selectedDeck", selectDeckElement.Id);
+            return selectDeckElement;
+        }
+
+        private static IHtmlButtonElement GetChangeDeckButtonElement(IRenderedComponent<PlanningPokerSettings> component)
+        {
+            var formElement = component.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form");
+            var fieldsetElements = formElement.GetElementsByTagName("fieldset");
+            Assert.AreEqual(2, fieldsetElements.Length);
+
+            var fieldsetElement = fieldsetElements[1];
+            var changeDeckButtonElement = fieldsetElement.QuerySelector<IHtmlButtonElement>("button");
+            Assert.IsNotNull(changeDeckButtonElement);
+            Assert.AreEqual("planningPokerSettings$changeDeckButton", changeDeckButtonElement.Id);
+            return changeDeckButtonElement;
+        }
+
+        private static void AssertSuccessMessageElement(IRenderedComponent<PlanningPokerSettings> component, bool shouldExist)
+        {
+            var formElement = component.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form");
+            var fieldsetElements = formElement.GetElementsByTagName("fieldset");
+            Assert.AreEqual(2, fieldsetElements.Length);
+
+            var fieldsetElement = fieldsetElements[1];
+            var successMessageElement = fieldsetElement.QuerySelector("p.text-success");
+
+            if (shouldExist)
+            {
+                Assert.IsNotNull(successMessageElement);
+                Assert.AreEqual("Estimation deck has been changed.", successMessageElement.Text());
+            }
+            else
+            {
+                Assert.IsNull(successMessageElement);
+            }
         }
 
         private void InitializeContext(PlanningPokerController controller, IMessageBoxService? messageBoxService = null)
