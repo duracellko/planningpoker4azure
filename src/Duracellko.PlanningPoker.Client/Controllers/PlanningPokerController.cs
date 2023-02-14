@@ -25,6 +25,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly ITimerFactory _timerFactory;
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly IServiceTimeProvider _serviceTimeProvider;
+        private readonly ITimerSettingsRepository _timerSettingsRepository;
         private bool _disposed;
         private List<MemberEstimation>? _memberEstimations;
         private bool _isConnected;
@@ -43,13 +44,15 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="timerFactory">Factory object to create timer for periodic actions.</param>
         /// <param name="dateTimeProvider">The provider of current time.</param>
         /// <param name="serviceTimeProvider">Service to obtain time difference between client and server.</param>
+        /// <param name="timerSettingsRepository">Service to save and load settings for timer functionality.</param>
         public PlanningPokerController(
             IPlanningPokerClient planningPokerService,
             IBusyIndicatorService busyIndicator,
             IMemberCredentialsStore memberCredentialsStore,
             ITimerFactory timerFactory,
             DateTimeProvider dateTimeProvider,
-            IServiceTimeProvider serviceTimeProvider)
+            IServiceTimeProvider serviceTimeProvider,
+            ITimerSettingsRepository timerSettingsRepository)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
@@ -57,6 +60,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _timerFactory = timerFactory ?? throw new ArgumentNullException(nameof(timerFactory));
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
+            _timerSettingsRepository = timerSettingsRepository ?? throw new ArgumentNullException(nameof(timerSettingsRepository));
         }
 
         /// <summary>
@@ -217,6 +221,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 }
 
                 _timerDuration = value;
+                SaveTimerSettings();
             }
         }
 
@@ -309,6 +314,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 InitializeTeam(reconnectTeamInfo);
             }
 
+            await LoadTimerSettings();
             UpdateCountdownTimer(false);
 
             if (TeamName != null && User != null)
@@ -769,6 +775,20 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 _timer.Dispose();
                 _timer = null;
             }
+        }
+
+        private async Task LoadTimerSettings()
+        {
+            var timerDuration = await _timerSettingsRepository.GetTimerDurationAsync();
+            if (timerDuration.HasValue)
+            {
+                _timerDuration = timerDuration.Value;
+            }
+        }
+
+        private async void SaveTimerSettings()
+        {
+            await _timerSettingsRepository.SetTimerDurationAsync(TimerDuration);
         }
 
         private sealed class EstimationComparer : IComparer<double?>

@@ -225,13 +225,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var timerFactory = new Mock<ITimerFactory>();
             var dateTimeProvider = new DateTimeProviderMock();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
             return new PlanningPokerController(
                 planningPokerClient.Object,
                 busyIndicator.Object,
                 memberCredentialsStore.Object,
                 timerFactory.Object,
                 dateTimeProvider,
-                serviceTimeProvider.Object);
+                serviceTimeProvider.Object,
+                timerSettingsRepository.Object);
         }
 
         private static ScrumTeam GetScrumTeamWithEstimations(IReadOnlyList<double?> estimations)

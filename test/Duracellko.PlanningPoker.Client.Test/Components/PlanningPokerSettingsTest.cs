@@ -194,13 +194,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var timerFactory = new Mock<ITimerFactory>();
             var dateTimeProvider = new DateTimeProviderMock();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
             return new PlanningPokerController(
                 planningPokerClient.Object,
                 busyIndicatorService.Object,
                 memberCredentialsStore.Object,
                 timerFactory.Object,
                 dateTimeProvider,
-                serviceTimeProvider.Object);
+                serviceTimeProvider.Object,
+                timerSettingsRepository.Object);
         }
 
         private static IHtmlSelectElement GetSelectDeckElement(IRenderedComponent<PlanningPokerSettings> component)

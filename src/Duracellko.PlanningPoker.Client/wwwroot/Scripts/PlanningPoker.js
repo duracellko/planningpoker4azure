@@ -7,6 +7,7 @@
 
         PlanningPoker.credentialsTeamNameKey = "PlanningPoker.Credentials.TeamName";
         PlanningPoker.credentialsMemberNameKey = "PlanningPoker.Credentials.MemberName";
+        PlanningPoker.timerDurationKey = "PlanningPoker.TimerSettings.TimerDuration";
 
         // Shows message box using Bootstrap.
         PlanningPoker.showMessageBox = function (element) {
@@ -70,6 +71,16 @@
                 window.sessionStorage.removeItem(PlanningPoker.credentialsTeamNameKey);
                 window.sessionStorage.removeItem(PlanningPoker.credentialsMemberNameKey);
             }
+        };
+
+        // Loads timer duration setting from LocalStorage.
+        PlanningPoker.getTimerDuration = function () {
+            return window.localStorage.getItem(PlanningPoker.timerDurationKey);
+        };
+
+        // Saves timer duration setting into LocalStorage.
+        PlanningPoker.setTimerDuration = function (timerDuration) {
+            window.localStorage.setItem(PlanningPoker.timerDurationKey, timerDuration);
         };
 
         return PlanningPoker;

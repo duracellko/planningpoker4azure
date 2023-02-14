@@ -1294,6 +1294,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerClient = new Mock<IPlanningPokerClient>();
             var busyIndicator = new Mock<IBusyIndicatorService>();
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
 
             if (timerFactory == null)
             {
@@ -1318,7 +1319,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 memberCredentialsStore.Object,
                 timerFactory,
                 dateTimeProvider,
-                serviceTimeProvider);
+                serviceTimeProvider,
+                timerSettingsRepository.Object);
             if (propertyChangedCounter != null)
             {
                 // Subtract 1 PropertyChanged event raised by InitializeTeam
