@@ -1398,6 +1398,39 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
+        public async Task InitializeTeam_TimerDurationIsStored_TimerDurationIsLoaded()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = CreateTeamResult(scrumTeam);
+
+            var timerDuration = TimeSpan.FromSeconds(225);
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            timerSettingsRepository.Setup(o => o.GetTimerDurationAsync())
+                .ReturnsAsync(timerDuration);
+            using var target = CreateController(timerSettingsRepository: timerSettingsRepository.Object);
+
+            await target.InitializeTeam(teamResult, PlanningPokerData.MemberName);
+
+            Assert.AreEqual(timerDuration, target.TimerDuration);
+        }
+
+        [TestMethod]
+        public async Task InitializeTeam_TimerDurationIsNotStored_TimerDurationIs5Minutes()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = CreateTeamResult(scrumTeam);
+
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            timerSettingsRepository.Setup(o => o.GetTimerDurationAsync())
+                .ReturnsAsync(default(TimeSpan?));
+            using var target = CreateController(timerSettingsRepository: timerSettingsRepository.Object);
+
+            await target.InitializeTeam(teamResult, PlanningPokerData.MemberName);
+
+            Assert.AreEqual(TimeSpan.FromMinutes(5), target.TimerDuration);
+        }
+
+        [TestMethod]
         public async Task Disconnect_Initialized_DisconnectTeam()
         {
             var planningPokerClient = new Mock<IPlanningPokerClient>();
@@ -2018,6 +2051,25 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             busyIndicatorDisposable.Verify(o => o.Dispose());
         }
 
+        [TestMethod]
+        public async Task TimerDuration_Set_TimerDurationIsStored()
+        {
+            var scrumTeam = PlanningPokerData.GetScrumTeam();
+            var teamResult = CreateTeamResult(scrumTeam);
+
+            var timerDuration = TimeSpan.FromSeconds(225);
+            var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            timerSettingsRepository.Setup(o => o.SetTimerDurationAsync(It.IsAny<TimeSpan>()))
+                .Returns(Task.CompletedTask);
+            using var target = CreateController(timerSettingsRepository: timerSettingsRepository.Object);
+
+            await target.InitializeTeam(teamResult, PlanningPokerData.MemberName);
+            target.TimerDuration = timerDuration;
+
+            timerSettingsRepository.Verify(o => o.SetTimerDurationAsync(timerDuration));
+            Assert.AreEqual(timerDuration, target.TimerDuration);
+        }
+
         internal static void AssertNoMemberHasEstimated(PlanningPokerController controller, bool skipScrumMaster = false)
         {
             if (!skipScrumMaster)
@@ -2055,6 +2107,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             ITimerFactory? timerFactory = null,
             DateTimeProvider? dateTimeProvider = null,
             IServiceTimeProvider? serviceTimeProvider = null,
+            ITimerSettingsRepository? timerSettingsRepository = null,
             PropertyChangedCounter? propertyChangedCounter = null)
         {
             if (planningPokerClient == null)
@@ -2092,7 +2145,20 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 serviceTimeProvider = serviceTimeProviderMock.Object;
             }
 
-            var result = new PlanningPokerController(planningPokerClient, busyIndicator, memberCredentialsStore, timerFactory, dateTimeProvider, serviceTimeProvider);
+            if (timerSettingsRepository == null)
+            {
+                var timerSettingsRepositoryMock = new Mock<ITimerSettingsRepository>();
+                timerSettingsRepository = timerSettingsRepositoryMock.Object;
+            }
+
+            var result = new PlanningPokerController(
+                planningPokerClient,
+                busyIndicator,
+                memberCredentialsStore,
+                timerFactory,
+                dateTimeProvider,
+                serviceTimeProvider,
+                timerSettingsRepository);
             if (propertyChangedCounter != null)
             {
                 propertyChangedCounter.Target = result;

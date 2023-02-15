@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 namespace Duracellko.PlanningPoker.Client.Service
 {
     /// <summary>
-    /// Storage of <see cref="MemberCredentials"/>. Credentials are stored in cookie.
+    /// Storage of <see cref="MemberCredentials"/>. Credentials are stored in browser local storage.
     /// </summary>
     public class MemberCredentialsStore : IMemberCredentialsStore
     {
