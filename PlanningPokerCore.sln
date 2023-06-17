@@ -40,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{30E235
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Redis", "src\Duracellko.PlanningPoker.Redis\Duracellko.PlanningPoker.Redis.csproj", "{B5F7A7A3-C1F5-4497-98FE-6659932DDBCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duracellko.PlanningPoker.Redis.Test", "test\Duracellko.PlanningPoker.Redis.Test\Duracellko.PlanningPoker.Redis.Test.csproj", "{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Duracellko.PlanningPoker.Redis.Test", "test\Duracellko.PlanningPoker.Redis.Test\Duracellko.PlanningPoker.Redis.Test.csproj", "{EDD1B4E6-C1DE-45F6-A86A-ABEA17C30CEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
