@@ -117,37 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_InvalidTimerDuraction" xml:space="preserve">
-    <value>Timer duration must be more greater than 0 seconds.</value>
+  <data name="Error_EmptyLibmanFile" xml:space="preserve">
+    <value>Error reading client scripts. libman.json file is empty.</value>
   </data>
-  <data name="Error_MemberNameTooLong" xml:space="preserve">
-    <value>Member name cannot be longer than 50 characters.</value>
-  </data>
-  <data name="Error_MemberNotFound" xml:space="preserve">
-    <value>Team member "{0}" has not been found.</value>
-  </data>
-  <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
-    <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
-  </data>
-  <data name="Error_ScrumTeamNotExist" xml:space="preserve">
-    <value>Scrum Team "{0}" does not exist.</value>
-  </data>
-  <data name="Error_ScrumTeamTimeout" xml:space="preserve">
-    <value>Scrum Team cannot be opened.</value>
-  </data>
-  <data name="Error_TeamNameTooLong" xml:space="preserve">
-    <value>Team name cannot be longer than 50 characters.</value>
-  </data>
-  <data name="Health_PlanningPokerInitialized" xml:space="preserve">
-    <value>PlanningPoker is initialized.</value>
-  </data>
-  <data name="Health_PlanningPokerInitializing" xml:space="preserve">
-    <value>PlanningPoker is initializing.</value>
-  </data>
-  <data name="Health_RepositoryHealthy" xml:space="preserve">
-    <value>Repository has {0} teams.</value>
-  </data>
-  <data name="Health_RepositoryUnhealthy" xml:space="preserve">
-    <value>Repository is unhealthy.</value>
+  <data name="Error_EmptyLibraryName" xml:space="preserve">
+    <value>Library name is empty.</value>
   </data>
 </root>

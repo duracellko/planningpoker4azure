@@ -234,7 +234,7 @@ namespace Duracellko.PlanningPoker.Azure
                         }
                         else if (_teamsToInitialize.Contains(teamName))
                         {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
+                            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
                         }
                     }
                 }

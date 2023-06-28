@@ -53,7 +53,7 @@ namespace Duracellko.PlanningPoker.Domain
                 {
                     if (value != null && !Team.AvailableEstimations.Contains(value))
                     {
-                        throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_EstimationIsNotAvailableInTeam, value.Value), nameof(value));
+                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_EstimationIsNotAvailableInTeam, value.Value), nameof(value));
                     }
 
                     _estimation = value;

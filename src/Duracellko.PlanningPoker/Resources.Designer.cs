@@ -122,5 +122,41 @@ namespace Duracellko.PlanningPoker {
                 return ResourceManager.GetString("Error_TeamNameTooLong", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PlanningPoker is initialized..
+        /// </summary>
+        internal static string Health_PlanningPokerInitialized {
+            get {
+                return ResourceManager.GetString("Health_PlanningPokerInitialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PlanningPoker is initializing..
+        /// </summary>
+        internal static string Health_PlanningPokerInitializing {
+            get {
+                return ResourceManager.GetString("Health_PlanningPokerInitializing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository has {0} teams..
+        /// </summary>
+        internal static string Health_RepositoryHealthy {
+            get {
+                return ResourceManager.GetString("Health_RepositoryHealthy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository is unhealthy..
+        /// </summary>
+        internal static string Health_RepositoryUnhealthy {
+            get {
+                return ResourceManager.GetString("Health_RepositoryUnhealthy", resourceCulture);
+            }
+        }
     }
 }

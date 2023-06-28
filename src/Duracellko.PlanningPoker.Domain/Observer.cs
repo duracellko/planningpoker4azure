@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Duracellko.PlanningPoker.Domain
@@ -44,7 +45,7 @@ namespace Duracellko.PlanningPoker.Domain
         {
             if (string.IsNullOrEmpty(memberData.Name))
             {
-                throw new ArgumentException("Member name cannot be empty.", nameof(memberData));
+                throw new ArgumentException(Resources.Error_EmptyMemberName, nameof(memberData));
             }
 
             Team = team;
@@ -246,7 +247,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case MessageType.TimerStarted:
                     return new TimerMessage(messageData);
                 default:
-                    throw new ArgumentException($"Invalid message type {messageData.MessageType}.", nameof(messageData));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidMessageType, messageData.MessageType), nameof(messageData));
             }
         }
     }

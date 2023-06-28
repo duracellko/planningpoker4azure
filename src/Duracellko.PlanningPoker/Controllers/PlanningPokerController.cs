@@ -122,7 +122,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             if (!_scrumTeams.TryAdd(teamName, teamTuple))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
             }
 
             OnTeamAdded(team);
@@ -152,7 +152,7 @@ namespace Duracellko.PlanningPoker.Controllers
 
             if (!_scrumTeams.TryAdd(teamName, teamTuple))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(team));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(team));
             }
 
             OnTeamAdded(team);
@@ -180,7 +180,7 @@ namespace Duracellko.PlanningPoker.Controllers
             var teamTuple = LoadScrumTeam(teamName);
             if (teamTuple == null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, teamName), nameof(teamName));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_ScrumTeamNotExist, teamName), nameof(teamName));
             }
 
             _logger.ReadScrumTeam(teamTuple.Item1.Name);
@@ -214,7 +214,7 @@ namespace Duracellko.PlanningPoker.Controllers
             Tuple<ScrumTeam, object>? teamTuple;
             if (!_scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
             {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamNotExist, observer.Team.Name));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.Error_ScrumTeamNotExist, observer.Team.Name));
             }
 
             var scrumTeamLock = new ScrumTeamLock(teamTuple.Item1, teamTuple.Item2);

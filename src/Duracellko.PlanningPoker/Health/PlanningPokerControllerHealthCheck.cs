@@ -31,11 +31,11 @@ namespace Duracellko.PlanningPoker.Health
         {
             if (_initializationStatusProvider.IsInitialized)
             {
-                return Task.FromResult(HealthCheckResult.Healthy("PlanningPoker is initialized."));
+                return Task.FromResult(HealthCheckResult.Healthy(Resources.Health_PlanningPokerInitialized));
             }
             else
             {
-                return Task.FromResult(HealthCheckResult.Unhealthy("PlanningPoker is initializing."));
+                return Task.FromResult(HealthCheckResult.Unhealthy(Resources.Health_PlanningPokerInitializing));
             }
         }
     }

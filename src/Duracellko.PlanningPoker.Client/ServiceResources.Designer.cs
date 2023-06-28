@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Duracellko.PlanningPoker.Azure {
+namespace Duracellko.PlanningPoker.Client {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Duracellko.PlanningPoker.Azure {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class ServiceResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal ServiceResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Duracellko.PlanningPoker.Azure {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Azure.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Client.ServiceResources", typeof(ServiceResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,38 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AzureServiceBus is not initialized..
+        ///   Looks up a localized string similar to GetMessages is already in progress..
         /// </summary>
-        internal static string Error_AzureServiceBusNotInitialized {
+        internal static string Error_GetMessagesInProgress {
             get {
-                return ResourceManager.GetString("Error_AzureServiceBusNotInitialized", resourceCulture);
+                return ResourceManager.GetString("Error_GetMessagesInProgress", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Planning Poker controller initialization must be started before initializing a scrum team..
+        ///   Looks up a localized string similar to ScrumMaster cannot disconnect himself..
         /// </summary>
-        internal static string Error_InitializationIsNotStarted {
+        internal static string Error_ScrumMasterDisconnectSelf {
             get {
-                return ResourceManager.GetString("Error_InitializationIsNotStarted", resourceCulture);
+                return ResourceManager.GetString("Error_ScrumMasterDisconnectSelf", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
+        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
         /// </summary>
-        internal static string Error_ScrumTeamAlreadyExists {
+        internal static string Error_TimerDurationZeroOrNegative {
             get {
-                return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
+                return ResourceManager.GetString("Error_TimerDurationZeroOrNegative", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription has {0} active messages..
+        ///   Looks up a localized string similar to Timer cannot be started without configured dispatcher..
         /// </summary>
-        internal static string Health_AzureServiceBusHealthy {
+        internal static string Error_TimerStartedWithoutDispatcher {
             get {
-                return ResourceManager.GetString("Health_AzureServiceBusHealthy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription is unhealthy..
-        /// </summary>
-        internal static string Health_AzureServiceBusUnhealthy {
-            get {
-                return ResourceManager.GetString("Health_AzureServiceBusUnhealthy", resourceCulture);
+                return ResourceManager.GetString("Error_TimerStartedWithoutDispatcher", resourceCulture);
             }
         }
     }

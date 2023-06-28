@@ -68,13 +68,40 @@ namespace Duracellko.PlanningPoker.Domain {
                 return ResourceManager.GetString("Error_ChangeAvailableEstimationsInProgress", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deck &apos;{0}&apos; is not supported..
+        /// </summary>
+        internal static string Error_DeckNotSupported {
+            get {
+                return ResourceManager.GetString("Error_DeckNotSupported", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Deserialization of Scrum Team failed..
         /// </summary>
         internal static string Error_DeserializationFailed {
             get {
                 return ResourceManager.GetString("Error_DeserializationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member name cannot be empty..
+        /// </summary>
+        internal static string Error_EmptyMemberName {
+            get {
+                return ResourceManager.GetString("Error_EmptyMemberName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrum Team name cannot be empty..
+        /// </summary>
+        internal static string Error_EmptyScrumTeamName {
+            get {
+                return ResourceManager.GetString("Error_EmptyScrumTeamName", resourceCulture);
             }
         }
         
@@ -106,6 +133,15 @@ namespace Duracellko.PlanningPoker.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid message type {0}..
+        /// </summary>
+        internal static string Error_InvalidMessageType {
+            get {
+                return ResourceManager.GetString("Error_InvalidMessageType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid session ID..
         /// </summary>
         internal static string Error_InvalidSessionId {
@@ -129,6 +165,15 @@ namespace Duracellko.PlanningPoker.Domain {
         internal static string Error_MemberAlreadyExists {
             get {
                 return ResourceManager.GetString("Error_MemberAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrum Team member names must be unique..
+        /// </summary>
+        internal static string Error_MemberNamesNotUnique {
+            get {
+                return ResourceManager.GetString("Error_MemberNamesNotUnique", resourceCulture);
             }
         }
         

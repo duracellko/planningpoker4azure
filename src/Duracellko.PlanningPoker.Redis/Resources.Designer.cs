@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Duracellko.PlanningPoker.Azure {
+namespace Duracellko.PlanningPoker.Redis {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Duracellko.PlanningPoker.Azure {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Azure.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Redis.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,38 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AzureServiceBus is not initialized..
+        ///   Looks up a localized string similar to Invalid message format..
         /// </summary>
-        internal static string Error_AzureServiceBusNotInitialized {
+        internal static string Error_InvalidMessageFormat {
             get {
-                return ResourceManager.GetString("Error_AzureServiceBusNotInitialized", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidMessageFormat", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Planning Poker controller initialization must be started before initializing a scrum team..
+        ///   Looks up a localized string similar to Redis PubSub is not initialized..
         /// </summary>
-        internal static string Error_InitializationIsNotStarted {
+        internal static string Error_RedisPubSubNotInitialized {
             get {
-                return ResourceManager.GetString("Error_InitializationIsNotStarted", resourceCulture);
+                return ResourceManager.GetString("Error_RedisPubSubNotInitialized", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
+        ///   Looks up a localized string similar to Redis is healthy..
         /// </summary>
-        internal static string Error_ScrumTeamAlreadyExists {
+        internal static string Health_RedisHealthy {
             get {
-                return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
+                return ResourceManager.GetString("Health_RedisHealthy", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription has {0} active messages..
+        ///   Looks up a localized string similar to Redis is unhealthy..
         /// </summary>
-        internal static string Health_AzureServiceBusHealthy {
+        internal static string Health_RedisUnhealthy {
             get {
-                return ResourceManager.GetString("Health_AzureServiceBusHealthy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription is unhealthy..
-        /// </summary>
-        internal static string Health_AzureServiceBusUnhealthy {
-            get {
-                return ResourceManager.GetString("Health_AzureServiceBusUnhealthy", resourceCulture);
+                return ResourceManager.GetString("Health_RedisUnhealthy", resourceCulture);
             }
         }
     }

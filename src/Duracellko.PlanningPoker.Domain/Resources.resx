@@ -120,8 +120,17 @@
   <data name="Error_ChangeAvailableEstimationsInProgress" xml:space="preserve">
     <value>Available estimations cannot be changed, when estimation is in progress.</value>
   </data>
+  <data name="Error_DeckNotSupported" xml:space="preserve">
+    <value>Deck '{0}' is not supported.</value>
+  </data>
   <data name="Error_DeserializationFailed" xml:space="preserve">
     <value>Deserialization of Scrum Team failed.</value>
+  </data>
+  <data name="Error_EmptyMemberName" xml:space="preserve">
+    <value>Member name cannot be empty.</value>
+  </data>
+  <data name="Error_EmptyScrumTeamName" xml:space="preserve">
+    <value>Scrum Team name cannot be empty.</value>
   </data>
   <data name="Error_EstimationIsInProgress" xml:space="preserve">
     <value>Cannot start estimation. Estimation is already in progress.</value>
@@ -132,6 +141,9 @@
   <data name="Error_EstimationResultIsReadOnly" xml:space="preserve">
     <value>Estimation result is read-only.</value>
   </data>
+  <data name="Error_InvalidMessageType" xml:space="preserve">
+    <value>Invalid message type {0}.</value>
+  </data>
   <data name="Error_InvalidSessionId" xml:space="preserve">
     <value>Invalid session ID.</value>
   </data>
@@ -140,6 +152,9 @@
   </data>
   <data name="Error_MemberAlreadyExists" xml:space="preserve">
     <value>Member or observer named '{0}' already exists in the team.</value>
+  </data>
+  <data name="Error_MemberNamesNotUnique" xml:space="preserve">
+    <value>Scrum Team member names must be unique.</value>
   </data>
   <data name="Error_MemberNotInResult" xml:space="preserve">
     <value>The given member was not present in the estimation result.</value>

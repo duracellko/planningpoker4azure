@@ -259,7 +259,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                     {
                         if (_getMessagesTask != null)
                         {
-                            throw new InvalidOperationException("GetMessages is already in progress.");
+                            throw new InvalidOperationException(ServiceResources.Error_GetMessagesInProgress);
                         }
 
                         _getMessagesTask = new TaskCompletionSource<IList<Message>>();
