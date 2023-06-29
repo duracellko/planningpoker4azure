@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Client {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,101 +61,38 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89.
+        ///   Looks up a localized string similar to GetMessages is already in progress..
         /// </summary>
-        internal static string EstimationDeck_Fibonacci {
+        internal static string Error_GetMessagesInProgress {
             get {
-                return ResourceManager.GetString("EstimationDeck_Fibonacci", resourceCulture);
+                return ResourceManager.GetString("Error_GetMessagesInProgress", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+        ///   Looks up a localized string similar to ScrumMaster cannot disconnect himself..
         /// </summary>
-        internal static string EstimationDeck_Rating {
+        internal static string Error_ScrumMasterDisconnectSelf {
             get {
-                return ResourceManager.GetString("EstimationDeck_Rating", resourceCulture);
+                return ResourceManager.GetString("Error_ScrumMasterDisconnectSelf", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rock, Paper, Scissors, Lizard, Spock.
+        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
         /// </summary>
-        internal static string EstimationDeck_RockPaperScissorsLizardSpock {
+        internal static string Error_TimerDurationZeroOrNegative {
             get {
-                return ResourceManager.GetString("EstimationDeck_RockPaperScissorsLizardSpock", resourceCulture);
+                return ResourceManager.GetString("Error_TimerDurationZeroOrNegative", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100.
+        ///   Looks up a localized string similar to Timer cannot be started without configured dispatcher..
         /// </summary>
-        internal static string EstimationDeck_Standard {
+        internal static string Error_TimerStartedWithoutDispatcher {
             get {
-                return ResourceManager.GetString("EstimationDeck_Standard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to T-shirt: XS, S, M, L, XL.
-        /// </summary>
-        internal static string EstimationDeck_Tshirt {
-            get {
-                return ResourceManager.GetString("EstimationDeck_Tshirt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reconnect.
-        /// </summary>
-        internal static string JoinTeam_ReconnectButton {
-            get {
-                return ResourceManager.GetString("JoinTeam_ReconnectButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you want to reconnect?.
-        /// </summary>
-        internal static string JoinTeam_ReconnectMessage {
-            get {
-                return ResourceManager.GetString("JoinTeam_ReconnectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reconnect.
-        /// </summary>
-        internal static string JoinTeam_ReconnectTitle {
-            get {
-                return ResourceManager.GetString("JoinTeam_ReconnectTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        internal static string MessagePanel_Error {
-            get {
-                return ResourceManager.GetString("MessagePanel_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connection failed. Please, check your internet connection..
-        /// </summary>
-        internal static string PlanningPokerService_ConnectionError {
-            get {
-                return ResourceManager.GetString("PlanningPokerService_ConnectionError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Service is temporarily not available. Please, try again later..
-        /// </summary>
-        internal static string PlanningPokerService_UnexpectedError {
-            get {
-                return ResourceManager.GetString("PlanningPokerService_UnexpectedError", resourceCulture);
+                return ResourceManager.GetString("Error_TimerStartedWithoutDispatcher", resourceCulture);
             }
         }
     }

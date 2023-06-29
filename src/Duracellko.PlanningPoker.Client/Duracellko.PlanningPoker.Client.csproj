@@ -20,10 +20,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="ServiceResources.Designer.cs">
+    <Compile Update="UIResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ServiceResources.resx</DependentUpon>
+      <DependentUpon>UIResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -32,9 +32,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="ServiceResources.resx">
+    <EmbeddedResource Update="UIResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ServiceResources.Designer.cs</LastGenOutput>
+      <LastGenOutput>UIResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

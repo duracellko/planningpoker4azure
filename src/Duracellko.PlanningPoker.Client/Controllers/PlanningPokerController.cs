@@ -217,7 +217,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             {
                 if (value <= TimeSpan.Zero)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, ServiceResources.Error_TimerDurationZeroOrNegative);
+                    throw new ArgumentOutOfRangeException(nameof(value), value, Resources.Error_TimerDurationZeroOrNegative);
                 }
 
                 _timerDuration = value;
@@ -366,7 +366,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             if (string.Equals(member, User.Name, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException(ServiceResources.Error_ScrumMasterDisconnectSelf, nameof(member));
+                throw new ArgumentException(Resources.Error_ScrumMasterDisconnectSelf, nameof(member));
             }
 
             using (_busyIndicator.Show())

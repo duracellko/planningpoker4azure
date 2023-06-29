@@ -259,7 +259,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                     {
                         if (_getMessagesTask != null)
                         {
-                            throw new InvalidOperationException(ServiceResources.Error_GetMessagesInProgress);
+                            throw new InvalidOperationException(Resources.Error_GetMessagesInProgress);
                         }
 
                         _getMessagesTask = new TaskCompletionSource<IList<Message>>();
@@ -325,18 +325,18 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (System.Net.Http.HttpRequestException ex)
             {
-                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
             }
             catch (Exception ex)
             {
                 // WASM .NET reports JSException when connection / negotiation fails.
                 if (ex.Message != null && ex.Message.StartsWith("TypeError: Failed to fetch", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                    throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
                 }
                 else
                 {
-                    throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError, ex);
+                    throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError, ex);
                 }
             }
         }
@@ -372,18 +372,18 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (System.Net.Http.HttpRequestException ex)
             {
-                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
             }
             catch (Exception ex)
             {
                 // WASM .NET reports JSException when connection / negotiation fails.
                 if (ex.Message != null && ex.Message.StartsWith("TypeError: Failed to fetch", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                    throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
                 }
                 else
                 {
-                    throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError, ex);
+                    throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError, ex);
                 }
             }
         }

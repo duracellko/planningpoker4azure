@@ -16,11 +16,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         public static IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = new SortedDictionary<Deck, string>
         {
-            { Deck.Standard, Resources.EstimationDeck_Standard },
-            { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
-            { Deck.Rating, Resources.EstimationDeck_Rating },
-            { Deck.Tshirt, Resources.EstimationDeck_Tshirt },
-            { Deck.RockPaperScissorsLizardSpock, Resources.EstimationDeck_RockPaperScissorsLizardSpock },
+            { Deck.Standard, UIResources.EstimationDeck_Standard },
+            { Deck.Fibonacci, UIResources.EstimationDeck_Fibonacci },
+            { Deck.Rating, UIResources.EstimationDeck_Rating },
+            { Deck.Tshirt, UIResources.EstimationDeck_Tshirt },
+            { Deck.RockPaperScissorsLizardSpock, UIResources.EstimationDeck_RockPaperScissorsLizardSpock },
         };
 
         /// <summary>

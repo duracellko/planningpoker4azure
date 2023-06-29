@@ -37,7 +37,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             var dispatcherDelegate = _dispatcherDelegate;
             if (dispatcherDelegate == null)
             {
-                throw new InvalidOperationException(ServiceResources.Error_TimerStartedWithoutDispatcher);
+                throw new InvalidOperationException(Resources.Error_TimerStartedWithoutDispatcher);
             }
 
             return new DisposableTimer(action, dispatcherDelegate, _interval);

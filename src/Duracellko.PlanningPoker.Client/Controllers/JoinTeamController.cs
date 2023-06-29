@@ -97,8 +97,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     message.Contains(MemberExistsError2, StringComparison.OrdinalIgnoreCase))
                 {
                     message = ControllerHelper.GetErrorMessage(ex);
-                    message = $"{message}{Environment.NewLine}{Resources.JoinTeam_ReconnectMessage}";
-                    if (await _messageBoxService.ShowMessage(message, Resources.JoinTeam_ReconnectTitle, Resources.JoinTeam_ReconnectButton))
+                    message = $"{message}{Environment.NewLine}{UIResources.JoinTeam_ReconnectMessage}";
+                    if (await _messageBoxService.ShowMessage(message, UIResources.JoinTeam_ReconnectTitle, UIResources.JoinTeam_ReconnectButton))
                     {
                         return await ReconnectTeam(teamName, memberName, false, CancellationToken.None);
                     }
@@ -106,7 +106,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 else
                 {
                     message = ControllerHelper.GetErrorMessage(ex);
-                    await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                    await _messageBoxService.ShowMessage(message, UIResources.MessagePanel_Error);
                 }
             }
 
@@ -160,7 +160,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (!ignoreError)
                 {
                     var message = ControllerHelper.GetErrorMessage(ex);
-                    await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                    await _messageBoxService.ShowMessage(message, UIResources.MessagePanel_Error);
                 }
             }
 
