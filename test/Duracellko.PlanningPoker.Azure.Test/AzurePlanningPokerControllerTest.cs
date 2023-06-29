@@ -300,14 +300,18 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void CreateScrumTeam_TeamNameIsInInitializationTeamList_ArgumentException()
+        public void CreateScrumTeam_TeamNameIsInInitializationTeamList_PlanningPokerException()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
             target.SetTeamsInitializingList(new string[] { "test" });
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("test", exception.Argument);
         }
 
         [TestMethod]
@@ -377,14 +381,18 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void GetScrumTeam_InitializationTimeout_ArgumentException()
+        public void GetScrumTeam_InitializationTimeout_PlanningPokerException()
         {
             // Arrange
             var configuration = new AzurePlanningPokerConfiguration() { InitializationTimeout = 1 };
             var target = CreateAzurePlanningPokerController(configuration: configuration);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("test team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("test team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("test team", exception.Argument);
         }
 
         [TestMethod]

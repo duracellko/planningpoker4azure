@@ -61,6 +61,33 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Member or observer named &apos;{0}&apos; already exists in the team..
+        /// </summary>
+        internal static string Error_MemberAlreadyExists {
+            get {
+                return ResourceManager.GetString("Error_MemberAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create Scrum Team &apos;{0}&apos;. Team with that name already exists..
+        /// </summary>
+        internal static string Error_ScrumTeamAlreadyExists {
+            get {
+                return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrum Team &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string Error_ScrumTeamNotExist {
+            get {
+                return ResourceManager.GetString("Error_ScrumTeamNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89.
         /// </summary>
         internal static string EstimationDeck_Fibonacci {

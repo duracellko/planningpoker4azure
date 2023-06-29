@@ -79,15 +79,6 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
-        /// </summary>
-        internal static string Error_ScrumTeamAlreadyExists {
-            get {
-                return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Azure ServiceBus Subscription has {0} active messages..
         /// </summary>
         internal static string Health_AzureServiceBusHealthy {

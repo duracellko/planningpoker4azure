@@ -56,6 +56,21 @@ namespace Duracellko.PlanningPoker.Service
             return (D.Deck)value;
         }
 
+        /// <summary>
+        /// Maps <see cref="D.PlanningPokerException"/> to error data object.
+        /// </summary>
+        /// <param name="exception">The Planning Poker Exception to convert.</param>
+        /// <returns>The Planning Poker application error data object.</returns>
+        public static PlanningPokerExceptionData Map(D.PlanningPokerException exception)
+        {
+            return new PlanningPokerExceptionData
+            {
+                Error = exception.Error,
+                Message = exception.Message,
+                Argument = exception.Argument
+            };
+        }
+
         private static IConfigurationProvider CreateMapperConfiguration()
         {
             var result = new MapperConfiguration(config =>

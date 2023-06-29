@@ -123,9 +123,6 @@
   <data name="Error_InitializationIsNotStarted" xml:space="preserve">
     <value>Planning Poker controller initialization must be started before initializing a scrum team.</value>
   </data>
-  <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
-    <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
-  </data>
   <data name="Health_AzureServiceBusHealthy" xml:space="preserve">
     <value>Azure ServiceBus Subscription has {0} active messages.</value>
   </data>

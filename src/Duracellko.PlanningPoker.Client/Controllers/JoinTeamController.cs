@@ -12,9 +12,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// </summary>
     public class JoinTeamController
     {
-        private const string MemberExistsError1 = "Member or observer named";
-        private const string MemberExistsError2 = "already exists in the team.";
-
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IPlanningPokerInitializer _planningPokerInitializer;
         private readonly IMessageBoxService _messageBoxService;
@@ -92,11 +89,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
             catch (PlanningPokerException ex)
             {
-                var message = ex.Message;
-                if (message.Contains(MemberExistsError1, StringComparison.OrdinalIgnoreCase) &&
-                    message.Contains(MemberExistsError2, StringComparison.OrdinalIgnoreCase))
+                var message = ControllerHelper.GetErrorMessage(ex);
+                if (string.Equals(ex.Error, ErrorCodes.MemberAlreadyExists, StringComparison.OrdinalIgnoreCase))
                 {
-                    message = ControllerHelper.GetErrorMessage(ex);
                     message = $"{message}{Environment.NewLine}{UIResources.JoinTeam_ReconnectMessage}";
                     if (await _messageBoxService.ShowMessage(message, UIResources.JoinTeam_ReconnectTitle, UIResources.JoinTeam_ReconnectButton))
                     {
@@ -105,7 +100,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 }
                 else
                 {
-                    message = ControllerHelper.GetErrorMessage(ex);
                     await _messageBoxService.ShowMessage(message, UIResources.MessagePanel_Error);
                 }
             }

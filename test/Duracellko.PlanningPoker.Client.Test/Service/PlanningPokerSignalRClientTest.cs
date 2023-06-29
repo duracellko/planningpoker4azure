@@ -67,12 +67,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var sentMessage = await fixture.GetSentMessage();
             var invocationId = GetInvocationId(sentMessage);
 
-            var returnMessage = new CompletionMessage(invocationId, "An unexpected error occured. HubException: Team 'Test team' already exists.", null, false);
+            var errorMessage = @"An unexpected error occured. HubException: PlanningPokerException:{""Error"":""ScrumTeamAlreadyExists"",""Message"":""Cannot create Scrum Team \u0027test team\u0027. Team with that name already exists."",""Argument"":""test team""}";
+            var returnMessage = new CompletionMessage(invocationId, errorMessage, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
 
-            Assert.AreEqual("Team 'Test team' already exists.", exception.Message);
+            Assert.AreEqual(ErrorCodes.ScrumTeamAlreadyExists, exception.Error);
+            Assert.AreEqual("test team", exception.Argument);
+            Assert.AreEqual("Cannot create Scrum Team 'test team'. Team with that name already exists.", exception.Message);
         }
 
         [TestMethod]
@@ -272,12 +275,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var sentMessage = await fixture.GetSentMessage();
             var invocationId = GetInvocationId(sentMessage);
 
-            var returnMessage = new CompletionMessage(invocationId, "Team 'Test team' does not exist.", null, false);
+            var errorMessage = @"PlanningPokerException:{""Error"":""MemberAlreadyExists"",""Message"":""Member or observer named \u0027member\u0027 already exists in the team."",""Argument"":""member""}";
+            var returnMessage = new CompletionMessage(invocationId, errorMessage, null, false);
             await fixture.ReceiveMessage(returnMessage);
 
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
 
-            Assert.AreEqual("Team 'Test team' does not exist.", exception.Message);
+            Assert.AreEqual(ErrorCodes.MemberAlreadyExists, exception.Error);
+            Assert.AreEqual("member", exception.Argument);
+            Assert.AreEqual("Member or observer named 'member' already exists in the team.", exception.Message);
         }
 
         [TestMethod]
@@ -296,6 +302,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
 
             Assert.AreEqual(string.Empty, exception.Message);
+            Assert.IsNull(exception.Error);
+            Assert.IsNull(exception.Argument);
         }
 
         [TestMethod]

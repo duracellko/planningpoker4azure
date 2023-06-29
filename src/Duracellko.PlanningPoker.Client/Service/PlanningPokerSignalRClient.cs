@@ -313,7 +313,7 @@ namespace Duracellko.PlanningPoker.Client.Service
             }
             catch (HubException ex)
             {
-                throw new PlanningPokerException(GetHubExceptionMessage(ex), ex);
+                throw ScrumTeamMapper.GetPlanningPokerException(GetHubExceptionMessage(ex), ex);
             }
             catch (TaskCanceledException)
             {
@@ -359,7 +359,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                 }
                 else
                 {
-                    throw new PlanningPokerException(exceptionMessage, ex);
+                    throw ScrumTeamMapper.GetPlanningPokerException(exceptionMessage, ex);
                 }
             }
             catch (TaskCanceledException)

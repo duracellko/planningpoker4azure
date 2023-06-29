@@ -177,7 +177,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             if (FindMemberOrObserver(name) != null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberAlreadyExists, name), nameof(name));
+                throw new PlanningPokerException(ErrorCodes.MemberAlreadyExists, name);
             }
 
             if (ScrumMaster != null)
@@ -210,7 +210,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             if (FindMemberOrObserver(name) != null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberAlreadyExists, name), nameof(name));
+                throw new PlanningPokerException(ErrorCodes.MemberAlreadyExists, name);
             }
 
             Observer result;

@@ -286,7 +286,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
                             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                            throw new PlanningPokerException(content);
+                            throw ScrumTeamMapper.GetPlanningPokerException(content);
                         }
 
                         response.EnsureSuccessStatusCode();
@@ -318,7 +318,7 @@ namespace Duracellko.PlanningPoker.Client.Service
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
                             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                            throw new PlanningPokerException(content);
+                            throw ScrumTeamMapper.GetPlanningPokerException(content);
                         }
                         else if (!response.IsSuccessStatusCode)
                         {

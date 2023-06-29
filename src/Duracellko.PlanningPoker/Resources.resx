@@ -118,19 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Error_InvalidTimerDuraction" xml:space="preserve">
-    <value>Timer duration must be more greater than 0 seconds.</value>
+    <value>Timer duration must be greater than 0 seconds.</value>
   </data>
   <data name="Error_MemberNameTooLong" xml:space="preserve">
     <value>Member name cannot be longer than 50 characters.</value>
   </data>
   <data name="Error_MemberNotFound" xml:space="preserve">
     <value>Team member "{0}" has not been found.</value>
-  </data>
-  <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
-    <value>Cannot create Scrum Team "{0}". Team with that name already exists.</value>
-  </data>
-  <data name="Error_ScrumTeamNotExist" xml:space="preserve">
-    <value>Scrum Team "{0}" does not exist.</value>
   </data>
   <data name="Error_ScrumTeamTimeout" xml:space="preserve">
     <value>Scrum Team cannot be opened.</value>

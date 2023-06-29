@@ -105,7 +105,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         [TestMethod]
         public async Task CreateTeam_ServiceThrowsException_ReturnsFalse()
         {
-            var target = CreateController(errorMessage: string.Empty);
+            var target = CreateController(exception: new PlanningPokerException());
 
             var result = await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
@@ -117,7 +117,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
 
-            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, errorMessage: string.Empty);
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, exception: new PlanningPokerException());
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
@@ -129,7 +129,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var navigationManager = new Mock<INavigationManager>();
 
-            var target = CreateController(navigationManager: navigationManager.Object, errorMessage: string.Empty);
+            var target = CreateController(navigationManager: navigationManager.Object, exception: new PlanningPokerException());
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
@@ -137,29 +137,29 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [TestMethod]
-        public async Task CreateTeam_ServiceThrowsException_ShowsMessage()
+        public async Task CreateTeam_ServiceThrowsExceptionWithErrorCode_ShowsMessage()
         {
-            var errorMessage = "Planning Poker Error";
+            var exception = new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamAlreadyExists, PlanningPokerData.TeamName);
             var messageBoxService = new Mock<IMessageBoxService>();
 
-            var target = CreateController(messageBoxService: messageBoxService.Object, errorMessage: errorMessage);
+            var target = CreateController(messageBoxService: messageBoxService.Object, exception: exception);
+
+            await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
+
+            messageBoxService.Verify(o => o.ShowMessage("Cannot create Scrum Team 'Test team'. Team with that name already exists.", "Error"));
+        }
+
+        [TestMethod]
+        public async Task CreateTeam_ServiceThrowsExceptionWithoutErrorCode_ShowsMessage()
+        {
+            var exception = new PlanningPokerException("Planning Poker Error");
+            var messageBoxService = new Mock<IMessageBoxService>();
+
+            var target = CreateController(messageBoxService: messageBoxService.Object, exception: exception);
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
             messageBoxService.Verify(o => o.ShowMessage("Planning Poker Error", "Error"));
-        }
-
-        [TestMethod]
-        public async Task CreateTeam_ServiceThrowsException_Shows1LineMessage()
-        {
-            var errorMessage = "Planning Poker Error\r\nArgumentException";
-            var messageBoxService = new Mock<IMessageBoxService>();
-
-            var target = CreateController(messageBoxService: messageBoxService.Object, errorMessage: errorMessage);
-
-            await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
-
-            messageBoxService.Verify(o => o.ShowMessage("Planning Poker Error\r", "Error"));
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             INavigationManager? navigationManager = null,
             IServiceTimeProvider? serviceTimeProvider = null,
             TeamResult? teamResult = null,
-            string? errorMessage = null)
+            PlanningPokerException? exception = null)
         {
             if (planningPokerInitializer == null)
             {
@@ -205,13 +205,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             {
                 var planningPokerServiceMock = new Mock<IPlanningPokerClient>();
                 var createSetup = planningPokerServiceMock.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()));
-                if (errorMessage == null)
+                if (exception == null)
                 {
                     createSetup!.ReturnsAsync(teamResult);
                 }
                 else
                 {
-                    createSetup.ThrowsAsync(new PlanningPokerException(errorMessage));
+                    createSetup.ThrowsAsync(exception);
                 }
 
                 planningPokerService = planningPokerServiceMock.Object;

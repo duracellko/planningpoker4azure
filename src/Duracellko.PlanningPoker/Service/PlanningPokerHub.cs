@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -76,9 +77,9 @@ namespace Duracellko.PlanningPoker.Service
                     };
                 }
             }
-            catch (ArgumentException ex)
+            catch (D.PlanningPokerException ex)
             {
-                throw new HubException(ex.Message);
+                throw CreateHubException(ex);
             }
         }
 
@@ -113,9 +114,9 @@ namespace Duracellko.PlanningPoker.Service
                     };
                 }
             }
-            catch (ArgumentException ex)
+            catch (D.PlanningPokerException ex)
             {
-                throw new HubException(ex.Message);
+                throw CreateHubException(ex);
             }
         }
 
@@ -166,6 +167,10 @@ namespace Duracellko.PlanningPoker.Service
                         SelectedEstimation = selectedEstimation
                     };
                 }
+            }
+            catch (D.PlanningPokerException ex)
+            {
+                throw CreateHubException(ex);
             }
             catch (ArgumentException ex)
             {
@@ -404,6 +409,12 @@ namespace Duracellko.PlanningPoker.Service
             {
                 throw new ArgumentException(Resources.Error_MemberNameTooLong, paramName);
             }
+        }
+
+        private static HubException CreateHubException(D.PlanningPokerException exception)
+        {
+            var exceptionData = ServiceEntityMapper.Map(exception);
+            return new HubException(nameof(D.PlanningPokerException) + ':' + JsonSerializer.Serialize(exceptionData));
         }
 
         private async void OnMessageReceived(Task<IEnumerable<D.Message>> receiveMessagesTask, string connectionId)

@@ -76,14 +76,17 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public async Task CreateTeam_TeamNameExists_PlanningPokerException()
         {
             var httpMock = new MockHttpMessageHandler();
+            var response = @"PlanningPokerException:{""Error"":""ScrumTeamAlreadyExists"",""Message"":""Cannot create Scrum Team \u0027test team\u0027. Team with that name already exists."",""Argument"":""test team""}";
             httpMock.When(BaseUrl + "api/PlanningPokerService/CreateTeam")
-                .Respond(HttpStatusCode.BadRequest, TextType, "Team 'Test team' already exists.");
+                .Respond(HttpStatusCode.BadRequest, TextType, response);
             var target = CreatePlanningPokerClient(httpMock);
 
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(
                 () => target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, Deck.Standard, CancellationToken.None));
 
-            Assert.AreEqual("Team 'Test team' already exists.", exception.Message);
+            Assert.AreEqual(ErrorCodes.ScrumTeamAlreadyExists, exception.Error);
+            Assert.AreEqual("test team", exception.Argument);
+            Assert.AreEqual("Cannot create Scrum Team 'test team'. Team with that name already exists.", exception.Message);
         }
 
         [TestMethod]
@@ -411,13 +414,16 @@ namespace Duracellko.PlanningPoker.Client.Test.Service
         public async Task JoinTeam_TeamDoesNotExist_PlanningPokerException()
         {
             var httpMock = new MockHttpMessageHandler();
+            var response = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
             httpMock.When(BaseUrl + "api/PlanningPokerService/JoinTeam")
-                .Respond(HttpStatusCode.BadRequest, TextType, "Team 'Test team' does not exist.");
+                .Respond(HttpStatusCode.BadRequest, TextType, response);
             var target = CreatePlanningPokerClient(httpMock);
 
             var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => target.JoinTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, false, CancellationToken.None));
 
-            Assert.AreEqual("Team 'Test team' does not exist.", exception.Message);
+            Assert.AreEqual(ErrorCodes.ScrumTeamNotExist, exception.Error);
+            Assert.AreEqual("test team", exception.Argument);
+            Assert.AreEqual("Scrum Team 'test team' does not exist.", exception.Message);
         }
 
         [TestMethod]

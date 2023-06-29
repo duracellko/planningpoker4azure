@@ -158,6 +158,27 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
+        public void CreateTeam_TeamAlreadyExists_ThrowsHubException()
+        {
+            // Arrange
+            var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamAlreadyExists, TeamName);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Standard))
+                .Throws(planningPokerException).Verifiable();
+
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                var exception = Assert.ThrowsException<HubException>(() => target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard));
+
+                // Verify
+                planningPoker.Verify();
+                var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamAlreadyExists"",""Message"":""Cannot create Scrum Team \u0027test team\u0027. Team with that name already exists."",""Argument"":""test team""}";
+                Assert.AreEqual(expectedMessage, exception.Message);
+            }
+        }
+
+        [TestMethod]
         public void JoinTeam_TeamNameAndMemberNameAsMember_ReturnsTeamJoined()
         {
             // Arrange
@@ -316,6 +337,46 @@ namespace Duracellko.PlanningPoker.Test.Service
             {
                 // Act
                 Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
+            }
+        }
+
+        [TestMethod]
+        public void JoinTeam_MemberAlreadyExists_ThrowsHubException()
+        {
+            // Arrange
+            var team = CreateBasicTeam();
+            team.Join(MemberName, false);
+            var teamLock = CreateTeamLock(team);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+
+                // Verify
+                planningPoker.Verify();
+                var expectedMessage = @"PlanningPokerException:{""Error"":""MemberAlreadyExists"",""Message"":""Member or observer named \u0027member\u0027 already exists in the team."",""Argument"":""member""}";
+                Assert.AreEqual(expectedMessage, exception.Message);
+            }
+        }
+
+        [TestMethod]
+        public void JoinTeam_TeamDoesNotExist_ThrowsHubException()
+        {
+            // Arrange
+            var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamNotExist, TeamName);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(planningPokerException).Verifiable();
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+
+                // Verify
+                planningPoker.Verify();
+                var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
+                Assert.AreEqual(expectedMessage, exception.Message);
             }
         }
 
@@ -818,6 +879,25 @@ namespace Duracellko.PlanningPoker.Test.Service
             {
                 // Act
                 Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
+            }
+        }
+
+        [TestMethod]
+        public void ReconnectTeam_TeamDeasNotExist_ThrowsHubException()
+        {
+            // Arrange
+            var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamNotExist, TeamName);
+            var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+            planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(planningPokerException).Verifiable();
+            using (var target = CreatePlanningPokerHub(planningPoker.Object))
+            {
+                // Act
+                var exception = Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
+
+                // Verify
+                planningPoker.Verify();
+                var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
+                Assert.AreEqual(expectedMessage, exception.Message);
             }
         }
 

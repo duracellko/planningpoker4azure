@@ -61,7 +61,7 @@ namespace Duracellko.PlanningPoker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Timer duration must be more greater than 0 seconds..
+        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
         /// </summary>
         internal static string Error_InvalidTimerDuraction {
             get {
@@ -84,24 +84,6 @@ namespace Duracellko.PlanningPoker {
         internal static string Error_MemberNotFound {
             get {
                 return ResourceManager.GetString("Error_MemberNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create Scrum Team &quot;{0}&quot;. Team with that name already exists..
-        /// </summary>
-        internal static string Error_ScrumTeamAlreadyExists {
-            get {
-                return ResourceManager.GetString("Error_ScrumTeamAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scrum Team &quot;{0}&quot; does not exist..
-        /// </summary>
-        internal static string Error_ScrumTeamNotExist {
-            get {
-                return ResourceManager.GetString("Error_ScrumTeamNotExist", resourceCulture);
             }
         }
         
