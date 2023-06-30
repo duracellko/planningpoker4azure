@@ -61,6 +61,87 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Processing....
+        /// </summary>
+        internal static string BusyIndicator_Processing {
+            get {
+                return ResourceManager.GetString("BusyIndicator_Processing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create team.
+        /// </summary>
+        internal static string CreateTeam_CreateTeamButton {
+            get {
+                return ResourceManager.GetString("CreateTeam_CreateTeamButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create team.
+        /// </summary>
+        internal static string CreateTeam_Header {
+            get {
+                return ResourceManager.GetString("CreateTeam_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required.
+        /// </summary>
+        internal static string CreateTeam_RequiredLabel {
+            get {
+                return ResourceManager.GetString("CreateTeam_RequiredLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrum Master name.
+        /// </summary>
+        internal static string CreateTeam_ScrumMasterNameLabel {
+            get {
+                return ResourceManager.GetString("CreateTeam_ScrumMasterNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deck of cards.
+        /// </summary>
+        internal static string CreateTeam_SelectedDeckLabel {
+            get {
+                return ResourceManager.GetString("CreateTeam_SelectedDeckLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team name.
+        /// </summary>
+        internal static string CreateTeam_TeamNameLabel {
+            get {
+                return ResourceManager.GetString("CreateTeam_TeamNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tip.
+        /// </summary>
+        internal static string CreateTeam_TipLabel {
+            get {
+                return ResourceManager.GetString("CreateTeam_TipLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After creating the team, send link from addressbar to your team mates. After opening the link, the &quot;Team name&quot; is pre-filled and they just need to enter name..
+        /// </summary>
+        internal static string CreateTeam_TipText {
+            get {
+                return ResourceManager.GetString("CreateTeam_TipText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Member or observer named &apos;{0}&apos; already exists in the team..
         /// </summary>
         internal static string Error_MemberAlreadyExists {
@@ -133,6 +214,60 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string GlobalMessage_CloseButton {
+            get {
+                return ResourceManager.GetString("GlobalMessage_CloseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string GlobalMessage_CloseButtonTooltip {
+            get {
+                return ResourceManager.GetString("GlobalMessage_CloseButtonTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to As observer only.
+        /// </summary>
+        internal static string JoinTeam_AsObserverLabel {
+            get {
+                return ResourceManager.GetString("JoinTeam_AsObserverLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join team.
+        /// </summary>
+        internal static string JoinTeam_Header {
+            get {
+                return ResourceManager.GetString("JoinTeam_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join team.
+        /// </summary>
+        internal static string JoinTeam_JoinTeamButton {
+            get {
+                return ResourceManager.GetString("JoinTeam_JoinTeamButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member name.
+        /// </summary>
+        internal static string JoinTeam_MemberNameLabel {
+            get {
+                return ResourceManager.GetString("JoinTeam_MemberNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reconnect.
         /// </summary>
         internal static string JoinTeam_ReconnectButton {
@@ -160,11 +295,281 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Required.
+        /// </summary>
+        internal static string JoinTeam_RequiredLabel {
+            get {
+                return ResourceManager.GetString("JoinTeam_RequiredLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team name.
+        /// </summary>
+        internal static string JoinTeam_TeamNameLabel {
+            get {
+                return ResourceManager.GetString("JoinTeam_TeamNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tip.
+        /// </summary>
+        internal static string JoinTeam_TipLabel {
+            get {
+                return ResourceManager.GetString("JoinTeam_TipLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you accidentally closed browser window and want to reconnect to your team, simply enter your original team and member name here and click &quot;Join team&quot;. You will get reconnected..
+        /// </summary>
+        internal static string JoinTeam_TipText {
+            get {
+                return ResourceManager.GetString("JoinTeam_TipText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attributions.
+        /// </summary>
+        internal static string MainLayout_AttributionsLabel {
+            get {
+                return ResourceManager.GetString("MainLayout_AttributionsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copyright © 2012.
+        /// </summary>
+        internal static string MainLayout_CopyrightLabel {
+            get {
+                return ResourceManager.GetString("MainLayout_CopyrightLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member has voted.
+        /// </summary>
+        internal static string MembersPanel_MemberHasVotedTooltip {
+            get {
+                return ResourceManager.GetString("MembersPanel_MemberHasVotedTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Members.
+        /// </summary>
+        internal static string MembersPanel_MembersLabel {
+            get {
+                return ResourceManager.GetString("MembersPanel_MembersLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observers.
+        /// </summary>
+        internal static string MembersPanel_ObserversLabel {
+            get {
+                return ResourceManager.GetString("MembersPanel_ObserversLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string MembersPanel_RemoveButtonTooltip {
+            get {
+                return ResourceManager.GetString("MembersPanel_RemoveButtonTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrum Master.
+        /// </summary>
+        internal static string MembersPanel_ScrumMasterLabel {
+            get {
+                return ResourceManager.GetString("MembersPanel_ScrumMasterLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timer.
+        /// </summary>
+        internal static string MembersPanel_TimerLabel {
+            get {
+                return ResourceManager.GetString("MembersPanel_TimerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string MessagePanel_Error {
             get {
                 return ResourceManager.GetString("MessagePanel_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnect.
+        /// </summary>
+        internal static string NavBar_Disconnect {
+            get {
+                return ResourceManager.GetString("NavBar_Disconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning Poker Website.
+        /// </summary>
+        internal static string NavBar_Header {
+            get {
+                return ResourceManager.GetString("NavBar_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string NavBar_Settings {
+            get {
+                return ResourceManager.GetString("NavBar_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle navigation.
+        /// </summary>
+        internal static string NavBar_ToggleNavigationTooltip {
+            get {
+                return ResourceManager.GetString("NavBar_ToggleNavigationTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified page was not found. Please, verify that URL is correct..
+        /// </summary>
+        internal static string PageNotFound_Text {
+            get {
+                return ResourceManager.GetString("PageNotFound_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not found.
+        /// </summary>
+        internal static string PageNotFound_Title {
+            get {
+                return ResourceManager.GetString("PageNotFound_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average.
+        /// </summary>
+        internal static string PlanningPokerDesk_AverageLabel {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_AverageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel estimation.
+        /// </summary>
+        internal static string PlanningPokerDesk_CancelEstimationButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_CancelEstimationButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Median.
+        /// </summary>
+        internal static string PlanningPokerDesk_MedianLabel {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_MedianLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick estimation.
+        /// </summary>
+        internal static string PlanningPokerDesk_PickEstimationLabel {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_PickEstimationLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected estimates.
+        /// </summary>
+        internal static string PlanningPokerDesk_SelectedEstimatesLabel {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_SelectedEstimatesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show average.
+        /// </summary>
+        internal static string PlanningPokerDesk_ShowAverageButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_ShowAverageButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start estimation.
+        /// </summary>
+        internal static string PlanningPokerDesk_StartEstimationButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_StartEstimationButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start timer.
+        /// </summary>
+        internal static string PlanningPokerDesk_StartTimerButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_StartTimerButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop timer.
+        /// </summary>
+        internal static string PlanningPokerDesk_StopTimerButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_StopTimerButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sum.
+        /// </summary>
+        internal static string PlanningPokerDesk_SumLabel {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_SumLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team.
+        /// </summary>
+        internal static string PlanningPokerDesk_TeamTooltip {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_TeamTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User.
+        /// </summary>
+        internal static string PlanningPokerDesk_UserTooltip {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_UserTooltip", resourceCulture);
             }
         }
         
@@ -183,6 +588,105 @@ namespace Duracellko.PlanningPoker.Client {
         internal static string PlanningPokerService_UnexpectedError {
             get {
                 return ResourceManager.GetString("PlanningPokerService_UnexpectedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        internal static string Settings_ChangeDeckButton {
+            get {
+                return ResourceManager.GetString("Settings_ChangeDeckButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change deck.
+        /// </summary>
+        internal static string Settings_ChangeDeckLabel {
+            get {
+                return ResourceManager.GetString("Settings_ChangeDeckLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string Settings_CloseButton {
+            get {
+                return ResourceManager.GetString("Settings_CloseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string Settings_CloseButtonTooltip {
+            get {
+                return ResourceManager.GetString("Settings_CloseButtonTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Estimation deck has been changed..
+        /// </summary>
+        internal static string Settings_DeckChangedLabel {
+            get {
+                return ResourceManager.GetString("Settings_DeckChangedLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min.
+        /// </summary>
+        internal static string Settings_MinutesShortLabel {
+            get {
+                return ResourceManager.GetString("Settings_MinutesShortLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minutes.
+        /// </summary>
+        internal static string Settings_MinutesTooltip {
+            get {
+                return ResourceManager.GetString("Settings_MinutesTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to sec.
+        /// </summary>
+        internal static string Settings_SecondsShortLabel {
+            get {
+                return ResourceManager.GetString("Settings_SecondsShortLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        internal static string Settings_SecondsTooltip {
+            get {
+                return ResourceManager.GetString("Settings_SecondsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timer duration.
+        /// </summary>
+        internal static string Settings_TimerDurationLabel {
+            get {
+                return ResourceManager.GetString("Settings_TimerDurationLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Settings_Title {
+            get {
+                return ResourceManager.GetString("Settings_Title", resourceCulture);
             }
         }
     }

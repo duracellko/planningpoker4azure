@@ -117,55 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_GetMessagesInProgress" xml:space="preserve">
-    <value>GetMessages is already in progress.</value>
+  <data name="Home_DevelopmentErrorText" xml:space="preserve">
+    <value>An unhandled exception has occurred. See browser dev tools for details.</value>
   </data>
-  <data name="Error_ScrumMasterSelfDisconnect" xml:space="preserve">
-    <value>ScrumMaster cannot disconnect himself.</value>
+  <data name="Home_DismissButtonTooltip" xml:space="preserve">
+    <value>Dismiss</value>
   </data>
-  <data name="Error_TimerDurationZeroOrNegative" xml:space="preserve">
-    <value>Timer duration must be greater than 0 seconds.</value>
+  <data name="Home_LoadingLabel" xml:space="preserve">
+    <value>Loading...</value>
   </data>
-  <data name="Error_TimerStartedWithoutDispatcher" xml:space="preserve">
-    <value>Timer cannot be started without configured dispatcher.</value>
+  <data name="Home_ProductionErrorText" xml:space="preserve">
+    <value>An error has occurred. This application may no longer respond until reloaded.</value>
   </data>
-  <data name="Estimation_Half" xml:space="preserve">
-    <value>½</value>
+  <data name="Home_ReloadButton" xml:space="preserve">
+    <value>Reload</value>
   </data>
-  <data name="Estimation_Infinity" xml:space="preserve">
-    <value>∞</value>
-  </data>
-  <data name="Estimation_L" xml:space="preserve">
-    <value>L</value>
-  </data>
-  <data name="Estimation_Lizard" xml:space="preserve">
-    <value>🦎</value>
-  </data>
-  <data name="Estimation_M" xml:space="preserve">
-    <value>M</value>
-  </data>
-  <data name="Estimation_Paper" xml:space="preserve">
-    <value>📜</value>
-  </data>
-  <data name="Estimation_QuestionMark" xml:space="preserve">
-    <value>?</value>
-  </data>
-  <data name="Estimation_Rock" xml:space="preserve">
-    <value>💎</value>
-  </data>
-  <data name="Estimation_S" xml:space="preserve">
-    <value>S</value>
-  </data>
-  <data name="Estimation_Scissors" xml:space="preserve">
-    <value>✂</value>
-  </data>
-  <data name="Estimation_Spock" xml:space="preserve">
-    <value>🖖</value>
-  </data>
-  <data name="Estimation_XL" xml:space="preserve">
-    <value>XL</value>
-  </data>
-  <data name="Estimation_XS" xml:space="preserve">
-    <value>XS</value>
+  <data name="Home_Title" xml:space="preserve">
+    <value>Scrum Planning Poker</value>
   </data>
 </root>

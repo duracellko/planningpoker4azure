@@ -845,7 +845,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        public void ReconnectTeam_TeamDeasNotExist_ReturnsBadRequest()
+        public void ReconnectTeam_TeamDoesNotExist_ReturnsBadRequest()
         {
             // Arrange
             var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamNotExist, TeamName);

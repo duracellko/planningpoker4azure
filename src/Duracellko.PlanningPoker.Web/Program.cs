@@ -26,6 +26,8 @@ namespace Duracellko.PlanningPoker.Web
 {
     public static class Program
     {
+        private static readonly string[] SupportedCultures = new[] { "en-US", "en", "sk" };
+
         public static void Main(string[] args)
         {
             using var app = CreateWebApplication(args);
@@ -151,6 +153,8 @@ namespace Duracellko.PlanningPoker.Web
                     app.UseWebAssemblyDebugging();
                 }
             }
+
+            app.UseRequestLocalization(SupportedCultures);
 
             var rewriteOptions = new RewriteOptions()
                 .AddRewrite(@"^appsettings\.json$", "configuration", false);

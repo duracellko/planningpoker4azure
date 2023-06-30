@@ -1,5 +1,6 @@
 ﻿@page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Duracellko.PlanningPoker.Web
 @model Duracellko.PlanningPoker.Web.Model.HomeModel
 @{
     Layout = null;
@@ -11,7 +12,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Scrum Planning Poker</title>
+    <title>@UIResources.Home_Title</title>
     <base href="/" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -30,21 +31,21 @@
         }
         else
         {
-            <span class="oi oi-loop-circular"></span> <span>Loading...</span>
+            <span class="oi oi-loop-circular"></span> <span>@UIResources.Home_LoadingLabel</span>
         }
     </app>
 
     <div id="blazor-error-ui" class="alert alert-warning alert-dismissible" role="alert">
         <p>
             <environment include="Staging,Production">
-                An error has occurred. This application may no longer respond until reloaded.
+                @UIResources.Home_ProductionErrorText
             </environment>
             <environment include="Development">
-                An unhandled exception has occurred. See browser dev tools for details.
+                @UIResources.Home_DevelopmentErrorText
             </environment>
         </p>
-        <button type="button" class="reload btn btn-warning">Reload</button>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss"></button>
+        <button type="button" class="reload btn btn-warning">@UIResources.Home_ReloadButton</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@UIResources.Home_DismissButtonTooltip"></button>
     </div>
 
     @foreach (var jsScript in Model.ClientScripts.JavaScripts)

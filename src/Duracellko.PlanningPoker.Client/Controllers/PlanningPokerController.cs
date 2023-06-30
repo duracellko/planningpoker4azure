@@ -366,7 +366,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
             if (string.Equals(member, User.Name, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException(Resources.Error_ScrumMasterDisconnectSelf, nameof(member));
+                throw new ArgumentException(Resources.Error_ScrumMasterSelfDisconnect, nameof(member));
             }
 
             using (_busyIndicator.Show())

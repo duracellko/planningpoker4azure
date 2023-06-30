@@ -9,38 +9,38 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="planningPokerSettingsModalTitle">Settings</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="planningPokerSettingsModalTitle">@UIResources.Settings_Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@UIResources.Settings_CloseButtonTooltip"></button>
             </div>
             <div class="modal-body">
                 <form>
                     <fieldset disabled="@(Controller.CanChangeTimer ? null : string.Empty)">
                         <div class="mb-3">
-                            <label class="form-label">Timer duration</label>
+                            <label class="form-label">@UIResources.Settings_TimerDurationLabel</label>
                             <div class="input-group">
-                                <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="minutes">
+                                <select class="form-select text-end" @onchange="OnTimerDurationMinutesSelectChanged" aria-label="@UIResources.Settings_MinutesTooltip">
                                     @for (int i = 0; i < 60; i++)
                                     {
                                         <option value="@i.ToString(CultureInfo.InvariantCulture)"
                                                 selected="@(i == TimerDurationMinutes ? string.Empty : null)">@i</option>
                                     }
                                 </select>
-                                <span class="input-group-text">min</span>
+                                <span class="input-group-text">@UIResources.Settings_MinutesShortLabel</span>
 
-                                <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="seconds">
+                                <select class="form-select text-end" @onchange="OnTimerDurationSecondsSelectChanged" aria-label="@UIResources.Settings_SecondsTooltip">
                                     @for (int i = 0; i < 60; i++)
                                     {
                                         <option value="@i.ToString(CultureInfo.InvariantCulture)"
                                                 selected="@(i == TimerDurationSeconds ? string.Empty : null)">@i</option>
                                     }
                                 </select>
-                                <span class="input-group-text">sec</span>
+                                <span class="input-group-text">@UIResources.Settings_SecondsShortLabel</span>
                             </div>
                         </div>
                     </fieldset>
                     <fieldset disabled="@(Controller.CanChangeDeck ? null : string.Empty)">
                         <div class="mb-3">
-                            <label for="planningPokerSettings$selectedDeck" class="form-label">Change deck</label>
+                            <label for="planningPokerSettings$selectedDeck" class="form-label">@UIResources.Settings_ChangeDeckLabel</label>
                             <div class="input-group">
                                 <select id="planningPokerSettings$selectedDeck" name="deck" class="form-select"
                                         @bind="SelectedDeck" aria-describedby="planningPokerSettings$changeDeckButton">
@@ -50,12 +50,12 @@
                                     }
                                 </select>
                                 <button type="button" id="planningPokerSettings$changeDeckButton"
-                                        @onclick="ChangeDeckCommand" class="btn btn-primary">Change</button>
+                                        @onclick="ChangeDeckCommand" class="btn btn-primary">@UIResources.Settings_ChangeDeckButton</button>
                             </div>
                             @if (DeckHasChanged)
                             {
                                 <p class="text-success">
-                                    <small>Estimation deck has been changed.</small>
+                                    <small>@UIResources.Settings_DeckChangedLabel</small>
                                 </p>
                             }
                         </div>
@@ -63,7 +63,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@UIResources.Settings_CloseButton</button>
             </div>
         </div>
     </div>

@@ -7,11 +7,11 @@
 
     <div class="team-title">
         <h2>
-            <span class="badge bg-secondary"><span class="oi oi-people" title="Team" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary"><span class="oi oi-people" title="@UIResources.PlanningPokerDesk_TeamTooltip" aria-hidden="true"></span></span>
             <span>@Controller.TeamName</span>
         </h2>
         <h3>
-            <span class="badge bg-secondary"><span class="oi oi-person" title="User" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary"><span class="oi oi-person" title="@UIResources.PlanningPokerDesk_UserTooltip" aria-hidden="true"></span></span>
             <span>@Controller.User?.Name</span>
         </h3>
     </div>
@@ -23,35 +23,35 @@
                 @if (Controller.CanStartEstimation)
                 {
                     <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary col-md-auto me-3">
-                        <span class="oi oi-media-play me-1" aria-hidden="true"></span> Start estimation
+                        <span class="oi oi-media-play me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StartEstimationButton
                     </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
                     <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-media-stop me-1" aria-hidden="true"></span> Cancel estimation
+                        <span class="oi oi-media-stop me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_CancelEstimationButton
                     </button>
                 }
 
                 @if (Controller.CanShowEstimationSummary)
                 {
                     <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-calculator me-1" aria-hidden="true"></span> Show average
+                        <span class="oi oi-calculator me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_ShowAverageButton
                     </button>
                 }
 
                 @if (Controller.CanStartTimer)
                 {
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-timer me-1" aria-hidden="true"></span> Start timer
+                        <span class="oi oi-timer me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StartTimerButton
                     </button>
                 }
 
                 @if (Controller.CanStopTimer)
                 {
                     <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-action-undo me-1" aria-hidden="true"></span> Stop timer
+                        <span class="oi oi-action-undo me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StopTimerButton
                     </button>
                 }
             </p>
@@ -61,7 +61,7 @@
     @if (Controller.CanSelectEstimation)
     {
         <div class="availableEstimations">
-            <h3>Pick estimation</h3>
+            <h3>@UIResources.PlanningPokerDesk_PickEstimationLabel</h3>
             <ul>
                 @foreach (var estimation in Controller.AvailableEstimations)
                 {
@@ -79,14 +79,14 @@
     @if (HasEstimationResult)
     {
         <div class="estimationResult">
-            <h3>Selected estimates</h3>
+            <h3>@UIResources.PlanningPokerDesk_SelectedEstimatesLabel</h3>
 
             @if (Controller.EstimationSummary != null)
             {
                 <div class="estimationSummary row">
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Average</div>
+                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_AverageLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Average)
                             </div>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Median</div>
+                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_MedianLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Median)
                             </div>
@@ -102,7 +102,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">Sum</div>
+                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_SumLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Sum)
                             </div>
@@ -178,62 +178,57 @@
     {
         if (estimation == null)
         {
-            return "?";
+            return Resources.Estimation_QuestionMark;
         }
 
         var value = estimation.Value;
         if (double.IsPositiveInfinity(value))
         {
-            return "\u221E";
+            return Resources.Estimation_Infinity;
         }
         else if (value == 0.5)
         {
-            return "\u00BD";
+            return Resources.Estimation_Half;
         }
         else if (value == -999509.0)
         {
-            return "XS";
+            return Resources.Estimation_XS;
         }
         else if (value == -999508.0)
         {
-            return "S";
+            return Resources.Estimation_S;
         }
         else if (value == -999507.0)
         {
-            return "M";
+            return Resources.Estimation_M;
         }
         else if (value == -999506.0)
         {
-            return "L";
+            return Resources.Estimation_L;
         }
         else if (value == -999505.0)
         {
-            return "XL";
+            return Resources.Estimation_XL;
         }
         else if (value == -999909.0)
         {
-            // 💎 Rock
-            return "\uD83D\uDC8E";
+            return Resources.Estimation_Rock;
         }
         else if (value == -999908.0)
         {
-            // 📜 Paper
-            return "\uD83D\uDCDC";
+            return Resources.Estimation_Paper;
         }
         else if (value == -999907.0)
         {
-            // ✂ Scissors
-            return "\u2702";
+            return Resources.Estimation_Scissors;
         }
         else if (value == -999906.0)
         {
-            // 🦎 Lizard
-            return "\uD83E\uDD8E";
+            return Resources.Estimation_Lizard;
         }
         else if (value == -999905.0)
         {
-            // 🖖 Spock
-            return "\uD83D\uDD96";
+            return Resources.Estimation_Spock;
         }
         else
         {

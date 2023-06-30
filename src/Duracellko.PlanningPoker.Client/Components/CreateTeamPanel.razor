@@ -3,29 +3,29 @@
 @inject CreateTeamController Controller
 
 <div class="card">
-    <h5 class="card-header">Create team</h5>
+    <h5 class="card-header">@UIResources.CreateTeam_Header</h5>
     <div class="card-body">
         <form name="createTeam" action="." @onsubmit="CreateTeamCommand">
             <div class="mb-3">
-                <label for="createTeam$teamName" class="form-label">Team name:</label>
+                <label for="createTeam$teamName" class="form-label">@UIResources.CreateTeam_TeamNameLabel:</label>
                 <input type="text" id="createTeam$teamName" name="teamName" @bind="TeamName"
                        class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
                 @if (!IsTeamNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">@UIResources.CreateTeam_RequiredLabel</span>
                 }
             </div>
             <div class="mb-3">
-                <label for="createTeam$scrumMasterName" class="form-label">Scrum Master name:</label>
+                <label for="createTeam$scrumMasterName" class="form-label">@UIResources.CreateTeam_ScrumMasterNameLabel:</label>
                 <input type="text" id="createTeam$scrumMasterName" name="scrumMasterName" @bind="ScrumMasterName"
                        class="@GetFormControlCss(IsScrumMasterNameValid)" maxlength="50" />
                 @if (!IsScrumMasterNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">@UIResources.CreateTeam_RequiredLabel</span>
                 }
             </div>
             <div class="mb-3">
-                <label for="createTeam$selectedDeck" class="form-label">Deck of cards:</label>
+                <label for="createTeam$selectedDeck" class="form-label">@UIResources.CreateTeam_SelectedDeckLabel:</label>
                 <select id="createTeam$selectedDeck" name="deck" class="form-select"
                         @bind="SelectedDeck">
                     @foreach (var deckOption in EstimationDecks)
@@ -34,13 +34,12 @@
                     }
                 </select>
             </div>
-            <button type="submit" id="createTeam$Submit" class="btn btn-primary">Create team</button>
+            <button type="submit" id="createTeam$Submit" class="btn btn-primary">@UIResources.CreateTeam_CreateTeamButton</button>
         </form>
     </div>
     <div class="card-footer">
         <small>
-            <strong>Tip:</strong> After creating the team, send link from addressbar to your team mates.
-            After opening the link, the "Team name" is pre-filled and they just need to enter name.
+            <strong>@UIResources.CreateTeam_TipLabel:</strong> @UIResources.CreateTeam_TipText
         </small>
     </div>
 </div>
