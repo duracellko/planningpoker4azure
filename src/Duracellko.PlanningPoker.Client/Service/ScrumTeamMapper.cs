@@ -58,14 +58,14 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
-        /// Gets new <see cref="PlanningPokerException"/> from response value.
+        /// Gets a new <see cref="PlanningPokerException"/> from response value.
         /// </summary>
         /// <param name="value">The response value that contains data for the PlanningPokerException.</param>
         /// <returns>A new instance of PlanningPokerException.</returns>
         public static PlanningPokerException GetPlanningPokerException(string? value) => GetPlanningPokerException(value, null);
 
         /// <summary>
-        /// Gets new <see cref="PlanningPokerException"/> from response value.
+        /// Gets a new <see cref="PlanningPokerException"/> from response value.
         /// </summary>
         /// <param name="value">The response value that contains data for the PlanningPokerException.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>

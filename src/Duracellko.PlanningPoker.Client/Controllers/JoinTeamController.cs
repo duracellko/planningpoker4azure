@@ -92,7 +92,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 var message = ControllerHelper.GetErrorMessage(ex);
                 if (string.Equals(ex.Error, ErrorCodes.MemberAlreadyExists, StringComparison.OrdinalIgnoreCase))
                 {
-                    message = $"{message}{Environment.NewLine}{UIResources.JoinTeam_ReconnectMessage}";
+                    message = string.Concat(message, Environment.NewLine, UIResources.JoinTeam_ReconnectMessage);
                     if (await _messageBoxService.ShowMessage(message, UIResources.JoinTeam_ReconnectTitle, UIResources.JoinTeam_ReconnectButton))
                     {
                         return await ReconnectTeam(teamName, memberName, false, CancellationToken.None);

@@ -142,7 +142,7 @@
     <value>Tip</value>
   </data>
   <data name="CreateTeam_TipText" xml:space="preserve">
-    <value>Po vytvorení tímu, pošlíte odkaz z URL panela členom vášho tímu. Po otvorení odkazu "Meno tímu" bude vyplnené a členovia musia vložiť len svoje meno.</value>
+    <value>Po vytvorení tímu, pošlite odkaz z URL panela členom vášho tímu. Po otvorení odkazu "Meno tímu" bude vyplnené a členovia musia vložiť len svoje meno.</value>
   </data>
   <data name="Error_MemberAlreadyExists" xml:space="preserve">
     <value>Člen s menom '{0}' už v tíme existuje.</value>
@@ -187,7 +187,7 @@
     <value>Meno člena</value>
   </data>
   <data name="JoinTeam_ReconnectButton" xml:space="preserve">
-    <value>Pripojiť znova</value>
+    <value>Pripoj sa znova</value>
   </data>
   <data name="JoinTeam_ReconnectMessage" xml:space="preserve">
     <value>Chcete sa pripojiť znova?</value>
@@ -214,7 +214,7 @@
     <value>Copyright © 2012</value>
   </data>
   <data name="MembersPanel_MemberHasVotedTooltip" xml:space="preserve">
-    <value>Člen už odhadol</value>
+    <value>Člen už hlasoval</value>
   </data>
   <data name="MembersPanel_MembersLabel" xml:space="preserve">
     <value>Členovia</value>

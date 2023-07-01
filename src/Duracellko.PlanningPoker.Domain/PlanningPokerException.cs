@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
-    /// Represents error or invalid input in an operation in the Planning Poker application.
+    /// Represents an error or an invalid input in an operation in the Planning Poker application.
     /// </summary>
     public class PlanningPokerException : Exception
     {

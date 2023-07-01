@@ -7,11 +7,15 @@
 
     <div class="team-title">
         <h2>
-            <span class="badge bg-secondary"><span class="oi oi-people" title="@UIResources.PlanningPokerDesk_TeamTooltip" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary">
+                <span class="oi oi-people" title="@UIResources.PlanningPokerDesk_TeamTooltip" aria-hidden="true"></span>
+            </span>
             <span>@Controller.TeamName</span>
         </h2>
         <h3>
-            <span class="badge bg-secondary"><span class="oi oi-person" title="@UIResources.PlanningPokerDesk_UserTooltip" aria-hidden="true"></span></span>
+            <span class="badge bg-secondary">
+                <span class="oi oi-person" title="@UIResources.PlanningPokerDesk_UserTooltip" aria-hidden="true"></span>
+            </span>
             <span>@Controller.User?.Name</span>
         </h3>
     </div>
@@ -23,35 +27,40 @@
                 @if (Controller.CanStartEstimation)
                 {
                     <button type="button" @onclick="StartEstimationCommand" class="btn btn-primary col-md-auto me-3">
-                        <span class="oi oi-media-play me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StartEstimationButton
+                        <span class="oi oi-media-play me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_StartEstimationButton
                     </button>
                 }
 
                 @if (Controller.CanCancelEstimation)
                 {
                     <button type="button" @onclick="CancelEstimationCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-media-stop me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_CancelEstimationButton
+                        <span class="oi oi-media-stop me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_CancelEstimationButton
                     </button>
                 }
 
                 @if (Controller.CanShowEstimationSummary)
                 {
                     <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-calculator me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_ShowAverageButton
+                        <span class="oi oi-calculator me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_ShowAverageButton
                     </button>
                 }
 
                 @if (Controller.CanStartTimer)
                 {
                     <button type="button" @onclick="StartTimerCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-timer me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StartTimerButton
+                        <span class="oi oi-timer me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_StartTimerButton
                     </button>
                 }
 
                 @if (Controller.CanStopTimer)
                 {
                     <button type="button" @onclick="CancelTimerCommand" class="btn btn-secondary col-md-auto me-3">
-                        <span class="oi oi-action-undo me-1" aria-hidden="true"></span> @UIResources.PlanningPokerDesk_StopTimerButton
+                        <span class="oi oi-action-undo me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_StopTimerButton
                     </button>
                 }
             </p>

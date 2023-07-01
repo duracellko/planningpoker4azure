@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.Controllers;
@@ -15,6 +16,35 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     {
         private const string ErrorMessage = "Planning Poker Error";
         private const string ReconnectErrorMessage = "Member or observer named 'Test member' already exists in the team.";
+
+        private CultureInfo? _originalCultureInfo;
+        private CultureInfo? _originalUICultureInfo;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _originalCultureInfo = CultureInfo.CurrentCulture;
+            _originalUICultureInfo = CultureInfo.CurrentUICulture;
+            var enCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentCulture = enCulture;
+            CultureInfo.CurrentUICulture = enCulture;
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if (_originalCultureInfo != null)
+            {
+                CultureInfo.CurrentCulture = _originalCultureInfo;
+                _originalCultureInfo = null;
+            }
+
+            if (_originalUICultureInfo != null)
+            {
+                CultureInfo.CurrentUICulture = _originalUICultureInfo;
+                _originalUICultureInfo = null;
+            }
+        }
 
         [TestMethod]
         public async Task GetCredentials_CredentialsAreStored_ReturnsMemberCredentials()

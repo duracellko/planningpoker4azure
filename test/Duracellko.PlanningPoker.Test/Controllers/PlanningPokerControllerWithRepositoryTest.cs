@@ -404,7 +404,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void GetScrumTeam_TeamNotInRepository_ReturnsTeamFromRepository()
+        public void GetScrumTeam_TeamNotInRepository_ThrowsException()
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);

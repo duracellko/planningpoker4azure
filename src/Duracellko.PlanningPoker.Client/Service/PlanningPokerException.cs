@@ -41,10 +41,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <param name="error">The error code of the error that caused this exception.</param>
         /// <param name="argument">The argument value that was invalid input for the failed operation.</param>
         public PlanningPokerException(string? message, string? error, string? argument)
-            : base(message)
+            : this(message, error, argument, null)
         {
-            Error = error;
-            Argument = argument;
         }
 
         /// <summary>

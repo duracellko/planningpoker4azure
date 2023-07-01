@@ -1,7 +1,7 @@
 ﻿namespace Duracellko.PlanningPoker.Service
 {
     /// <summary>
-    /// Information about error that occured in the Planning Poker application.
+    /// Information about an error that occured in the Planning Poker application.
     /// </summary>
     public class PlanningPokerExceptionData
     {

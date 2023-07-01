@@ -26,8 +26,7 @@
             </div>
             <div class="mb-3">
                 <label for="createTeam$selectedDeck" class="form-label">@UIResources.CreateTeam_SelectedDeckLabel:</label>
-                <select id="createTeam$selectedDeck" name="deck" class="form-select"
-                        @bind="SelectedDeck">
+                <select id="createTeam$selectedDeck" name="deck" @bind="SelectedDeck" class="form-select">
                     @foreach (var deckOption in EstimationDecks)
                     {
                         <option value="@deckOption.Key">@deckOption.Value</option>

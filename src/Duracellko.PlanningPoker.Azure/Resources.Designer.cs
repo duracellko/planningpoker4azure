@@ -61,7 +61,7 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AzureServiceBus is not initialized..
+        ///   Looks up a localized string similar to Azure Service Bus is not initialized..
         /// </summary>
         internal static string Error_AzureServiceBusNotInitialized {
             get {
@@ -79,7 +79,7 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription has {0} active messages..
+        ///   Looks up a localized string similar to Azure Service Bus Subscription has {0} active messages..
         /// </summary>
         internal static string Health_AzureServiceBusHealthy {
             get {
@@ -88,7 +88,7 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Azure ServiceBus Subscription is unhealthy..
+        ///   Looks up a localized string similar to Azure Service Bus Subscription is unhealthy..
         /// </summary>
         internal static string Health_AzureServiceBusUnhealthy {
             get {
