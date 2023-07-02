@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -100,7 +101,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case Deck.RockPaperScissorsLizardSpock:
                     return _rockPaperScissorsLizardSpock;
                 default:
-                    throw new ArgumentException($"Deck '{deck}' is not supported.", nameof(deck));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_DeckNotSupported, deck), nameof(deck));
             }
         }
 

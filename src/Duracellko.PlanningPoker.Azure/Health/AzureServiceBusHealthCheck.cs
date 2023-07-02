@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus.Administration;
@@ -45,11 +46,11 @@ namespace Duracellko.PlanningPoker.Azure.Health
                 }
 
                 var properties = await _serviceBusAdministrationClient.Value.GetSubscriptionRuntimePropertiesAsync(topicName, _node.NodeId, cancellationToken);
-                return HealthCheckResult.Healthy($"Azure ServiceBus Subscription has {properties.Value.ActiveMessageCount} active messages.");
+                return HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, Resources.Health_AzureServiceBusHealthy, properties.Value.ActiveMessageCount));
             }
             catch (Exception ex)
             {
-                return HealthCheckResult.Unhealthy("Azure ServiceBus Subscription is unhealthy.", ex);
+                return HealthCheckResult.Unhealthy(Resources.Health_AzureServiceBusUnhealthy, ex);
             }
         }
     }

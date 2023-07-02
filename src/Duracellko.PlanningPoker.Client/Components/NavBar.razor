@@ -5,9 +5,9 @@
 
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
     <div class="container">
-        <a class="navbar-brand" href="https://github.com/duracellko/planningpoker4azure" target="_blank">Planning Poker Website</a>
+        <a class="navbar-brand" href="https://github.com/duracellko/planningpoker4azure" target="_blank">@UIResources.NavBar_Header</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigationBar" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="@UIResources.NavBar_ToggleNavigationTooltip">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div id="mainNavigationBar" class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
@@ -16,12 +16,12 @@
                 <ul class="navbar-nav flex-grow-1 justify-content-end">
                     <li class="nav-item">
                         <a href="#" class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#planningPokerSettingsModal">
-                            <span class="oi oi-cog" aria-hidden="true"></span> Settings
+                            <span class="oi oi-cog" aria-hidden="true"></span> @UIResources.NavBar_Settings
                         </a>
                     </li>
                     <li class="nav-item">
                         <a @onclick="DisconnectCommand" class="nav-link">
-                            <span class="oi oi-account-logout" aria-hidden="true"></span> Disconnect
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> @UIResources.NavBar_Disconnect
                         </a>
                     </li>
                 </ul>

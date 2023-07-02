@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Azure.Configuration;
@@ -26,6 +27,8 @@ namespace Duracellko.PlanningPoker.Web
 {
     public static class Program
     {
+        private static readonly Lazy<string[]> SupportedCultures = new Lazy<string[]>(() => LocalizationService.GetSupportedCultures().ToArray());
+
         public static void Main(string[] args)
         {
             using var app = CreateWebApplication(args);
@@ -151,6 +154,8 @@ namespace Duracellko.PlanningPoker.Web
                     app.UseWebAssemblyDebugging();
                 }
             }
+
+            app.UseRequestLocalization(SupportedCultures.Value);
 
             var rewriteOptions = new RewriteOptions()
                 .AddRewrite(@"^appsettings\.json$", "configuration", false);

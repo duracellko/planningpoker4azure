@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Duracellko.PlanningPoker.Client.Service
+namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
-    /// Represents error returned by Planning Poker service.
+    /// Represents an error or an invalid input in an operation in the Planning Poker application.
     /// </summary>
     public class PlanningPokerException : Exception
     {
@@ -19,7 +20,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Initializes a new instance of the <see cref="PlanningPokerException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public PlanningPokerException(string? message)
+        public PlanningPokerException(string message)
             : base(message)
         {
         }
@@ -29,8 +30,18 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public PlanningPokerException(string? message, Exception? innerException)
+        public PlanningPokerException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlanningPokerException"/> class.
+        /// </summary>
+        /// <param name="error">The error code of the error that caused this exception.</param>
+        /// <param name="argument">The argument value that was invalid input for the failed operation.</param>
+        public PlanningPokerException(string error, string argument)
+            : this(GetExceptionMessage(error, argument), error, argument)
         {
         }
 
@@ -40,20 +51,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <param name="message">The message that describes the error.</param>
         /// <param name="error">The error code of the error that caused this exception.</param>
         /// <param name="argument">The argument value that was invalid input for the failed operation.</param>
-        public PlanningPokerException(string? message, string? error, string? argument)
-            : this(message, error, argument, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PlanningPokerException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        /// <param name="error">The error code of the error that caused this exception.</param>
-        /// <param name="argument">The argument value that was invalid input for the failed operation.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public PlanningPokerException(string? message, string? error, string? argument, Exception? innerException)
-            : base(message, innerException)
+        public PlanningPokerException(string message, string error, string argument)
+            : base(message)
         {
             Error = error;
             Argument = argument;
@@ -67,6 +66,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         protected PlanningPokerException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            Error = info.GetString(nameof(Error));
+            Argument = info.GetString(nameof(Argument));
         }
 
         /// <summary>
@@ -78,5 +79,23 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Gets an argument value that was invalid input for the failed operation.
         /// </summary>
         public string? Argument { get; }
+
+        private static string GetExceptionMessage(string error, string argument)
+        {
+            string? message = error switch
+            {
+                ErrorCodes.ScrumTeamNotExist => Resources.Error_ScrumTeamNotExist,
+                ErrorCodes.ScrumTeamAlreadyExists => Resources.Error_ScrumTeamAlreadyExists,
+                ErrorCodes.MemberAlreadyExists => Resources.Error_MemberAlreadyExists,
+                _ => null
+            };
+
+            if (message == null)
+            {
+                return error;
+            }
+
+            return string.Format(CultureInfo.InvariantCulture, message, argument);
+        }
     }
 }

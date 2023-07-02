@@ -66,7 +66,7 @@ namespace Duracellko.PlanningPoker.Web.Model
             using (var stream = File.OpenRead(LibManPath))
             {
                 var jsonDocument = await JsonSerializer.DeserializeAsync<JsonDocument>(stream);
-                libManDocument = jsonDocument ?? throw new InvalidOperationException("Error reading client scripts. libman.json file is empty.");
+                libManDocument = jsonDocument ?? throw new InvalidOperationException(Resources.Error_EmptyLibmanFile);
             }
 
             var libraries = libManDocument.RootElement.GetProperty("libraries");
@@ -85,7 +85,7 @@ namespace Duracellko.PlanningPoker.Web.Model
             var libraryFullName = libraryElement.GetProperty("library").GetString();
             if (string.IsNullOrEmpty(libraryFullName))
             {
-                throw new InvalidOperationException("Library name is empty.");
+                throw new InvalidOperationException(Resources.Error_EmptyLibraryName);
             }
 
             var separatorPosition = libraryFullName.IndexOf('@', StringComparison.Ordinal);

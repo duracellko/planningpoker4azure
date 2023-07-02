@@ -22,3 +22,9 @@ dotnet_diagnostic.SA1309.severity = none
 dotnet_diagnostic.SA1413.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1652.severity = none
+
+[*.{csproj,shproj,projitems,props,targets}]
+indent_size = 2
+
+[*.{xml,resx,resw,manifest,appxmanifest}]
+indent_size = 2

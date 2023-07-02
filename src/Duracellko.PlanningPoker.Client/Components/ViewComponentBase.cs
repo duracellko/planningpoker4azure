@@ -54,7 +54,7 @@ namespace Duracellko.PlanningPoker.Client.Components
 
             if (MessageBox != null)
             {
-                await MessageBox.ShowMessage(exception.Message, Resources.MessagePanel_Error);
+                await MessageBox.ShowMessage(exception.Message, UIResources.MessagePanel_Error);
             }
         }
     }

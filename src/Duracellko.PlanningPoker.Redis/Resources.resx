@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_AzureServiceBusNotInitialized" xml:space="preserve">
-    <value>Azure Service Bus is not initialized.</value>
+  <data name="Error_InvalidMessageFormat" xml:space="preserve">
+    <value>Invalid message format.</value>
   </data>
-  <data name="Error_InitializationIsNotStarted" xml:space="preserve">
-    <value>Planning Poker controller initialization must be started before initializing a scrum team.</value>
+  <data name="Error_RedisPubSubNotInitialized" xml:space="preserve">
+    <value>Redis PubSub is not initialized.</value>
   </data>
-  <data name="Health_AzureServiceBusHealthy" xml:space="preserve">
-    <value>Azure Service Bus Subscription has {0} active messages.</value>
+  <data name="Health_RedisHealthy" xml:space="preserve">
+    <value>Redis is healthy.</value>
   </data>
-  <data name="Health_AzureServiceBusUnhealthy" xml:space="preserve">
-    <value>Azure Service Bus Subscription is unhealthy.</value>
+  <data name="Health_RedisUnhealthy" xml:space="preserve">
+    <value>Redis is unhealthy.</value>
   </data>
 </root>

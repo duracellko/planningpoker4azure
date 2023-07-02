@@ -80,7 +80,7 @@ namespace Duracellko.PlanningPoker.Redis
             var subscriber = _subscriber;
             if (subscriber == null)
             {
-                throw new InvalidOperationException("Redis PubSub is not initialized.");
+                throw new InvalidOperationException(Resources.Error_RedisPubSubNotInitialized);
             }
 
             var redisMessage = MessageConverter.ConvertToRedisMessage(message);

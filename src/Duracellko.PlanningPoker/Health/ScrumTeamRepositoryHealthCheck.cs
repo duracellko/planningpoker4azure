@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,11 +37,11 @@ namespace Duracellko.PlanningPoker.Health
             try
             {
                 var count = _scrumTeamRepository.ScrumTeamNames.Count();
-                return Task.FromResult(HealthCheckResult.Healthy($"Repository has {count} teams."));
+                return Task.FromResult(HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, Resources.Health_RepositoryHealthy, count)));
             }
             catch (Exception ex)
             {
-                return Task.FromResult(HealthCheckResult.Unhealthy("Repository is unhealthy.", ex));
+                return Task.FromResult(HealthCheckResult.Unhealthy(Resources.Health_RepositoryUnhealthy, ex));
             }
         }
     }

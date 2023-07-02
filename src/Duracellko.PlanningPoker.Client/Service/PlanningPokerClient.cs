@@ -286,24 +286,24 @@ namespace Duracellko.PlanningPoker.Client.Service
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
                             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                            throw new PlanningPokerException(content);
+                            throw ScrumTeamMapper.GetPlanningPokerException(content);
                         }
 
                         response.EnsureSuccessStatusCode();
 
                         if (response.Content == null)
                         {
-                            throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
+                            throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
                         }
 
                         var result = await response.Content.ReadFromJsonAsync<T>(default(JsonSerializerOptions), cancellationToken);
-                        return result ?? throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
+                        return result ?? throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
                     }
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
             }
         }
 
@@ -318,18 +318,18 @@ namespace Duracellko.PlanningPoker.Client.Service
                         if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
                         {
                             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                            throw new PlanningPokerException(content);
+                            throw ScrumTeamMapper.GetPlanningPokerException(content);
                         }
                         else if (!response.IsSuccessStatusCode)
                         {
-                            throw new PlanningPokerException(Client.Resources.PlanningPokerService_UnexpectedError);
+                            throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
                         }
                     }
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new PlanningPokerException(Client.Resources.PlanningPokerService_ConnectionError, ex);
+                throw new PlanningPokerException(UIResources.PlanningPokerService_ConnectionError, ex);
             }
         }
     }

@@ -405,7 +405,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void SetScrumMaster_MemberWithSpecifiedNameExists_ArgumentException()
+        public void SetScrumMaster_MemberWithSpecifiedNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -413,11 +413,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join("test", false);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.SetScrumMaster(name));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.SetScrumMaster(name));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]
-        public void SetScrumMaster_ObserverWithSpecifiedNameExists_ArgumentException()
+        public void SetScrumMaster_ObserverWithSpecifiedNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -425,7 +429,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join("test", true);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.SetScrumMaster(name));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.SetScrumMaster(name));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]
@@ -646,7 +654,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         }
 
         [TestMethod]
-        public void Join_AsMemberAndMemberWithNameExists_ArgumentException()
+        public void Join_AsMemberAndMemberWithNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -654,11 +662,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, false);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.Join(name, false));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, false));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]
-        public void Join_AsMemberAndObserverWithNameExists_ArgumentException()
+        public void Join_AsMemberAndObserverWithNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -666,11 +678,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, true);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.Join(name, false));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, false));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]
-        public void Join_AsObserverAndMemberWithNameExists_ArgumentException()
+        public void Join_AsObserverAndMemberWithNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -678,11 +694,15 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, false);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.Join(name, true));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, true));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]
-        public void Join_AsObserverAndObserverWithNameExists_ArgumentException()
+        public void Join_AsObserverAndObserverWithNameExists_PlanningPokerException()
         {
             // Arrange
             var name = "test";
@@ -690,7 +710,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
             target.Join(name, true);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.Join(name, true));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, true));
+
+            // Verify
+            Assert.AreEqual("MemberAlreadyExists", exception.Error);
+            Assert.AreEqual(name, exception.Argument);
         }
 
         [TestMethod]

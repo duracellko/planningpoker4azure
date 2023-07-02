@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Duracellko.PlanningPoker {
+namespace Duracellko.PlanningPoker.Web {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Duracellko.PlanningPoker {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class UIResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal UIResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Duracellko.PlanningPoker {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Web.UIResources", typeof(UIResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,83 +61,56 @@ namespace Duracellko.PlanningPoker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
+        ///   Looks up a localized string similar to An unhandled exception has occurred. See browser dev tools for details..
         /// </summary>
-        internal static string Error_InvalidTimerDuraction {
+        internal static string Home_DevelopmentErrorText {
             get {
-                return ResourceManager.GetString("Error_InvalidTimerDuraction", resourceCulture);
+                return ResourceManager.GetString("Home_DevelopmentErrorText", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Member name cannot be longer than 50 characters..
+        ///   Looks up a localized string similar to Dismiss.
         /// </summary>
-        internal static string Error_MemberNameTooLong {
+        internal static string Home_DismissButtonTooltip {
             get {
-                return ResourceManager.GetString("Error_MemberNameTooLong", resourceCulture);
+                return ResourceManager.GetString("Home_DismissButtonTooltip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team member &quot;{0}&quot; has not been found..
+        ///   Looks up a localized string similar to Loading....
         /// </summary>
-        internal static string Error_MemberNotFound {
+        internal static string Home_LoadingLabel {
             get {
-                return ResourceManager.GetString("Error_MemberNotFound", resourceCulture);
+                return ResourceManager.GetString("Home_LoadingLabel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scrum Team cannot be opened..
+        ///   Looks up a localized string similar to An error has occurred. This application may no longer respond until reloaded..
         /// </summary>
-        internal static string Error_ScrumTeamTimeout {
+        internal static string Home_ProductionErrorText {
             get {
-                return ResourceManager.GetString("Error_ScrumTeamTimeout", resourceCulture);
+                return ResourceManager.GetString("Home_ProductionErrorText", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team name cannot be longer than 50 characters..
+        ///   Looks up a localized string similar to Reload.
         /// </summary>
-        internal static string Error_TeamNameTooLong {
+        internal static string Home_ReloadButton {
             get {
-                return ResourceManager.GetString("Error_TeamNameTooLong", resourceCulture);
+                return ResourceManager.GetString("Home_ReloadButton", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PlanningPoker is initialized..
+        ///   Looks up a localized string similar to Scrum Planning Poker.
         /// </summary>
-        internal static string Health_PlanningPokerInitialized {
+        internal static string Home_Title {
             get {
-                return ResourceManager.GetString("Health_PlanningPokerInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PlanningPoker is initializing..
-        /// </summary>
-        internal static string Health_PlanningPokerInitializing {
-            get {
-                return ResourceManager.GetString("Health_PlanningPokerInitializing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repository has {0} teams..
-        /// </summary>
-        internal static string Health_RepositoryHealthy {
-            get {
-                return ResourceManager.GetString("Health_RepositoryHealthy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repository is unhealthy..
-        /// </summary>
-        internal static string Health_RepositoryUnhealthy {
-            get {
-                return ResourceManager.GetString("Health_RepositoryUnhealthy", resourceCulture);
+                return ResourceManager.GetString("Home_Title", resourceCulture);
             }
         }
     }

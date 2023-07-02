@@ -62,7 +62,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             if (string.IsNullOrEmpty(scrumTeamData.Name))
             {
-                throw new ArgumentException("Scrum Team name cannot be empty.", nameof(scrumTeamData));
+                throw new ArgumentException(Resources.Error_EmptyScrumTeamName, nameof(scrumTeamData));
             }
 
             DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
@@ -177,7 +177,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             if (FindMemberOrObserver(name) != null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberAlreadyExists, name), nameof(name));
+                throw new PlanningPokerException(ErrorCodes.MemberAlreadyExists, name);
             }
 
             if (ScrumMaster != null)
@@ -210,7 +210,7 @@ namespace Duracellko.PlanningPoker.Domain
 
             if (FindMemberOrObserver(name) != null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberAlreadyExists, name), nameof(name));
+                throw new PlanningPokerException(ErrorCodes.MemberAlreadyExists, name);
             }
 
             Observer result;
@@ -557,7 +557,7 @@ namespace Duracellko.PlanningPoker.Domain
                 .Any(g => g.Count() > 1);
             if (hasDuplicates)
             {
-                throw new ArgumentException("Scrum Team member names must be unique.", nameof(scrumTeamData));
+                throw new ArgumentException(Resources.Error_MemberNamesNotUnique, nameof(scrumTeamData));
             }
 
             var scrumMasterData = scrumTeamData.Members.SingleOrDefault(m => m.MemberType == Serialization.MemberType.ScrumMaster);

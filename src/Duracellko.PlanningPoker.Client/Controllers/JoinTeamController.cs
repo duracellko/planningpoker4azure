@@ -12,9 +12,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// </summary>
     public class JoinTeamController
     {
-        private const string MemberExistsError1 = "Member or observer named";
-        private const string MemberExistsError2 = "already exists in the team.";
-
         private readonly IPlanningPokerClient _planningPokerService;
         private readonly IPlanningPokerInitializer _planningPokerInitializer;
         private readonly IMessageBoxService _messageBoxService;
@@ -92,21 +89,18 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
             catch (PlanningPokerException ex)
             {
-                var message = ex.Message;
-                if (message.Contains(MemberExistsError1, StringComparison.OrdinalIgnoreCase) &&
-                    message.Contains(MemberExistsError2, StringComparison.OrdinalIgnoreCase))
+                var message = ControllerHelper.GetErrorMessage(ex);
+                if (string.Equals(ex.Error, ErrorCodes.MemberAlreadyExists, StringComparison.OrdinalIgnoreCase))
                 {
-                    message = ControllerHelper.GetErrorMessage(ex);
-                    message = $"{message}{Environment.NewLine}{Resources.JoinTeam_ReconnectMessage}";
-                    if (await _messageBoxService.ShowMessage(message, Resources.JoinTeam_ReconnectTitle, Resources.JoinTeam_ReconnectButton))
+                    message = string.Concat(message, Environment.NewLine, UIResources.JoinTeam_ReconnectMessage);
+                    if (await _messageBoxService.ShowMessage(message, UIResources.JoinTeam_ReconnectTitle, UIResources.JoinTeam_ReconnectButton))
                     {
                         return await ReconnectTeam(teamName, memberName, false, CancellationToken.None);
                     }
                 }
                 else
                 {
-                    message = ControllerHelper.GetErrorMessage(ex);
-                    await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                    await _messageBoxService.ShowMessage(message, UIResources.MessagePanel_Error);
                 }
             }
 
@@ -160,7 +154,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (!ignoreError)
                 {
                     var message = ControllerHelper.GetErrorMessage(ex);
-                    await _messageBoxService.ShowMessage(message, Resources.MessagePanel_Error);
+                    await _messageBoxService.ShowMessage(message, UIResources.MessagePanel_Error);
                 }
             }
 

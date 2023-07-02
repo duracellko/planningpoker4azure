@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Encodings.Web;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
@@ -16,11 +17,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         public static IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = new SortedDictionary<Deck, string>
         {
-            { Deck.Standard, Resources.EstimationDeck_Standard },
-            { Deck.Fibonacci, Resources.EstimationDeck_Fibonacci },
-            { Deck.Rating, Resources.EstimationDeck_Rating },
-            { Deck.Tshirt, Resources.EstimationDeck_Tshirt },
-            { Deck.RockPaperScissorsLizardSpock, Resources.EstimationDeck_RockPaperScissorsLizardSpock },
+            { Deck.Standard, UIResources.EstimationDeck_Standard },
+            { Deck.Fibonacci, UIResources.EstimationDeck_Fibonacci },
+            { Deck.Rating, UIResources.EstimationDeck_Rating },
+            { Deck.Tshirt, UIResources.EstimationDeck_Tshirt },
+            { Deck.RockPaperScissorsLizardSpock, UIResources.EstimationDeck_RockPaperScissorsLizardSpock },
         };
 
         /// <summary>
@@ -35,14 +36,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            var result = exception.Message;
-            var newLineIndex = result.IndexOf('\n', StringComparison.Ordinal);
-            if (newLineIndex >= 0)
-            {
-                result = result.Substring(0, newLineIndex);
-            }
-
-            return result;
+            var result = GetErrorMessageFromErrorCode(exception);
+            return result ?? exception.Message;
         }
 
         /// <summary>
@@ -90,6 +85,29 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             navigationManager.NavigateTo(uri);
+        }
+
+        private static string? GetErrorMessageFromErrorCode(PlanningPokerException exception)
+        {
+            if (string.IsNullOrEmpty(exception.Error))
+            {
+                return null;
+            }
+
+            string? message = exception.Error switch
+            {
+                ErrorCodes.ScrumTeamNotExist => UIResources.Error_ScrumTeamNotExist,
+                ErrorCodes.ScrumTeamAlreadyExists => UIResources.Error_ScrumTeamAlreadyExists,
+                ErrorCodes.MemberAlreadyExists => UIResources.Error_MemberAlreadyExists,
+                _ => null
+            };
+
+            if (message == null)
+            {
+                return null;
+            }
+
+            return string.Format(CultureInfo.CurrentCulture, message, exception.Argument);
         }
     }
 }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Duracellko.PlanningPoker {
+namespace Duracellko.PlanningPoker.Redis {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Duracellko.PlanningPoker {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Redis.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,83 +61,38 @@ namespace Duracellko.PlanningPoker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
+        ///   Looks up a localized string similar to Invalid message format..
         /// </summary>
-        internal static string Error_InvalidTimerDuraction {
+        internal static string Error_InvalidMessageFormat {
             get {
-                return ResourceManager.GetString("Error_InvalidTimerDuraction", resourceCulture);
+                return ResourceManager.GetString("Error_InvalidMessageFormat", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Member name cannot be longer than 50 characters..
+        ///   Looks up a localized string similar to Redis PubSub is not initialized..
         /// </summary>
-        internal static string Error_MemberNameTooLong {
+        internal static string Error_RedisPubSubNotInitialized {
             get {
-                return ResourceManager.GetString("Error_MemberNameTooLong", resourceCulture);
+                return ResourceManager.GetString("Error_RedisPubSubNotInitialized", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team member &quot;{0}&quot; has not been found..
+        ///   Looks up a localized string similar to Redis is healthy..
         /// </summary>
-        internal static string Error_MemberNotFound {
+        internal static string Health_RedisHealthy {
             get {
-                return ResourceManager.GetString("Error_MemberNotFound", resourceCulture);
+                return ResourceManager.GetString("Health_RedisHealthy", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scrum Team cannot be opened..
+        ///   Looks up a localized string similar to Redis is unhealthy..
         /// </summary>
-        internal static string Error_ScrumTeamTimeout {
+        internal static string Health_RedisUnhealthy {
             get {
-                return ResourceManager.GetString("Error_ScrumTeamTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Team name cannot be longer than 50 characters..
-        /// </summary>
-        internal static string Error_TeamNameTooLong {
-            get {
-                return ResourceManager.GetString("Error_TeamNameTooLong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PlanningPoker is initialized..
-        /// </summary>
-        internal static string Health_PlanningPokerInitialized {
-            get {
-                return ResourceManager.GetString("Health_PlanningPokerInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PlanningPoker is initializing..
-        /// </summary>
-        internal static string Health_PlanningPokerInitializing {
-            get {
-                return ResourceManager.GetString("Health_PlanningPokerInitializing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repository has {0} teams..
-        /// </summary>
-        internal static string Health_RepositoryHealthy {
-            get {
-                return ResourceManager.GetString("Health_RepositoryHealthy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Repository is unhealthy..
-        /// </summary>
-        internal static string Health_RepositoryUnhealthy {
-            get {
-                return ResourceManager.GetString("Health_RepositoryUnhealthy", resourceCulture);
+                return ResourceManager.GetString("Health_RedisUnhealthy", resourceCulture);
             }
         }
     }

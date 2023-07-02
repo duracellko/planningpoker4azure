@@ -82,7 +82,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             var serviceBusSender = _serviceBusSender;
             if (serviceBusSender == null)
             {
-                throw new InvalidOperationException("AzureServiceBus is not initialized.");
+                throw new InvalidOperationException(Resources.Error_AzureServiceBusNotInitialized);
             }
 
             var serviceBusMessage = MessageConverter.ConvertToServiceBusMessage(message);

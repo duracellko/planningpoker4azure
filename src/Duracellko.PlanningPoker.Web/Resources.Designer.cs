@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Duracellko.PlanningPoker.Azure {
+namespace Duracellko.PlanningPoker.Web {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Duracellko.PlanningPoker.Azure {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Azure.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Duracellko.PlanningPoker.Web.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,20 @@ namespace Duracellko.PlanningPoker.Azure {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Azure Service Bus is not initialized..
+        ///   Looks up a localized string similar to Error reading client scripts. libman.json file is empty..
         /// </summary>
-        internal static string Error_AzureServiceBusNotInitialized {
+        internal static string Error_EmptyLibmanFile {
             get {
-                return ResourceManager.GetString("Error_AzureServiceBusNotInitialized", resourceCulture);
+                return ResourceManager.GetString("Error_EmptyLibmanFile", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Planning Poker controller initialization must be started before initializing a scrum team..
+        ///   Looks up a localized string similar to Library name is empty..
         /// </summary>
-        internal static string Error_InitializationIsNotStarted {
+        internal static string Error_EmptyLibraryName {
             get {
-                return ResourceManager.GetString("Error_InitializationIsNotStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure Service Bus Subscription has {0} active messages..
-        /// </summary>
-        internal static string Health_AzureServiceBusHealthy {
-            get {
-                return ResourceManager.GetString("Health_AzureServiceBusHealthy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Azure Service Bus Subscription is unhealthy..
-        /// </summary>
-        internal static string Health_AzureServiceBusUnhealthy {
-            get {
-                return ResourceManager.GetString("Health_AzureServiceBusUnhealthy", resourceCulture);
+                return ResourceManager.GetString("Error_EmptyLibraryName", resourceCulture);
             }
         }
     }

@@ -2,38 +2,37 @@
 @inject JoinTeamController Controller
 
 <div class="card">
-    <h5 class="card-header">Join team</h5>
+    <h5 class="card-header">@UIResources.JoinTeam_Header</h5>
     <div class="card-body">
         <form name="joinTeam" action="." @onsubmit="JoinTeamCommand">
             <div class="mb-3">
-                <label for="joinTeam$teamName" class="form-label">Team name:</label>
+                <label for="joinTeam$teamName" class="form-label">@UIResources.JoinTeam_TeamNameLabel:</label>
                 <input type="text" id="joinTeam$teamName" name="teamName" @bind="TeamName"
                        class="@GetFormControlCss(IsTeamNameValid)" maxlength="50" />
                 @if (!IsTeamNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">@UIResources.JoinTeam_RequiredLabel</span>
                 }
             </div>
             <div class="mb-3">
-                <label for="joinTeam$memberName" class="form-label">Member name:</label>
+                <label for="joinTeam$memberName" class="form-label">@UIResources.JoinTeam_MemberNameLabel:</label>
                 <input type="text" id="joinTeam$memberName" name="memberName" @bind="MemberName"
                        class="@GetFormControlCss(IsMemberNameValid)" maxlength="50" />
                 @if (!IsMemberNameValid)
                 {
-                    <span class="invalid-feedback">Required</span>
+                    <span class="invalid-feedback">@UIResources.JoinTeam_RequiredLabel</span>
                 }
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" id="joinTeam$asObserver" name="asObserver" @bind="AsObserver" class="form-check-input" />
-                <label for="joinTeam$asObserver" class="form-check-label">As observer only</label>
+                <label for="joinTeam$asObserver" class="form-check-label">@UIResources.JoinTeam_AsObserverLabel</label>
             </div>
-            <button type="submit" id="joinTeam$submit" class="btn btn-primary">Join team</button>
+            <button type="submit" id="joinTeam$submit" class="btn btn-primary">@UIResources.JoinTeam_JoinTeamButton</button>
         </form>
     </div>
     <div class="card-footer">
         <small>
-            <strong>Tip:</strong> If you accidentally closed browser window and want to reconnect to your team,
-            simply enter your original team and member name here and click "Join team". You will get reconnected.
+            <strong>@UIResources.JoinTeam_TipLabel:</strong> @UIResources.JoinTeam_TipText
         </small>
     </div>
 </div>

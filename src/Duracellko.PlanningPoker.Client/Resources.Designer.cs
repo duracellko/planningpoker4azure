@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Client {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,101 +61,155 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89.
+        ///   Looks up a localized string similar to GetMessages is already in progress..
         /// </summary>
-        internal static string EstimationDeck_Fibonacci {
+        internal static string Error_GetMessagesInProgress {
             get {
-                return ResourceManager.GetString("EstimationDeck_Fibonacci", resourceCulture);
+                return ResourceManager.GetString("Error_GetMessagesInProgress", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+        ///   Looks up a localized string similar to ScrumMaster cannot disconnect himself..
         /// </summary>
-        internal static string EstimationDeck_Rating {
+        internal static string Error_ScrumMasterSelfDisconnect {
             get {
-                return ResourceManager.GetString("EstimationDeck_Rating", resourceCulture);
+                return ResourceManager.GetString("Error_ScrumMasterSelfDisconnect", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rock, Paper, Scissors, Lizard, Spock.
+        ///   Looks up a localized string similar to Timer duration must be greater than 0 seconds..
         /// </summary>
-        internal static string EstimationDeck_RockPaperScissorsLizardSpock {
+        internal static string Error_TimerDurationZeroOrNegative {
             get {
-                return ResourceManager.GetString("EstimationDeck_RockPaperScissorsLizardSpock", resourceCulture);
+                return ResourceManager.GetString("Error_TimerDurationZeroOrNegative", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100.
+        ///   Looks up a localized string similar to Timer cannot be started without configured dispatcher..
         /// </summary>
-        internal static string EstimationDeck_Standard {
+        internal static string Error_TimerStartedWithoutDispatcher {
             get {
-                return ResourceManager.GetString("EstimationDeck_Standard", resourceCulture);
+                return ResourceManager.GetString("Error_TimerStartedWithoutDispatcher", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to T-shirt: XS, S, M, L, XL.
+        ///   Looks up a localized string similar to ½.
         /// </summary>
-        internal static string EstimationDeck_Tshirt {
+        internal static string Estimation_Half {
             get {
-                return ResourceManager.GetString("EstimationDeck_Tshirt", resourceCulture);
+                return ResourceManager.GetString("Estimation_Half", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reconnect.
+        ///   Looks up a localized string similar to ∞.
         /// </summary>
-        internal static string JoinTeam_ReconnectButton {
+        internal static string Estimation_Infinity {
             get {
-                return ResourceManager.GetString("JoinTeam_ReconnectButton", resourceCulture);
+                return ResourceManager.GetString("Estimation_Infinity", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to reconnect?.
+        ///   Looks up a localized string similar to L.
         /// </summary>
-        internal static string JoinTeam_ReconnectMessage {
+        internal static string Estimation_L {
             get {
-                return ResourceManager.GetString("JoinTeam_ReconnectMessage", resourceCulture);
+                return ResourceManager.GetString("Estimation_L", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reconnect.
+        ///   Looks up a localized string similar to 🦎.
         /// </summary>
-        internal static string JoinTeam_ReconnectTitle {
+        internal static string Estimation_Lizard {
             get {
-                return ResourceManager.GetString("JoinTeam_ReconnectTitle", resourceCulture);
+                return ResourceManager.GetString("Estimation_Lizard", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error.
+        ///   Looks up a localized string similar to M.
         /// </summary>
-        internal static string MessagePanel_Error {
+        internal static string Estimation_M {
             get {
-                return ResourceManager.GetString("MessagePanel_Error", resourceCulture);
+                return ResourceManager.GetString("Estimation_M", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection failed. Please, check your internet connection..
+        ///   Looks up a localized string similar to 📜.
         /// </summary>
-        internal static string PlanningPokerService_ConnectionError {
+        internal static string Estimation_Paper {
             get {
-                return ResourceManager.GetString("PlanningPokerService_ConnectionError", resourceCulture);
+                return ResourceManager.GetString("Estimation_Paper", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Service is temporarily not available. Please, try again later..
+        ///   Looks up a localized string similar to ?.
         /// </summary>
-        internal static string PlanningPokerService_UnexpectedError {
+        internal static string Estimation_QuestionMark {
             get {
-                return ResourceManager.GetString("PlanningPokerService_UnexpectedError", resourceCulture);
+                return ResourceManager.GetString("Estimation_QuestionMark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 💎.
+        /// </summary>
+        internal static string Estimation_Rock {
+            get {
+                return ResourceManager.GetString("Estimation_Rock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S.
+        /// </summary>
+        internal static string Estimation_S {
+            get {
+                return ResourceManager.GetString("Estimation_S", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ✂.
+        /// </summary>
+        internal static string Estimation_Scissors {
+            get {
+                return ResourceManager.GetString("Estimation_Scissors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🖖.
+        /// </summary>
+        internal static string Estimation_Spock {
+            get {
+                return ResourceManager.GetString("Estimation_Spock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XL.
+        /// </summary>
+        internal static string Estimation_XL {
+            get {
+                return ResourceManager.GetString("Estimation_XL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XS.
+        /// </summary>
+        internal static string Estimation_XS {
+            get {
+                return ResourceManager.GetString("Estimation_XS", resourceCulture);
             }
         }
     }

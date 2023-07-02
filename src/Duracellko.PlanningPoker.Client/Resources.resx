@@ -117,37 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EstimationDeck_Fibonacci" xml:space="preserve">
-    <value>0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89</value>
+  <data name="Error_GetMessagesInProgress" xml:space="preserve">
+    <value>GetMessages is already in progress.</value>
   </data>
-  <data name="EstimationDeck_Rating" xml:space="preserve">
-    <value>1, 2, 3, 4, 5, 6, 7, 8, 9, 10</value>
+  <data name="Error_ScrumMasterSelfDisconnect" xml:space="preserve">
+    <value>ScrumMaster cannot disconnect himself.</value>
   </data>
-  <data name="EstimationDeck_RockPaperScissorsLizardSpock" xml:space="preserve">
-    <value>Rock, Paper, Scissors, Lizard, Spock</value>
+  <data name="Error_TimerDurationZeroOrNegative" xml:space="preserve">
+    <value>Timer duration must be greater than 0 seconds.</value>
   </data>
-  <data name="EstimationDeck_Standard" xml:space="preserve">
-    <value>0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100</value>
+  <data name="Error_TimerStartedWithoutDispatcher" xml:space="preserve">
+    <value>Timer cannot be started without configured dispatcher.</value>
   </data>
-  <data name="EstimationDeck_Tshirt" xml:space="preserve">
-    <value>T-shirt: XS, S, M, L, XL</value>
+  <data name="Estimation_Half" xml:space="preserve">
+    <value>½</value>
   </data>
-  <data name="JoinTeam_ReconnectButton" xml:space="preserve">
-    <value>Reconnect</value>
+  <data name="Estimation_Infinity" xml:space="preserve">
+    <value>∞</value>
   </data>
-  <data name="JoinTeam_ReconnectMessage" xml:space="preserve">
-    <value>Do you want to reconnect?</value>
+  <data name="Estimation_L" xml:space="preserve">
+    <value>L</value>
   </data>
-  <data name="JoinTeam_ReconnectTitle" xml:space="preserve">
-    <value>Reconnect</value>
+  <data name="Estimation_Lizard" xml:space="preserve">
+    <value>🦎</value>
   </data>
-  <data name="MessagePanel_Error" xml:space="preserve">
-    <value>Error</value>
+  <data name="Estimation_M" xml:space="preserve">
+    <value>M</value>
   </data>
-  <data name="PlanningPokerService_ConnectionError" xml:space="preserve">
-    <value>Connection failed. Please, check your internet connection.</value>
+  <data name="Estimation_Paper" xml:space="preserve">
+    <value>📜</value>
   </data>
-  <data name="PlanningPokerService_UnexpectedError" xml:space="preserve">
-    <value>Service is temporarily not available. Please, try again later.</value>
+  <data name="Estimation_QuestionMark" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="Estimation_Rock" xml:space="preserve">
+    <value>💎</value>
+  </data>
+  <data name="Estimation_S" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="Estimation_Scissors" xml:space="preserve">
+    <value>✂</value>
+  </data>
+  <data name="Estimation_Spock" xml:space="preserve">
+    <value>🖖</value>
+  </data>
+  <data name="Estimation_XL" xml:space="preserve">
+    <value>XL</value>
+  </data>
+  <data name="Estimation_XS" xml:space="preserve">
+    <value>XS</value>
   </data>
 </root>

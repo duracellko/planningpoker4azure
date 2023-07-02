@@ -111,7 +111,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -138,7 +142,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             {
                 target.CreateScrumTeam("team", "master", Deck.Standard);
             }
-            catch (ArgumentException)
+            catch (PlanningPokerException)
             {
                 // expected exception when adding same team
             }
@@ -216,7 +220,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             {
                 target.CreateScrumTeam("team", "master", Deck.Standard);
             }
-            catch (ArgumentException)
+            catch (PlanningPokerException)
             {
                 // expected exception when adding same team
             }
@@ -278,7 +282,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -323,7 +331,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var inputTeam = new ScrumTeam("team");
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.AttachScrumTeam(inputTeam));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.AttachScrumTeam(inputTeam));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -352,7 +364,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             {
                 target.AttachScrumTeam(inputTeam);
             }
-            catch (ArgumentException)
+            catch (PlanningPokerException)
             {
                 // expected exception when adding same team
             }
@@ -392,7 +404,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void GetScrumTeam_TeamNotInRepository_ReturnsTeamFromRepository()
+        public void GetScrumTeam_TeamNotInRepository_ThrowsException()
         {
             // Arrange
             var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
@@ -401,7 +413,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -415,7 +431,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(repository: repository.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -433,7 +453,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             {
                 target.GetScrumTeam("team");
             }
-            catch (ArgumentException)
+            catch (PlanningPokerException)
             {
                 // expected exception
             }
@@ -465,7 +485,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -494,7 +518,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             {
                 target.GetScrumTeam("team");
             }
-            catch (ArgumentException)
+            catch (PlanningPokerException)
             {
                 // expected exception
             }

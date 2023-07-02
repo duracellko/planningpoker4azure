@@ -6,9 +6,9 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h2" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
+        <PageTitle>@UIResources.PageNotFound_Title</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p>Specified page was not found. Please, verify that URL is correct.</p>
+            <p>@UIResources.PageNotFound_Text</p>
         </LayoutView>
     </NotFound>
 </Router>

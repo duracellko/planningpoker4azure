@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -68,9 +69,9 @@ namespace Duracellko.PlanningPoker.Service
                     };
                 }
             }
-            catch (ArgumentException ex)
+            catch (D.PlanningPokerException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CreatePlanningPokerExceptionResponse(ex));
             }
         }
 
@@ -105,9 +106,9 @@ namespace Duracellko.PlanningPoker.Service
                     };
                 }
             }
-            catch (ArgumentException ex)
+            catch (D.PlanningPokerException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CreatePlanningPokerExceptionResponse(ex));
             }
         }
 
@@ -158,6 +159,10 @@ namespace Duracellko.PlanningPoker.Service
                         SelectedEstimation = selectedEstimation
                     };
                 }
+            }
+            catch (D.PlanningPokerException ex)
+            {
+                return BadRequest(CreatePlanningPokerExceptionResponse(ex));
             }
             catch (ArgumentException ex)
             {
@@ -412,6 +417,12 @@ namespace Duracellko.PlanningPoker.Service
             {
                 throw new ArgumentException(Resources.Error_MemberNameTooLong, paramName);
             }
+        }
+
+        private static string CreatePlanningPokerExceptionResponse(D.PlanningPokerException exception)
+        {
+            var exceptionData = ServiceEntityMapper.Map(exception);
+            return nameof(D.PlanningPokerException) + ':' + JsonSerializer.Serialize(exceptionData);
         }
     }
 }

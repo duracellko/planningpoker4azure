@@ -70,7 +70,7 @@ namespace Duracellko.PlanningPoker.Redis
             data = data.Slice(1);
             if (!Enum.IsDefined<NodeMessageType>(messageType))
             {
-                throw new ArgumentException("Invalid message format.", nameof(message));
+                throw new ArgumentException(Resources.Error_InvalidMessageFormat, nameof(message));
             }
 
             data = ReadString(data, out var messageSubtype);
@@ -136,7 +136,7 @@ namespace Duracellko.PlanningPoker.Redis
 
             if (!Enum.IsDefined<NodeMessageType>(messageType))
             {
-                throw new ArgumentException("Invalid message format.", nameof(message));
+                throw new ArgumentException(Resources.Error_InvalidMessageFormat, nameof(message));
             }
 
             return new NodeMessage(messageType)
@@ -182,7 +182,7 @@ namespace Duracellko.PlanningPoker.Redis
         {
             if (data.IsEmpty)
             {
-                throw new ArgumentException("Invalid message format.", nameof(data));
+                throw new ArgumentException(Resources.Error_InvalidMessageFormat, nameof(data));
             }
 
             var length = data[0];

@@ -4,18 +4,20 @@
 
 <div class="membersPanel">
     <div class="card">
-        <div class="card-header">Scrum Master</div>
+        <div class="card-header">@UIResources.MembersPanel_ScrumMasterLabel</div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 <span>@Controller.ScrumMaster?.Name</span>
                 @if ((Controller.ScrumMaster?.HasEstimated).GetValueOrDefault())
                 {
-                    <span class="text-success ms-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
+                    <span class="text-success ms-1">
+                        <span class="oi oi-task" title="@UIResources.MembersPanel_MemberHasVotedTooltip" aria-hidden="true"></span>
+                    </span>
                 }
             </li>
         </ul>
 
-        <div class="card-header">Members</div>
+        <div class="card-header">@UIResources.MembersPanel_MembersLabel</div>
         <ul class="list-group list-group-flush">
             @foreach (var member in Controller.Members)
             {
@@ -23,11 +25,14 @@
                     <span>@member.Name</span>
                     @if (member.HasEstimated)
                     {
-                        <span class="text-success ms-1"><span class="oi oi-task" title="Member has voted" aria-hidden="true"></span></span>
+                        <span class="text-success ms-1">
+                            <span class="oi oi-task" title="@UIResources.MembersPanel_MemberHasVotedTooltip" aria-hidden="true"></span>
+                        </span>
                     }
                     @if (Controller.IsScrumMaster)
                     {
-                        <button type="button" @onclick="@(e => KickoffMemberCommand(member.Name))" class="btn btn-outline-danger float-end remove-member-btn" aria-label="Remove">
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(member.Name))" class="btn btn-outline-danger float-end remove-member-btn"
+                                aria-label="@UIResources.MembersPanel_RemoveButtonTooltip">
                             <span class="fw-bold" aria-hidden="true">&times;</span>
                         </button>
                     }
@@ -35,7 +40,7 @@
             }
         </ul>
 
-        <div class="card-header">Observers</div>
+        <div class="card-header">@UIResources.MembersPanel_ObserversLabel</div>
         <ul class="list-group list-group-flush">
             @foreach (var observer in Controller.Observers)
             {
@@ -43,7 +48,8 @@
                     <span>@observer.Name</span>
                     @if (Controller.IsScrumMaster)
                     {
-                        <button type="button" @onclick="@(e => KickoffMemberCommand(observer.Name))" class="btn btn-outline-danger float-end remove-member-btn" aria-label="Remove">
+                        <button type="button" @onclick="@(e => KickoffMemberCommand(observer.Name))" class="btn btn-outline-danger float-end remove-member-btn"
+                                aria-label="@UIResources.MembersPanel_RemoveButtonTooltip">
                             <span class="fw-bold" aria-hidden="true">&times;</span>
                         </button>
                     }
@@ -53,7 +59,7 @@
 
         @if (RemainingTimerTime != null)
         {
-            <div class="card-header">Timer</div>
+            <div class="card-header">@UIResources.MembersPanel_TimerLabel</div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-center">
                     <p class="h2">@RemainingTimerTime</p>

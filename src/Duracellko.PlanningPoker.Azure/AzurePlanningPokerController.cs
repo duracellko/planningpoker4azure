@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using System.Reactive.Subjects;
 using Duracellko.PlanningPoker.Azure.Configuration;
@@ -234,7 +233,7 @@ namespace Duracellko.PlanningPoker.Azure
                         }
                         else if (_teamsToInitialize.Contains(teamName))
                         {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Error_ScrumTeamAlreadyExists, teamName), nameof(teamName));
+                            throw new PlanningPokerException(Service.ErrorCodes.ScrumTeamAlreadyExists, teamName);
                         }
                     }
                 }

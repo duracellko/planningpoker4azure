@@ -59,11 +59,11 @@ namespace Duracellko.PlanningPoker.Redis
             {
                 var redis = await Connect();
                 await redis.GetDatabase().PingAsync();
-                return HealthCheckResult.Healthy("Redis is healthy.");
+                return HealthCheckResult.Healthy(Resources.Health_RedisHealthy);
             }
             catch (Exception ex)
             {
-                return HealthCheckResult.Unhealthy("Redis is unhealthy.", ex);
+                return HealthCheckResult.Unhealthy(Resources.Health_RedisUnhealthy, ex);
             }
         }
 

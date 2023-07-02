@@ -184,7 +184,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void CreateScrumTeam_TeamNameAlreadyExists_ArgumentException()
+        public void CreateScrumTeam_TeamNameAlreadyExists_PlanningPokerException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
@@ -192,7 +192,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             team.Dispose();
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateScrumTeam("team", "master2", Deck.Standard));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master2", Deck.Standard));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -259,7 +263,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void AttachScrumTeam_TeamNameAlreadyExists_ArgumentException()
+        public void AttachScrumTeam_TeamNameAlreadyExists_PlanningPokerException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
@@ -268,7 +272,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var team = new ScrumTeam("team");
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.AttachScrumTeam(team));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.AttachScrumTeam(team));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -301,13 +309,17 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void GetScrumTeam_TeamNameNotExists_ArgumentException()
+        public void GetScrumTeam_TeamNameNotExists_PlanningPokerException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -321,7 +333,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         }
 
         [TestMethod]
-        public void GetScrumTeam_AfterDisconnectingScrumMaster_ArgumentException()
+        public void GetScrumTeam_AfterDisconnectingScrumMaster_PlanningPokerException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
@@ -337,11 +349,15 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
-        public void GetScrumTeam_AfterDisconnectingAllMembers_ArgumentException()
+        public void GetScrumTeam_AfterDisconnectingAllMembers_PlanningPokerException()
         {
             // Arrange
             var target = CreatePlanningPokerController();
@@ -364,7 +380,11 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             }
 
             // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+
+            // Verify
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
+            Assert.AreEqual("team", exception.Argument);
         }
 
         [TestMethod]
@@ -627,7 +647,8 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
 
             // Verify
-            Assert.ThrowsException<ArgumentException>(() => target.GetScrumTeam("team"));
+            var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+            Assert.AreEqual("ScrumTeamNotExist", exception.Error);
         }
 
         private static PlanningPokerController CreatePlanningPokerController(
