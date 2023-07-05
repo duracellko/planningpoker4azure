@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BusyIndicator_Processing" xml:space="preserve">
+    <value>Tratamiento...</value>
+  </data>
+  <data name="CreateTeam_CreateTeamButton" xml:space="preserve">
+    <value>Crear equipo</value>
+  </data>
+  <data name="CreateTeam_Header" xml:space="preserve">
+    <value>Crear equipo</value>
+  </data>
+  <data name="CreateTeam_RequiredLabel" xml:space="preserve">
+    <value>Obligatorio</value>
+  </data>
+  <data name="CreateTeam_ScrumMasterNameLabel" xml:space="preserve">
+    <value>Nombre de Scrum Master</value>
+  </data>
+  <data name="CreateTeam_SelectedDeckLabel" xml:space="preserve">
+    <value>Baraja de cartas</value>
+  </data>
+  <data name="CreateTeam_TeamNameLabel" xml:space="preserve">
+    <value>Nombre del equipo</value>
+  </data>
+  <data name="CreateTeam_TipLabel" xml:space="preserve">
+    <value>Propina</value>
+  </data>
+  <data name="CreateTeam_TipText" xml:space="preserve">
+    <value>Después de crear el equipo, envíe el enlace desde la barra de direcciones a sus compañeros de equipo. Después de abrir el enlace, el "Nombre del equipo" se rellena previamente y solo necesitan ingresar el nombre.</value>
+  </data>
+  <data name="Error_MemberAlreadyExists" xml:space="preserve">
+    <value>El miembro u observador llamado '{0}' ya existe en el equipo.</value>
+  </data>
+  <data name="Error_ScrumTeamAlreadyExists" xml:space="preserve">
+    <value>No se puede crear el '{0}' del equipo Scrum. El equipo con ese nombre ya existe.</value>
+  </data>
+  <data name="Error_ScrumTeamNotExist" xml:space="preserve">
+    <value>El equipo Scrum '{0}' no existe.</value>
+  </data>
+  <data name="EstimationDeck_Fibonacci" xml:space="preserve">
+    <value>0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89</value>
+  </data>
+  <data name="EstimationDeck_Rating" xml:space="preserve">
+    <value>1, 2, 3, 4, 5, 6, 7, 8, 9, 10</value>
+  </data>
+  <data name="EstimationDeck_RockPaperScissorsLizardSpock" xml:space="preserve">
+    <value>Piedra, Papel, Tijeras, Lagarto, Spock</value>
+  </data>
+  <data name="EstimationDeck_Standard" xml:space="preserve">
+    <value>0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100</value>
+  </data>
+  <data name="EstimationDeck_Tshirt" xml:space="preserve">
+    <value>Camiseta: XS, S, M, L, XL</value>
+  </data>
+  <data name="GlobalMessage_CloseButton" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="GlobalMessage_CloseButtonTooltip" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="JoinTeam_AsObserverLabel" xml:space="preserve">
+    <value>Sólo como observador</value>
+  </data>
+  <data name="JoinTeam_Header" xml:space="preserve">
+    <value>Únete al equipo</value>
+  </data>
+  <data name="JoinTeam_JoinTeamButton" xml:space="preserve">
+    <value>Únete al equipo</value>
+  </data>
+  <data name="JoinTeam_MemberNameLabel" xml:space="preserve">
+    <value>Nombre del miembro</value>
+  </data>
+  <data name="JoinTeam_ReconnectButton" xml:space="preserve">
+    <value>Reconectar</value>
+  </data>
+  <data name="JoinTeam_ReconnectMessage" xml:space="preserve">
+    <value>¿Quieres volver a conectarte?</value>
+  </data>
+  <data name="JoinTeam_ReconnectTitle" xml:space="preserve">
+    <value>Reconectar</value>
+  </data>
+  <data name="JoinTeam_RequiredLabel" xml:space="preserve">
+    <value>Obligatorio</value>
+  </data>
+  <data name="JoinTeam_TeamNameLabel" xml:space="preserve">
+    <value>Nombre del equipo</value>
+  </data>
+  <data name="JoinTeam_TipLabel" xml:space="preserve">
+    <value>Propina</value>
+  </data>
+  <data name="JoinTeam_TipText" xml:space="preserve">
+    <value>Si accidentalmente cerró la ventana del navegador y desea volver a conectarse a su equipo, simplemente ingrese su equipo original y el nombre del miembro aquí y haga clic en "Unirse al equipo". Te volverás a conectar.</value>
+  </data>
+  <data name="MainLayout_AttributionsLabel" xml:space="preserve">
+    <value>Atribuciones</value>
+  </data>
+  <data name="MainLayout_CopyrightLabel" xml:space="preserve">
+    <value>Derechos de autor © 2012</value>
+  </data>
+  <data name="MembersPanel_MemberHasVotedTooltip" xml:space="preserve">
+    <value>El diputado ha votado</value>
+  </data>
+  <data name="MembersPanel_MembersLabel" xml:space="preserve">
+    <value>Miembros</value>
+  </data>
+  <data name="MembersPanel_ObserversLabel" xml:space="preserve">
+    <value>Observadores</value>
+  </data>
+  <data name="MembersPanel_RemoveButtonTooltip" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="MembersPanel_ScrumMasterLabel" xml:space="preserve">
+    <value>Scrum Master</value>
+  </data>
+  <data name="MembersPanel_TimerLabel" xml:space="preserve">
+    <value>Temporizador</value>
+  </data>
+  <data name="MessagePanel_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="NavBar_Disconnect" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="NavBar_Header" xml:space="preserve">
+    <value>Planificación del sitio web de poker</value>
+  </data>
+  <data name="NavBar_Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="NavBar_ToggleNavigationTooltip" xml:space="preserve">
+    <value>Alternar navegación</value>
+  </data>
+  <data name="PageNotFound_Text" xml:space="preserve">
+    <value>No se encontró la página especificada. Por favor, verifique que la URL sea correcta.</value>
+  </data>
+  <data name="PageNotFound_Title" xml:space="preserve">
+    <value>No encontrado</value>
+  </data>
+  <data name="PlanningPokerDesk_AverageLabel" xml:space="preserve">
+    <value>Promedio</value>
+  </data>
+  <data name="PlanningPokerDesk_CancelEstimationButton" xml:space="preserve">
+    <value>Cancelar estimación</value>
+  </data>
+  <data name="PlanningPokerDesk_MedianLabel" xml:space="preserve">
+    <value>Mediana</value>
+  </data>
+  <data name="PlanningPokerDesk_PickEstimationLabel" xml:space="preserve">
+    <value>Estimación de selección</value>
+  </data>
+  <data name="PlanningPokerDesk_SelectedEstimatesLabel" xml:space="preserve">
+    <value>Estimaciones seleccionadas</value>
+  </data>
+  <data name="PlanningPokerDesk_ShowAverageButton" xml:space="preserve">
+    <value>Mostrar promedio</value>
+  </data>
+  <data name="PlanningPokerDesk_StartEstimationButton" xml:space="preserve">
+    <value>Iniciar estimación</value>
+  </data>
+  <data name="PlanningPokerDesk_StartTimerButton" xml:space="preserve">
+    <value>Temporizador de inicio</value>
+  </data>
+  <data name="PlanningPokerDesk_StopTimerButton" xml:space="preserve">
+    <value>Detener el temporizador</value>
+  </data>
+  <data name="PlanningPokerDesk_SumLabel" xml:space="preserve">
+    <value>Suma</value>
+  </data>
+  <data name="PlanningPokerDesk_TeamTooltip" xml:space="preserve">
+    <value>Equipo</value>
+  </data>
+  <data name="PlanningPokerDesk_UserTooltip" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="PlanningPokerService_ConnectionError" xml:space="preserve">
+    <value>Error de conexión. Por favor, compruebe su conexión a Internet.</value>
+  </data>
+  <data name="PlanningPokerService_UnexpectedError" xml:space="preserve">
+    <value>El servicio no está disponible temporalmente. Por favor, inténtalo de nuevo más tarde.</value>
+  </data>
+  <data name="Settings_ChangeDeckButton" xml:space="preserve">
+    <value>Cambio</value>
+  </data>
+  <data name="Settings_ChangeDeckLabel" xml:space="preserve">
+    <value>Cambiar de mazo</value>
+  </data>
+  <data name="Settings_CloseButton" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Settings_CloseButtonTooltip" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Settings_DeckChangedLabel" xml:space="preserve">
+    <value>Se ha cambiado la plataforma de estimación.</value>
+  </data>
+  <data name="Settings_MinutesShortLabel" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="Settings_MinutesTooltip" xml:space="preserve">
+    <value>acta</value>
+  </data>
+  <data name="Settings_SecondsShortLabel" xml:space="preserve">
+    <value>Sec</value>
+  </data>
+  <data name="Settings_SecondsTooltip" xml:space="preserve">
+    <value>sobras</value>
+  </data>
+  <data name="Settings_TimerDurationLabel" xml:space="preserve">
+    <value>Duración del temporizador</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+</root>
