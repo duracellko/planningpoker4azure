@@ -155,13 +155,13 @@ npm install
 
 PlanningPoker solution contains following projects:
 
-* **PlanningPoker.Shared** contains common settings for all projects. This includes build configuration, static code analysis, assembly version, etc.
 * **PlanningPoker.Domain** contains domain classes of the application. This includes domain logic and entities e.g. ScrumMaster, Estimation.
 * **PlanningPoker** implements host of domain objects, JSON web service and file-system repository.
 * **PlanningPoker.Service** implements DTOs shared between server and client.
 * **PlanningPoker.Web** is host application. It starts ASP.NET Core hosting, dependency injection and loads configuration.
 * **PlanningPoker.Client** is Blazor SPA client. It containes 2 pages, Blazor components and communication with the server.
-* **PlanningPoker.Azure** contains modified host of domain objects used on Windows Azure platform. Additionally it implements communication between cloud instances using Service Bus.
+* **PlanningPoker.Azure** contains modified host of domain objects used on Windows Azure platform. Additionally it implements communication between cloud instances using [Service Bus](https://azure.microsoft.com/products/service-bus/).
+* **PlanningPoker.Redis** contains extension to use [Redis PubSub](https://redis.com/glossary/pub-sub/) instead of Azure Service Bus.
 * **PlanningPoker.Domain.Test** contains unit-tests of domain classes.
 * **PlanningPoker.Test** contains unit-tests of PlanningPoker project classes.
 * **PlanningPoker.Client.Test** contains unit-tests of client application.
@@ -175,3 +175,6 @@ This application including source code can be used under [MIT License](License.t
 * [Planning Poker](https://www.mountaingoatsoftware.com/agile/planning-poker/license) is a registered trademark of Mountain Goat Software, LLC.
 * [Rock, Paper, Scissors, Lizard, Spock](http://www.samkass.com/theories/RPSSL.html) is licensed under [CC BY-NC 3.0](https://creativecommons.org/licenses/by-nc/3.0/).
 * [Open Iconic](https://useiconic.com/open) is licensed under [MIT](https://opensource.org/licenses/MIT) and [OFL](https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web).
+* Translations are made available thanks to following people:
+    * Italian - [@johnfelipe](https://github.com/johnfelipe)
+    * Spanish - [@johnfelipe](https://github.com/johnfelipe)
