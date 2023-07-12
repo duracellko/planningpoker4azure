@@ -11,21 +11,21 @@
 
         // Shows message box using Bootstrap.
         PlanningPoker.showMessageBox = function (element) {
-            var options = { backdrop: 'static' };
-            var modal = bootstrap.Modal.getOrCreateInstance(element, options);
+            const options = { backdrop: 'static' };
+            const modal = bootstrap.Modal.getOrCreateInstance(element, options);
             modal.show();
         };
 
         // Shows busy indicator using Bootstrap.
         PlanningPoker.showBusyIndicator = function (element) {
-            var options = { backdrop: 'static', keyboard: false };
-            var modal = bootstrap.Modal.getOrCreateInstance(element, options);
+            const options = { backdrop: 'static', keyboard: false };
+            const modal = bootstrap.Modal.getOrCreateInstance(element, options);
             modal.show();
         };
 
         // Hides modal component using Bootstrap.
         PlanningPoker.hide = function (element) {
-            var modal = bootstrap.Modal.getOrCreateInstance(element);
+            const modal = bootstrap.Modal.getOrCreateInstance(element);
             modal.hide();
         };
 

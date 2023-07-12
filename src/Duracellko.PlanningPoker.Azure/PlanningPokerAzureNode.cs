@@ -280,6 +280,7 @@ namespace Duracellko.PlanningPoker.Azure
                         _processingScrumTeamName = scrumTeam.Name;
                         using (var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam))
                         {
+                            // The team can be released just after attaching.
                         }
                     }
                     finally
@@ -703,6 +704,7 @@ namespace Duracellko.PlanningPoker.Azure
                 }
                 catch (Exception)
                 {
+                    // Node will request teams again on failure.
                 }
             }
         }

@@ -21,7 +21,6 @@ namespace Duracellko.PlanningPoker.Redis
         private readonly ILogger<RedisServiceBus> _logger;
 
         private volatile string? _nodeId;
-        private string? _connectionString;
         private string? _channel;
         private RedisChannel _redisChannel;
         private ConnectionMultiplexer? _redis;
@@ -108,7 +107,6 @@ namespace Duracellko.PlanningPoker.Redis
                 throw new ArgumentNullException(nameof(nodeId));
             }
 
-            _connectionString = GetConnectionString();
             _nodeId = nodeId;
             _channel = Configuration.ServiceBusTopic;
             if (string.IsNullOrEmpty(_channel))
@@ -116,8 +114,9 @@ namespace Duracellko.PlanningPoker.Redis
                 _channel = DefaultChannelName;
             }
 
+            var connectionString = GetConnectionString();
             _redisChannel = new RedisChannel(_channel, RedisChannel.PatternMode.Literal);
-            _redis = await ConnectionMultiplexer.ConnectAsync(_connectionString);
+            _redis = await ConnectionMultiplexer.ConnectAsync(connectionString);
             _subscriber = _redis.GetSubscriber();
             await CreateSubscription(_redisChannel, _channel, nodeId);
         }

@@ -55,7 +55,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         private sealed class DisposableTimer : IDisposable
         {
             private readonly Action _action;
-            private Func<Action, Task> _dispatcherDelegate;
+            private readonly Func<Action, Task> _dispatcherDelegate;
             private Timer? _timer;
 
             public DisposableTimer(Action action, Func<Action, Task> dispatcherDelegate, TimeSpan interval)

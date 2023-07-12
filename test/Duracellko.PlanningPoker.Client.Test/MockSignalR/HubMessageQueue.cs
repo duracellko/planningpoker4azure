@@ -12,13 +12,16 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
     public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposable
     {
         private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
-        private readonly IObservable<HubMessage> _messages;
         private IDisposable? _subscription;
         private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception?)>();
 
         public HubMessageQueue(IObservable<HubMessage> messages)
         {
-            _messages = messages ?? throw new ArgumentNullException(nameof(messages));
+            if (messages == null)
+            {
+                throw new ArgumentNullException(nameof(messages));
+            }
+
             _subscription = messages.Subscribe(new HubMessageHandler(this));
         }
 

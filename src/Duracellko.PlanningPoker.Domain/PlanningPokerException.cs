@@ -7,6 +7,7 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Represents an error or an invalid input in an operation in the Planning Poker application.
     /// </summary>
+    [Serializable]
     public class PlanningPokerException : Exception
     {
         /// <summary>
@@ -79,6 +80,18 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets an argument value that was invalid input for the failed operation.
         /// </summary>
         public string? Argument { get; }
+
+        /// <summary>
+        /// Sets the SerializationInfo with information about the exception.
+        /// </summary>
+        /// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(Error), Error);
+            info.AddValue(nameof(Argument), Argument);
+        }
 
         private static string GetExceptionMessage(string error, string argument)
         {

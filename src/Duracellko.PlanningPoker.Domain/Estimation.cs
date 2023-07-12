@@ -5,7 +5,7 @@ namespace Duracellko.PlanningPoker.Domain
     /// <summary>
     /// Estimation value of a planning poker card.
     /// </summary>
-    public class Estimation : IEquatable<Estimation>
+    public sealed class Estimation : IEquatable<Estimation>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Estimation"/> class.
@@ -31,6 +31,16 @@ namespace Duracellko.PlanningPoker.Domain
         public double? Value { get; private set; }
 
         /// <summary>
+        /// Indicates whether the current Estimation is equal to another Estimation.
+        /// </summary>
+        /// <param name="other">The other Estimation to compare with.</param>
+        /// <returns><c>True</c> if the specified Estimation is equal to this instance; otherwise, <c>false</c>.</returns>
+        public bool Equals(Estimation? other)
+        {
+            return other != null && Value == other.Value;
+        }
+
+        /// <summary>
         /// Determines whether the specified <see cref="object"/> is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
@@ -39,12 +49,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </returns>
         public override bool Equals(object? obj)
         {
-            if (obj == null || obj.GetType() != typeof(Estimation))
-            {
-                return false;
-            }
-
-            return Equals((Estimation)obj);
+            return obj is Estimation estimation && Equals(estimation);
         }
 
         /// <summary>
@@ -55,17 +60,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// </returns>
         public override int GetHashCode()
         {
-            return Value.HasValue ? Value.GetHashCode() : 0;
-        }
-
-        /// <summary>
-        /// Indicates whether the current Estimation is equal to another Estimation.
-        /// </summary>
-        /// <param name="other">The other Estimation to compare with.</param>
-        /// <returns><c>True</c> if the specified Estimation is equal to this instance; otherwise, <c>false</c>.</returns>
-        public bool Equals(Estimation? other)
-        {
-            return other != null ? Value == other.Value : false;
+            return Value.HasValue ? Value.GetHashCode() : int.MinValue;
         }
     }
 }

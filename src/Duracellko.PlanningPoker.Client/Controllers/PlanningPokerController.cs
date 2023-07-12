@@ -738,7 +738,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             var hasEstimated = ScrumTeam?.State == TeamState.EstimationInProgress && _memberEstimations != null &&
-                _memberEstimations.Any(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
+                _memberEstimations.Exists(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
 
             return new MemberItem(member, hasEstimated);
         }

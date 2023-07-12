@@ -149,7 +149,8 @@ namespace Duracellko.PlanningPoker.Test.Data
             target.SaveScrumTeam(team2);
 
             var fileNames = _rootFolder!.GetFiles().Select(f => f.Name).ToList();
-            var expectedFileNames = new[] { "The team.json", "Team2.json" };
+            var expectedFileNames = new[] { "The team.json", "Team 2.json" };
+            CollectionAssert.AreEquivalent(expectedFileNames, fileNames);
         }
 
         [TestMethod]

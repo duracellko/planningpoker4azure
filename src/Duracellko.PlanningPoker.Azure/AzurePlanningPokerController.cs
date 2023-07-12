@@ -20,8 +20,8 @@ namespace Duracellko.PlanningPoker.Azure
     public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
     {
         private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
+        private readonly object _teamsToInitializeLock = new object();
         private HashSet<string>? _teamsToInitialize;
-        private object _teamsToInitializeLock = new object();
         private volatile bool _initialized;
 
         /// <summary>
@@ -90,6 +90,7 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 using (var teamLock = AttachScrumTeam(team))
                 {
+                    // The team can be released just after attaching.
                 }
 
                 lock (_teamsToInitializeLock)

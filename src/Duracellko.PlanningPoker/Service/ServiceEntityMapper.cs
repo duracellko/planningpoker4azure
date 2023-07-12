@@ -26,27 +26,6 @@ namespace Duracellko.PlanningPoker.Service
         }
 
         /// <summary>
-        /// Filters or transforms message before sending to client.
-        /// MemberDisconnected message of ScrumMaster is transformed to Empty message,
-        /// because that is internal message and ScrumMaster is not actually disconnected.
-        /// </summary>
-        /// <param name="message">The message to transform.</param>
-        /// <returns>The transformed message.</returns>
-        public static D.Message FilterMessage(D.Message message)
-        {
-            if (message.MessageType == D.MessageType.MemberDisconnected)
-            {
-                var memberMessage = (D.MemberMessage)message;
-                if (memberMessage.Member is D.ScrumMaster)
-                {
-                    return new D.Message(D.MessageType.Empty, message.Id);
-                }
-            }
-
-            return message;
-        }
-
-        /// <summary>
         /// Maps service Deck value to domain Deck value.
         /// </summary>
         /// <param name="value">Service deck value.</param>
@@ -69,6 +48,27 @@ namespace Duracellko.PlanningPoker.Service
                 Message = exception.Message,
                 Argument = exception.Argument
             };
+        }
+
+        /// <summary>
+        /// Filters or transforms message before sending to client.
+        /// MemberDisconnected message of ScrumMaster is transformed to Empty message,
+        /// because that is internal message and ScrumMaster is not actually disconnected.
+        /// </summary>
+        /// <param name="message">The message to transform.</param>
+        /// <returns>The transformed message.</returns>
+        public static D.Message FilterMessage(D.Message message)
+        {
+            if (message.MessageType == D.MessageType.MemberDisconnected)
+            {
+                var memberMessage = (D.MemberMessage)message;
+                if (memberMessage.Member is D.ScrumMaster)
+                {
+                    return new D.Message(D.MessageType.Empty, message.Id);
+                }
+            }
+
+            return message;
         }
 
         private static IConfigurationProvider CreateMapperConfiguration()

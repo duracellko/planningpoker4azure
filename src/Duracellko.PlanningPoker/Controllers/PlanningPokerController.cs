@@ -308,17 +308,14 @@ namespace Duracellko.PlanningPoker.Controllers
 
             LogScrumTeamMessage(team, e.Message);
 
-            if (e.Message.MessageType == MessageType.MemberDisconnected)
+            if (e.Message.MessageType == MessageType.MemberDisconnected && !IsTeamActive(team))
             {
-                if (!IsTeamActive(team))
-                {
-                    saveTeam = false;
-                    OnTeamRemoved(team);
+                saveTeam = false;
+                OnTeamRemoved(team);
 
-                    _scrumTeams.TryRemove(team.Name, out _);
-                    Repository.DeleteScrumTeam(team.Name);
-                    _logger.ScrumTeamRemoved(team.Name);
-                }
+                _scrumTeams.TryRemove(team.Name, out _);
+                Repository.DeleteScrumTeam(team.Name);
+                _logger.ScrumTeamRemoved(team.Name);
             }
 
             if (saveTeam)
@@ -345,17 +342,8 @@ namespace Duracellko.PlanningPoker.Controllers
                     {
                         if (VerifyTeamActive(team))
                         {
-                            var teamLock = new object();
-                            result = new Tuple<ScrumTeam, object>(team, teamLock);
-                            if (_scrumTeams.TryAdd(team.Name, result))
-                            {
-                                OnTeamAdded(team);
-                            }
-                            else
-                            {
-                                result = null;
-                                retry = true;
-                            }
+                            result = AttachLoadedScrumTeam(team);
+                            retry = result == null;
                         }
                         else
                         {
@@ -371,6 +359,19 @@ namespace Duracellko.PlanningPoker.Controllers
         private void SaveScrumTeam(ScrumTeam team)
         {
             Repository.SaveScrumTeam(team);
+        }
+
+        private Tuple<ScrumTeam, object>? AttachLoadedScrumTeam(ScrumTeam team)
+        {
+            var teamLock = new object();
+            var result = new Tuple<ScrumTeam, object>(team, teamLock);
+            if (_scrumTeams.TryAdd(team.Name, result))
+            {
+                OnTeamAdded(team);
+                return result;
+            }
+
+            return null;
         }
 
         private bool VerifyTeamActive(ScrumTeam team)
