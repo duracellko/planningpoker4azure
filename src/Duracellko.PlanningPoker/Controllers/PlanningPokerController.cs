@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,6 +71,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <summary>
         /// Gets a collection of Scrum team names.
         /// </summary>
+        [SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Creates copy to be thread-safe.")]
         public IEnumerable<string> ScrumTeamNames
         {
             get

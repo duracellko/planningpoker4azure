@@ -67,6 +67,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error, when application is closing.")]
+            [SuppressMessage("Major Bug", "S3168:\"async\" methods should not return \"void\"", Justification = "Task life time is controlled by controller, not consumer.")]
             public async void StartReceiving()
             {
                 try

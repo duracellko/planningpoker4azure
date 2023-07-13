@@ -79,12 +79,14 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var target = CreatePlanningPokerController();
-            using (var teamLock1 = target.CreateScrumTeam("team1", "master1", Deck.Standard))
+            using (target.CreateScrumTeam("team1", "master1", Deck.Standard))
             {
+                // Create team only
             }
 
-            using (var teamLock2 = target.CreateScrumTeam("team2", "master1", Deck.Standard))
+            using (target.CreateScrumTeam("team2", "master1", Deck.Standard))
             {
+                // Create team only
             }
 
             // Act
@@ -339,7 +341,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController();
             using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
             {
-                var team = teamLock.Team;
+                _ = teamLock.Team;
             }
 
             using (var teamLock = target.GetScrumTeam("team"))
@@ -520,7 +522,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
             ScrumTeam team;
@@ -530,7 +532,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 team.Join("member", false);
             }
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40, DateTimeKind.Utc));
             team.ScrumMaster!.UpdateActivity();
 
             // Act
@@ -548,7 +550,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
             ScrumTeam team;
@@ -558,7 +560,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 team.Join("member", false);
             }
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
             team.ScrumMaster!.UpdateActivity();
 
             // Act
@@ -576,7 +578,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
             ScrumTeam team;
@@ -586,7 +588,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 team.Join("observer", true);
             }
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40, DateTimeKind.Utc));
             team.ScrumMaster!.UpdateActivity();
 
             // Act
@@ -604,7 +606,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
             ScrumTeam team;
@@ -614,7 +616,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 team.Join("observer", true);
             }
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
             team.ScrumMaster!.UpdateActivity();
 
             // Act
@@ -632,16 +634,15 @@ namespace Duracellko.PlanningPoker.Test.Controllers
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
-            ScrumTeam team;
             using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
             {
-                team = teamLock.Team;
+                _ = teamLock.Team;
             }
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));

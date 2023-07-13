@@ -23,6 +23,10 @@ dotnet_diagnostic.SA1413.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1652.severity = none
 
+dotnet_diagnostic.S2346.severity = none
+dotnet_diagnostic.S3267.severity = none
+dotnet_diagnostic.S4070.severity = none
+
 [*.{csproj,shproj,projitems,props,targets}]
 indent_size = 2
 

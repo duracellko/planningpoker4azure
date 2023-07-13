@@ -237,7 +237,6 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var sessionId = Guid.NewGuid();
             var team = CreateScrumTeamWithMessages(sessionId);
             var target = team.Observers.First();
-            var expectedMessages = target.Messages.Skip(messageId1).ToList();
 
             // Act
             target.AcknowledgeMessages(sessionId, messageId1);
@@ -335,7 +334,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void LastActivity_AfterConstruction_ReturnsUtcNow()
         {
             // Arrange
-            var utcNow = new DateTime(2012, 1, 2, 4, 50, 13);
+            var utcNow = new DateTime(2012, 1, 2, 4, 50, 13, DateTimeKind.Utc);
             var dateTimeProvider = new DateTimeProviderMock();
             dateTimeProvider.SetUtcNow(utcNow);
 
@@ -353,9 +352,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
         public void UpdateActivity_UtcNowIsChanged_LastActivityIsChanged()
         {
             // Arrange
-            var utcNow = new DateTime(2012, 1, 2, 4, 50, 13);
+            var utcNow = new DateTime(2012, 1, 2, 4, 50, 13, DateTimeKind.Utc);
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 2, 3, 35, 0, DateTimeKind.Utc));
 
             var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var target = new Observer(team, "test");

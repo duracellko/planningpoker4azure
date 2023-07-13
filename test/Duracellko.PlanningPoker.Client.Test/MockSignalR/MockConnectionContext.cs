@@ -9,8 +9,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 {
     internal sealed class MockConnectionContext : ConnectionContext
     {
-        private string _connectionId = Guid.NewGuid().ToString();
-        private IDuplexPipe _transport;
+        private readonly string _connectionId = Guid.NewGuid().ToString();
+        private readonly IDuplexPipe _transport;
 
         public MockConnectionContext(IDuplexPipe transport)
         {

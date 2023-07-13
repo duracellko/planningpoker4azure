@@ -346,7 +346,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             return new FileScrumTeamRepository(settings.Object, configuration.Object, serializer, DateTimeProvider.Default, GuidProvider.Default, logger.Object);
         }
 
-        private FileInfo CreateTextFile(string name)
+        private void CreateTextFile(string name)
         {
             var path = Path.Join(_rootFolder!.FullName, name);
             var result = new FileInfo(path);
@@ -354,8 +354,6 @@ namespace Duracellko.PlanningPoker.Test.Data
             {
                 writer.Write(Guid.NewGuid().ToString());
             }
-
-            return result;
         }
     }
 }

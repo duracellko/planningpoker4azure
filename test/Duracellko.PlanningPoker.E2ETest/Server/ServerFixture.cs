@@ -106,7 +106,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
                             Stop().Wait();
                         }
                         catch (AggregateException ex)
-                            when (ex.InnerException != null && ex.InnerException is TaskCanceledException)
+                            when (ex.InnerException is TaskCanceledException)
                         {
                             // Ignore time out error
                         }

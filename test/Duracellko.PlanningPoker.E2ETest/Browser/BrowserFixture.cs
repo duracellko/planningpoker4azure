@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using OpenQA.Selenium;
@@ -34,6 +35,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             Browser = driver;
         }
 
+        [SuppressMessage("Major Code Smell", "S1066:Collapsible \"if\" statements should be merged", Justification = "Follows IDisposable pattern.")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

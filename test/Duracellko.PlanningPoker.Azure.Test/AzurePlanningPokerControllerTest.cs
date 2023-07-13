@@ -277,7 +277,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void CreateScrumTeam_InitializationTeamListIsNotSet_WaitForInitializationTeamList()
+        public async Task CreateScrumTeam_InitializationTeamListIsNotSet_WaitForInitializationTeamList()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
@@ -289,13 +289,13 @@ namespace Duracellko.PlanningPoker.Azure.Test
                 TaskCreationOptions.None,
                 TaskScheduler.Default);
             Assert.IsFalse(task.IsCompleted);
-            Thread.Sleep(50);
+            await Task.Delay(50);
             Assert.IsFalse(task.IsCompleted);
             target.SetTeamsInitializingList(Enumerable.Empty<string>());
-            Assert.IsTrue(task.Wait(1000));
+            await task.WaitAsync(TimeSpan.FromSeconds(1));
 
             // Verify
-            Assert.IsNotNull(task.Result);
+            Assert.IsNotNull(await task);
             Assert.IsFalse(target.IsInitialized);
         }
 
@@ -346,7 +346,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
         }
 
         [TestMethod]
-        public void GetScrumTeam_TeamIsNotInitialized_WaitForTeamInitialization()
+        public async Task GetScrumTeam_TeamIsNotInitialized_WaitForTeamInitialization()
         {
             // Arrange
             var target = CreateAzurePlanningPokerController();
@@ -355,13 +355,13 @@ namespace Duracellko.PlanningPoker.Azure.Test
             // Act
             var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
             Assert.IsFalse(task.IsCompleted);
-            Thread.Sleep(50);
+            await Task.Delay(50);
             Assert.IsFalse(task.IsCompleted);
             target.InitializeScrumTeam(new ScrumTeam("test team"));
-            Assert.IsTrue(task.Wait(1000));
+            await task.WaitAsync(TimeSpan.FromSeconds(1));
 
             // Verify
-            Assert.IsNotNull(task.Result);
+            Assert.IsNotNull(await task);
             Assert.IsFalse(target.IsInitialized);
         }
 

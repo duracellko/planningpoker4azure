@@ -42,10 +42,12 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             var target = CreatePlanningPokerController(repository: repository.Object);
             using (target.CreateScrumTeam("team1", "master", Deck.Standard))
             {
+                // Create team only
             }
 
             using (target.CreateScrumTeam("team3", "master", Deck.Standard))
             {
+                // Create team only
             }
 
             // Act
@@ -213,6 +215,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             using (target.CreateScrumTeam("team", "master", Deck.Standard))
             {
+                // Create team only
             }
 
             // Act
@@ -550,6 +553,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
             // Act
             using (target.GetScrumTeam("team"))
             {
+                // Obtain team only
             }
 
             using (var teamLock = target.GetScrumTeam("team"))

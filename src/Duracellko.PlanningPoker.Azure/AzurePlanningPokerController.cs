@@ -137,6 +137,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Releases all unmanaged and optionally managed resources.
         /// </summary>
         /// <param name="disposing"><c>True</c> if disposing not using GC; otherwise <c>false</c>.</param>
+        [SuppressMessage("Major Code Smell", "S1066:Collapsible \"if\" statements should be merged", Justification = "Follows IDisposable pattern.")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

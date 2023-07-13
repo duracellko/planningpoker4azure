@@ -210,7 +210,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, resultTeam.Name);
                 Assert.IsNotNull(resultTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), resultTeam.TimerEndTime);
+                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), resultTeam.TimerEndTime);
                 Assert.IsNotNull(resultTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName, MemberName };
                 CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
@@ -448,7 +448,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             // Arrange
             var guidProvider = new GuidProviderMock();
             var team = CreateBasicTeam(guidProvider: guidProvider);
-            var member = team.Join(MemberName, false);
+            team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
@@ -490,7 +490,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc));
             var team = CreateBasicTeam(guidProvider: guidProvider, dateTimeProvider: dateTimeProvider);
             team.ScrumMaster!.StartTimer(TimeSpan.FromSeconds(122));
-            var observer = team.Join(ObserverName, true);
+            team.Join(ObserverName, true);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
@@ -514,7 +514,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
                 Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
                 Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
-                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), result.ScrumTeam.TimerEndTime);
+                Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), result.ScrumTeam.TimerEndTime);
 
                 Assert.IsNotNull(result.ScrumTeam.Members);
                 var expectedMembers = new string[] { ScrumMasterName };
@@ -534,7 +534,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             // Arrange
             var guidProvider = new GuidProviderMock();
             var team = CreateBasicTeam(guidProvider: guidProvider);
-            var member = team.Join(MemberName, false);
+            team.Join(MemberName, false);
             team.Disconnect(ScrumMasterName);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -705,7 +705,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam();
-            var member = (D.Member)team.Join(MemberName, false);
+            team.Join(MemberName, false);
             team.ScrumMaster!.StartEstimation();
 
             var teamLock = CreateTeamLock(team);
@@ -731,7 +731,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam();
-            var member = (D.Member)team.Join(MemberName, false);
+            team.Join(MemberName, false);
 
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -756,7 +756,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam();
-            var member = (D.Member)team.Join(MemberName, false);
+            team.Join(MemberName, false);
             team.ScrumMaster!.StartEstimation();
 
             var teamLock = CreateTeamLock(team);
@@ -785,7 +785,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam();
-            var member = (D.Member)team.Join(MemberName, false);
+            team.Join(MemberName, false);
 
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -826,7 +826,7 @@ namespace Duracellko.PlanningPoker.Test.Service
                 guidProvider.SetGuid(guid);
 
                 // Act
-                var result = target.ReconnectTeam(TeamName, ScrumMasterName);
+                target.ReconnectTeam(TeamName, ScrumMasterName);
 
                 // Verify
                 Assert.AreEqual<DateTime>(utcNow, team.ScrumMaster!.LastActivity);
@@ -1160,27 +1160,28 @@ namespace Duracellko.PlanningPoker.Test.Service
         }
 
         [TestMethod]
-        public void SubmitEstimation_TeamNameAndMemberNameAndMinus1111100_EstimationOfMemberIsSetToInfinity()
+        public void SubmitEstimation_TeamNameAndScrumMasterNameAndMinus1111100_EstimationOfMemberIsSetToInfinity()
         {
             // Arrange
             var team = CreateBasicTeam();
-            var member = (D.Member)team.Join(MemberName, false);
+            var scrumMaster = team.ScrumMaster!;
+            team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
             using (var target = CreatePlanningPokerHub(planningPoker.Object))
             {
                 // Act
-                target.SubmitEstimation(TeamName, MemberName, -1111100.0);
+                target.SubmitEstimation(TeamName, ScrumMasterName, -1111100.0);
 
                 // Verify
                 planningPoker.Verify();
                 teamLock.Verify();
                 teamLock.Verify(l => l.Team);
 
-                Assert.IsNotNull(member.Estimation);
-                Assert.IsNotNull(member.Estimation.Value);
-                Assert.IsTrue(double.IsPositiveInfinity(member.Estimation.Value.Value));
+                Assert.IsNotNull(scrumMaster.Estimation);
+                Assert.IsNotNull(scrumMaster.Estimation.Value);
+                Assert.IsTrue(double.IsPositiveInfinity(scrumMaster.Estimation.Value.Value));
             }
         }
 
@@ -1373,7 +1374,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             teamLock.Verify();
             teamLock.Verify(l => l.Team);
 
-            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), team.TimerEndTime);
+            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), team.TimerEndTime);
         }
 
         [TestMethod]
@@ -1507,7 +1508,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam(new GuidProviderMock());
-            var member = team.Join(MemberName, false);
+            team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
             planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
@@ -1779,7 +1780,7 @@ namespace Duracellko.PlanningPoker.Test.Service
             Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
             Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
             var timerMessage = (TimerMessage)result[0];
-            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3), timerMessage.EndTime);
+            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), timerMessage.EndTime);
         }
 
         [TestMethod]
@@ -1818,7 +1819,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         {
             // Arrange
             var team = CreateBasicTeam(new GuidProviderMock());
-            var member = team.Join(MemberName, false);
+            team.Join(MemberName, false);
             var teamLock = CreateTeamLock(team);
             var messageCount = team.ScrumMaster!.Messages.Count();
 

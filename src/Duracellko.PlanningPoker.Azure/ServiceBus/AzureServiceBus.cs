@@ -351,17 +351,15 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 {
                     // if subscription is new, then assume that it has been created very recently and
                     // this node has not received notification about it yet
-                    _nodes.TryAdd(subscription, DateTime.UtcNow);
+                    var isNewSubscription = _nodes.TryAdd(subscription, DateTime.UtcNow);
 
-                    DateTime lastSubscriptionActivity;
-                    if (_nodes.TryGetValue(subscription, out lastSubscriptionActivity))
+                    if (!isNewSubscription &&
+                        _nodes.TryGetValue(subscription, out var lastSubscriptionActivity) &&
+                        lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
                     {
-                        if (lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
-                        {
-                            await DeleteSubscription(subscription);
-                            _nodes.TryRemove(subscription, out lastSubscriptionActivity);
-                            _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
-                        }
+                        await DeleteSubscription(subscription);
+                        _nodes.TryRemove(subscription, out lastSubscriptionActivity);
+                        _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
                     }
                 }
             }

@@ -137,6 +137,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <value>
         /// The estimation participants.
         /// </value>
+        [SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Used only by tests.")]
         public IEnumerable<EstimationParticipantStatus>? EstimationParticipants
         {
             get

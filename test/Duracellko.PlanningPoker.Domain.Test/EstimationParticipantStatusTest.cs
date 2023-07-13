@@ -36,7 +36,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var estimated = true;
 
             // Act
-            var result = new EstimationParticipantStatus("Member", estimated);
+            _ = new EstimationParticipantStatus("Member", estimated);
 
             // Verify
             Assert.IsTrue(estimated);

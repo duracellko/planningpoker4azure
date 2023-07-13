@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
     [TestClass]
     public sealed class JoinTeamPanelTest : IDisposable
     {
-        private Bunit.TestContext _context = new Bunit.TestContext();
+        private readonly Bunit.TestContext _context = new Bunit.TestContext();
 
         public void Dispose()
         {

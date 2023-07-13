@@ -206,7 +206,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var availableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci);
             var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
             var master = team.SetScrumMaster("master");
-            var member = (Member)team.Join("member", false);
+            team.Join("member", false);
             master.StartEstimation();
             var masterEstimation = new Estimation(89);
 
@@ -895,7 +895,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
             var team = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
-            var master = team.SetScrumMaster("master");
+            team.SetScrumMaster("master");
             var member = (Member)team.Join("member", false);
 
             // Act

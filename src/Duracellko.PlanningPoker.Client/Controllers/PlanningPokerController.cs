@@ -786,6 +786,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        [SuppressMessage("Major Bug", "S3168:\"async\" methods should not return \"void\"", Justification = "Fire-and-forget action.")]
         private async void SaveTimerSettings()
         {
             await _timerSettingsRepository.SetTimerDurationAsync(TimerDuration);
