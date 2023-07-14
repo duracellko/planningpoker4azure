@@ -335,9 +335,9 @@ namespace Duracellko.PlanningPoker.Domain
         public void DisconnectInactiveObservers(TimeSpan inactivityTime)
         {
             var lastInactivityTime = DateTimeProvider.UtcNow - inactivityTime;
-            bool IsObserverActive(Observer observer) => observer.LastActivity < lastInactivityTime && !observer.IsDormant;
-            var inactiveObservers = Observers.Where(IsObserverActive).ToList();
-            var inactiveMembers = Members.Where<Member>(IsObserverActive).ToList();
+            bool IsObserverInactive(Observer observer) => observer.LastActivity < lastInactivityTime && !observer.IsDormant;
+            var inactiveObservers = Observers.Where(IsObserverInactive).ToList();
+            var inactiveMembers = Members.Where<Member>(IsObserverInactive).ToList();
 
             if (inactiveObservers.Count > 0 || inactiveMembers.Count > 0)
             {
