@@ -6,6 +6,7 @@ namespace Duracellko.PlanningPoker.Client.Service
     /// <summary>
     /// Represents error returned by Planning Poker service.
     /// </summary>
+    [Serializable]
     public class PlanningPokerException : Exception
     {
         /// <summary>
@@ -67,6 +68,8 @@ namespace Duracellko.PlanningPoker.Client.Service
         protected PlanningPokerException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            Error = info.GetString(nameof(Error));
+            Argument = info.GetString(nameof(Argument));
         }
 
         /// <summary>
@@ -78,5 +81,17 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// Gets an argument value that was invalid input for the failed operation.
         /// </summary>
         public string? Argument { get; }
+
+        /// <summary>
+        /// Sets the SerializationInfo with information about the exception.
+        /// </summary>
+        /// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(Error), Error);
+            info.AddValue(nameof(Argument), Argument);
+        }
     }
 }

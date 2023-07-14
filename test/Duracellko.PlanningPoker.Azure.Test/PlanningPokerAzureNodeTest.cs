@@ -937,7 +937,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
 
-            var teamLock = SetupPlanningPoker(planningPoker, null, true);
+            SetupPlanningPoker(planningPoker, null, true);
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act
@@ -998,7 +998,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
             var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
             var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
 
-            var teamLock = SetupPlanningPoker(planningPoker, null, true);
+            SetupPlanningPoker(planningPoker, null, true);
             planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
 
             // Act

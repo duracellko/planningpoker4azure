@@ -9,7 +9,7 @@ namespace Duracellko.PlanningPoker.Data
     /// </summary>
     public class FileScrumTeamRepositorySettings : IFileScrumTeamRepositorySettings
     {
-        private IPlanningPokerConfiguration _configuration;
+        private readonly IPlanningPokerConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileScrumTeamRepositorySettings"/> class.

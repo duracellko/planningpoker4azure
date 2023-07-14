@@ -14,8 +14,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
         private readonly HubMessageStore _messageStore;
         private readonly SentMessagesObservable _sentMessagesObservable;
         private readonly CancellationTokenSource _closeCancellationToken = new CancellationTokenSource();
-
-        private IDisposable _sentMessagesSubscription;
+        private readonly IDisposable _sentMessagesSubscription;
         private bool _messageReadingStarted;
 
         public InMemoryTransport(HubMessageStore messageStore)
@@ -60,6 +59,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
             await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Bug", "S3168:\"async\" methods should not return \"void\"", Justification = "Receiving messages is not controlled by a consumer.")]
         internal async void OpenChannel()
         {
             try
@@ -138,6 +138,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
             public void OnNext(HubMessage value)
             {
+                // This observer just disposes InMemoryTransport after receiving last message.
             }
 
             public void OnCompleted()

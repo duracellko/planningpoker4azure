@@ -58,6 +58,20 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
         }
 
+        public static ScrumTeam GetScrumTeam(int membersCount)
+        {
+            var result = GetInitialScrumTeam();
+            result.Members = MemberNames.Take(membersCount)
+                .Select(n => new TeamMember
+                {
+                    Name = n,
+                    Type = MemberType
+                })
+                .ToList();
+
+            return result;
+        }
+
         public static ScrumTeam GetInitialScrumTeam()
         {
             return new ScrumTeam
@@ -71,20 +85,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 State = TeamState.Initial,
                 AvailableEstimations = GetAvailableEstimations()
             };
-        }
-
-        public static ScrumTeam GetScrumTeam(int membersCount)
-        {
-            var result = GetInitialScrumTeam();
-            result.Members = MemberNames.Take(membersCount)
-                .Select(n => new TeamMember
-                {
-                    Name = n,
-                    Type = MemberType
-                })
-                .ToList();
-
-            return result;
         }
 
         public static IList<Estimation> GetAvailableEstimations()

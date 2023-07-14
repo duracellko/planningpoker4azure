@@ -149,7 +149,8 @@ namespace Duracellko.PlanningPoker.Test.Data
             target.SaveScrumTeam(team2);
 
             var fileNames = _rootFolder!.GetFiles().Select(f => f.Name).ToList();
-            var expectedFileNames = new[] { "The team.json", "Team2.json" };
+            var expectedFileNames = new[] { "The team.json", "Team 2.json" };
+            CollectionAssert.AreEquivalent(expectedFileNames, fileNames);
         }
 
         [TestMethod]
@@ -345,7 +346,7 @@ namespace Duracellko.PlanningPoker.Test.Data
             return new FileScrumTeamRepository(settings.Object, configuration.Object, serializer, DateTimeProvider.Default, GuidProvider.Default, logger.Object);
         }
 
-        private FileInfo CreateTextFile(string name)
+        private void CreateTextFile(string name)
         {
             var path = Path.Join(_rootFolder!.FullName, name);
             var result = new FileInfo(path);
@@ -353,8 +354,6 @@ namespace Duracellko.PlanningPoker.Test.Data
             {
                 writer.Write(Guid.NewGuid().ToString());
             }
-
-            return result;
         }
     }
 }

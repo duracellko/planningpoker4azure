@@ -133,7 +133,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
             var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult);
 
-            var result = await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
             planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName));
         }
@@ -291,7 +291,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
             var target = CreateController(memberExistsError: true, planningPokerInitializer: planningPokerInitializer.Object, reconnectTeamResult: reconnectTeamResult);
 
-            var result = await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
             planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName));
         }

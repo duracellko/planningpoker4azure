@@ -538,7 +538,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name1 = "test1";
             var name2 = "test2";
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var eventArgsList = new List<MessageReceivedEventArgs>();
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgsList.Add(e));
 
@@ -614,7 +614,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var name1 = "test1";
             var name2 = "test2";
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var eventArgsList = new List<MessageReceivedEventArgs>();
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgsList.Add(e));
 
@@ -727,7 +727,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var masterEstimation = new Estimation();
 
             // Act
-            var member = (Member)target.Join("member", false);
+            target.Join("member", false);
             master.Estimation = masterEstimation;
 
             // Verify
@@ -749,7 +749,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             master.StartEstimation();
 
             // Act
-            var member = (Member)target.Join("member", false);
+            target.Join("member", false);
             var result = target.EstimationParticipants;
 
             // Verify
@@ -766,7 +766,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             var master = target.SetScrumMaster("master");
 
             // Act
-            var result = target.Join("member", false);
+            target.Join("member", false);
 
             // Verify
             Assert.IsTrue(master.HasMessage);
@@ -780,7 +780,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
@@ -823,7 +823,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             master.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
-            var result = target.Join("member", false);
+            target.Join("member", false);
 
             // Verify
             Assert.IsNotNull(eventArgs);
@@ -834,7 +834,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
 
             // Act
             var result = target.Join("member", false);
@@ -848,11 +848,11 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
 
             // Act
-            var result = target.Join("member", false);
+            target.Join("member", false);
 
             // Verify
             Assert.IsTrue(observer.HasMessage);
@@ -866,7 +866,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
 
             // Act
@@ -885,13 +885,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
             EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
             // Act
-            var result = target.Join("member", false);
+            target.Join("member", false);
 
             // Verify
             Assert.IsNotNull(eventArgs);
@@ -902,8 +902,8 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
-            var observer = target.Join("observer", true);
+            target.SetScrumMaster("master");
+            target.Join("observer", true);
 
             // Act
             var result = target.Join("member", false);
@@ -1044,7 +1044,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
-            var member = target.Join("member", false);
+            target.Join("member", false);
             var eventArgsList = new List<MessageReceivedEventArgs>();
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgsList.Add(e));
 
@@ -1066,7 +1066,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var target = new ScrumTeam("test team");
             var master = target.SetScrumMaster("master");
-            var member = target.Join("member", false);
+            target.Join("member", false);
             MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
 
@@ -1086,7 +1086,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
@@ -1105,7 +1105,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             MessageReceivedEventArgs? eventArgs = null;
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgs = e);
@@ -1126,7 +1126,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var eventArgsList = new List<MessageReceivedEventArgs>();
             target.MessageReceived += new EventHandler<MessageReceivedEventArgs>((s, e) => eventArgsList.Add(e));
             var member = target.Join("member", false);
@@ -1224,7 +1224,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
 
             // Act
@@ -1242,7 +1242,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var observer = target.Join("observer", true);
 
@@ -1261,7 +1261,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var observer = target.Join("observer", true);
 
@@ -1281,7 +1281,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var observer = target.Join("observer", true);
             EventArgs? eventArgs = null;
@@ -1299,9 +1299,9 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
-            var observer = target.Join("observer", true);
+            target.Join("observer", true);
             member.ClearMessages();
 
             // Act
@@ -1319,7 +1319,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
             var member = target.Join("member", false);
 
@@ -1550,7 +1550,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
 
             // Act
             Assert.ThrowsException<ArgumentNullException>(() => target.ChangeAvailableEstimations(null!));
@@ -1629,7 +1629,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
             var newEstimationsSet = ScrumTeamTestData.GetCustomEstimationDeck();
 
@@ -1652,7 +1652,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var member = target.Join("member", false);
 
             var newEstimationsSet = ScrumTeamTestData.GetCustomEstimationDeck();
@@ -1671,7 +1671,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
             var newEstimationsSet = DeckProvider.Default.GetDefaultDeck();
 
@@ -1694,7 +1694,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var target = new ScrumTeam("test team");
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
             var observer = target.Join("observer", true);
 
             var newEstimationsSet = DeckProvider.Default.GetDefaultDeck();
@@ -1713,13 +1713,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1735,13 +1735,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster(name);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1757,13 +1757,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, false);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1777,13 +1777,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, false);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1797,13 +1797,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, true);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 40, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1817,13 +1817,13 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var name = "test";
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             target.Join(name, true);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1837,17 +1837,17 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
-            var master = target.SetScrumMaster("master");
+            target.SetScrumMaster("master");
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
             var member = target.Join("member", false);
             EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1864,18 +1864,18 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
-            var master = target.SetScrumMaster("master");
-            var observer = target.Join("observer", true);
+            target.SetScrumMaster("master");
+            target.Join("observer", true);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
             var member = target.Join("member", false);
             EventArgs? eventArgs = null;
             member.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1892,18 +1892,18 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
-            var master = target.SetScrumMaster("master");
-            var member = target.Join("member", false);
+            target.SetScrumMaster("master");
+            target.Join("member", false);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
             var observer = target.Join("observer", true);
             EventArgs? eventArgs = null;
             observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
 
             // Act
             target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
@@ -1920,18 +1920,18 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
-            var member = (Member)target.Join("member", false);
+            target.Join("member", false);
             master.StartEstimation();
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
             master.Estimation = new Estimation();
             master.UpdateActivity();
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
             master.ClearMessages();
 
             // Act
@@ -1952,18 +1952,18 @@ namespace Duracellko.PlanningPoker.Domain.Test
         {
             // Arrange
             var dateTimeProvider = new DateTimeProviderMock();
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 20, DateTimeKind.Utc));
 
             var target = ScrumTeamTestData.CreateScrumTeam("test team", dateTimeProvider: dateTimeProvider);
             var master = target.SetScrumMaster("master");
             var member = (Member)target.Join("member", false);
             master.StartEstimation();
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
             member.Estimation = new Estimation();
             member.UpdateActivity();
 
-            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55));
+            dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
             master.ClearMessages();
 
             // Act

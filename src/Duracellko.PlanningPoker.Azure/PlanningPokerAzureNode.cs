@@ -202,6 +202,7 @@ namespace Duracellko.PlanningPoker.Azure
             return null;
         }
 
+        [SuppressMessage("Minor Code Smell", "S1905:Redundant casts should not be used", Justification = "Single cast is preferred over unnecessary identity projection.")]
         private void SetupPlanningPokerListeners()
         {
             var teamMessages = PlanningPoker.ObservableMessages.Where(m => !string.Equals(m.TeamName, _processingScrumTeamName, StringComparison.OrdinalIgnoreCase));
@@ -280,6 +281,7 @@ namespace Duracellko.PlanningPoker.Azure
                         _processingScrumTeamName = scrumTeam.Name;
                         using (var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam))
                         {
+                            // The team can be released just after attaching.
                         }
                     }
                     finally
@@ -703,6 +705,7 @@ namespace Duracellko.PlanningPoker.Azure
                 }
                 catch (Exception)
                 {
+                    // Node will request teams again on failure.
                 }
             }
         }

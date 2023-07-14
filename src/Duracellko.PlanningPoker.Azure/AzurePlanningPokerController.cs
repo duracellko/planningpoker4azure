@@ -20,8 +20,8 @@ namespace Duracellko.PlanningPoker.Azure
     public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
     {
         private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
+        private readonly object _teamsToInitializeLock = new object();
         private HashSet<string>? _teamsToInitialize;
-        private object _teamsToInitializeLock = new object();
         private volatile bool _initialized;
 
         /// <summary>
@@ -90,6 +90,7 @@ namespace Duracellko.PlanningPoker.Azure
             {
                 using (var teamLock = AttachScrumTeam(team))
                 {
+                    // The team can be released just after attaching.
                 }
 
                 lock (_teamsToInitializeLock)
@@ -136,6 +137,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// Releases all unmanaged and optionally managed resources.
         /// </summary>
         /// <param name="disposing"><c>True</c> if disposing not using GC; otherwise <c>false</c>.</param>
+        [SuppressMessage("Major Code Smell", "S1066:Collapsible \"if\" statements should be merged", Justification = "Follows IDisposable pattern.")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

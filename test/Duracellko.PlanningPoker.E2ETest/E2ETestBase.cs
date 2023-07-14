@@ -26,7 +26,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         protected BrowserTestContext? Context => Contexts.FirstOrDefault();
 
-        protected ClientTest ClientTest => ClientTests.First();
+        protected ClientTest ClientTest => ClientTests[0];
 
         protected ScreenshotCapture? ScreenshotCapture { get; private set; }
 

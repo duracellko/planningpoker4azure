@@ -738,7 +738,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
 
             var hasEstimated = ScrumTeam?.State == TeamState.EstimationInProgress && _memberEstimations != null &&
-                _memberEstimations.Any(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
+                _memberEstimations.Exists(m => string.Equals(m.MemberName, member.Name, StringComparison.OrdinalIgnoreCase));
 
             return new MemberItem(member, hasEstimated);
         }
@@ -786,6 +786,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             }
         }
 
+        [SuppressMessage("Major Bug", "S3168:\"async\" methods should not return \"void\"", Justification = "Fire-and-forget action.")]
         private async void SaveTimerSettings()
         {
             await _timerSettingsRepository.SetTimerDurationAsync(TimerDuration);

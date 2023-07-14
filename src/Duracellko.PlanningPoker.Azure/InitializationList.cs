@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Duracellko.PlanningPoker.Azure
@@ -36,6 +37,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <value>
         /// The values to initialize.
         /// </value>
+        [SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Creates copy to be thread-safe.")]
         public IList<string>? Values
         {
             get

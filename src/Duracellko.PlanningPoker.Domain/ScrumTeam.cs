@@ -137,6 +137,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <value>
         /// The estimation participants.
         /// </value>
+        [SuppressMessage("Critical Code Smell", "S2365:Properties should not make collection or array copies", Justification = "Used only by tests.")]
         public IEnumerable<EstimationParticipantStatus>? EstimationParticipants
         {
             get
@@ -246,7 +247,7 @@ namespace Duracellko.PlanningPoker.Domain
             }
 
             Observer? disconnectedObserver = null;
-            var observer = _observers.FirstOrDefault(o => MatchObserverName(o, name));
+            var observer = _observers.Find(o => MatchObserverName(o, name));
             if (observer != null)
             {
                 _observers.Remove(observer);
@@ -254,7 +255,7 @@ namespace Duracellko.PlanningPoker.Domain
             }
             else
             {
-                var member = _members.FirstOrDefault(o => MatchObserverName(o, name));
+                var member = _members.Find(o => MatchObserverName(o, name));
                 if (member != null && !member.IsDormant)
                 {
                     DisconnectMember(member);
@@ -334,9 +335,9 @@ namespace Duracellko.PlanningPoker.Domain
         public void DisconnectInactiveObservers(TimeSpan inactivityTime)
         {
             var lastInactivityTime = DateTimeProvider.UtcNow - inactivityTime;
-            bool IsObserverActive(Observer observer) => observer.LastActivity < lastInactivityTime && !observer.IsDormant;
-            var inactiveObservers = Observers.Where(IsObserverActive).ToList();
-            var inactiveMembers = Members.Where<Member>(IsObserverActive).ToList();
+            bool IsObserverInactive(Observer observer) => observer.LastActivity < lastInactivityTime && !observer.IsDormant;
+            var inactiveObservers = Observers.Where(IsObserverInactive).ToList();
+            var inactiveMembers = Members.Where<Member>(IsObserverInactive).ToList();
 
             if (inactiveObservers.Count > 0 || inactiveMembers.Count > 0)
             {
@@ -356,13 +357,10 @@ namespace Duracellko.PlanningPoker.Domain
                     SendMessage(recipients, () => new MemberMessage(MessageType.MemberDisconnected, member));
                 }
 
-                if (inactiveMembers.Count > 0)
+                if (inactiveMembers.Count > 0 && State == TeamState.EstimationInProgress)
                 {
-                    if (State == TeamState.EstimationInProgress)
-                    {
-                        // Check if all members picked estimations. If member disconnects then his/her estimation is null.
-                        UpdateEstimationResult(null);
-                    }
+                    // Check if all members picked estimations. If member disconnects then his/her estimation is null.
+                    UpdateEstimationResult(null);
                 }
             }
         }
@@ -533,12 +531,9 @@ namespace Duracellko.PlanningPoker.Domain
                 return;
             }
 
-            if (member != null)
+            if (member != null && _estimationResult.ContainsMember(member))
             {
-                if (_estimationResult.ContainsMember(member))
-                {
-                    _estimationResult[member] = member.Estimation;
-                }
+                _estimationResult[member] = member.Estimation;
             }
 
             if (_estimationResult.All(p => p.Value != null || !Members.Contains(p.Key)))

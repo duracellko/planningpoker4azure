@@ -556,7 +556,7 @@ namespace Duracellko.PlanningPoker.Domain.Test
             // Arrange
             var team = new ScrumTeam("test team");
             var master = team.SetScrumMaster("master");
-            var observer = team.Join("observer", true);
+            team.Join("observer", true);
 
             // Act
             team.Disconnect(master.Name);

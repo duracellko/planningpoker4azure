@@ -30,7 +30,6 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         private readonly ILogger<AzureServiceBus> _logger;
 
         private volatile string? _nodeId;
-        private string? _connectionString;
         private string? _topicName;
         private ServiceBusAdministrationClient? _serviceBusAdministrationClient;
         private ServiceBusClient? _serviceBusClient;
@@ -111,15 +110,15 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
 
             _nodeId = nodeId;
-            _connectionString = Configuration.ServiceBusConnectionString;
             _topicName = Configuration.ServiceBusTopic;
             if (string.IsNullOrEmpty(_topicName))
             {
                 _topicName = DefaultTopicName;
             }
 
-            _serviceBusAdministrationClient = new ServiceBusAdministrationClient(_connectionString);
-            _serviceBusClient = new ServiceBusClient(_connectionString);
+            var connectionString = Configuration.ServiceBusConnectionString;
+            _serviceBusAdministrationClient = new ServiceBusAdministrationClient(connectionString);
+            _serviceBusClient = new ServiceBusClient(connectionString);
             _serviceBusSender = _serviceBusClient.CreateSender(_topicName);
 
             await CreateSubscription(_topicName, _nodeId);
@@ -247,6 +246,28 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Subscription will be deleted next time.")]
+        private async Task DeleteSubscription(string name)
+        {
+            if (_serviceBusAdministrationClient == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var existsSubcription = await _serviceBusAdministrationClient.SubscriptionExistsAsync(_topicName, name);
+                if (existsSubcription)
+                {
+                    await _serviceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, name);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.SubscriptionDeleteFailed(ex, _topicName, name);
+            }
+        }
+
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error and try again.")]
         private async Task ReceiveMessage(ProcessMessageEventArgs messageEventArgs)
         {
@@ -330,17 +351,15 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
                 {
                     // if subscription is new, then assume that it has been created very recently and
                     // this node has not received notification about it yet
-                    _nodes.TryAdd(subscription, DateTime.UtcNow);
+                    var isNewSubscription = _nodes.TryAdd(subscription, DateTime.UtcNow);
 
-                    DateTime lastSubscriptionActivity;
-                    if (_nodes.TryGetValue(subscription, out lastSubscriptionActivity))
+                    if (!isNewSubscription &&
+                        _nodes.TryGetValue(subscription, out var lastSubscriptionActivity) &&
+                        lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
                     {
-                        if (lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
-                        {
-                            await DeleteSubscription(subscription);
-                            _nodes.TryRemove(subscription, out lastSubscriptionActivity);
-                            _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
-                        }
+                        await DeleteSubscription(subscription);
+                        _nodes.TryRemove(subscription, out lastSubscriptionActivity);
+                        _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
                     }
                 }
             }
@@ -355,28 +374,6 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
 
             var subscriptions = await _serviceBusAdministrationClient.GetSubscriptionsAsync(_topicName).ToListAsync();
             return subscriptions.Select(s => s.SubscriptionName);
-        }
-
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Subscription will be deleted next time.")]
-        private async Task DeleteSubscription(string name)
-        {
-            if (_serviceBusAdministrationClient == null)
-            {
-                return;
-            }
-
-            try
-            {
-                var existsSubcription = await _serviceBusAdministrationClient.SubscriptionExistsAsync(_topicName, name);
-                if (existsSubcription)
-                {
-                    await _serviceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, name);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.SubscriptionDeleteFailed(ex, _topicName, name);
-            }
         }
     }
 }
