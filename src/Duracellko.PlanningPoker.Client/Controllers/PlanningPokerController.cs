@@ -34,6 +34,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private TimeSpan _timerDuration = TimeSpan.FromMinutes(5);
         private DateTime? _timerEndTime;
         private IDisposable? _timer;
+        private ApplicationCallbackReference? _applicationCallback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanningPokerController" /> class.
@@ -242,6 +243,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         public bool CanChangeTimer => CanStartTimer;
 
+        /// <summary>
+        /// Gets a value indicating whether user can send estimation result back to the application that started it.
+        /// </summary>
+        public bool CanCallbackApplication => IsScrumMaster && EstimationSummary != null && _applicationCallback != null;
+
         public void Dispose()
         {
             StopInternalTimer();
@@ -254,7 +260,17 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="teamInfo">Scrum Team data received from server.</param>
         /// <param name="username">Name of user joining the Scrum Team.</param>
         /// <returns>Asynchronous operation.</returns>
-        public async Task InitializeTeam(TeamResult teamInfo, string username)
+        public Task InitializeTeam(TeamResult teamInfo, string username) =>
+            InitializeTeam(teamInfo, username, null);
+
+        /// <summary>
+        /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
+        /// </summary>
+        /// <param name="teamInfo">Scrum Team data received from server.</param>
+        /// <param name="username">Name of user joining the Scrum Team.</param>
+        /// <param name="applicationCallback">Application reference for callback after an estimation ended.</param>
+        /// <returns>Asynchronous operation.</returns>
+        public async Task InitializeTeam(TeamResult teamInfo, string username, ApplicationCallbackReference? applicationCallback)
         {
             if (teamInfo == null)
             {
@@ -308,6 +324,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 scrumTeam.EstimationParticipants.Any(p => string.Equals(p.MemberName, User?.Name, StringComparison.OrdinalIgnoreCase));
             _selectedEstimation = null;
             _timerEndTime = scrumTeam.TimerEndTime;
+            _applicationCallback = applicationCallback;
 
             if (teamInfo is ReconnectTeamResult reconnectTeamInfo)
             {

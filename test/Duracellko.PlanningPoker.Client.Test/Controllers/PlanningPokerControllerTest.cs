@@ -299,6 +299,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -323,6 +324,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -347,6 +349,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -371,6 +374,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -394,6 +398,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -418,6 +423,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -442,6 +448,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -466,6 +473,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -521,6 +529,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -612,6 +621,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -710,6 +720,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -805,6 +816,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -864,6 +876,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -907,6 +920,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -963,6 +977,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -996,6 +1011,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
 
             Assert.IsNull(target.Estimations);
@@ -1032,6 +1048,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
@@ -1066,6 +1083,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanStartTimer);
             Assert.IsFalse(target.CanStopTimer);
             Assert.IsTrue(target.CanChangeTimer);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.ScrumMaster);
@@ -1101,6 +1119,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
             Assert.IsTrue(target.IsConnected);
+            Assert.IsFalse(target.CanCallbackApplication);
             AssertNoMemberHasEstimated(target);
         }
 
