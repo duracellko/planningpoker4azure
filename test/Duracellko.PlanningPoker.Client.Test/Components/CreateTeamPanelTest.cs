@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using AngleSharp.Html.Dom;
+using AngleSharpWrappers;
 using Bunit;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
@@ -142,7 +144,49 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             planningPokerClient.Verify(o => o.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard, It.IsAny<CancellationToken>()));
         }
 
-        private static CreateTeamController CreateCreateTeamController(IPlanningPokerClient? planningPokerClient = null)
+        [TestMethod]
+        public void InitializedWithStoredCredentials_TeamNameAndMemberNameIsPreset()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var controller = CreateCreateTeamController(memberCredentialsStore: memberCredentialsStore.Object);
+            InitializeContext(controller);
+
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+            using var target = _context.RenderComponent<CreateTeamPanel>();
+
+            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+            Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
+            var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]").Unwrap();
+            Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
+        }
+
+        [TestMethod]
+        public void InitializedWithAutoConnect_TeamNameAndMemberNameIsNotChanged()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var url = "http://planningpoker.duracellko.net/Index?AutoConnect=True&CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
+            var controller = CreateCreateTeamController(memberCredentialsStore: memberCredentialsStore.Object, url: url);
+            InitializeContext(controller);
+
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+            using var target = _context.RenderComponent<CreateTeamPanel>(
+                ComponentParameter.CreateParameter(nameof(CreateTeamPanel.TeamName), "Hello"),
+                ComponentParameter.CreateParameter(nameof(CreateTeamPanel.ScrumMasterName), "World"));
+
+            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+            Assert.AreEqual("Hello", teamNameElement.Value);
+            var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]").Unwrap();
+            Assert.AreEqual("World", memberNameElement.Value);
+        }
+
+        private static CreateTeamController CreateCreateTeamController(
+            IPlanningPokerClient? planningPokerClient = null,
+            IMemberCredentialsStore? memberCredentialsStore = null,
+            string? url = null)
         {
             if (planningPokerClient == null)
             {
@@ -150,17 +194,27 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 planningPokerClient = planningPokerClientMock.Object;
             }
 
+            if (memberCredentialsStore == null)
+            {
+                var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
+                memberCredentialsStore = memberCredentialsStoreMock.Object;
+            }
+
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
             var messageBoxService = new Mock<IMessageBoxService>();
             var busyIndicatorService = new Mock<IBusyIndicatorService>();
             var navigationManager = new Mock<INavigationManager>();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+
+            navigationManager.SetupGet(o => o.Uri).Returns(url ?? "http://planningpoker.duracellko.net/");
+
             return new CreateTeamController(
                 planningPokerClient,
                 planningPokerInitializer.Object,
                 messageBoxService.Object,
                 busyIndicatorService.Object,
                 navigationManager.Object,
+                memberCredentialsStore,
                 serviceTimeProvider.Object);
         }
 

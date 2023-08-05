@@ -49,6 +49,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         }
 
         /// <summary>
+        /// Gets a value indicating whether an automatic team joining was requested. In such case the member name should be preserved.
+        /// </summary>
+        public bool JoinAutomatically => (ControllerHelper.GetAutoConnectRequestFromUri(_navigationManager.Uri)?.JoinAutomatically).GetValueOrDefault();
+
+        /// <summary>
         /// Gets permanent <see cref="MemberCredentials"/> from store to fill user's default values.
         /// </summary>
         /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>

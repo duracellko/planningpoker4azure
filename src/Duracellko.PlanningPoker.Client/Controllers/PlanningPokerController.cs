@@ -259,15 +259,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// </summary>
         /// <param name="teamInfo">Scrum Team data received from server.</param>
         /// <param name="username">Name of user joining the Scrum Team.</param>
-        /// <returns>Asynchronous operation.</returns>
-        public Task InitializeTeam(TeamResult teamInfo, string username) =>
-            InitializeTeam(teamInfo, username, null);
-
-        /// <summary>
-        /// Initialize <see cref="PlanningPokerController"/> object with Scrum Team data received from server.
-        /// </summary>
-        /// <param name="teamInfo">Scrum Team data received from server.</param>
-        /// <param name="username">Name of user joining the Scrum Team.</param>
         /// <param name="applicationCallback">Application reference for callback after an estimation ended.</param>
         /// <returns>Asynchronous operation.</returns>
         public async Task InitializeTeam(TeamResult teamInfo, string username, ApplicationCallbackReference? applicationCallback)

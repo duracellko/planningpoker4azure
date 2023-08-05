@@ -45,17 +45,42 @@
 
 @code
 {
+    [Parameter]
+    public string? TeamName { get; set; }
+
+    [Parameter]
+    public string? ScrumMasterName { get; set; }
+
     private IEnumerable<KeyValuePair<Deck, string>> EstimationDecks => Controller.EstimationDecks;
-
-    private string? TeamName { get; set; }
-
-    private string? ScrumMasterName { get; set; }
 
     private Deck SelectedDeck { get; set; }
 
     private bool IsTeamNameValid => TeamName == null || !string.IsNullOrWhiteSpace(TeamName);
 
     private bool IsScrumMasterNameValid => ScrumMasterName == null || !string.IsNullOrWhiteSpace(ScrumMasterName);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // When user opened the page from another application with automatic join,
+        // then let user to use requested credentials and do not restore the stored ones.
+        if (Controller.JoinAutomatically && !string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(ScrumMasterName))
+        {
+            return;
+        }
+
+        var memberCredentials = await Controller.GetCredentials();
+        if (memberCredentials != null)
+        {
+            if (string.IsNullOrEmpty(TeamName))
+            {
+                TeamName = memberCredentials.TeamName;
+            }
+
+            ScrumMasterName = memberCredentials.MemberName;
+        }
+    }
 
     private Task CreateTeamCommand()
     {

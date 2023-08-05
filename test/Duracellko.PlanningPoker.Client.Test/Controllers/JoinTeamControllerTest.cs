@@ -48,6 +48,30 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             }
         }
 
+        [DataTestMethod]
+        [DataRow("", false)]
+        [DataRow("Something=true", false)]
+        [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=False&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=TrueX&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=", false)]
+        [DataRow("AutoConnect=True&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254", false)]
+        [DataRow("AutoConnect=TrueX&CallbackUri=localhost&CallbackReference=MyTest", false)]
+        [DataRow(AutoConnectQueryString, true)]
+        [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&AutoConnect=TRUE&CallbackReference=ID%23254", true)]
+        [DataRow("callbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&callbackReference=ID%23254&autoConnect=true", true)]
+        [DataRow("AutoConnect=True&CallbackUri=http%3A%2F%2Flocalhost&CallbackReference=My%20Test", true)]
+        public void JoinAutomatically_UrlQueryString_ReturnsExpectedResult(string queryString, bool expectedResult)
+        {
+            var target = CreateController(urlQueryString: queryString);
+
+            var result = target.JoinAutomatically;
+
+            Assert.AreEqual(expectedResult, result);
+        }
+
         [TestMethod]
         public async Task GetCredentials_CredentialsAreStored_ReturnsMemberCredentials()
         {
@@ -204,7 +228,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]
@@ -402,7 +426,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]
@@ -649,7 +673,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]
@@ -824,7 +848,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]
@@ -932,7 +956,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]

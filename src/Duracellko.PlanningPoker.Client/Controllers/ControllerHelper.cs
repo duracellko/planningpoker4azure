@@ -80,7 +80,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="navigationManager">Helper to navigate to URL.</param>
         /// <param name="team">Scrum team name to include in URL.</param>
         /// <param name="member">Member name to include in URL.</param>
-        public static void OpenIndexPage(INavigationManager navigationManager, string? team, string? member)
+        /// <param name="callbackReference">The application callback reference to include in the URL.</param>
+        public static void OpenIndexPage(INavigationManager navigationManager, string? team, string? member, ApplicationCallbackReference? callbackReference)
         {
             if (navigationManager == null)
             {
@@ -97,6 +98,11 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 if (!string.IsNullOrEmpty(member))
                 {
                     uri += '/' + urlEncoder.Encode(member);
+
+                    if (callbackReference != null)
+                    {
+                        uri += $"?{CallbackUriName}={urlEncoder.Encode(callbackReference.Url.ToString())}&{CallbackReferenceName}={urlEncoder.Encode(callbackReference.Reference)}";
+                    }
                 }
             }
 

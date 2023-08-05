@@ -8,6 +8,7 @@ using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.Test.Controllers;
 using Duracellko.PlanningPoker.Client.UI;
+using Duracellko.PlanningPoker.Service;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -230,9 +231,64 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
         }
 
+        [TestMethod]
+        public void InitializedWithAutoConnect_TeamNameAndMemberNameIsNotChanged()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var url = "http://planningpoker.duracellko.net/Index?AutoConnect=True&CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
+            var controller = CreateJoinTeamController(
+                planningPokerClient: planningPokerClient.Object,
+                memberCredentialsStore: memberCredentialsStore.Object,
+                url: url);
+            InitializeContext(controller);
+
+            planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+            using var target = _context.RenderComponent<JoinTeamPanel>(
+                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
+                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+
+            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+            Assert.AreEqual("Hello", teamNameElement.Value);
+            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+            Assert.AreEqual("World", memberNameElement.Value);
+        }
+
+        [TestMethod]
+        public void InitializedWithoutAutoConnect_MemberNameIsPresetFromStore()
+        {
+            var planningPokerClient = new Mock<IPlanningPokerClient>();
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            var url = "http://planningpoker.duracellko.net/Index?CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
+            var controller = CreateJoinTeamController(
+                planningPokerClient: planningPokerClient.Object,
+                memberCredentialsStore: memberCredentialsStore.Object,
+                url: url);
+            InitializeContext(controller);
+
+            planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+            using var target = _context.RenderComponent<JoinTeamPanel>(
+                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
+                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+
+            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+            Assert.AreEqual("Hello", teamNameElement.Value);
+            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+            Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
+        }
+
         private static JoinTeamController CreateJoinTeamController(
             IPlanningPokerClient? planningPokerClient = null,
-            IMemberCredentialsStore? memberCredentialsStore = null)
+            IMemberCredentialsStore? memberCredentialsStore = null,
+            string? url = null)
         {
             if (planningPokerClient == null)
             {
@@ -251,6 +307,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var busyIndicatorService = new Mock<IBusyIndicatorService>();
             var navigationManager = new Mock<INavigationManager>();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+
+            navigationManager.SetupGet(o => o.Uri).Returns(url ?? "http://planningpoker.duracellko.net/");
+
             return new JoinTeamController(
                 planningPokerClient,
                 planningPokerInitializer.Object,

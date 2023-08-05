@@ -62,6 +62,57 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         }
 
         [DataTestMethod]
+        [DataRow("", false)]
+        [DataRow("Something=true", false)]
+        [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=False&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=TrueX&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=", false)]
+        [DataRow("AutoConnect=True&CallbackReference=ID%23254", false)]
+        [DataRow("AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254", false)]
+        [DataRow("AutoConnect=TrueX&CallbackUri=localhost&CallbackReference=MyTest", false)]
+        [DataRow(AutoConnectQueryString, true)]
+        [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&AutoConnect=TRUE&CallbackReference=ID%23254", true)]
+        [DataRow("callbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&callbackReference=ID%23254&autoConnect=true", true)]
+        [DataRow("AutoConnect=True&CallbackUri=http%3A%2F%2Flocalhost&CallbackReference=My%20Test", true)]
+        public void JoinAutomatically_UrlQueryString_ReturnsExpectedResult(string queryString, bool expectedResult)
+        {
+            var target = CreateController(urlQueryString: queryString);
+
+            var result = target.JoinAutomatically;
+
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestMethod]
+        public async Task GetCredentials_CredentialsAreStored_ReturnsMemberCredentials()
+        {
+            var memberCredentials = PlanningPokerData.GetMemberCredentials();
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true)).ReturnsAsync(memberCredentials);
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            var result = await target.GetCredentials();
+
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true));
+            Assert.AreEqual(memberCredentials, result);
+        }
+
+        [TestMethod]
+        public async Task GetCredentials_NoCredentialsAreStored_ReturnsNull()
+        {
+            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true)).ReturnsAsync(default(MemberCredentials?));
+            var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
+
+            var result = await target.GetCredentials();
+
+            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true));
+            Assert.IsNull(result);
+        }
+
+        [DataTestMethod]
         [DataRow(Deck.Standard)]
         [DataRow(Deck.Fibonacci)]
         [DataRow(Deck.RockPaperScissorsLizardSpock)]
@@ -189,7 +240,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()), Times.Never());
         }
 
         [TestMethod]
@@ -259,9 +310,11 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             IMessageBoxService? messageBoxService = null,
             IBusyIndicatorService? busyIndicatorService = null,
             INavigationManager? navigationManager = null,
+            IMemberCredentialsStore? memberCredentialsStore = null,
             IServiceTimeProvider? serviceTimeProvider = null,
             TeamResult? teamResult = null,
             PlanningPokerException? exception = null,
+            MemberCredentials? memberCredentials = null,
             string? urlQueryString = null)
         {
             if (planningPokerInitializer == null)
@@ -311,13 +364,27 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 navigationManager = navigationManagerMock.Object;
             }
 
+            if (memberCredentialsStore == null)
+            {
+                var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
+                memberCredentialsStoreMock.Setup(o => o.GetCredentialsAsync(false)).ReturnsAsync(memberCredentials);
+                memberCredentialsStore = memberCredentialsStoreMock.Object;
+            }
+
             if (serviceTimeProvider == null)
             {
                 var serviceTimeProviderMock = new Mock<IServiceTimeProvider>();
                 serviceTimeProvider = serviceTimeProviderMock.Object;
             }
 
-            return new CreateTeamController(planningPokerService, planningPokerInitializer, messageBoxService, busyIndicatorService, navigationManager, serviceTimeProvider);
+            return new CreateTeamController(
+                planningPokerService,
+                planningPokerInitializer,
+                messageBoxService,
+                busyIndicatorService,
+                navigationManager,
+                memberCredentialsStore,
+                serviceTimeProvider);
         }
     }
 }
