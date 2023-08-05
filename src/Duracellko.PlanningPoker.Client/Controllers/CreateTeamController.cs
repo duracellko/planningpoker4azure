@@ -75,8 +75,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
                 if (teamResult != null)
                 {
-                    await _planningPokerInitializer.InitializeTeam(teamResult, scrumMasterName);
-                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam!, scrumMasterName);
+                    var callbackReference = ControllerHelper.GetAutoConnectRequestFromUri(_navigationManager.Uri)?.CallbackReference;
+                    await _planningPokerInitializer.InitializeTeam(teamResult, scrumMasterName, callbackReference);
+                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam!, scrumMasterName, callbackReference);
                     return true;
                 }
             }

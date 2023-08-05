@@ -14,8 +14,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     [TestClass]
     public class JoinTeamControllerTest
     {
+        private const string PageUrl = "http://planningpoker/Path/Should/Not/Matter";
         private const string ErrorMessage = "Planning Poker Error";
         private const string ReconnectErrorMessage = "Member or observer named 'Test member' already exists in the team.";
+        private const string AutoConnectQueryString = "AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
 
         private CultureInfo? _originalCultureInfo;
         private CultureInfo? _originalUICultureInfo;
@@ -88,7 +90,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             await target.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver);
 
             planningPokerService.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, memberName, asObserver, It.IsAny<CancellationToken>()));
-            planningPokerService.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, memberName, It.IsAny<CancellationToken>()), Times.Never());
+            planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
             serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
         }
 
@@ -135,7 +137,25 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName, null));
+        }
+
+        [DataTestMethod]
+        public async Task JoinTeam_ServiceReturnsTeamAndUrlHasCallback_InitializePlanningPokerController()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult, urlQueryString: AutoConnectQueryString);
+
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName, It.IsAny<ApplicationCallbackReference?>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net/some/item?id=254"), applicationCallbackReference.Url);
+            Assert.AreEqual("ID#254", applicationCallbackReference.Reference);
         }
 
         [TestMethod]
@@ -143,11 +163,27 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var teamResult = PlanningPokerData.GetTeamResult();
             var navigationManager = new Mock<INavigationManager>();
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl);
             var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
 
             navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer"));
+        }
+
+        [TestMethod]
+        public async Task JoinTeam_ServiceReturnsTeamAndUrlHasCallback_NavigatesToPlanningPoker()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
+            var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
+
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
+
+            var navigateToUri = "PlanningPoker/Test%20team/Test%20observer?CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
+            navigationManager.Verify(o => o.NavigateTo(navigateToUri));
         }
 
         [TestMethod]
@@ -164,7 +200,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task JoinTeam_ServiceThrowsException_DoesNotInitializePlanningPokerController()
         {
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-
             var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, exception: new PlanningPokerException(ErrorMessage));
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
@@ -176,7 +211,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task JoinTeam_ServiceThrowsException_DoesNotNavigateToPlanningPoker()
         {
             var navigationManager = new Mock<INavigationManager>();
-
             var target = CreateController(navigationManager: navigationManager.Object, exception: new PlanningPokerException(ErrorMessage));
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
@@ -289,11 +323,37 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-            var target = CreateController(memberExistsError: true, planningPokerInitializer: planningPokerInitializer.Object, reconnectTeamResult: reconnectTeamResult);
+            var target = CreateController(
+                memberExistsError: true,
+                planningPokerInitializer: planningPokerInitializer.Object,
+                reconnectTeamResult: reconnectTeamResult,
+                urlQueryString: "CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254");
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, null));
+        }
+
+        [DataTestMethod]
+        public async Task ReconnectTeam_ServiceReturnsTeamAndUrlHasCallback_InitializePlanningPokerController()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var target = CreateController(
+                memberExistsError: true,
+                planningPokerInitializer: planningPokerInitializer.Object,
+                reconnectTeamResult: reconnectTeamResult,
+                urlQueryString: "CallbackUri=https%3A%2F%2Fwww.testweb.net&Param2=3&CallbackReference=My%20Test");
+
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, It.IsAny<ApplicationCallbackReference>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net"), applicationCallbackReference.Url);
+            Assert.AreEqual("My Test", applicationCallbackReference.Reference);
         }
 
         [TestMethod]
@@ -301,11 +361,27 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         {
             var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
             var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
             var target = CreateController(memberExistsError: true, navigationManager: navigationManager.Object, reconnectTeamResult: reconnectTeamResult);
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
 
             navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer"));
+        }
+
+        [TestMethod]
+        public async Task ReconnectTeam_ServiceReturnsTeamAndUrlHasCallback_NavigatesToPlanningPoker()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?CallbackUri=https%3A%2F%2Fwww.testweb.net&Param2=3&CallbackReference=My%20Test";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
+            var target = CreateController(memberExistsError: true, navigationManager: navigationManager.Object, reconnectTeamResult: reconnectTeamResult);
+
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName, true);
+
+            navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer?CallbackUri=https%3A%2F%2Fwww.testweb.net%2F&CallbackReference=My%20Test"));
         }
 
         [TestMethod]
@@ -322,7 +398,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task ReconnectTeam_ServiceThrowsException_DoesNotInitializePlanningPokerController()
         {
             var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-
             var target = CreateController(memberExistsError: true, planningPokerInitializer: planningPokerInitializer.Object, exception: new PlanningPokerException(ErrorMessage));
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
@@ -334,7 +409,6 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
         public async Task ReconnectTeam_ServiceThrowsException_DoesNotNavigateToPlanningPoker()
         {
             var navigationManager = new Mock<INavigationManager>();
-
             var target = CreateController(memberExistsError: true, navigationManager: navigationManager.Object, exception: new PlanningPokerException(ErrorMessage));
 
             await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
@@ -414,7 +488,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false)).ReturnsAsync(memberCredentials);
             var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object, memberExistsError: true, reconnectTeamResult: reconnectTeamResult);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false));
         }
@@ -429,7 +503,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
             var target = CreateController(memberCredentialsStore: memberCredentialsStore.Object);
 
-            var result = await target.TryReconnectTeam(teamName, memberName);
+            var result = await target.TryAutoConnectTeam(teamName, memberName);
 
             Assert.IsFalse(result);
             memberCredentialsStore.Verify(o => o.GetCredentialsAsync(It.IsAny<bool>()), Times.Never());
@@ -450,9 +524,10 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
             var target = CreateController(planningPokerService: planningPokerService.Object, memberCredentials: memberCredentials, serviceTimeProvider: serviceTimeProvider.Object);
 
-            await target.TryReconnectTeam(teamName, memberName);
+            await target.TryAutoConnectTeam(teamName, memberName);
 
             planningPokerService.Verify(o => o.ReconnectTeam(teamName, memberName, It.IsAny<CancellationToken>()));
+            planningPokerService.Verify(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never());
             serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
         }
 
@@ -463,13 +538,15 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
             var target = CreateController(memberExistsError: true, reconnectTeamResult: reconnectTeamResult, memberCredentials: memberCredentials);
 
-            var result = await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             Assert.IsTrue(result);
         }
 
-        [TestMethod]
-        public async Task TryReconnectTeam_ReconnectTeamIsSuccessful_InitializePlanningPokerController()
+        [DataTestMethod]
+        [DataRow("CallbackUri=&CallbackReference=2")]
+        [DataRow("AutoConnect=Yes&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254")]
+        public async Task TryReconnectTeam_ReconnectTeamIsSuccessful_InitializePlanningPokerController(string queryString)
         {
             var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
@@ -478,11 +555,36 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 planningPokerInitializer: planningPokerInitializer.Object,
                 memberExistsError: true,
                 reconnectTeamResult: reconnectTeamResult,
-                memberCredentials: memberCredentials);
+                memberCredentials: memberCredentials,
+                urlQueryString: queryString);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, null));
+        }
+
+        [TestMethod]
+        public async Task TryReconnectTeam_ReconnectTeamIsSuccessfulAndUrlHasCallback_InitializePlanningPokerController()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var memberCredentials = PlanningPokerData.GetMemberCredentials();
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var target = CreateController(
+                planningPokerInitializer: planningPokerInitializer.Object,
+                memberExistsError: true,
+                reconnectTeamResult: reconnectTeamResult,
+                memberCredentials: memberCredentials,
+                urlQueryString: "CallbackReference=My%20Test&CallbackUri=https%3A%2F%2Fwww.testweb.net%2FIndex%3Fa%3D1%26b%3D2&Param2=3");
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, It.IsAny<ApplicationCallbackReference?>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net/Index?a=1&b=2"), applicationCallbackReference.Url);
+            Assert.AreEqual("My Test", applicationCallbackReference.Reference);
         }
 
         [TestMethod]
@@ -491,15 +593,36 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
             var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?CallbackUri=&CallbackReference=";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
             var target = CreateController(
                 navigationManager: navigationManager.Object,
                 memberExistsError: true,
                 reconnectTeamResult: reconnectTeamResult,
                 memberCredentials: memberCredentials);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20member"));
+        }
+
+        [TestMethod]
+        public async Task TryReconnectTeam_ReconnectTeamIsSuccessfulAndUrlHasCallback_NavigatesToPlanningPoker()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var memberCredentials = PlanningPokerData.GetMemberCredentials();
+            var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?CallbackReference=My%20Test&CallbackUri=https%3A%2F%2Fwww.testweb.net%2FIndex%3Fa%3D1%26b%3D2&Param2=3";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
+            var target = CreateController(
+                navigationManager: navigationManager.Object,
+                memberExistsError: true,
+                reconnectTeamResult: reconnectTeamResult,
+                memberCredentials: memberCredentials);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20member?CallbackUri=https%3A%2F%2Fwww.testweb.net%2FIndex%3Fa%3D1%26b%3D2&CallbackReference=My%20Test"));
         }
 
         [TestMethod]
@@ -508,7 +631,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var memberCredentials = PlanningPokerData.GetMemberCredentials();
             var target = CreateController(memberExistsError: true, exception: new PlanningPokerException(ErrorMessage), memberCredentials: memberCredentials);
 
-            var result = await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             Assert.IsFalse(result);
         }
@@ -524,7 +647,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 exception: new PlanningPokerException(ErrorMessage),
                 memberCredentials: memberCredentials);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>()), Times.Never());
         }
@@ -540,7 +663,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 exception: new PlanningPokerException(ErrorMessage),
                 memberCredentials: memberCredentials);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             navigationManager.Verify(o => o.NavigateTo(It.IsAny<string>()), Times.Never());
         }
@@ -556,7 +679,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 exception: new PlanningPokerException(ErrorMessage),
                 memberCredentials: memberCredentials);
 
-            await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             messageBoxService.Verify(o => o.ShowMessage(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             messageBoxService.Verify(o => o.ShowMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
@@ -568,7 +691,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var planningPokerService = new Mock<IPlanningPokerClient>();
             var target = CreateController(planningPokerService: planningPokerService.Object);
 
-            var result = await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             Assert.IsFalse(result);
             planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
@@ -593,10 +716,264 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             var target = CreateController(planningPokerService: planningPokerService.Object, memberCredentials: memberCredentials);
 
-            var result = await target.TryReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
 
             Assert.IsFalse(result);
             planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [DataTestMethod]
+        [DataRow(null, PlanningPokerData.MemberName, DisplayName = "TeamName is null.")]
+        [DataRow("", PlanningPokerData.MemberName, DisplayName = "TeamName is empty.")]
+        [DataRow(PlanningPokerData.TeamName, null, DisplayName = "MemberName is null.")]
+        [DataRow(PlanningPokerData.TeamName, "", DisplayName = "MemberName is empty.")]
+        public async Task AutoJoinTeam_TeamNameOrMemberNameIsEmptyOrNull_DoesNotJoinTeam(string teamName, string memberName)
+        {
+            var planningPokerService = new Mock<IPlanningPokerClient>();
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(planningPokerService: planningPokerService.Object, serviceTimeProvider: serviceTimeProvider.Object, urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(teamName, memberName);
+
+            Assert.IsFalse(result);
+            planningPokerService.Verify(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never());
+            planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberName_JoinTeamOnService()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var planningPokerService = new Mock<IPlanningPokerClient>();
+            planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(teamResult);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(planningPokerService: planningPokerService.Object, serviceTimeProvider: serviceTimeProvider.Object, urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            planningPokerService.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, false, It.IsAny<CancellationToken>()));
+            planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberName_ReturnsTrue()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var target = CreateController(teamResult: teamResult, urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ServiceReturnsTeam_InitializePlanningPokerController()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var urlQueryString = "CallbackUri=https%3A%2F%2Fwww.testweb.net&CallbackReference=ID%3D254&AutoConnect=True";
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult, urlQueryString: urlQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName, It.IsAny<ApplicationCallbackReference?>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net/"), applicationCallbackReference.Url);
+            Assert.AreEqual("ID=254", applicationCallbackReference.Reference);
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ServiceReturnsTeam_NavigatesToPlanningPoker()
+        {
+            var teamResult = PlanningPokerData.GetTeamResult();
+            var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?CallbackUri=https%3A%2F%2Fwww.testweb.net&AutoConnect=True&CallbackReference=ID%3D254";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
+            var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName);
+
+            var navigateToUri = "PlanningPoker/Test%20team/Test%20observer?CallbackUri=https%3A%2F%2Fwww.testweb.net%2F&CallbackReference=ID%3D254";
+            navigationManager.Verify(o => o.NavigateTo(navigateToUri));
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ServiceThrowsException_ReturnsFalse()
+        {
+            var target = CreateController(exception: new PlanningPokerException(ErrorMessage), urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ServiceThrowsException_DoesNotInitializePlanningPokerController()
+        {
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            var target = CreateController(
+                planningPokerInitializer: planningPokerInitializer.Object,
+                exception: new PlanningPokerException(ErrorMessage),
+                urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ServiceThrowsException_DoesNotNavigateToPlanningPoker()
+        {
+            var navigationManager = new Mock<INavigationManager>();
+            var target = CreateController(
+                navigationManager: navigationManager.Object,
+                exception: new PlanningPokerException(ErrorMessage),
+                urlQueryString: AutoConnectQueryString);
+
+            await target.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false);
+
+            navigationManager.Verify(o => o.NavigateTo(It.IsAny<string>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExists_ReconnectTeamOnService()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var planningPokerService = new Mock<IPlanningPokerClient>();
+            planningPokerService.Setup(o => o.JoinTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new PlanningPokerException(ReconnectErrorMessage, ErrorCodes.MemberAlreadyExists, PlanningPokerData.ScrumMasterName));
+            planningPokerService.Setup(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(reconnectTeamResult);
+            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+            var target = CreateController(
+                memberExistsError: true,
+                planningPokerService: planningPokerService.Object,
+                serviceTimeProvider: serviceTimeProvider.Object,
+                urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            planningPokerService.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, false, It.IsAny<CancellationToken>()));
+            planningPokerService.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, It.IsAny<CancellationToken>()));
+            serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExists_ReturnsTrue()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var target = CreateController(memberExistsError: true, reconnectTeamResult: reconnectTeamResult, urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsTrue(result);
+        }
+
+        [DataTestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExists_InitializePlanningPokerController()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var target = CreateController(
+                memberExistsError: true,
+                planningPokerInitializer: planningPokerInitializer.Object,
+                reconnectTeamResult: reconnectTeamResult,
+                urlQueryString: "FirstParam&CallbackReference=My%20Test&AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net&Param2=3");
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, It.IsAny<ApplicationCallbackReference>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net"), applicationCallbackReference.Url);
+            Assert.AreEqual("My Test", applicationCallbackReference.Reference);
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExists_NavigatesToPlanningPoker()
+        {
+            var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
+            var navigationManager = new Mock<INavigationManager>();
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + '?' + AutoConnectQueryString);
+            var target = CreateController(memberExistsError: true, navigationManager: navigationManager.Object, reconnectTeamResult: reconnectTeamResult);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ObserverName);
+
+            navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20observer?CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254"));
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExistsAndReconnectThrowsException_ReturnsFalse()
+        {
+            var target = CreateController(memberExistsError: true, exception: new PlanningPokerException(ErrorMessage), urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExistsAndReconnectThrowsException_DoesNotInitializePlanningPokerController()
+        {
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            var target = CreateController(
+                memberExistsError: true,
+                planningPokerInitializer: planningPokerInitializer.Object,
+                exception: new PlanningPokerException(ErrorMessage),
+                urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(It.IsAny<ReconnectTeamResult>(), It.IsAny<string>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_MemberAlreadyExistsAndReconnectThrowsException_DoesNotNavigateToPlanningPoker()
+        {
+            var navigationManager = new Mock<INavigationManager>();
+            var target = CreateController(
+                memberExistsError: true,
+                navigationManager: navigationManager.Object,
+                exception: new PlanningPokerException(ErrorMessage),
+                urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
+
+            navigationManager.Verify(o => o.NavigateTo(It.IsAny<string>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ScrumTeamDoesNotExist_ShowsMessage()
+        {
+            var exception = new PlanningPokerException(ErrorMessage, ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName);
+            var messageBoxService = new Mock<IMessageBoxService>();
+
+            var target = CreateController(messageBoxService: messageBoxService.Object, exception: exception, urlQueryString: AutoConnectQueryString);
+
+            await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            messageBoxService.Verify(o => o.ShowMessage($"Scrum Team 'Test team' does not exist.{Environment.NewLine}Please, create new Scrum Team by confirming Create form.", "Error"));
+        }
+
+        [TestMethod]
+        public async Task AutoJoinTeam_ScrumTeamDoesNotExist_ReturnsFalse()
+        {
+            var exception = new PlanningPokerException(ErrorMessage, ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName);
+            var messageBoxService = new Mock<IMessageBoxService>();
+
+            var target = CreateController(messageBoxService: messageBoxService.Object, exception: exception, urlQueryString: AutoConnectQueryString);
+
+            var result = await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName);
+
+            Assert.IsFalse(result);
         }
 
         private static JoinTeamController CreateController(
@@ -611,7 +988,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             TeamResult? teamResult = null,
             ReconnectTeamResult? reconnectTeamResult = null,
             PlanningPokerException? exception = null,
-            MemberCredentials? memberCredentials = null)
+            MemberCredentials? memberCredentials = null,
+            string? urlQueryString = null)
         {
             if (planningPokerInitializer == null)
             {
@@ -671,6 +1049,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             if (navigationManager == null)
             {
                 var navigationManagerMock = new Mock<INavigationManager>();
+                var url = PageUrl;
+                if (!string.IsNullOrEmpty(urlQueryString))
+                {
+                    url += '?' + urlQueryString;
+                }
+
+                navigationManagerMock.SetupGet(o => o.Uri).Returns(url);
                 navigationManager = navigationManagerMock.Object;
             }
 

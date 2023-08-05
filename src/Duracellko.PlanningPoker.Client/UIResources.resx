@@ -177,6 +177,9 @@
   <data name="JoinTeam_AsObserverLabel" xml:space="preserve">
     <value>As observer only</value>
   </data>
+  <data name="JoinTeam_CreateTeamMessage" xml:space="preserve">
+    <value>Please, create new Scrum Team by confirming Create form.</value>
+  </data>
   <data name="JoinTeam_Header" xml:space="preserve">
     <value>Join team</value>
   </data>

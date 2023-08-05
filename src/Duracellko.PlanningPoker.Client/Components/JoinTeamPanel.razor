@@ -60,7 +60,7 @@
         {
             try
             {
-                hasReconnected = await Controller.TryReconnectTeam(TeamName, MemberName);
+                hasReconnected = await Controller.TryAutoConnectTeam(TeamName, MemberName);
             }
             catch (Exception)
             {

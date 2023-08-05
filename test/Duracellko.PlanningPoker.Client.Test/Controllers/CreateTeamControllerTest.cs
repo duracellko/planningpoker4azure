@@ -14,6 +14,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
     [TestClass]
     public class CreateTeamControllerTest
     {
+        private const string PageUrl = "http://planningpoker/Path/Should/Not/Matter";
+        private const string AutoConnectQueryString = "AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
+
         private CultureInfo? _originalCultureInfo;
         private CultureInfo? _originalUICultureInfo;
 
@@ -116,7 +119,26 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
 
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
-            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName));
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null));
+        }
+
+        [TestMethod]
+        public async Task CreateTeam_ServiceReturnsTeamAndUrlHasCallback_InitializePlanningPokerController()
+        {
+            var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+            ApplicationCallbackReference? applicationCallbackReference = null;
+            planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
+                .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
+            var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult, urlQueryString: AutoConnectQueryString);
+
+            await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
+
+            planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, It.IsAny<ApplicationCallbackReference>()));
+            Assert.IsNotNull(applicationCallbackReference);
+            Assert.AreEqual(new Uri("https://www.testweb.net/some/item?id=254"), applicationCallbackReference.Url);
+            Assert.AreEqual("ID#254", applicationCallbackReference.Reference);
         }
 
         [TestMethod]
@@ -130,6 +152,22 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
 
             navigationManager.Verify(o => o.NavigateTo("PlanningPoker/Test%20team/Test%20Scrum%20Master"));
+        }
+
+        [TestMethod]
+        public async Task CreateTeam_ServiceReturnsTeamAndUrlHasCallback_NavigatesToPlanningPoker()
+        {
+            var scrumTeam = PlanningPokerData.GetInitialScrumTeam();
+            var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
+            var navigationManager = new Mock<INavigationManager>();
+            var urlQueryString = "?AutoConnect=True&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
+            navigationManager.SetupGet(o => o.Uri).Returns(PageUrl + urlQueryString);
+            var target = CreateController(navigationManager: navigationManager.Object, teamResult: teamResult);
+
+            await target.CreateTeam(PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, Deck.Standard);
+
+            var navigateToUri = "PlanningPoker/Test%20team/Test%20Scrum%20Master?CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
+            navigationManager.Verify(o => o.NavigateTo(navigateToUri));
         }
 
         [TestMethod]
@@ -223,7 +261,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             INavigationManager? navigationManager = null,
             IServiceTimeProvider? serviceTimeProvider = null,
             TeamResult? teamResult = null,
-            PlanningPokerException? exception = null)
+            PlanningPokerException? exception = null,
+            string? urlQueryString = null)
         {
             if (planningPokerInitializer == null)
             {
@@ -262,6 +301,13 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             if (navigationManager == null)
             {
                 var navigationManagerMock = new Mock<INavigationManager>();
+                var url = PageUrl;
+                if (!string.IsNullOrEmpty(urlQueryString))
+                {
+                    url += '?' + urlQueryString;
+                }
+
+                navigationManagerMock.SetupGet(o => o.Uri).Returns(url);
                 navigationManager = navigationManagerMock.Object;
             }
 
