@@ -97,6 +97,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Estimation summary function {0} is not supported..
+        /// </summary>
+        internal static string Error_UnsupportedEstimationSummaryFunction {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedEstimationSummaryFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ½.
         /// </summary>
         internal static string Estimation_Half {

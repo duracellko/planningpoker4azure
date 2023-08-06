@@ -282,6 +282,9 @@
   <data name="PlanningPokerDesk_StopTimerButton" xml:space="preserve">
     <value>Stop timer</value>
   </data>
+  <data name="PlanningPokerDesk_SubmitEstimationSummary" xml:space="preserve">
+    <value>Submit</value>
+  </data>
   <data name="PlanningPokerDesk_SumLabel" xml:space="preserve">
     <value>Sum</value>
   </data>

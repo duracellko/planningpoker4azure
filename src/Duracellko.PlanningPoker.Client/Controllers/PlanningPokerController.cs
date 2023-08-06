@@ -26,6 +26,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly DateTimeProvider _dateTimeProvider;
         private readonly IServiceTimeProvider _serviceTimeProvider;
         private readonly ITimerSettingsRepository _timerSettingsRepository;
+        private readonly IApplicationIntegrationService _applicationIntegrationService;
         private bool _disposed;
         private List<MemberEstimation>? _memberEstimations;
         private bool _isConnected;
@@ -46,6 +47,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="dateTimeProvider">The provider of current time.</param>
         /// <param name="serviceTimeProvider">Service to obtain time difference between client and server.</param>
         /// <param name="timerSettingsRepository">Service to save and load settings for timer functionality.</param>
+        /// <param name="applicationIntegrationService">Service to integrate Planning Poker with a 3rd-party application.</param>
         public PlanningPokerController(
             IPlanningPokerClient planningPokerService,
             IBusyIndicatorService busyIndicator,
@@ -53,7 +55,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             ITimerFactory timerFactory,
             DateTimeProvider dateTimeProvider,
             IServiceTimeProvider serviceTimeProvider,
-            ITimerSettingsRepository timerSettingsRepository)
+            ITimerSettingsRepository timerSettingsRepository,
+            IApplicationIntegrationService applicationIntegrationService)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
             _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
@@ -62,6 +65,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
             _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
             _timerSettingsRepository = timerSettingsRepository ?? throw new ArgumentNullException(nameof(timerSettingsRepository));
+            _applicationIntegrationService = applicationIntegrationService ?? throw new ArgumentNullException(nameof(applicationIntegrationService));
         }
 
         /// <summary>
@@ -242,11 +246,6 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Gets a value indicating whether user can change duration of the timer.
         /// </summary>
         public bool CanChangeTimer => CanStartTimer;
-
-        /// <summary>
-        /// Gets a value indicating whether user can send estimation result back to the application that started it.
-        /// </summary>
-        public bool CanCallbackApplication => IsScrumMaster && EstimationSummary != null && _applicationCallback != null;
 
         public void Dispose()
         {
@@ -469,6 +468,29 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             if (CanShowEstimationSummary)
             {
                 EstimationSummary = new EstimationSummary(Estimations!);
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the estimation result from the estimation summary
+        /// can be sent back to the application that started the Planning Poker.
+        /// </summary>
+        public bool CanPostEstimationResult(EstimationSummaryFunction function)
+        {
+            return IsScrumMaster && _applicationCallback != null && EstimationSummary != null && EstimationSummary.GetValue(function).HasValue;
+        }
+
+        /// <summary>
+        /// Posts the estimation result value to the application that started the Planning Poker.
+        /// </summary>
+        /// <param name="function">The function to calculate the estimation summary value that should be sent to the application.</param>
+        /// <returns>Asynchronous operation.</returns>
+        public async Task PostEstimationResult(EstimationSummaryFunction function)
+        {
+            if (CanPostEstimationResult(function))
+            {
+                var value = EstimationSummary!.GetValue(function);
+                await _applicationIntegrationService.PostEstimationResult(value!.Value, _applicationCallback!);
             }
         }
 

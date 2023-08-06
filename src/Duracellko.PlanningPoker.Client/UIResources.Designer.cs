@@ -556,6 +556,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        internal static string PlanningPokerDesk_SubmitEstimationSummary {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_SubmitEstimationSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sum.
         /// </summary>
         internal static string PlanningPokerDesk_SumLabel {

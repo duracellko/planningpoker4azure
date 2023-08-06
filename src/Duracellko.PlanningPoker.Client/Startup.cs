@@ -38,6 +38,7 @@ namespace Duracellko.PlanningPoker.Client
 
             services.AddScoped<IMemberCredentialsStore, MemberCredentialsStore>();
             services.AddScoped<ITimerSettingsRepository, TimerSettingsRepository>();
+            services.AddScoped<IApplicationIntegrationService, ApplicationIntegrationService>();
             services.AddScoped<Microsoft.AspNetCore.SignalR.Client.IHubConnectionBuilder, PlanningPokerHubConnectionBuilder>();
 
             services.AddScoped<INavigationManager, AppNavigationManager>();

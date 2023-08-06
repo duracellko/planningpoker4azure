@@ -91,6 +91,15 @@
             window.localStorage.setItem(PlanningPoker.timerDurationKey, timerDuration);
         };
 
+        // Posts estimation result to the calling application.
+        PlanningPoker.postEstimationResult = function(estimation, callbackReference) {
+            const message = {
+                estimation: estimation,
+                reference: callbackReference.reference
+            }
+            window.postMessage(message, callbackReference.url);
+        }
+
         return PlanningPoker;
     })();
 

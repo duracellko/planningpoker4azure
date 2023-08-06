@@ -324,7 +324,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -354,7 +354,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -384,7 +384,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -414,7 +414,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -447,7 +447,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
 
             Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(1, target.Estimations.Count());
@@ -490,7 +490,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -543,7 +543,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -672,7 +672,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -762,7 +762,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -859,7 +859,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -961,7 +961,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -1048,7 +1048,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         }
 
         [TestMethod]
@@ -1093,7 +1093,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsFalse(target.CanStartTimer);
@@ -1176,7 +1176,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsFalse(target.CanStartTimer);
@@ -1230,7 +1230,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsTrue(target.CanStartTimer);
@@ -1279,7 +1279,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
-            Assert.IsFalse(target.CanCallbackApplication);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsTrue(target.CanStartTimer);
@@ -1311,6 +1311,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var busyIndicator = new Mock<IBusyIndicatorService>();
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
             var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
 
             if (timerFactory == null)
             {
@@ -1336,7 +1337,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory,
                 dateTimeProvider,
                 serviceTimeProvider,
-                timerSettingsRepository.Object);
+                timerSettingsRepository.Object,
+                applicationIntegrationService.Object);
             if (propertyChangedCounter != null)
             {
                 // Subtract 1 PropertyChanged event raised by InitializeTeam

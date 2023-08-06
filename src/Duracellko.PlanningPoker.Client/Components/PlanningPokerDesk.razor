@@ -98,6 +98,10 @@
                             <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_AverageLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Average)
+                                <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Average))"
+                                        class="btn btn-secondary btn-sm">
+                                    @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -106,6 +110,10 @@
                             <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_MedianLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Median)
+                                <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Median))"
+                                        class="btn btn-secondary btn-sm">
+                                    @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -114,6 +122,10 @@
                             <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_SumLabel</div>
                             <div class="estimationSummaryValue">
                                 @FormatSummaryValue(Controller.EstimationSummary.Sum)
+                                <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Sum))"
+                                        class="btn btn-secondary btn-sm">
+                                    @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -176,6 +188,11 @@
     private Task CancelTimerCommand()
     {
         return TryRun(() => Controller.CancelTimer());
+    }
+
+    private Task SubmitEstimationSummaryCommand(EstimationSummaryFunction function)
+    {
+        return TryRun(() => Controller.PostEstimationResult(function));
     }
 
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

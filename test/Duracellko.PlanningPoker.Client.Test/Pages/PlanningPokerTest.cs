@@ -99,6 +99,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Pages
             var dateTimeProvider = new DateTimeProviderMock();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
             var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
             return new PlanningPokerController(
                 planningPokerClient.Object,
                 busyIndicatorService.Object,
@@ -106,7 +107,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Pages
                 timerFactory.Object,
                 dateTimeProvider,
                 serviceTimeProvider.Object,
-                timerSettingsRepository.Object);
+                timerSettingsRepository.Object,
+                applicationIntegrationService.Object);
         }
 
         private static MessageReceiver CreateMessageReceiver()

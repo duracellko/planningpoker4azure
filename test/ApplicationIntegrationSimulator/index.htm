@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Planning Poker Application Integration simulator</title>
+</head>
+<body>
+    <h1>Planning Poker Application Integration simulator</h1>
+    <p>This is web page for simulation of an application that integrations with Planning Poker.</p>
+
+    <h2>Open Planning Poker</h2>
+    <div>
+        <form id="openPlanningPoker" name="openPlanningPoker" action=".">
+            <p>
+                <label for="teamName">Team name:</label>
+                <input type="text" id="teamName" name="teamName" required maxlength="50" value="My team" />
+            </p>
+            <p>
+                <label for="userName">User name:</label>
+                <input type="text" id="userName" name="userName" required maxlength="50" value="Duracellko" />
+            </p>
+            <p>
+                <label for="callbackReference">Reference:</label>
+                <input type="text" id="callbackReference" name="callbackReference" required maxlength="50" value="22" />
+            </p>
+            <p>
+                <button type="submit">Open Planning Poker</button>
+            </p>
+        </form>
+    </div>
+
+    <h2>Estimation result</h2>
+    <p>Estimation: <span id="resultEstimation"></span></p>
+    <p>Reference: <span id="resultReference"></span></p>
+
+    <script>
+        let planningPokerBaseUrl = 'http://localhost:10641';
+
+        function openPlanningPoker(event) {
+            event.preventDefault();
+
+            const teamName = document.getElementById("teamName").value;
+            const userName = document.getElementById("userName").value;
+            const callbackReference = document.getElementById("callbackReference").value;
+
+            if (!!teamName && !!userName && !!callbackReference) {
+                const callbackUri = document.location.href;
+                const url = planningPokerBaseUrl + "/Index/" + encodeURIComponent(teamName) + "/" + encodeURIComponent(userName) +
+                    "?CallbackUri=" + encodeURIComponent(callbackUri) +
+                    "&CallbackReference=" + encodeURIComponent(callbackReference) +
+                    "&AutoConnect=True";
+                window.open(url, "Duracellko.PlanningPoker");
+            }
+        }
+
+        function onMessageReceived(event) {
+            if (event.origin === planningPokerBaseUrl) {
+                const resultEstimationElement = document.getElementById("resultEstimation");
+                const resultReferenceElement = document.getElementById("resultReference");
+
+                const estimation = event.data.estimation;
+                const reference = event.data.reference;
+
+                resultEstimationElement.innerText = !!estimation ? estimation.toString() : '';
+                resultReferenceElement.innerText = !!reference ? estimation.toString() : '';
+            }
+        }
+
+        document.getElementById("openPlanningPoker").addEventListener("submit", openPlanningPoker);
+        window.addEventListener("message", onMessageReceived);
+    </script>
+</body>
+</html>
