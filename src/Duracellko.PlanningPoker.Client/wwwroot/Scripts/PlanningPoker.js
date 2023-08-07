@@ -97,7 +97,8 @@
                 estimation: estimation,
                 reference: callbackReference.reference
             }
-            window.postMessage(message, callbackReference.url);
+            window.opener.postMessage(message, callbackReference.url);
+            window.opener.focus();
         }
 
         return PlanningPoker;

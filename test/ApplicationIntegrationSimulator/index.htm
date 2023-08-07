@@ -62,7 +62,9 @@
                 const reference = event.data.reference;
 
                 resultEstimationElement.innerText = !!estimation ? estimation.toString() : '';
-                resultReferenceElement.innerText = !!reference ? estimation.toString() : '';
+                resultReferenceElement.innerText = !!reference ? reference.toString() : '';
+
+                window.focus();
             }
         }
 
