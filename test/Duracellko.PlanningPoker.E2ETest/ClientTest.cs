@@ -267,15 +267,15 @@ namespace Duracellko.PlanningPoker.E2ETest
             };
 
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var summaryItemElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult div.estimationSummary div.estimationSummaryItem"));
+            var summaryItemElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult div.estimationSummary div.card"));
             Assert.AreEqual(summaryItems.Length, summaryItemElements.Count);
 
             for (int i = 0; i < summaryItems.Length; i++)
             {
                 var summaryItem = summaryItems[i];
                 var summaryItemElement = summaryItemElements[i];
-                var nameElement = summaryItemElement.FindElement(By.CssSelector("div.estimationSummaryTitle"));
-                var valueElement = summaryItemElement.FindElement(By.CssSelector("div.estimationSummaryValue"));
+                var nameElement = summaryItemElement.FindElement(By.CssSelector("div.card-header"));
+                var valueElement = summaryItemElement.FindElement(By.CssSelector("div.card-body"));
                 Assert.AreEqual(summaryItem.Key, nameElement.Text);
                 Assert.AreEqual(summaryItem.Value.ToString("N2"), valueElement.Text);
             }
