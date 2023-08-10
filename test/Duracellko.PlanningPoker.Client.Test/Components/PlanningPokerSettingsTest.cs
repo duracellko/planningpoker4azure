@@ -32,7 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             using var target = _context.RenderComponent<PlanningPokerSettings>();
 
@@ -57,7 +57,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             using var target = _context.RenderComponent<PlanningPokerSettings>();
 
@@ -81,7 +81,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             using var target = _context.RenderComponent<PlanningPokerSettings>();
 
@@ -109,7 +109,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
                 .SetVoidResult();
@@ -133,7 +133,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
                 .SetVoidResult();
@@ -159,7 +159,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             DotNetObjectReference<PlanningPokerSettings>? modalEventHandler = null;
             _context.JSInterop.SetupVoid(
@@ -195,6 +195,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var dateTimeProvider = new DateTimeProviderMock();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
             var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
             return new PlanningPokerController(
                 planningPokerClient.Object,
                 busyIndicatorService.Object,
@@ -202,7 +203,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 timerFactory.Object,
                 dateTimeProvider,
                 serviceTimeProvider.Object,
-                timerSettingsRepository.Object);
+                timerSettingsRepository.Object,
+                applicationIntegrationService.Object);
         }
 
         private static IHtmlSelectElement GetSelectDeckElement(IRenderedComponent<PlanningPokerSettings> component)

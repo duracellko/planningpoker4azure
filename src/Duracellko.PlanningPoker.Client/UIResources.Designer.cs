@@ -241,6 +241,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please, create new Scrum Team by confirming Create form..
+        /// </summary>
+        internal static string JoinTeam_CreateTeamMessage {
+            get {
+                return ResourceManager.GetString("JoinTeam_CreateTeamMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Join team.
         /// </summary>
         internal static string JoinTeam_Header {
@@ -543,6 +552,15 @@ namespace Duracellko.PlanningPoker.Client {
         internal static string PlanningPokerDesk_StopTimerButton {
             get {
                 return ResourceManager.GetString("PlanningPokerDesk_StopTimerButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        internal static string PlanningPokerDesk_SubmitEstimationSummary {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_SubmitEstimationSummary", resourceCulture);
             }
         }
         

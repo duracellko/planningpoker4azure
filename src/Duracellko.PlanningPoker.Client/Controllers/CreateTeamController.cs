@@ -18,6 +18,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         private readonly IMessageBoxService _messageBoxService;
         private readonly IBusyIndicatorService _busyIndicatorService;
         private readonly INavigationManager _navigationManager;
+        private readonly IMemberCredentialsStore _memberCredentialsStore;
         private readonly IServiceTimeProvider _serviceTimeProvider;
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="messageBoxService">Service to display message to user.</param>
         /// <param name="busyIndicatorService">Service to display that operation is in progress.</param>
         /// <param name="navigationManager">Service to navigate to specified URL.</param>
+        /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
         /// <param name="serviceTimeProvider">Service to update time from server.</param>
         public CreateTeamController(
             IPlanningPokerClient planningPokerService,
@@ -35,6 +37,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             IMessageBoxService messageBoxService,
             IBusyIndicatorService busyIndicatorService,
             INavigationManager navigationManager,
+            IMemberCredentialsStore memberCredentialsStore,
             IServiceTimeProvider serviceTimeProvider)
         {
             _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
@@ -42,6 +45,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _busyIndicatorService = busyIndicatorService ?? throw new ArgumentNullException(nameof(busyIndicatorService));
             _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
+            _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
             _serviceTimeProvider = serviceTimeProvider ?? throw new ArgumentNullException(nameof(serviceTimeProvider));
         }
 
@@ -49,6 +53,20 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Gets collection of available estimation decks, which can be selected, when creating new team.
         /// </summary>
         public IReadOnlyDictionary<Deck, string> EstimationDecks { get; } = ControllerHelper.EstimationDecks;
+
+        /// <summary>
+        /// Gets a value indicating whether an automatic team joining was requested. In such case the member name should be preserved.
+        /// </summary>
+        public bool JoinAutomatically => (ControllerHelper.GetAutoConnectRequestFromUri(_navigationManager.Uri)?.JoinAutomatically).GetValueOrDefault();
+
+        /// <summary>
+        /// Gets permanent <see cref="MemberCredentials"/> from store to fill user's default values.
+        /// </summary>
+        /// <returns>Loaded <see cref="MemberCredentials"/> instance.</returns>
+        public async Task<MemberCredentials?> GetCredentials()
+        {
+            return await _memberCredentialsStore.GetCredentialsAsync(true);
+        }
 
         /// <summary>
         /// Creates new Scrum Team and initialize Planning Poker game.
@@ -75,8 +93,9 @@ namespace Duracellko.PlanningPoker.Client.Controllers
 
                 if (teamResult != null)
                 {
-                    await _planningPokerInitializer.InitializeTeam(teamResult, scrumMasterName);
-                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam!, scrumMasterName);
+                    var callbackReference = ControllerHelper.GetAutoConnectRequestFromUri(_navigationManager.Uri)?.CallbackReference;
+                    await _planningPokerInitializer.InitializeTeam(teamResult, scrumMasterName, callbackReference);
+                    ControllerHelper.OpenPlanningPokerPage(_navigationManager, teamResult.ScrumTeam!, scrumMasterName, callbackReference);
                     return true;
                 }
             }

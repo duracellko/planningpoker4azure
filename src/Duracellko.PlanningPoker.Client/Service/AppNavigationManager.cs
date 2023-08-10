@@ -21,6 +21,11 @@ namespace Duracellko.PlanningPoker.Client.Service
         }
 
         /// <summary>
+        /// Gets the current URI. The <see cref="Uri" /> is always represented as an absolute URI in string form.
+        /// </summary>
+        public string Uri => _navigationManager.Uri;
+
+        /// <summary>
         /// Navigates to the specified URI.
         /// </summary>
         /// <param name="uri">The destination URI. This can be absolute, or relative to the base URI.</param>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
@@ -40,6 +42,26 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// Gets median value of estimations.
         /// </summary>
         public double? Median { get; }
+
+        /// <summary>
+        /// Gets estimation summary value calculated by the specified function.
+        /// </summary>
+        /// <param name="function">The function to calculate the summary value.</param>
+        /// <returns>The calculated estimation summary value.</returns>
+        public double? GetValue(EstimationSummaryFunction function)
+        {
+            switch (function)
+            {
+                case EstimationSummaryFunction.Average:
+                    return Average;
+                case EstimationSummaryFunction.Median:
+                    return Median;
+                case EstimationSummaryFunction.Sum:
+                    return Sum;
+                default:
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedEstimationSummaryFunction, function), nameof(function));
+            }
+        }
 
         private static bool IsNumericEstimation(MemberEstimation memberEstimation)
         {

@@ -46,7 +46,8 @@
 
         if (Controller.ScrumTeam == null)
         {
-            ControllerHelper.OpenIndexPage(NavigationManager, TeamName, MemberName);
+            var callbackReference = ControllerHelper.GetAutoConnectRequestFromUri(NavigationManager.Uri)?.CallbackReference;
+            ControllerHelper.OpenIndexPage(NavigationManager, TeamName, MemberName, callbackReference);
         }
         else
         {

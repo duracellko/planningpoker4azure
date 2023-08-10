@@ -177,6 +177,9 @@
   <data name="JoinTeam_AsObserverLabel" xml:space="preserve">
     <value>As observer only</value>
   </data>
+  <data name="JoinTeam_CreateTeamMessage" xml:space="preserve">
+    <value>Please, create new Scrum Team by confirming Create form.</value>
+  </data>
   <data name="JoinTeam_Header" xml:space="preserve">
     <value>Join team</value>
   </data>
@@ -278,6 +281,9 @@
   </data>
   <data name="PlanningPokerDesk_StopTimerButton" xml:space="preserve">
     <value>Stop timer</value>
+  </data>
+  <data name="PlanningPokerDesk_SubmitEstimationSummary" xml:space="preserve">
+    <value>Submit</value>
   </data>
   <data name="PlanningPokerDesk_SumLabel" xml:space="preserve">
     <value>Sum</value>

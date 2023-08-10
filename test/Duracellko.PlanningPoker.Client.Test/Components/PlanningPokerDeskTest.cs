@@ -32,7 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         {
             using var controller = CreatePlanningPokerController();
             InitializeContext(controller);
-            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName);
+            await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
@@ -68,7 +68,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = true },
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
             };
-            await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
@@ -136,7 +136,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                     Estimation = new Estimation { Value = 3 }
                 }
             };
-            await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
@@ -184,7 +184,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = false },
                 new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
             };
-            await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName);
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
@@ -238,7 +238,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                     Estimation = new Estimation { Value = -999909 }
                 }
             };
-            await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName);
+            await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
             using var target = _context.RenderComponent<PlanningPokerDesk>();
 
@@ -261,6 +261,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
             var dateTimeProvider = new DateTimeProviderMock();
             var serviceTimeProvider = new Mock<IServiceTimeProvider>();
             var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
             return new PlanningPokerController(
                 planningPokerClient.Object,
                 busyIndicatorService.Object,
@@ -268,7 +269,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
                 timerFactory.Object,
                 dateTimeProvider,
                 serviceTimeProvider.Object,
-                timerSettingsRepository.Object);
+                timerSettingsRepository.Object,
+                applicationIntegrationService.Object);
         }
 
         private static void AssertAvailableEstimation(IElement element, string estimationText)

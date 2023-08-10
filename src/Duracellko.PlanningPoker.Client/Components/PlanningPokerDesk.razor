@@ -93,28 +93,55 @@
             @if (Controller.EstimationSummary != null)
             {
                 <div class="estimationSummary row">
-                    <div class="col-md-6">
-                        <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_AverageLabel</div>
-                            <div class="estimationSummaryValue">
+                    <div class="col-md">
+                        <div class="card border-primary mb-2">
+                            <div class="card-header text-bg-primary">@UIResources.PlanningPokerDesk_AverageLabel</div>
+                            <div class="card-body text-end fw-bold pt-2 pb-2">
                                 @FormatSummaryValue(Controller.EstimationSummary.Average)
                             </div>
+                            @if (Controller.CanPostEstimationResult(EstimationSummaryFunction.Average))
+                            {
+                                <div class="card-footer border border-0 text-end">
+                                    <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Average))"
+                                            class="btn btn-secondary btn-sm">
+                                        @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_MedianLabel</div>
-                            <div class="estimationSummaryValue">
+                    <div class="col-md">
+                        <div class="card border-primary mb-2">
+                            <div class="card-header text-bg-primary">@UIResources.PlanningPokerDesk_MedianLabel</div>
+                            <div class="card-body text-end fw-bold pt-2 pb-2">
                                 @FormatSummaryValue(Controller.EstimationSummary.Median)
                             </div>
+                            @if (Controller.CanPostEstimationResult(EstimationSummaryFunction.Median))
+                            {
+                                <div class="card-footer border border-0 text-end">
+                                    <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Median))"
+                                            class="btn btn-secondary btn-sm">
+                                        @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="estimationSummaryItem">
-                            <div class="estimationSummaryTitle">@UIResources.PlanningPokerDesk_SumLabel</div>
-                            <div class="estimationSummaryValue">
+                    <div class="col-md">
+                        <div class="card border-primary mb-2">
+                            <div class="card-header text-bg-primary">@UIResources.PlanningPokerDesk_SumLabel</div>
+                            <div class="card-body text-end fw-bold pt-2 pb-2">
                                 @FormatSummaryValue(Controller.EstimationSummary.Sum)
                             </div>
+                            @if (Controller.CanPostEstimationResult(EstimationSummaryFunction.Sum))
+                            {
+                                <div class="card-footer border border-0 text-end">
+                                    <button type="button" @onclick="@(e => SubmitEstimationSummaryCommand(EstimationSummaryFunction.Sum))"
+                                            class="btn btn-secondary btn-sm">
+                                        @UIResources.PlanningPokerDesk_SubmitEstimationSummary
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -176,6 +203,11 @@
     private Task CancelTimerCommand()
     {
         return TryRun(() => Controller.CancelTimer());
+    }
+
+    private Task SubmitEstimationSummaryCommand(EstimationSummaryFunction function)
+    {
+        return TryRun(() => Controller.PostEstimationResult(function));
     }
 
     private void ControllerOnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -249,7 +281,7 @@
     {
         if (!value.HasValue)
         {
-            return string.Empty;
+            return "\u00A0";
         }
 
         return value.Value.ToString("N2");

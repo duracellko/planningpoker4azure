@@ -18,9 +18,17 @@
 
         // Shows busy indicator using Bootstrap.
         PlanningPoker.showBusyIndicator = function (element) {
-            const options = { backdrop: 'static', keyboard: false };
-            const modal = bootstrap.Modal.getOrCreateInstance(element, options);
-            modal.show();
+            try {
+                const options = { backdrop: 'static', keyboard: false };
+                const modal = bootstrap.Modal.getOrCreateInstance(element, options);
+                modal.show();
+            }
+            catch (ex) {
+                // Bootstrap may not be initialized, when busy indicator is requested.
+                // It can be ignored, that it is not shown the first time.
+                console.error("Showing BusyIndicator failed.")
+                console.error(ex);
+            }
         };
 
         // Hides modal component using Bootstrap.
@@ -82,6 +90,16 @@
         PlanningPoker.setTimerDuration = function (timerDuration) {
             window.localStorage.setItem(PlanningPoker.timerDurationKey, timerDuration);
         };
+
+        // Posts estimation result to the calling application.
+        PlanningPoker.postEstimationResult = function(estimation, callbackReference) {
+            const message = {
+                estimation: estimation,
+                reference: callbackReference.reference
+            }
+            window.opener.postMessage(message, callbackReference.url);
+            window.opener.focus();
+        }
 
         return PlanningPoker;
     })();

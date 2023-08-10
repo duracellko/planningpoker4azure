@@ -53,21 +53,26 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        base.OnParametersSet();
+        await base.OnParametersSetAsync();
 
         bool hasReconnected = false;
         if (!string.IsNullOrEmpty(TeamName) && !string.IsNullOrEmpty(MemberName))
         {
             try
             {
-                hasReconnected = await Controller.TryReconnectTeam(TeamName, MemberName);
+                hasReconnected = await Controller.TryAutoConnectTeam(TeamName, MemberName);
             }
             catch (Exception)
             {
                 // Ignore error. User can connect manually.
             }
 
-            MemberName = null;
+            // Automatic join fails, when team is not created yet. Let user wait and join with the requested member name.
+            // Otherwise restore user's stored user name.
+            if (!Controller.JoinAutomatically)
+            {
+                MemberName = null;
+            }
         }
 
         if (!hasReconnected)

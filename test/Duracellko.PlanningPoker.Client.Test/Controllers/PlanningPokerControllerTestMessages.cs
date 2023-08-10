@@ -40,7 +40,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             target.ProcessMessages(Enumerable.Empty<Message>());
 
@@ -54,7 +54,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new Message
             {
@@ -73,7 +73,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new MemberMessage
             {
@@ -104,7 +104,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Observers = null!;
             scrumTeam.State = TeamState.EstimationFinished;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new MemberMessage
             {
@@ -134,7 +134,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message1 = new MemberMessage
             {
@@ -174,7 +174,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName, null);
 
             var message = new MemberMessage
             {
@@ -211,7 +211,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             };
             scrumTeam.Members.Add(member);
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new MemberMessage
             {
@@ -242,7 +242,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new MemberMessage
             {
@@ -274,7 +274,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new MemberMessage
             {
@@ -305,7 +305,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new Message
             {
@@ -324,6 +324,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -334,7 +335,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationFinished;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new Message
             {
@@ -353,6 +354,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -363,7 +365,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationCanceled;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new Message
             {
@@ -382,6 +384,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -392,7 +395,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             scrumTeam.State = TeamState.EstimationInProgress;
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new Message
             {
@@ -411,6 +414,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         }
 
@@ -420,7 +424,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message = new MemberMessage
             {
@@ -443,6 +447,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
 
             Assert.IsNotNull(target.Estimations);
             Assert.AreEqual(1, target.Estimations.Count());
@@ -462,7 +467,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ObserverName, null);
 
             var message = new MemberMessage
             {
@@ -485,6 +490,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -504,7 +510,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message1 = new MemberMessage
             {
@@ -537,6 +543,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoObserverHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -563,7 +570,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             var message1 = new MemberMessage
             {
@@ -665,6 +672,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsTrue(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -706,7 +714,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new EstimationResultMessage
             {
@@ -754,6 +762,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -796,7 +805,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new EstimationResultMessage
             {
@@ -850,6 +859,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -897,7 +907,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
             scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new EstimationResultMessage
             {
@@ -951,6 +961,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsTrue(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsNotNull(target.Estimations);
@@ -994,7 +1005,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new EstimationSetMessage
             {
@@ -1037,6 +1048,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         }
 
         [TestMethod]
@@ -1062,7 +1074,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory: timerFactory.Object,
                 dateTimeProvider: dateTimeProvider,
                 serviceTimeProvider: serviceTimeProvider.Object);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             var message = new TimerMessage
             {
@@ -1081,6 +1093,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsFalse(target.CanStartTimer);
@@ -1143,7 +1156,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory: timerFactory.Object,
                 dateTimeProvider: dateTimeProvider,
                 serviceTimeProvider: serviceTimeProvider.Object);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc));
             var message = new TimerMessage
@@ -1163,6 +1176,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsFalse(target.CanStartTimer);
@@ -1197,7 +1211,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory: timerFactory.Object,
                 dateTimeProvider: dateTimeProvider,
                 serviceTimeProvider: serviceTimeProvider.Object);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc));
             var message = new Message
@@ -1216,6 +1230,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsTrue(target.CanStartTimer);
@@ -1245,7 +1260,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory: timerFactory.Object,
                 dateTimeProvider: dateTimeProvider,
                 serviceTimeProvider: serviceTimeProvider.Object);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.MemberName, null);
 
             dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc));
             var message = new Message
@@ -1264,6 +1279,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             Assert.IsFalse(target.CanShowEstimationSummary);
             Assert.IsNull(target.EstimationSummary);
             Assert.IsFalse(target.CanChangeDeck);
+            PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
             PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
 
             Assert.IsTrue(target.CanStartTimer);
@@ -1280,7 +1296,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var propertyChangedCounter = new PropertyChangedCounter();
             var scrumTeam = PlanningPokerData.GetScrumTeam();
             using var target = CreateController(propertyChangedCounter);
-            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName);
+            await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
             Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null!));
         }
@@ -1295,6 +1311,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             var busyIndicator = new Mock<IBusyIndicatorService>();
             var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
             var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
+            var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
 
             if (timerFactory == null)
             {
@@ -1320,7 +1337,8 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
                 timerFactory,
                 dateTimeProvider,
                 serviceTimeProvider,
-                timerSettingsRepository.Object);
+                timerSettingsRepository.Object,
+                applicationIntegrationService.Object);
             if (propertyChangedCounter != null)
             {
                 // Subtract 1 PropertyChanged event raised by InitializeTeam
