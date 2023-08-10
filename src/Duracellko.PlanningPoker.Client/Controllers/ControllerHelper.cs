@@ -168,6 +168,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                     case '&':
                         ProcessValueToken(token.ToString());
                         token.Clear();
+                        name = null;
                         break;
                     case '=':
                         name = Uri.UnescapeDataString(token.ToString());

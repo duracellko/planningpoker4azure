@@ -801,7 +801,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             ApplicationCallbackReference? applicationCallbackReference = null;
             planningPokerInitializer.Setup(o => o.InitializeTeam(It.IsAny<TeamResult>(), It.IsAny<string>(), It.IsAny<ApplicationCallbackReference?>()))
                 .Callback<TeamResult, string, ApplicationCallbackReference?>((_, _, r) => applicationCallbackReference = r);
-            var urlQueryString = "CallbackUri=https%3A%2F%2Fwww.testweb.net&CallbackReference=ID%3D254&AutoConnect=True";
+            var urlQueryString = "CallbackUri=https%3A%2F%2Fwww.testweb.net&NoValue&CallbackReference=ID%3D254&AutoConnect=True";
             var target = CreateController(planningPokerInitializer: planningPokerInitializer.Object, teamResult: teamResult, urlQueryString: urlQueryString);
 
             await target.TryAutoConnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName);
