@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Globalization;
-using System.Runtime.Serialization;
 
 namespace Duracellko.PlanningPoker.Domain
 {
     /// <summary>
     /// Represents an error or an invalid input in an operation in the Planning Poker application.
     /// </summary>
-    [Serializable]
     public class PlanningPokerException : Exception
     {
         /// <summary>
@@ -60,18 +58,6 @@ namespace Duracellko.PlanningPoker.Domain
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlanningPokerException"/> class.
-        /// </summary>
-        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
-        protected PlanningPokerException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            Error = info.GetString(nameof(Error));
-            Argument = info.GetString(nameof(Argument));
-        }
-
-        /// <summary>
         /// Gets an error code of the error that caused this exception.
         /// </summary>
         public string? Error { get; }
@@ -80,18 +66,6 @@ namespace Duracellko.PlanningPoker.Domain
         /// Gets an argument value that was invalid input for the failed operation.
         /// </summary>
         public string? Argument { get; }
-
-        /// <summary>
-        /// Sets the SerializationInfo with information about the exception.
-        /// </summary>
-        /// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(nameof(Error), Error);
-            info.AddValue(nameof(Argument), Argument);
-        }
 
         private static string GetExceptionMessage(string error, string argument)
         {

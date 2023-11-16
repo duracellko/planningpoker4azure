@@ -18,10 +18,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public long Add(HubMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             long nextId = Interlocked.Increment(ref _nextId);
             if (!_messages.TryAdd(nextId, message))

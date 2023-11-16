@@ -300,7 +300,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers
             return scrumTeam;
         }
 
-        private static IList<EstimationResultItem> GetScrumTeamEstimations(ScrumTeam scrumTeam, IReadOnlyList<double?> estimations)
+        private static List<EstimationResultItem> GetScrumTeamEstimations(ScrumTeam scrumTeam, IReadOnlyList<double?> estimations)
         {
             var estimationResult = new List<EstimationResultItem>();
             var estimationResultItem = new EstimationResultItem

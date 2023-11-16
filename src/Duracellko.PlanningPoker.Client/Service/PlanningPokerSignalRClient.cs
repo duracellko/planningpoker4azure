@@ -456,10 +456,7 @@ namespace Duracellko.PlanningPoker.Client.Service
 
         private void CheckDisposed()
         {
-            if (_disposed || _disposeInProgress)
-            {
-                throw new ObjectDisposedException(nameof(PlanningPokerSignalRClient));
-            }
+            ObjectDisposedException.ThrowIf(_disposed || _disposeInProgress, this);
         }
 
         private void Dispose(bool disposing)

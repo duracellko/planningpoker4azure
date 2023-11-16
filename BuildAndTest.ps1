@@ -26,7 +26,7 @@ try {
 
     Write-Host "Step: unit tests" -ForegroundColor Green
     $testFiles = [System.Collections.Generic.List[string]]::new()
-    $testPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net7.0"
+    $testPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net8.0"
     Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add($_.FullName) }
     $testAssemblies = $testFiles.ToArray()
 
@@ -76,7 +76,7 @@ try {
         throw "dotnet publish failed"
     }
 
-    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\net7.0\publish"
+    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\net8.0\publish"
     $dockerAppFolder = Join-Path -Path $scriptDir -ChildPath "docker\app"
     if (!(Test-Path -Path $dockerAppFolder)) {
         New-Item -Path $dockerAppFolder -ItemType Directory

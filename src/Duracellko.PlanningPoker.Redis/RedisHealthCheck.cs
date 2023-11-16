@@ -50,10 +50,7 @@ namespace Duracellko.PlanningPoker.Redis
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All errors are reported as unhealthy status.")]
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(RedisHealthCheck));
-            }
+            ObjectDisposedException.ThrowIf(_disposed, this);
 
             try
             {

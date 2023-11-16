@@ -71,10 +71,7 @@ namespace Duracellko.PlanningPoker.Redis
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
         public async Task SendMessage(NodeMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             var subscriber = _subscriber;
             if (subscriber == null)

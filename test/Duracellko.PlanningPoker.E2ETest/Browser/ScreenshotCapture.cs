@@ -25,15 +25,8 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
         public string TakeScreenshot(ITakesScreenshot driver, BrowserTestContext context, string name)
         {
-            if (driver == null)
-            {
-                throw new ArgumentNullException(nameof(driver));
-            }
-
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(driver);
+            ArgumentNullException.ThrowIfNull(context);
 
             if (string.IsNullOrEmpty(name))
             {

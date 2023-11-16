@@ -55,10 +55,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="guidProvider">The GUID provider to provide new GUID objects. If null is specified, then default GUID provider is used.</param>
         public ScrumTeam(Serialization.ScrumTeamData scrumTeamData, DateTimeProvider? dateTimeProvider, GuidProvider? guidProvider)
         {
-            if (scrumTeamData == null)
-            {
-                throw new ArgumentNullException(nameof(scrumTeamData));
-            }
+            ArgumentNullException.ThrowIfNull(scrumTeamData);
 
             if (string.IsNullOrEmpty(scrumTeamData.Name))
             {
@@ -312,10 +309,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="availableEstimations">The collection of available stimations.</param>
         public void ChangeAvailableEstimations(IEnumerable<Estimation> availableEstimations)
         {
-            if (availableEstimations == null)
-            {
-                throw new ArgumentNullException(nameof(availableEstimations));
-            }
+            ArgumentNullException.ThrowIfNull(availableEstimations);
 
             if (State == TeamState.EstimationInProgress)
             {

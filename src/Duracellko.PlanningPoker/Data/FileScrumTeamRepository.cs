@@ -148,10 +148,7 @@ namespace Duracellko.PlanningPoker.Data
         /// <param name="team">The Scrum team.</param>
         public void SaveScrumTeam(ScrumTeam team)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             InitializeFolder();
 

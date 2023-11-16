@@ -60,10 +60,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
 
         public Task Start()
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(ServerFixture));
-            }
+            ObjectDisposedException.ThrowIf(_disposed, this);
 
             if (WebHost != null)
             {

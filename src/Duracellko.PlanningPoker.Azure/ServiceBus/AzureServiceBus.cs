@@ -73,10 +73,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
         public async Task SendMessage(NodeMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             var serviceBusSender = _serviceBusSender;
             if (serviceBusSender == null)
@@ -220,7 +217,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             }
         }
 
-        private Task CreateTopicSubscription(string topicName, string nodeId)
+        private async Task CreateTopicSubscription(string topicName, string nodeId)
         {
             var subscriptionOptions = new CreateSubscriptionOptions(topicName, nodeId)
             {
@@ -233,7 +230,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
             var filter = new SqlRuleFilter(string.Format(CultureInfo.InvariantCulture, sqlPattern, senderIdPropertyName, recipientIdPropertyName, nodeId));
             var subscriptionRuleOptions = new CreateRuleOptions("RecipientFilter", filter);
 
-            return _serviceBusAdministrationClient!.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
+            await _serviceBusAdministrationClient!.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
         }
 
         private async Task DeleteSubscription()

@@ -69,10 +69,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <returns><c>True</c> if queue was setup successfully; otherwise <c>false</c>.</returns>
         public bool Setup(IEnumerable<string> values)
         {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
+            ArgumentNullException.ThrowIfNull(values);
 
             lock (_listLock)
             {

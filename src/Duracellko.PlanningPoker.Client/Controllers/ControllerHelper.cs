@@ -36,10 +36,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <returns>User friendly text message.</returns>
         public static string GetErrorMessage(PlanningPokerException exception)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
+            ArgumentNullException.ThrowIfNull(exception);
 
             var result = GetErrorMessageFromErrorCode(exception);
             return result ?? exception.Message;
@@ -58,10 +55,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
             string member,
             ApplicationCallbackReference? callbackReference)
         {
-            if (navigationManager == null)
-            {
-                throw new ArgumentNullException(nameof(navigationManager));
-            }
+            ArgumentNullException.ThrowIfNull(navigationManager);
 
             var urlEncoder = UrlEncoder.Default;
             var uri = $"PlanningPoker/{urlEncoder.Encode(team.Name)}/{urlEncoder.Encode(member)}";
@@ -83,10 +77,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="callbackReference">The application callback reference to include in the URL.</param>
         public static void OpenIndexPage(INavigationManager navigationManager, string? team, string? member, ApplicationCallbackReference? callbackReference)
         {
-            if (navigationManager == null)
-            {
-                throw new ArgumentNullException(nameof(navigationManager));
-            }
+            ArgumentNullException.ThrowIfNull(navigationManager);
 
             var urlEncoder = UrlEncoder.Default;
             var uri = "Index";

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Data;
@@ -14,6 +15,8 @@ namespace Duracellko.PlanningPoker.Health
     /// </summary>
     public class ScrumTeamRepositoryHealthCheck : IHealthCheck
     {
+        private static readonly CompositeFormat _healthRepositoryHealthy = CompositeFormat.Parse(Resources.Health_RepositoryHealthy);
+
         private readonly IScrumTeamRepository _scrumTeamRepository;
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace Duracellko.PlanningPoker.Health
             try
             {
                 var count = _scrumTeamRepository.ScrumTeamNames.Count();
-                return Task.FromResult(HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, Resources.Health_RepositoryHealthy, count)));
+                return Task.FromResult(HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, _healthRepositoryHealthy, count)));
             }
             catch (Exception ex)
             {

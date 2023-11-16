@@ -32,10 +32,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public Task ReceiveMessage(HubMessage message, CancellationToken cancellationToken)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             return _transport.ReceiveMessage(message, cancellationToken);
         }

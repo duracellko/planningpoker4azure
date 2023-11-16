@@ -152,10 +152,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertMembersInTeam(params string[] members)
         {
-            if (members == null)
-            {
-                throw new ArgumentNullException(nameof(members));
-            }
+            ArgumentNullException.ThrowIfNull(members);
 
             Assert.IsNotNull(MembersPanelElement);
             var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span[1]"));
@@ -165,10 +162,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertObserversInTeam(params string[] observers)
         {
-            if (observers == null)
-            {
-                throw new ArgumentNullException(nameof(observers));
-            }
+            ArgumentNullException.ThrowIfNull(observers);
 
             Assert.IsNotNull(MembersPanelElement);
             var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[3]/li/span"));
@@ -237,10 +231,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
         public void AssertSelectedEstimation(params KeyValuePair<string, string>[] estimations)
         {
-            if (estimations == null)
-            {
-                throw new ArgumentNullException(nameof(estimations));
-            }
+            ArgumentNullException.ThrowIfNull(estimations);
 
             Assert.IsNotNull(PlanningPokerDeskElement);
             var estimationResultElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult ul li"));

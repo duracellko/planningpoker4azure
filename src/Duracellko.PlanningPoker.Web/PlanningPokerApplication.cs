@@ -10,10 +10,7 @@ namespace Duracellko.PlanningPoker.Web
     {
         public void Apply(ApplicationModel application)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             // Remove PlanningPokerController, because it is not MVC controller.
             var planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(PlanningPokerController));

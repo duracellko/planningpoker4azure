@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus.Administration;
@@ -13,6 +14,8 @@ namespace Duracellko.PlanningPoker.Azure.Health
     /// </summary>
     public class AzureServiceBusHealthCheck : IHealthCheck
     {
+        private static readonly CompositeFormat _healthAzureServiceBusHealthy = CompositeFormat.Parse(Resources.Health_AzureServiceBusHealthy);
+
         private readonly PlanningPokerAzureNode _node;
         private readonly Lazy<ServiceBusAdministrationClient> _serviceBusAdministrationClient;
 
@@ -46,7 +49,7 @@ namespace Duracellko.PlanningPoker.Azure.Health
                 }
 
                 var properties = await _serviceBusAdministrationClient.Value.GetSubscriptionRuntimePropertiesAsync(topicName, _node.NodeId, cancellationToken);
-                return HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, Resources.Health_AzureServiceBusHealthy, properties.Value.ActiveMessageCount));
+                return HealthCheckResult.Healthy(string.Format(CultureInfo.InvariantCulture, _healthAzureServiceBusHealthy, properties.Value.ActiveMessageCount));
             }
             catch (Exception ex)
             {
