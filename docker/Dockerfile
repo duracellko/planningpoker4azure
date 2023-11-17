@@ -1,15 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 WORKDIR /app
 COPY ./app/ ./
 
-RUN useradd --home /home/app app  && \
-    mkdir /home/app && \
-    chown -R app /home/app && \
-    chmod -R u=rwx,g=rx,o= /home/app &&\
-    chmod -R u=rwx,g=rx,o=rx /app
-
-USER app
+USER $APP_UID
 
 ENV ASPNETCORE_URLS=http://*:8080
 
