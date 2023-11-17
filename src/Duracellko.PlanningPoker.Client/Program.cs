@@ -19,8 +19,6 @@ namespace Duracellko.PlanningPoker.Client
             var useHttpClient = configuration.GetValue<bool>("UseHttpClient");
             Startup.ConfigureServices(builder.Services, false, useHttpClient);
 
-            builder.RootComponents.Add<App>("#app");
-
             await builder.Build().RunAsync();
         }
     }

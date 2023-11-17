@@ -61,6 +61,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        internal static string App_LoadingLabel {
+            get {
+                return ResourceManager.GetString("App_LoadingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing....
         /// </summary>
         internal static string BusyIndicator_Processing {

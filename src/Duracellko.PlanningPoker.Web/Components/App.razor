@@ -1,0 +1,61 @@
+﻿@using Duracellko.PlanningPoker.Client
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject Duracellko.PlanningPoker.Web.Model.HomeModel _model
+
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@UIResources.App_Title</title>
+    <base href="/" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    @foreach (var cssScript in _model.ClientScripts.CascadingStyleSheets)
+    {
+        <link href="//cdnjs.cloudflare.com/ajax/libs/@cssScript" rel="stylesheet"
+              onerror="this.onerror = null; this.href = 'lib/@cssScript.File'" />
+    }
+    <link href="Content/Site.css" rel="stylesheet" />
+    <HeadOutlet @rendermode="@AppRenderMode" />
+</head>
+<body>
+    <AppLoader @rendermode="@AppRenderMode" />
+
+    <div id="blazor-error-ui" class="alert alert-warning alert-dismissible" role="alert">
+        <p>
+            <environment include="Staging,Production">
+                @UIResources.App_ProductionErrorText
+            </environment>
+            <environment include="Development">
+                @UIResources.App_DevelopmentErrorText
+            </environment>
+        </p>
+        <button type="button" class="reload btn btn-warning">@UIResources.App_ReloadButton</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@UIResources.App_DismissButtonTooltip"></button>
+    </div>
+
+    @foreach (var jsScript in _model.ClientScripts.JavaScripts)
+    {
+        <script src="//cdnjs.cloudflare.com/ajax/libs/@jsScript"></script>
+    }
+
+    <script>window.bootstrap || document.write('<script src="lib/js/bootstrap.bundle.min.js"><\/script>')</script>
+
+    <script src="Scripts/PlanningPoker.js"></script>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>
+
+@code
+{
+    private IComponentRenderMode AppRenderMode =>
+        _model.UseServerSide ? RenderMode.InteractiveServer : RenderMode.InteractiveWebAssembly;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await _model.ClientScripts.Load();
+    }
+}

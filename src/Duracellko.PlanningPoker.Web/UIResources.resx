@@ -117,22 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home_DevelopmentErrorText" xml:space="preserve">
+  <data name="App_DevelopmentErrorText" xml:space="preserve">
     <value>An unhandled exception has occurred. See browser dev tools for details.</value>
   </data>
-  <data name="Home_DismissButtonTooltip" xml:space="preserve">
+  <data name="App_DismissButtonTooltip" xml:space="preserve">
     <value>Dismiss</value>
   </data>
-  <data name="Home_LoadingLabel" xml:space="preserve">
-    <value>Loading...</value>
-  </data>
-  <data name="Home_ProductionErrorText" xml:space="preserve">
+  <data name="App_ProductionErrorText" xml:space="preserve">
     <value>An error has occurred. This application may no longer respond until reloaded.</value>
   </data>
-  <data name="Home_ReloadButton" xml:space="preserve">
+  <data name="App_ReloadButton" xml:space="preserve">
     <value>Reload</value>
   </data>
-  <data name="Home_Title" xml:space="preserve">
+  <data name="App_Title" xml:space="preserve">
     <value>Scrum Planning Poker</value>
   </data>
 </root>

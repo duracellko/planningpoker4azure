@@ -52,9 +52,21 @@ namespace Duracellko.PlanningPoker.Web
             services.AddControllers()
                 .AddApplicationPart(typeof(PlanningPokerService).Assembly)
                 .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
-            services.AddRazorPages()
-                .AddApplicationPart(typeof(Program).Assembly);
             services.AddSignalR();
+
+            var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
+            var razorComponentsBuilder = services.AddRazorComponents();
+
+            if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
+            {
+                razorComponentsBuilder = razorComponentsBuilder.AddInteractiveWebAssemblyComponents();
+            }
+
+            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+            {
+                razorComponentsBuilder.AddInteractiveServerComponents();
+            }
+
             var healthChecks = services.AddHealthChecks()
                 .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
                 .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository")
@@ -124,13 +136,12 @@ namespace Duracellko.PlanningPoker.Web
 
             services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
             services.AddSingleton<ClientScriptsLibrary>();
+            services.AddTransient<HomeModel>();
 
-            var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
             services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
 
-            if (clientConfiguration.UseServerSide != Model.ServerSideConditions.Never)
+            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
             {
-                services.AddServerSideBlazor();
                 services.AddSingleton<HttpClient>();
                 services.AddSingleton<PlanningPokerServerUriProvider>();
                 services.AddSingleton<Client.Service.IPlanningPokerUriProvider>(sp => sp.GetRequiredService<PlanningPokerServerUriProvider>());
@@ -149,7 +160,7 @@ namespace Duracellko.PlanningPoker.Web
             {
                 app.UseDeveloperExceptionPage();
 
-                if (clientConfiguration.UseServerSide != Model.ServerSideConditions.Always)
+                if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
                 {
                     app.UseWebAssemblyDebugging();
                 }
@@ -161,21 +172,25 @@ namespace Duracellko.PlanningPoker.Web
                 .AddRewrite(@"^appsettings\.json$", "configuration", false);
             app.UseRewriter(rewriteOptions);
 
-            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
-
             app.UseRouting();
+            app.UseAntiforgery();
 
             endpoints.MapHealthChecks("/health");
-            endpoints.MapRazorPages();
             endpoints.MapControllers();
             endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
-            if (clientConfiguration.UseServerSide != Model.ServerSideConditions.Never)
+            var componentsEndpoint = endpoints.MapRazorComponents<Components.App>()
+                .AddAdditionalAssemblies(typeof(Client.AppLoader).Assembly);
+
+            if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
             {
-                endpoints.MapBlazorHub();
+                componentsEndpoint = componentsEndpoint.AddInteractiveWebAssemblyRenderMode();
             }
 
-            endpoints.MapFallbackToPage("/Home");
+            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+            {
+                componentsEndpoint.AddInteractiveServerRenderMode();
+            }
         }
 
         private static AzurePlanningPokerConfiguration GetPlanningPokerConfiguration(IConfiguration configuration)

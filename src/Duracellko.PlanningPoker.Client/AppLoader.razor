@@ -1,0 +1,25 @@
+﻿@if (_appStarted)
+{
+    <Routes />
+}
+else
+{
+    <p style="text-align: center; margin-top: 32px;">
+        <span class="oi oi-loop-circular"></span> <span>@UIResources.App_LoadingLabel</span>
+    </p>
+}
+
+@code {
+    private bool _appStarted;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            _appStarted = true;
+            this.StateHasChanged();
+        }
+    }
+}

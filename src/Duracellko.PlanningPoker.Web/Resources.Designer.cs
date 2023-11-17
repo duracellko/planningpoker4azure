@@ -77,5 +77,14 @@ namespace Duracellko.PlanningPoker.Web {
                 return ResourceManager.GetString("Error_EmptyLibraryName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HTTP Context cannot be accessed..
+        /// </summary>
+        internal static string Error_NoHttpContext {
+            get {
+                return ResourceManager.GetString("Error_NoHttpContext", resourceCulture);
+            }
+        }
     }
 }
