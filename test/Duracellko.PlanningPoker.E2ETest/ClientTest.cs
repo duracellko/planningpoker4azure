@@ -47,7 +47,7 @@ namespace Duracellko.PlanningPoker.E2ETest
         public Task OpenApplication()
         {
             Browser.Navigate().GoToUrl(Server.Uri);
-            AppElement = Browser.FindElement(By.TagName("app"));
+            AppElement = Browser.FindElement(By.Id("app"));
             Assert.IsNotNull(AppElement);
             return Task.Delay(2000);
         }
