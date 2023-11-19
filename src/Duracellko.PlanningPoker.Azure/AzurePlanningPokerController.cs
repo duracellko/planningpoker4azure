@@ -81,10 +81,7 @@ namespace Duracellko.PlanningPoker.Azure
         /// <param name="team">The Scrum team to insert.</param>
         public void InitializeScrumTeam(ScrumTeam team)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             if (!_initialized)
             {

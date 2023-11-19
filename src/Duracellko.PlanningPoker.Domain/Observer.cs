@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -11,6 +12,8 @@ namespace Duracellko.PlanningPoker.Domain
     /// </summary>
     public class Observer
     {
+        private static readonly CompositeFormat _errorInvalidMessageType = CompositeFormat.Parse(Resources.Error_InvalidMessageType);
+
         private readonly Queue<Message> _messages = new Queue<Message>();
         private long _lastMessageId;
 
@@ -21,10 +24,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="name">The observer name.</param>
         public Observer(ScrumTeam team, string name)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             if (string.IsNullOrEmpty(name))
             {
@@ -247,7 +247,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case MessageType.TimerStarted:
                     return new TimerMessage(messageData);
                 default:
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidMessageType, messageData.MessageType), nameof(messageData));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorInvalidMessageType, messageData.MessageType), nameof(messageData));
             }
         }
     }

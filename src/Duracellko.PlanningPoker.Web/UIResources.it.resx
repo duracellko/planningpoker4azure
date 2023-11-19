@@ -117,22 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home_DevelopmentErrorText" xml:space="preserve">
+  <data name="App_DevelopmentErrorText" xml:space="preserve">
     <value>Si è verificata un'eccezione non gestita. Per informazioni dettagliate, vedere Strumenti di sviluppo del browser.</value>
   </data>
-  <data name="Home_DismissButtonTooltip" xml:space="preserve">
+  <data name="App_DismissButtonTooltip" xml:space="preserve">
     <value>Licenziare</value>
   </data>
-  <data name="Home_LoadingLabel" xml:space="preserve">
-    <value>Caricamento...</value>
-  </data>
-  <data name="Home_ProductionErrorText" xml:space="preserve">
+  <data name="App_ProductionErrorText" xml:space="preserve">
     <value>Si è verificato un errore. Questa applicazione potrebbe non rispondere più fino a quando non viene ricaricata.</value>
   </data>
-  <data name="Home_ReloadButton" xml:space="preserve">
+  <data name="App_ReloadButton" xml:space="preserve">
     <value>Ricaricare</value>
   </data>
-  <data name="Home_Title" xml:space="preserve">
+  <data name="App_Title" xml:space="preserve">
     <value>Scrum Planning Poker</value>
   </data>
 </root>

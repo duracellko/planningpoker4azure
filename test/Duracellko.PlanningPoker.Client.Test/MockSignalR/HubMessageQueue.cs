@@ -17,10 +17,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public HubMessageQueue(IObservable<HubMessage> messages)
         {
-            if (messages == null)
-            {
-                throw new ArgumentNullException(nameof(messages));
-            }
+            ArgumentNullException.ThrowIfNull(messages);
 
             _subscription = messages.Subscribe(new HubMessageHandler(this));
         }

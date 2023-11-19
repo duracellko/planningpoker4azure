@@ -71,7 +71,7 @@ namespace Duracellko.PlanningPoker.Service
             return message;
         }
 
-        private static IConfigurationProvider CreateMapperConfiguration()
+        private static MapperConfiguration CreateMapperConfiguration()
         {
             var result = new MapperConfiguration(config =>
             {

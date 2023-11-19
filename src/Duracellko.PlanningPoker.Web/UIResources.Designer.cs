@@ -63,54 +63,45 @@ namespace Duracellko.PlanningPoker.Web {
         /// <summary>
         ///   Looks up a localized string similar to An unhandled exception has occurred. See browser dev tools for details..
         /// </summary>
-        internal static string Home_DevelopmentErrorText {
+        internal static string App_DevelopmentErrorText {
             get {
-                return ResourceManager.GetString("Home_DevelopmentErrorText", resourceCulture);
+                return ResourceManager.GetString("App_DevelopmentErrorText", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
-        internal static string Home_DismissButtonTooltip {
+        internal static string App_DismissButtonTooltip {
             get {
-                return ResourceManager.GetString("Home_DismissButtonTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading....
-        /// </summary>
-        internal static string Home_LoadingLabel {
-            get {
-                return ResourceManager.GetString("Home_LoadingLabel", resourceCulture);
+                return ResourceManager.GetString("App_DismissButtonTooltip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to An error has occurred. This application may no longer respond until reloaded..
         /// </summary>
-        internal static string Home_ProductionErrorText {
+        internal static string App_ProductionErrorText {
             get {
-                return ResourceManager.GetString("Home_ProductionErrorText", resourceCulture);
+                return ResourceManager.GetString("App_ProductionErrorText", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Reload.
         /// </summary>
-        internal static string Home_ReloadButton {
+        internal static string App_ReloadButton {
             get {
-                return ResourceManager.GetString("Home_ReloadButton", resourceCulture);
+                return ResourceManager.GetString("App_ReloadButton", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Scrum Planning Poker.
         /// </summary>
-        internal static string Home_Title {
+        internal static string App_Title {
             get {
-                return ResourceManager.GetString("Home_Title", resourceCulture);
+                return ResourceManager.GetString("App_Title", resourceCulture);
             }
         }
     }

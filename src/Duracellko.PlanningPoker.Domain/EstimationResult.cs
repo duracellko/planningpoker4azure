@@ -20,10 +20,7 @@ namespace Duracellko.PlanningPoker.Domain
         /// <param name="members">The members involved in planning poker.</param>
         public EstimationResult(IEnumerable<Member> members)
         {
-            if (members == null)
-            {
-                throw new ArgumentNullException(nameof(members));
-            }
+            ArgumentNullException.ThrowIfNull(members);
 
             foreach (var member in members)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Data;
@@ -28,6 +29,7 @@ namespace Duracellko.PlanningPoker.Test.Health
         }
 
         [TestMethod]
+        [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments", Justification = "Single use of arrays in tests.")]
         public async Task CheckHealthAsync_RepositoryReturns1Team_Healthy()
         {
             // Arrange

@@ -24,10 +24,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public ReadOnlyMemory<byte> GetMessageBytes(HubMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             long id = _messageStore.Add(message);
             return BitConverter.GetBytes(id);
@@ -35,15 +32,8 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public void WriteMessage(HubMessage message, IBufferWriter<byte> output)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            ArgumentNullException.ThrowIfNull(message);
+            ArgumentNullException.ThrowIfNull(output);
 
             long messageId = _messageStore.Add(message);
             var messageIdBytes = output.GetSpan(8);

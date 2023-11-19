@@ -39,15 +39,8 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Object should be injected.")]
         public void Serialize(Stream utf8Json, ScrumTeam scrumTeam)
         {
-            if (utf8Json == null)
-            {
-                throw new ArgumentNullException(nameof(utf8Json));
-            }
-
-            if (scrumTeam == null)
-            {
-                throw new ArgumentNullException(nameof(scrumTeam));
-            }
+            ArgumentNullException.ThrowIfNull(utf8Json);
+            ArgumentNullException.ThrowIfNull(scrumTeam);
 
             var data = scrumTeam.GetData();
             JsonSerializer.Serialize(utf8Json, data, _jsonSerializerOptions);
@@ -60,10 +53,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization
         /// <returns>Deserialized ScrumTeam object.</returns>
         public ScrumTeam Deserialize(Stream utf8Json)
         {
-            if (utf8Json == null)
-            {
-                throw new ArgumentNullException(nameof(utf8Json));
-            }
+            ArgumentNullException.ThrowIfNull(utf8Json);
 
             var data = JsonSerializer.Deserialize<ScrumTeamData>(utf8Json, _jsonSerializerOptions);
 

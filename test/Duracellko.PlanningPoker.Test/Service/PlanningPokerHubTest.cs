@@ -24,7 +24,7 @@ namespace Duracellko.PlanningPoker.Test.Service
         private const string LongTeamName = "ttttttttttttttttttttttttttttttttttttttttttttttttttt";
         private const string LongMemberName = "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
 
-        private readonly ILoggerFactory _loggerFactory = new LoggerFactory();
+        private readonly LoggerFactory _loggerFactory = new LoggerFactory();
 
         [TestMethod]
         public void Constructor_PlanningPoker_PlanningPokerPropertyIsSet()

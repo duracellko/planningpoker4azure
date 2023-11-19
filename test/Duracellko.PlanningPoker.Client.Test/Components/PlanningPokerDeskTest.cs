@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
 using Bunit;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
@@ -28,6 +28,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components
         }
 
         [TestMethod]
+        [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments", Justification = "Single use of arrays in tests.")]
         public async Task InitializedTeamWithScrumMaster_ShowStartEstimationButton()
         {
             using var controller = CreatePlanningPokerController();

@@ -118,7 +118,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             var response = await client.GetStringAsync(Server.Uri);
 
             var expected = serverSide ? "server" : "webassembly";
-            expected = @"<script src=""_framework/blazor." + expected + @".js""></script>";
+            expected = @"<!--Blazor:{""type"":""" + expected + @"""";
             Assert.IsNotNull(response);
             Assert.IsTrue(response.Contains(expected, StringComparison.Ordinal));
         }

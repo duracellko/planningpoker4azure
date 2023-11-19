@@ -139,10 +139,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <returns>The joined Scrum team.</returns>
         public IScrumTeamLock AttachScrumTeam(ScrumTeam team)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             var teamName = team.Name;
             var teamLock = new object();
@@ -199,10 +196,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// </returns>
         public Task<IEnumerable<Message>> GetMessagesAsync(Observer observer, CancellationToken cancellationToken)
         {
-            if (observer == null)
-            {
-                throw new ArgumentNullException(nameof(observer));
-            }
+            ArgumentNullException.ThrowIfNull(observer);
 
             if (observer.HasMessage)
             {
@@ -255,10 +249,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="team">The Scrum team that was added.</param>
         protected virtual void OnTeamAdded(ScrumTeam team)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             team.MessageReceived += new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
             _logger.DebugScrumTeamAdded(team.Name);
@@ -270,10 +261,7 @@ namespace Duracellko.PlanningPoker.Controllers
         /// <param name="team">The Scrum team that was removed.</param>
         protected virtual void OnTeamRemoved(ScrumTeam team)
         {
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(team));
-            }
+            ArgumentNullException.ThrowIfNull(team);
 
             team.MessageReceived -= new EventHandler<MessageReceivedEventArgs>(ScrumTeamOnMessageReceived);
             _logger.DebugScrumTeamRemoved(team.Name);
@@ -508,7 +496,7 @@ namespace Duracellko.PlanningPoker.Controllers
                         }
                         finally
                         {
-                            timeoutCancellationTokenSource.Cancel();
+                            await timeoutCancellationTokenSource.CancelAsync();
 
                             if (_isReceivedEventHandlerHooked)
                             {

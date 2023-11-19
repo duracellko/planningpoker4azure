@@ -19,10 +19,7 @@ namespace Duracellko.PlanningPoker.E2ETest
         [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1011:Closing square brackets should be spaced correctly", Justification = "StyleCop does not support nullable syntax.")]
         public string? GetDisplayName(MethodInfo methodInfo, object?[]? data)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data);
 
             var blazorType = ((bool)data[0]!) ? "Server-side" : "Client-side";
             var browserType = data[1]!.ToString();

@@ -38,10 +38,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <returns>Converted message of ServiceBusMessage type.</returns>
         public ServiceBusMessage ConvertToServiceBusMessage(NodeMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             BinaryData messageBody;
             if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
@@ -76,10 +73,7 @@ namespace Duracellko.PlanningPoker.Azure.ServiceBus
         /// <returns>Converted message of NodeMessage type.</returns>
         public NodeMessage ConvertToNodeMessage(ServiceBusReceivedMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), (string)message.ApplicationProperties[MessageTypePropertyName]);
             string? messageSubtype = null;

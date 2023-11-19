@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -11,6 +12,8 @@ namespace Duracellko.PlanningPoker.Domain
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Fields are placed near properties.")]
     public class Member : Observer
     {
+        private static readonly CompositeFormat _errorEstimationIsNotAvailableInTeam = CompositeFormat.Parse(Resources.Error_EstimationIsNotAvailableInTeam);
+
         private Estimation? _estimation;
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Duracellko.PlanningPoker.Domain
                 {
                     if (value != null && !Team.AvailableEstimations.Contains(value))
                     {
-                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_EstimationIsNotAvailableInTeam, value.Value), nameof(value));
+                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorEstimationIsNotAvailableInTeam, value.Value), nameof(value));
                     }
 
                     _estimation = value;

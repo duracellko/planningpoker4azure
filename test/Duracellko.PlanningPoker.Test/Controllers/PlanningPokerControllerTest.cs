@@ -449,6 +449,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                 teamLock.Team.ScrumMaster!.StartEstimation();
             }
 
+            await Task.Yield();
             Assert.IsTrue(messagesTask.IsCompleted);
 
             var result = await messagesTask;
@@ -476,7 +477,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
                     messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, cancellationToken.Token);
                 }
 
-                cancellationToken.Cancel();
+                await cancellationToken.CancelAsync();
                 await Assert.ThrowsExceptionAsync<OperationCanceledException>(() => messagesTask);
             }
         }
@@ -509,6 +510,7 @@ namespace Duracellko.PlanningPoker.Test.Controllers
 
             delayTask.SetResult(null);
 
+            await Task.Yield();
             Assert.IsTrue(messagesTask.IsCompleted);
 
             var result = await messagesTask;

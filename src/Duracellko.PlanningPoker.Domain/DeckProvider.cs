@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace Duracellko.PlanningPoker.Domain
 {
@@ -9,6 +10,8 @@ namespace Duracellko.PlanningPoker.Domain
     /// </summary>
     public class DeckProvider
     {
+        private static readonly CompositeFormat _errorDeckNotSupported = CompositeFormat.Parse(Resources.Error_DeckNotSupported);
+
         private readonly IEnumerable<Estimation> _standardDeck = new Estimation[]
         {
             new Estimation(0.0),
@@ -101,7 +104,7 @@ namespace Duracellko.PlanningPoker.Domain
                 case Deck.RockPaperScissorsLizardSpock:
                     return _rockPaperScissorsLizardSpock;
                 default:
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_DeckNotSupported, deck), nameof(deck));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorDeckNotSupported, deck), nameof(deck));
             }
         }
 

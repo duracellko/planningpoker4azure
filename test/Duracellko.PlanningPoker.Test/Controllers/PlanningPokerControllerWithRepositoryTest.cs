@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Duracellko.PlanningPoker.Configuration;
 using Duracellko.PlanningPoker.Controllers;
@@ -12,6 +13,7 @@ using Moq;
 namespace Duracellko.PlanningPoker.Test.Controllers
 {
     [TestClass]
+    [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments", Justification = "Single use of arrays in tests.")]
     public class PlanningPokerControllerWithRepositoryTest
     {
         [TestMethod]

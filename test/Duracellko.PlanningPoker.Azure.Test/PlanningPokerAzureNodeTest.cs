@@ -28,6 +28,11 @@ namespace Duracellko.PlanningPoker.Azure.Test
         private const string MemberName = "member";
         private const string ObserverName = "observer";
 
+        private static readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+        {
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+        };
+
         [TestMethod]
         public void Constructor_PlanningPoker_PlanningPokerIsSet()
         {
@@ -1594,11 +1599,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 
         private static byte[] SerializeScrumTeam(ScrumTeam scrumTeam)
         {
-            var options = new JsonSerializerOptions
-            {
-                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-            };
-            return JsonSerializer.SerializeToUtf8Bytes(scrumTeam.GetData(), options);
+            return JsonSerializer.SerializeToUtf8Bytes(scrumTeam.GetData(), _serializerOptions);
         }
 
         private static AzurePlanningPokerConfiguration CreateConfigutartion()

@@ -29,10 +29,7 @@ namespace Duracellko.PlanningPoker.Client.Service
         /// <returns>The disposable object that should be disposed to stop the timer.</returns>
         public IDisposable StartTimer(Action action)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            ArgumentNullException.ThrowIfNull(action);
 
             var dispatcherDelegate = _dispatcherDelegate;
             if (dispatcherDelegate == null)

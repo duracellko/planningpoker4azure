@@ -25,10 +25,7 @@ namespace Duracellko.PlanningPoker.Client.Components
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Error is displayed to user.")]
         protected async Task TryRun(Func<Task> action)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            ArgumentNullException.ThrowIfNull(action);
 
             try
             {
@@ -47,10 +44,7 @@ namespace Duracellko.PlanningPoker.Client.Components
         /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
         protected async Task ShowError(Exception exception)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
+            ArgumentNullException.ThrowIfNull(exception);
 
             if (MessageBox != null)
             {

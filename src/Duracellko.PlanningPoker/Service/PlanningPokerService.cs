@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace Duracellko.PlanningPoker.Service
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PlanningPokerService : ControllerBase
     {
+        private static readonly CompositeFormat _errorMemberNotFound = CompositeFormat.Parse(Resources.Error_MemberNotFound);
+
         private readonly D.DateTimeProvider _dateTimeProvider;
         private readonly D.DeckProvider _deckProvider;
 
@@ -138,7 +141,7 @@ namespace Duracellko.PlanningPoker.Service
                     var observer = team.CreateSession(memberName);
                     if (observer == null)
                     {
-                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberNotFound, memberName), nameof(memberName));
+                        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
                     }
 
                     Estimation? selectedEstimation = null;
@@ -354,7 +357,7 @@ namespace Duracellko.PlanningPoker.Service
 
                 if (member == null)
                 {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_MemberNotFound, memberName), nameof(memberName));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
                 }
 
                 // Removes old messages, which the member has already read, from the member's message queue.

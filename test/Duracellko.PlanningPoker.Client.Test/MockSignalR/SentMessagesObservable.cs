@@ -26,10 +26,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
 
         public IDisposable Subscribe(IObserver<HubMessage> observer)
         {
-            if (observer == null)
-            {
-                throw new ArgumentNullException(nameof(observer));
-            }
+            ArgumentNullException.ThrowIfNull(observer);
 
             long observerId = Interlocked.Increment(ref _nextId);
             if (!_observers.TryAdd(observerId, observer))

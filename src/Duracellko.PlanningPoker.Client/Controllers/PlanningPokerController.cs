@@ -262,10 +262,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <returns>Asynchronous operation.</returns>
         public async Task InitializeTeam(TeamResult teamInfo, string username, ApplicationCallbackReference? applicationCallback)
         {
-            if (teamInfo == null)
-            {
-                throw new ArgumentNullException(nameof(teamInfo));
-            }
+            ArgumentNullException.ThrowIfNull(teamInfo);
 
             var scrumTeam = teamInfo.ScrumTeam;
             if (scrumTeam == null)
@@ -516,10 +513,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="messages">Collection of messages received from server.</param>
         public void ProcessMessages(IEnumerable<Message> messages)
         {
-            if (messages == null)
-            {
-                throw new ArgumentNullException(nameof(messages));
-            }
+            ArgumentNullException.ThrowIfNull(messages);
 
             foreach (var message in messages.OrderBy(m => m.Id))
             {

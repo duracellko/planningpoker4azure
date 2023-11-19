@@ -26,10 +26,7 @@ namespace Duracellko.PlanningPoker.Redis
         /// <returns>Converted message of RedisValue type.</returns>
         public RedisValue ConvertToRedisMessage(NodeMessage message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             using var dataStream = new MemoryStream();
             WriteStringToStream(message.SenderNodeId, dataStream);

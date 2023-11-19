@@ -15,10 +15,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
         /// <param name="hasEstimated">Value indicating whether the member has estimation.</param>
         public MemberItem(TeamMember member, bool hasEstimated)
         {
-            if (member == null)
-            {
-                throw new ArgumentNullException(nameof(member));
-            }
+            ArgumentNullException.ThrowIfNull(member);
 
             Name = member.Name;
             HasEstimated = hasEstimated;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace Duracellko.PlanningPoker.Client.Controllers
 {
@@ -10,6 +11,8 @@ namespace Duracellko.PlanningPoker.Client.Controllers
     /// </summary>
     public class EstimationSummary
     {
+        private static readonly CompositeFormat _errorUnsupportedEstimationSummaryFunction = CompositeFormat.Parse(Resources.Error_UnsupportedEstimationSummaryFunction);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EstimationSummary" /> class.
         /// </summary>
@@ -59,7 +62,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers
                 case EstimationSummaryFunction.Sum:
                     return Sum;
                 default:
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedEstimationSummaryFunction, function), nameof(function));
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorUnsupportedEstimationSummaryFunction, function), nameof(function));
             }
         }
 

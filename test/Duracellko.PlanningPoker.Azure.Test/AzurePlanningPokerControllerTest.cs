@@ -17,6 +17,7 @@ namespace Duracellko.PlanningPoker.Azure.Test
 {
     [TestClass]
     [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Mock objects do not need to be disposed.")]
+    [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments", Justification = "Single use of arrays in tests.")]
     public class AzurePlanningPokerControllerTest
     {
         [TestMethod]
