@@ -2,9 +2,9 @@
 
 namespace Duracellko.PlanningPoker.E2ETest.Browser
 {
-    public class BrowserTestContext
+    public class BrowserTestConfiguration
     {
-        public BrowserTestContext(string className, string testName, BrowserType browserType, bool serverSide, bool useHttpClient)
+        public BrowserTestConfiguration(string className, string testName, bool serverSide, bool useHttpClient)
         {
             if (string.IsNullOrEmpty(className))
             {
@@ -18,7 +18,6 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
 
             ClassName = className;
             TestName = testName;
-            BrowserType = browserType;
             ServerSide = serverSide;
             UseHttpClient = useHttpClient;
         }
@@ -26,8 +25,6 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
         public string ClassName { get; }
 
         public string TestName { get; }
-
-        public BrowserType BrowserType { get; }
 
         public bool ServerSide { get; }
 

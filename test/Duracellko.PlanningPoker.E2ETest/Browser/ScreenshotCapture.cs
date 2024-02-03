@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using OpenQA.Selenium;
+using System.Threading.Tasks;
+using Microsoft.Playwright;
 
 namespace Duracellko.PlanningPoker.E2ETest.Browser
 {
@@ -23,29 +24,31 @@ namespace Duracellko.PlanningPoker.E2ETest.Browser
             }
         }
 
-        public string TakeScreenshot(ITakesScreenshot driver, BrowserTestContext context, string name)
+        public async Task<string> TakeScreenshot(IPage page, BrowserTestConfiguration configuration, string name)
         {
-            ArgumentNullException.ThrowIfNull(driver);
-            ArgumentNullException.ThrowIfNull(context);
+            ArgumentNullException.ThrowIfNull(page);
+            ArgumentNullException.ThrowIfNull(configuration);
 
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var screenshot = driver.GetScreenshot();
-            var screenshotFolder = GetScreenshotFolder(context);
+            var screenshotFolder = GetScreenshotFolder(configuration);
             var screenshotPath = Path.Combine(screenshotFolder, name + ".png");
-            screenshot.SaveAsFile(screenshotPath);
+            var options = new PageScreenshotOptions
+            {
+                Path = screenshotPath
+            };
+            await page.ScreenshotAsync(options);
             return screenshotPath;
         }
 
-        private string GetScreenshotFolder(BrowserTestContext context)
+        private string GetScreenshotFolder(BrowserTestConfiguration configuration)
         {
-            var browserName = context.BrowserType.ToString();
-            var serverSide = context.ServerSide ? "Server" : "Client";
-            var connectionType = context.UseHttpClient ? "HttpClient" : "SignalR";
-            var path = Path.Combine(BasePath, browserName, serverSide, connectionType, context.ClassName, context.TestName);
+            var serverSide = configuration.ServerSide ? "Server" : "Client";
+            var connectionType = configuration.UseHttpClient ? "HttpClient" : "SignalR";
+            var path = Path.Combine(BasePath, serverSide, connectionType, configuration.ClassName, configuration.TestName);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
