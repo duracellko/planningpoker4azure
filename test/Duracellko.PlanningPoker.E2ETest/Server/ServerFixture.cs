@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -127,13 +128,21 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             }
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Forward all exceptions to parent task.")]
         private static Task RunInBackgroundThread(Func<Task> action)
         {
             var isDone = new TaskCompletionSource();
             new Thread(async () =>
             {
-                await action().ConfigureAwait(false);
-                isDone.SetResult();
+                try
+                {
+                    await action().ConfigureAwait(false);
+                    isDone.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    isDone.TrySetException(new AggregateException(ex));
+                }
             }).Start();
 
             return isDone.Task;
