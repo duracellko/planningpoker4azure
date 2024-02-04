@@ -24,20 +24,9 @@ jobs:
     inputs:
       version: 8.0.x
 
-  - task: NodeTool@0
-    displayName: Install Node.js
-    inputs:
-      versionSpec: 20.x
-
   - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
     failOnStderr: true
-
-  - task: Npm@1
-    displayName: npm install
-    inputs:
-      command: install
-    condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
@@ -60,8 +49,8 @@ jobs:
       projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net8.0/*.Test.dll'
       testRunTitle: Planning Poker
 
-  - pwsh: .\node_modules\.bin\selenium-standalone install
-    displayName: Install Selenium
+  - pwsh: '.\Build\bin\$(BuildConfiguration)\net8.0\playwright.ps1 install chromium'
+    displayName: Install Playwright
     workingDirectory: $(Build.SourcesDirectory)
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 

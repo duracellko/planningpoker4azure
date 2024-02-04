@@ -125,8 +125,6 @@ The application has following configuration settings:
 Requirements:
 
 - .NET SDK 8.0
-- Java SE Development Kit version 8 or higher (for end-2-end tests only)
-- Node.js and NPM (for end-2-end tests only)
 
 To run build and tests simply execute PowerShell script BuildAndRun.ps1.
 
@@ -144,11 +142,10 @@ Optionally it is possible to include execution of end-2-end tests using Selenium
 
 **PlanningPokerCore.sln** solution can be normally open, built and debugged in Visual Studio 2022. Also unit tests can be executed.
 
-For end-2-end tests (Duracellko.PlanningPoker.E2ETest) Selenium drivers need to be downloaded. Simply execute following commands:
+For end-2-end tests (Duracellko.PlanningPoker.E2ETest) Playwright dependencies (browser) need to be installed. Simply execute following commands:
 
 ```
-npm install
-.\node_modules\.bin\selenium-standalone install
+.\Build\bin\Debug\net8.0\playwright.ps1 install chromium
 ```
 
 ## Solution projects
