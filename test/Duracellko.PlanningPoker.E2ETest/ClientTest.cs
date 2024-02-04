@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Duracellko.PlanningPoker.E2ETest.Server;
+using Microsoft.Playwright;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 
 namespace Duracellko.PlanningPoker.E2ETest
 {
@@ -16,239 +15,240 @@ namespace Duracellko.PlanningPoker.E2ETest
             "0", "\u00BD", "1", "2", "3", "5", "8", "13", "20", "40", "100", "\u221E", "?"
         };
 
-        public ClientTest(IWebDriver browser, ServerFixture server)
+        public ClientTest(IPage page, Uri serverUri)
         {
-            Browser = browser ?? throw new ArgumentNullException(nameof(browser));
-            Server = server ?? throw new ArgumentNullException(nameof(server));
+            Page = page ?? throw new ArgumentNullException(nameof(page));
+            ServerUri = serverUri ?? throw new ArgumentNullException(nameof(serverUri));
         }
 
-        public IWebDriver Browser { get; }
+        public IPage Page { get; }
 
-        public ServerFixture Server { get; }
+        public Uri ServerUri { get; }
 
-        public IWebElement? AppElement { get; private set; }
+        public ILocator? AppElement { get; private set; }
 
-        public IWebElement? PageContentElement { get; private set; }
+        public ILocator? PageContentElement { get; private set; }
 
-        public IWebElement? PlanningPokerContainerElement { get; private set; }
+        public ILocator? PlanningPokerContainerElement { get; private set; }
 
-        public IWebElement? ContainerElement { get; private set; }
+        public ILocator? ContainerElement { get; private set; }
 
-        public IWebElement? CreateTeamForm { get; private set; }
+        public ILocator? CreateTeamForm { get; private set; }
 
-        public IWebElement? JoinTeamForm { get; private set; }
+        public ILocator? JoinTeamForm { get; private set; }
 
-        public IWebElement? PlanningPokerDeskElement { get; private set; }
+        public ILocator? PlanningPokerDeskElement { get; private set; }
 
-        public IWebElement? MembersPanelElement { get; private set; }
+        public ILocator? MembersPanelElement { get; private set; }
 
-        public IWebElement? SettingsDialogElement { get; private set; }
+        public ILocator? SettingsDialogElement { get; private set; }
 
-        public Task OpenApplication()
+        public async Task OpenApplication()
         {
-            Browser.Navigate().GoToUrl(Server.Uri);
-            AppElement = Browser.FindElement(By.Id("app"));
+            await Page.GotoAsync(ServerUri.ToString());
+            AppElement = Page.Locator("#app");
+            await Assertions.Expect(AppElement).ToBeVisibleAsync();
+        }
+
+        public async Task AssertIndexPage()
+        {
             Assert.IsNotNull(AppElement);
-            return Task.Delay(2000);
+            PageContentElement = AppElement.Locator("div.pageContent");
+            PlanningPokerContainerElement = PageContentElement.Locator("div.planningPokerContainer");
+            ContainerElement = PlanningPokerContainerElement.Locator("xpath=./div[@class='container']");
+            CreateTeamForm = ContainerElement.Locator("form[name='createTeam']");
+            JoinTeamForm = ContainerElement.Locator("form[name='joinTeam']");
+            await Assertions.Expect(CreateTeamForm).ToBeVisibleAsync();
+            await Assertions.Expect(JoinTeamForm).ToBeVisibleAsync();
         }
 
-        public void AssertIndexPage()
-        {
-            Assert.IsNotNull(AppElement);
-            PageContentElement = AppElement.FindElement(By.CssSelector("div.pageContent"));
-            PlanningPokerContainerElement = PageContentElement.FindElement(By.CssSelector("div.planningPokerContainer"));
-            ContainerElement = PlanningPokerContainerElement.FindElement(By.XPath("./div[@class='container']"));
-            CreateTeamForm = ContainerElement.FindElement(By.CssSelector("form[name='createTeam']"));
-            JoinTeamForm = ContainerElement.FindElement(By.CssSelector("form[name='joinTeam']"));
-        }
-
-        public void FillCreateTeamForm(string team, string scrumMaster, string? deck = null, string? deckText = null)
+        public async Task FillCreateTeamForm(string team, string scrumMaster, string? deck = null, string? deckText = null)
         {
             Assert.IsNotNull(CreateTeamForm);
-            var teamNameInput = CreateTeamForm.FindElement(By.Id("createTeam$teamName"));
-            var scrumMasterNameInput = CreateTeamForm.FindElement(By.Id("createTeam$scrumMasterName"));
-            var selectDeckInput = CreateTeamForm.FindElement(By.Id("createTeam$selectedDeck"));
+            var teamNameInput = CreateTeamForm.Locator(@"#createTeam\$teamName");
+            var scrumMasterNameInput = CreateTeamForm.Locator(@"#createTeam\$scrumMasterName");
+            var selectDeckInput = CreateTeamForm.Locator(@"#createTeam\$selectedDeck");
 
-            teamNameInput.SendKeys(team);
-            scrumMasterNameInput.SendKeys(scrumMaster);
+            await teamNameInput.FillAsync(team);
+            await scrumMasterNameInput.FillAsync(scrumMaster);
 
-            Assert.AreEqual(0, teamNameInput.FindElements(By.XPath("../span")).Count);
-            Assert.AreEqual(0, scrumMasterNameInput.FindElements(By.XPath("../span")).Count);
+            Assert.AreEqual(0, await teamNameInput.Locator("xpath=../span").CountAsync());
+            Assert.AreEqual(0, await scrumMasterNameInput.Locator("xpath=../span").CountAsync());
 
             if (deck != null)
             {
-                var selectDeckElement = new SelectElement(selectDeckInput);
-                selectDeckElement.SelectByValue(deck);
+                await selectDeckInput.SelectOptionAsync(deck);
+                await Assertions.Expect(selectDeckInput).ToHaveValueAsync(deck);
+
                 if (deckText != null)
                 {
-                    Assert.IsNotNull(selectDeckElement.SelectedOption);
-                    Assert.AreEqual(deckText, selectDeckElement.SelectedOption.Text);
+                    var selectedOption = selectDeckInput.Locator($"option[value=\"{deck}\"]");
+                    await Assertions.Expect(selectedOption).ToHaveTextAsync(deckText);
                 }
             }
         }
 
-        public void SubmitCreateTeamForm()
+        public async Task SubmitCreateTeamForm()
         {
             Assert.IsNotNull(CreateTeamForm);
-            var submitButton = CreateTeamForm.FindElement(By.Id("createTeam$Submit"));
-            submitButton.Click();
+            var submitButton = CreateTeamForm.Locator(@"#createTeam\$Submit");
+            await submitButton.ClickAsync();
         }
 
-        public void FillJoinTeamForm(string team, string member)
+        public Task FillJoinTeamForm(string team, string member)
         {
-            FillJoinTeamForm(team, member, false);
+            return FillJoinTeamForm(team, member, false);
         }
 
-        public void FillJoinTeamForm(string team, string member, bool asObserver)
+        public async Task FillJoinTeamForm(string team, string member, bool asObserver)
         {
             Assert.IsNotNull(JoinTeamForm);
-            var teamNameInput = JoinTeamForm.FindElement(By.Id("joinTeam$teamName"));
-            var memberNameInput = JoinTeamForm.FindElement(By.Id("joinTeam$memberName"));
-            var observerInput = JoinTeamForm.FindElement(By.Id("joinTeam$asObserver"));
+            var teamNameInput = JoinTeamForm.Locator(@"#joinTeam\$teamName");
+            var memberNameInput = JoinTeamForm.Locator(@"#joinTeam\$memberName");
+            var observerInput = JoinTeamForm.Locator(@"#joinTeam\$asObserver");
 
-            teamNameInput.SendKeys(team);
-            memberNameInput.SendKeys(member);
+            await teamNameInput.FillAsync(team);
+            await memberNameInput.FillAsync(member);
             if (asObserver)
             {
-                observerInput.Click();
+                await observerInput.CheckAsync();
             }
 
-            Assert.AreEqual(0, teamNameInput.FindElements(By.XPath("../span")).Count);
-            Assert.AreEqual(0, memberNameInput.FindElements(By.XPath("../span")).Count);
+            Assert.AreEqual(0, await teamNameInput.Locator("xpath=../span").CountAsync());
+            Assert.AreEqual(0, await memberNameInput.Locator("xpath=../span").CountAsync());
         }
 
-        public void SubmitJoinTeamForm()
+        public async Task SubmitJoinTeamForm()
         {
             Assert.IsNotNull(JoinTeamForm);
-            var submitButton = JoinTeamForm.FindElement(By.Id("joinTeam$submit"));
-            submitButton.Click();
+            var submitButton = JoinTeamForm.Locator(@"#joinTeam\$submit");
+            await submitButton.ClickAsync();
         }
 
-        public void AssertPlanningPokerPage(string team, string scrumMaster)
+        public async Task AssertPlanningPokerPage(string team, string scrumMaster)
         {
             Assert.IsNotNull(ContainerElement);
-            PlanningPokerDeskElement = ContainerElement.FindElement(By.CssSelector("div.pokerDeskPanel"));
-            MembersPanelElement = ContainerElement.FindElement(By.CssSelector("div.membersPanel"));
+            PlanningPokerDeskElement = ContainerElement.Locator("div.pokerDeskPanel");
+            MembersPanelElement = ContainerElement.Locator("div.membersPanel");
 
-            Assert.AreEqual($"{Server.Uri}PlanningPoker/{team}/{scrumMaster}", Browser.Url);
+            await Assertions.Expect(PlanningPokerDeskElement).ToBeVisibleAsync();
+            await Assertions.Expect(MembersPanelElement).ToBeVisibleAsync();
+            await Assertions.Expect(Page).ToHaveURLAsync($"{ServerUri}PlanningPoker/{team}/{scrumMaster}");
         }
 
-        public void AssertTeamName(string team, string member)
+        public async Task AssertTeamName(string team, string member)
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var teamNameHeader = PlanningPokerDeskElement.FindElement(By.CssSelector("div.team-title h2"));
-            Assert.AreEqual(team, teamNameHeader.Text);
-            var userHeader = PlanningPokerDeskElement.FindElement(By.CssSelector("div.team-title h3"));
-            Assert.AreEqual(member, userHeader.Text);
+            var teamNameHeader = PlanningPokerDeskElement.Locator("div.team-title h2");
+            await Assertions.Expect(teamNameHeader).ToHaveTextAsync(team);
+            var userHeader = PlanningPokerDeskElement.Locator("div.team-title h3");
+            await Assertions.Expect(userHeader).ToHaveTextAsync(member);
         }
 
-        public void AssertScrumMasterInTeam(string scrumMaster)
+        public async Task AssertScrumMasterInTeam(string scrumMaster)
         {
             Assert.IsNotNull(MembersPanelElement);
-            var scrumMasterElements = MembersPanelElement.FindElements(By.XPath("./div/ul[1]/li/span[1]"));
-            Assert.AreEqual(1, scrumMasterElements.Count);
-            Assert.AreEqual(scrumMaster, scrumMasterElements[0].Text);
+            var scrumMasterElements = MembersPanelElement.Locator("xpath=./div/ul[1]/li/span[1]");
+            Assert.AreEqual(1, await scrumMasterElements.CountAsync());
+            await Assertions.Expect(scrumMasterElements.First).ToHaveTextAsync(scrumMaster);
         }
 
-        public void AssertMembersInTeam(params string[] members)
+        public async Task AssertMembersInTeam(params string[] members)
         {
             ArgumentNullException.ThrowIfNull(members);
 
             Assert.IsNotNull(MembersPanelElement);
-            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[2]/li/span[1]"));
-            Assert.AreEqual(members.Length, elements.Count);
-            CollectionAssert.AreEqual(members, elements.Select(e => e.Text).ToList());
+            var elements = MembersPanelElement.Locator("xpath=./div/ul[2]/li/span[1]");
+            await AssertElementsText(elements, members);
         }
 
-        public void AssertObserversInTeam(params string[] observers)
+        public async Task AssertObserversInTeam(params string[] observers)
         {
             ArgumentNullException.ThrowIfNull(observers);
 
             Assert.IsNotNull(MembersPanelElement);
-            var elements = MembersPanelElement.FindElements(By.XPath("./div/ul[3]/li/span"));
-            Assert.AreEqual(observers.Length, elements.Count);
-            CollectionAssert.AreEqual(observers, elements.Select(e => e.Text).ToList());
+            var elements = MembersPanelElement.Locator("xpath=./div/ul[3]/li/span");
+            await AssertElementsText(elements, observers);
         }
 
-        public void StartEstimation()
+        public async Task StartEstimation()
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
-            Assert.AreEqual("Start estimation", button.Text);
+            var button = PlanningPokerDeskElement.Locator("div.actionsBar button").First;
+            await Assertions.Expect(button).ToHaveTextAsync("Start estimation");
 
-            button.Click();
+            await button.ClickAsync();
 
-            PlanningPokerDeskElement.FindElement(By.CssSelector("div.availableEstimations"));
+            await Assertions.Expect(PlanningPokerDeskElement.Locator("div.availableEstimations")).ToBeVisibleAsync();
         }
 
-        public void CancelEstimation()
+        public async Task CancelEstimation()
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var button = PlanningPokerDeskElement.FindElement(By.CssSelector("div.actionsBar button"));
-            Assert.AreEqual("Cancel estimation", button.Text);
-            button.Click();
+            var button = PlanningPokerDeskElement.Locator("div.actionsBar button").First;
+            await Assertions.Expect(button).ToHaveTextAsync("Cancel estimation");
+            await button.ClickAsync();
         }
 
-        public void ShowAverage(bool isScrumMaster)
+        public async Task ShowAverage(bool isScrumMaster)
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var buttons = PlanningPokerDeskElement.FindElements(By.CssSelector("div.actionsBar button"));
-            Assert.AreEqual(isScrumMaster ? 3 : 2, buttons.Count);
+            var buttons = PlanningPokerDeskElement.Locator("div.actionsBar button");
+            Assert.AreEqual(isScrumMaster ? 3 : 2, await buttons.CountAsync());
 
-            var button = buttons[isScrumMaster ? 1 : 0];
-            Assert.AreEqual("Show average", button.Text);
-            button.Click();
+            var button = buttons.Nth(isScrumMaster ? 1 : 0);
+            await Assertions.Expect(button).ToHaveTextAsync("Show average");
+            await button.ClickAsync();
         }
 
-        public void AssertAvailableEstimations(ICollection<string>? estimations = null)
+        public async Task AssertAvailableEstimations(ICollection<string>? estimations = null)
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
+            var availableEstimationElements = PlanningPokerDeskElement.Locator("div.availableEstimations ul li a");
             var expectedEstimations = estimations?.ToArray() ?? _availableEstimations;
-            Assert.AreEqual(expectedEstimations.Length, availableEstimationElements.Count);
-            CollectionAssert.AreEqual(expectedEstimations, availableEstimationElements.Select(e => e.Text).ToList());
+            await AssertElementsText(availableEstimationElements, expectedEstimations);
         }
 
-        public void AssertNotAvailableEstimations()
+        public async Task AssertNotAvailableEstimations()
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations"));
-            Assert.AreEqual(0, availableEstimationElements.Count);
+            var availableEstimationElements = PlanningPokerDeskElement.Locator("div.availableEstimations");
+            Assert.AreEqual(0, await availableEstimationElements.CountAsync());
         }
 
-        public void SelectEstimation(string estimation)
+        public Task SelectEstimation(string estimation)
         {
             int index = Array.IndexOf<string>(_availableEstimations, estimation);
-            SelectEstimation(index);
+            return SelectEstimation(index);
         }
 
-        public void SelectEstimation(int index)
+        public async Task SelectEstimation(int index)
         {
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var availableEstimationElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.availableEstimations ul li a"));
-            availableEstimationElements[index].Click();
+            var availableEstimationElements = PlanningPokerDeskElement.Locator("div.availableEstimations ul li a");
+            await availableEstimationElements.Nth(index).ClickAsync();
         }
 
-        public void AssertSelectedEstimation(params KeyValuePair<string, string>[] estimations)
+        public async Task AssertSelectedEstimation(params KeyValuePair<string, string>[] estimations)
         {
             ArgumentNullException.ThrowIfNull(estimations);
 
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var estimationResultElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult ul li"));
-            Assert.AreEqual(estimations.Length, estimationResultElements.Count);
+            var estimationResultElements = PlanningPokerDeskElement.Locator("div.estimationResult ul li");
+            Assert.AreEqual(estimations.Length, await estimationResultElements.CountAsync());
 
             for (int i = 0; i < estimations.Length; i++)
             {
                 var estimation = estimations[i];
-                var estimationResultElement = estimationResultElements[i];
-                var valueElement = estimationResultElement.FindElement(By.XPath("./span[1]"));
-                var nameElement = estimationResultElement.FindElement(By.XPath("./span[2]"));
-                Assert.AreEqual(estimation.Key, nameElement.Text);
-                Assert.AreEqual(estimation.Value, valueElement.Text);
+                var estimationResultElement = estimationResultElements.Nth(i);
+                var valueElement = estimationResultElement.Locator("xpath=./span[1]");
+                var nameElement = estimationResultElement.Locator("xpath=./span[2]");
+                await Assertions.Expect(nameElement).ToHaveTextAsync(estimation.Key);
+                await Assertions.Expect(valueElement).ToHaveTextAsync(estimation.Value);
             }
         }
 
-        public void AssertEstimationSummary(double average, double median, double sum)
+        public async Task AssertEstimationSummary(double average, double median, double sum)
         {
             var summaryItems = new[]
             {
@@ -258,103 +258,118 @@ namespace Duracellko.PlanningPoker.E2ETest
             };
 
             Assert.IsNotNull(PlanningPokerDeskElement);
-            var summaryItemElements = PlanningPokerDeskElement.FindElements(By.CssSelector("div.estimationResult div.estimationSummary div.card"));
-            Assert.AreEqual(summaryItems.Length, summaryItemElements.Count);
+            var summaryItemElements = PlanningPokerDeskElement.Locator("div.estimationResult div.estimationSummary div.card");
+            Assert.AreEqual(summaryItems.Length, await summaryItemElements.CountAsync());
 
             for (int i = 0; i < summaryItems.Length; i++)
             {
                 var summaryItem = summaryItems[i];
-                var summaryItemElement = summaryItemElements[i];
-                var nameElement = summaryItemElement.FindElement(By.CssSelector("div.card-header"));
-                var valueElement = summaryItemElement.FindElement(By.CssSelector("div.card-body"));
-                Assert.AreEqual(summaryItem.Key, nameElement.Text);
-                Assert.AreEqual(summaryItem.Value.ToString("N2"), valueElement.Text);
+                var summaryItemElement = summaryItemElements.Nth(i);
+                var nameElement = summaryItemElement.Locator("div.card-header");
+                var valueElement = summaryItemElement.Locator("div.card-body");
+                await Assertions.Expect(nameElement).ToHaveTextAsync(summaryItem.Key);
+                await Assertions.Expect(valueElement).ToHaveTextAsync(summaryItem.Value.ToString("N2", CultureInfo.InvariantCulture));
             }
         }
 
-        public void OpenSettingsDialog()
+        public async Task OpenSettingsDialog()
         {
             Assert.IsNotNull(PlanningPokerContainerElement);
-            var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.TagName("nav"));
-            var settingsElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul li.nav-item:first-child a.nav-link"));
-            Assert.AreEqual("Settings", settingsElement.Text);
+            var navbarPlanningPokerElement = PlanningPokerContainerElement.Locator("nav");
+            var settingsElement = navbarPlanningPokerElement.Locator("ul li.nav-item:first-child a.nav-link");
+            await Assertions.Expect(settingsElement).ToHaveTextAsync("Settings");
 
-            settingsElement.Click();
+            await settingsElement.ClickAsync();
 
-            SettingsDialogElement = PlanningPokerContainerElement.FindElement(By.Id("planningPokerSettingsModal"));
+            SettingsDialogElement = PlanningPokerContainerElement.Locator("#planningPokerSettingsModal");
         }
 
-        public void AssertSettingsDialogIsOpen()
+        public async Task AssertSettingsDialogIsOpen()
         {
             Assert.IsNotNull(SettingsDialogElement);
-            Assert.AreEqual("block", SettingsDialogElement.GetCssValue("display"));
+            await Assertions.Expect(SettingsDialogElement).ToBeVisibleAsync();
+            await Assertions.Expect(SettingsDialogElement).ToHaveCSSAsync("display", "block");
 
-            var modalContentElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content"));
-            Assert.AreEqual("block", SettingsDialogElement.GetCssValue("display"));
+            var modalContentElement = SettingsDialogElement.Locator("div.modal-dialog div.modal-content");
+            await Assertions.Expect(modalContentElement).ToBeVisibleAsync();
+            await Assertions.Expect(modalContentElement).ToHaveCSSAsync("display", "flex");
 
-            var modalTitleElement = modalContentElement.FindElement(By.CssSelector("div.modal-header h5.modal-title"));
-            Assert.AreEqual("Settings", modalTitleElement.Text);
+            var modalTitleElement = modalContentElement.Locator("div.modal-header h5.modal-title");
+            await Assertions.Expect(modalTitleElement).ToHaveTextAsync("Settings");
         }
 
-        public void AssertSelectedDeckSetting(string deckText, bool isEnabled)
+        public async Task AssertSelectedDeckSetting(string deck, string deckText, bool isEnabled)
         {
             Assert.IsNotNull(SettingsDialogElement);
-            var modalBodyElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content div.modal-body"));
-            var formElement = modalBodyElement.FindElement(By.TagName("form"));
-            var selectedDeckInput = formElement.FindElement(By.Id("planningPokerSettings$selectedDeck"));
+            var modalBodyElement = SettingsDialogElement.Locator("div.modal-dialog div.modal-content div.modal-body");
+            var formElement = modalBodyElement.Locator("form");
+            var selectedDeckInput = formElement.Locator(@"#planningPokerSettings\$selectedDeck");
 
-            var selectedDeckElement = new SelectElement(selectedDeckInput);
-            Assert.IsNotNull(selectedDeckElement.SelectedOption);
-            Assert.AreEqual(deckText, selectedDeckElement.SelectedOption.Text);
-            Assert.AreEqual(isEnabled, selectedDeckInput.Enabled);
+            await Assertions.Expect(selectedDeckInput).ToHaveValueAsync(deck);
+            await Assertions.Expect(selectedDeckInput).ToBeEnabledAsync(new LocatorAssertionsToBeEnabledOptions() { Enabled = isEnabled });
+            var selectedOption = selectedDeckInput.Locator($"option[value=\"{deck}\"]");
+            await Assertions.Expect(selectedOption).ToHaveTextAsync(deckText);
 
-            var changeDeckButton = formElement.FindElement(By.Id("planningPokerSettings$changeDeckButton"));
-            Assert.AreEqual(isEnabled, changeDeckButton.Enabled);
+            var changeDeckButton = formElement.Locator(@"#planningPokerSettings\$changeDeckButton");
+            await Assertions.Expect(changeDeckButton).ToBeEnabledAsync(new LocatorAssertionsToBeEnabledOptions() { Enabled = isEnabled });
         }
 
-        public void ChangeDeck(string deck, string deckText)
+        public async Task ChangeDeck(string deck, string deckText)
         {
             Assert.IsNotNull(SettingsDialogElement);
-            var modalBodyElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content div.modal-body"));
-            var formElement = modalBodyElement.FindElement(By.TagName("form"));
-            var selectedDeckInput = formElement.FindElement(By.Id("planningPokerSettings$selectedDeck"));
-            var changeDeckButton = formElement.FindElement(By.Id("planningPokerSettings$changeDeckButton"));
+            var modalBodyElement = SettingsDialogElement.Locator("div.modal-dialog div.modal-content div.modal-body");
+            var formElement = modalBodyElement.Locator("form");
+            var selectedDeckInput = formElement.Locator(@"#planningPokerSettings\$selectedDeck");
+            var changeDeckButton = formElement.Locator(@"#planningPokerSettings\$changeDeckButton");
 
-            var selectedDeckElement = new SelectElement(selectedDeckInput);
-            selectedDeckElement.SelectByValue(deck);
-            changeDeckButton.Click();
+            await selectedDeckInput.SelectOptionAsync(deck);
+
+            var selectedOption = selectedDeckInput.Locator($"option[value=\"{deck}\"]");
+            await Assertions.Expect(selectedOption).ToHaveTextAsync(deckText);
+
+            await changeDeckButton.ClickAsync();
         }
 
-        public void CloseSettingsDialog()
+        public async Task CloseSettingsDialog()
         {
             Assert.IsNotNull(SettingsDialogElement);
-            var modalContentElement = SettingsDialogElement.FindElement(By.CssSelector("div.modal-dialog div.modal-content"));
-            var closeModalButton = modalContentElement.FindElement(By.CssSelector("div.modal-header button.btn-close"));
-            closeModalButton.Click();
+            var modalContentElement = SettingsDialogElement.Locator("div.modal-dialog div.modal-content");
+            var closeModalButton = modalContentElement.Locator("div.modal-header button.btn-close");
+            await closeModalButton.ClickAsync();
         }
 
-        public void Disconnect()
+        public async Task Disconnect()
         {
             Assert.IsNotNull(PlanningPokerContainerElement);
-            var navbarPlanningPokerElement = PlanningPokerContainerElement.FindElement(By.TagName("nav"));
-            var disconnectElement = navbarPlanningPokerElement.FindElement(By.CssSelector("ul li.nav-item:last-child a.nav-link"));
-            Assert.AreEqual("Disconnect", disconnectElement.Text);
+            var navbarPlanningPokerElement = PlanningPokerContainerElement.Locator("nav");
+            var disconnectElement = navbarPlanningPokerElement.Locator("ul li.nav-item:last-child a.nav-link");
+            await Assertions.Expect(disconnectElement).ToHaveTextAsync("Disconnect");
 
-            disconnectElement.Click();
+            await disconnectElement.ClickAsync();
 
             Assert.IsNotNull(ContainerElement);
-            CreateTeamForm = ContainerElement.FindElement(By.CssSelector("form[name='createTeam']"));
-            Assert.AreEqual($"{Server.Uri}Index", Browser.Url);
+            CreateTeamForm = ContainerElement.Locator("form[name='createTeam']");
+            await Assertions.Expect(Page).ToHaveURLAsync($"{ServerUri}Index");
         }
 
-        public void AssertMessageBox(string text)
+        public async Task AssertMessageBox(string text)
         {
             Assert.IsNotNull(PageContentElement);
-            var messageBoxElement = PageContentElement.FindElement(By.Id("messageBox"));
-            Assert.AreEqual("block", messageBoxElement.GetCssValue("display"));
+            var messageBoxElement = PageContentElement.Locator("#messageBox");
+            await Assertions.Expect(messageBoxElement).ToBeVisibleAsync();
+            await Assertions.Expect(messageBoxElement).ToHaveCSSAsync("display", "block");
 
-            var messageBodyElement = messageBoxElement.FindElement(By.CssSelector("div.modal-body"));
-            Assert.AreEqual(text, messageBodyElement.Text);
+            var messageBodyElement = messageBoxElement.Locator("div.modal-body");
+            await Assertions.Expect(messageBodyElement).ToHaveTextAsync(text);
+        }
+
+        private static async Task AssertElementsText(ILocator elements, string[] texts)
+        {
+            Assert.AreEqual(texts.Length, await elements.CountAsync());
+            for (int i = 0; i < texts.Length; i++)
+            {
+                await Assertions.Expect(elements.Nth(i)).ToHaveTextAsync(texts[i]);
+            }
         }
     }
 }

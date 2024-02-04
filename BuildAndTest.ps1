@@ -40,26 +40,13 @@ try {
 
         Write-Host "Phase: End-2-End tests" -ForegroundColor Green
 
-        Write-Host "Step: npm install" -ForegroundColor Green
-        Write-Host "npm install"
-        & npm install
+        Write-Host "Step: playwright install" -ForegroundColor Green
+        $playwrightPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net8.0\playwright.ps1"
+        & $playwrightPath install chromium
         if (!$?) {
-            throw "npm install failed"
+            throw "playwright install failed"
         }
     
-        Write-Host "Step: install Selenium" -ForegroundColor Green
-        $seleniumPath = Join-Path -Path $scriptDir -ChildPath 'node_modules\.bin\selenium-standalone'
-        $chromeVersionParameter = ''
-        if (![string]::IsNullOrEmpty($ChromeVersion)) {
-            $chromeVersionParameter = '--drivers.chrome.version=' + $ChromeVersion
-        }
-
-        Write-Host "`"$seleniumPath`" install $chromeVersionParameter"
-        & $seleniumPath install $chromeVersionParameter
-        if (!$?) {
-            throw "selenium-standalone install failed"
-        }
-
         Write-Host "Step: End-2-End tests" -ForegroundColor Green
         $e2eTestPath = Join-Path -Path $testPath -ChildPath 'Duracellko.PlanningPoker.E2ETest.dll'
         Write-Host "dotnet test `"$e2eTestPath`" --logger:trx"

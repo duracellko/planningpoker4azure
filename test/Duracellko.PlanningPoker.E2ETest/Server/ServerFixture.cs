@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Web;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Duracellko.PlanningPoker.E2ETest.Server
 {
-    public class ServerFixture : IDisposable
+    public class ServerFixture : IAsyncDisposable, IDisposable
     {
         private bool _disposed;
         private Uri? _uri;
@@ -52,13 +52,20 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             }
         }
 
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore().ConfigureAwait(false);
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        public Task Start()
+        public async Task Start()
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -68,8 +75,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             }
 
             WebHost = Program.CreateWebApplication(GetProgramArguments());
-            RunInBackgroundThread(WebHost.Start);
-            return Task.CompletedTask;
+            await RunInBackgroundThread(() => WebHost.StartAsync()).ConfigureAwait(false);
         }
 
         public async Task Stop()
@@ -78,7 +84,7 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             {
                 try
                 {
-                    await WebHost.StopAsync();
+                    await WebHost.StopAsync().ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
@@ -90,42 +96,56 @@ namespace Duracellko.PlanningPoker.E2ETest.Server
             }
         }
 
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            if (!_disposed)
+            {
+                await Stop().ConfigureAwait(false);
+                _disposed = true;
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
             {
                 if (disposing)
                 {
-                    RunInBackgroundThread(() =>
+                    RunInBackgroundThread(async () =>
                     {
                         try
                         {
-                            Stop().Wait();
+                            await Stop().ConfigureAwait(false);
                         }
-                        catch (AggregateException ex)
-                            when (ex.InnerException is TaskCanceledException)
+                        catch (TaskCanceledException)
                         {
                             // Ignore time out error
                         }
-                    });
+                    }).Wait();
                 }
 
                 _disposed = true;
             }
         }
 
-        private static void RunInBackgroundThread(Action action)
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Forward all exceptions to parent task.")]
+        private static Task RunInBackgroundThread(Func<Task> action)
         {
-            using (var isDone = new ManualResetEvent(false))
+            var isDone = new TaskCompletionSource();
+            new Thread(async () =>
             {
-                new Thread(() =>
+                try
                 {
-                    action();
-                    isDone.Set();
-                }).Start();
+                    await action().ConfigureAwait(false);
+                    isDone.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    isDone.TrySetException(new AggregateException(ex));
+                }
+            }).Start();
 
-                isDone.WaitOne();
-            }
+            return isDone.Task;
         }
 
         private string[] GetProgramArguments()

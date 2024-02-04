@@ -1,108 +1,149 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.E2ETest.Browser;
 using Duracellko.PlanningPoker.E2ETest.Server;
+using Microsoft.Playwright;
+using Microsoft.Playwright.MSTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium;
 
 namespace Duracellko.PlanningPoker.E2ETest
 {
     [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Disposable objects are disposed in TestCleanup.")]
-    public abstract class E2ETestBase
+    public abstract class E2ETestBase : PageTest
     {
+        private readonly List<IBrowserContext> _contexts = new List<IBrowserContext>();
+
+        private int _setupClientsCount = 1;
+
+        protected BrowserTestConfiguration? Configuration { get; private set; }
+
         protected ServerFixture? Server { get; private set; }
 
-        protected IList<BrowserFixture> BrowserFixtures { get; } = new List<BrowserFixture>();
-
-        protected IList<BrowserTestContext> Contexts { get; } = new List<BrowserTestContext>();
-
         protected IList<ClientTest> ClientTests { get; } = new List<ClientTest>();
-
-        protected BrowserFixture? BrowserFixture => BrowserFixtures.FirstOrDefault();
-
-        protected BrowserTestContext? Context => Contexts.FirstOrDefault();
 
         protected ClientTest ClientTest => ClientTests[0];
 
         protected ScreenshotCapture? ScreenshotCapture { get; private set; }
 
+        protected int SetupClientsCount
+        {
+            get => _setupClientsCount;
+            set
+            {
+                if (value < 1)
+                {
+                    ArgumentOutOfRangeException.ThrowIfLessThan(value, 1);
+                }
+                else if (value > 10)
+                {
+                    ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 10);
+                }
+
+                _setupClientsCount = value;
+            }
+        }
+
         [TestInitialize]
         public void TestInitialize()
         {
-            Contexts.Clear();
             ClientTests.Clear();
             Server = new ServerFixture();
-            BrowserFixtures.Clear();
-            BrowserFixtures.Add(new BrowserFixture());
             ScreenshotCapture = new ScreenshotCapture();
         }
 
         [TestCleanup]
-        public void TestCleanup()
+        public async Task TestCleanup()
         {
             ScreenshotCapture = null;
             ClientTests.Clear();
-            Contexts.Clear();
 
-            foreach (var browserFixture in BrowserFixtures)
+            foreach (var context in _contexts)
             {
-                browserFixture.Dispose();
+                await context.DisposeAsync();
             }
 
-            BrowserFixtures.Clear();
+            _contexts.Clear();
 
             if (Server != null)
             {
-                Server.Dispose();
+                await Server.DisposeAsync();
                 Server = null;
             }
         }
 
-        protected IWebDriver? GetBrowser() => BrowserFixture?.Browser;
+        public override BrowserNewContextOptions ContextOptions()
+        {
+            var options = base.ContextOptions();
+            options.ViewportSize = new ViewportSize
+            {
+                Width = 1920,
+                Height = 1080
+            };
 
-        protected IWebDriver? GetBrowser(int index) => BrowserFixtures[index].Browser;
+            return options;
+        }
+
+        protected void Configure(bool serverSide, bool useHttpClient, [CallerMemberName] string testName = "")
+        {
+            Configuration = new BrowserTestConfiguration(GetType().Name, testName, serverSide, useHttpClient);
+        }
 
         protected async Task StartServer()
         {
             Assert.IsNotNull(Context);
             Assert.IsNotNull(Server);
-            Server.UseServerSide = Context.ServerSide;
-            Server.UseHttpClient = Context.UseHttpClient;
+            Server.UseServerSide = GetConfiguration().ServerSide;
+            Server.UseHttpClient = GetConfiguration().UseHttpClient;
             await Server.Start();
-            await AssertServerSide(Context.ServerSide);
-            await AssertClientConnectionType(Context.UseHttpClient);
+            await AssertServerSide();
+            await AssertClientConnectionType();
             await AssertServerIsHealthy();
         }
 
-        protected void StartClients()
+        protected async Task StartClients()
         {
             Assert.IsNotNull(Server);
-            bool first = true;
-            foreach (var context in Contexts)
+            for (int i = 0; i < SetupClientsCount; i++)
             {
-                BrowserFixture browserFixture;
-                if (first)
+                IPage page;
+                if (i == 0)
                 {
-                    browserFixture = BrowserFixtures[0];
-                    first = false;
+                    page = Page;
                 }
                 else
                 {
-                    browserFixture = new BrowserFixture();
-                    BrowserFixtures.Add(browserFixture);
+                    var context = await NewContextAsync(ContextOptions());
+                    _contexts.Add(context);
+                    page = await context.NewPageAsync();
                 }
 
-                browserFixture.Initialize(context.BrowserType);
-                Assert.IsNotNull(browserFixture.Browser);
-                ClientTests.Add(new ClientTest(browserFixture.Browser, Server));
+                ClientTests.Add(new ClientTest(page, Server.Uri!));
             }
         }
 
-        protected async Task AssertServerIsHealthy()
+        protected Task<string> TakeScreenshot(string name)
+        {
+            Assert.IsNotNull(ScreenshotCapture);
+            return ScreenshotCapture.TakeScreenshot(Page, GetConfiguration(), name);
+        }
+
+        protected Task<string> TakeScreenshot(int index, string name)
+        {
+            Assert.IsNotNull(ScreenshotCapture);
+            var page = ClientTests[index].Page;
+            return ScreenshotCapture.TakeScreenshot(page, GetConfiguration(), name);
+        }
+
+        private BrowserTestConfiguration GetConfiguration()
+        {
+            return Configuration ?? throw new InvalidOperationException("Test has not been configured.");
+        }
+
+        private async Task AssertServerIsHealthy()
         {
             Assert.IsNotNull(Server);
             var client = new HttpClient();
@@ -111,19 +152,19 @@ namespace Duracellko.PlanningPoker.E2ETest
             Assert.AreEqual("Healthy", response);
         }
 
-        protected async Task AssertServerSide(bool serverSide)
+        private async Task AssertServerSide()
         {
             Assert.IsNotNull(Server);
             var client = new HttpClient();
             var response = await client.GetStringAsync(Server.Uri);
 
-            var expected = serverSide ? "server" : "webassembly";
+            var expected = GetConfiguration().ServerSide ? "server" : "webassembly";
             expected = @"<!--Blazor:{""type"":""" + expected + @"""";
             Assert.IsNotNull(response);
             Assert.IsTrue(response.Contains(expected, StringComparison.Ordinal));
         }
 
-        protected async Task AssertClientConnectionType(bool useHttpClient)
+        private async Task AssertClientConnectionType()
         {
             Assert.IsNotNull(Server);
             var client = new HttpClient();
@@ -135,25 +176,7 @@ namespace Duracellko.PlanningPoker.E2ETest
             var property = configuration.RootElement.GetProperty("useHttpClient");
             Assert.IsNotNull(property);
 
-            Assert.AreEqual(useHttpClient, property.GetBoolean());
-        }
-
-        protected string TakeScreenshot(string name)
-        {
-            Assert.IsNotNull(ScreenshotCapture);
-            var browser = GetBrowser();
-            Assert.IsNotNull(browser);
-            Assert.IsNotNull(Context);
-            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)browser, Context, name);
-        }
-
-        protected string TakeScreenshot(int index, string name)
-        {
-            Assert.IsNotNull(ScreenshotCapture);
-            var browser = GetBrowser(index);
-            Assert.IsNotNull(browser);
-            Assert.IsNotNull(Context);
-            return ScreenshotCapture.TakeScreenshot((ITakesScreenshot)browser, Context, name);
+            Assert.AreEqual(GetConfiguration().UseHttpClient, property.GetBoolean());
         }
     }
 }
