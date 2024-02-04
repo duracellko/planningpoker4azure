@@ -50,7 +50,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].AssertMembersInTeam(member);
             await ClientTests[1].AssertObserversInTeam();
 
-            await Task.Delay(200);
             await ClientTest.AssertMembersInTeam(member);
 
             // Alice starts estimation
@@ -58,12 +57,10 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("09-A-EstimationStarted");
 
             // Bob estimates
-            await Task.Delay(200);
             await TakeScreenshot(1, "10-B-EstimationStarted");
             await ClientTests[1].AssertAvailableEstimations();
             await ClientTests[1].SelectEstimation("8");
 
-            await Task.Delay(500);
             var expectedResult = new[] { new KeyValuePair<string, string>(member, string.Empty) };
             await TakeScreenshot(1, "11-B-MemberEstimated");
             await ClientTests[1].AssertSelectedEstimation(expectedResult);
@@ -74,7 +71,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Alice estimates
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("3");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(scrumMaster, "3"),
@@ -100,12 +96,10 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("17-A-EstimationStarted");
 
             // Alice estimates
-            await Task.Delay(200);
             await TakeScreenshot(1, "18-B-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("\u00BD");
 
-            await Task.Delay(500);
             expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
             await TakeScreenshot("19-A-ScrumMasterEstimated");
             await ClientTest.AssertSelectedEstimation(expectedResult);
@@ -116,7 +110,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Bob estimates
             await ClientTests[1].AssertAvailableEstimations();
             await ClientTests[1].SelectEstimation("\u221E");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(scrumMaster, "\u00BD"),
@@ -131,7 +124,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].Disconnect();
             await TakeScreenshot(1, "23-B-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot("24-A-Disconnected");
             await ClientTest.AssertMembersInTeam();
 
@@ -183,7 +175,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].AssertMembersInTeam(member);
             await ClientTests[1].AssertObserversInTeam();
 
-            await Task.Delay(200);
             await ClientTest.AssertMembersInTeam(member);
 
             // Alice starts estimation
@@ -191,13 +182,11 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("09-A-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
 
-            await Task.Delay(200);
             await TakeScreenshot(1, "10-B-EstimationStarted");
             await ClientTests[1].AssertAvailableEstimations();
 
             // Alice estimates
             await ClientTest.SelectEstimation("100");
-            await Task.Delay(500);
             var expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
             await TakeScreenshot(1, "11-B-ScrumMasterEstimated");
             await ClientTests[1].AssertSelectedEstimation(expectedResult);
@@ -207,7 +196,6 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             // Alice cancels estimation
             await ClientTest.CancelEstimation();
-            await Task.Delay(200);
 
             await TakeScreenshot("13-A-EstimationCancelled");
             await ClientTest.AssertNotAvailableEstimations();
@@ -221,12 +209,10 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("15-A-EstimationStarted");
 
             // Alice estimates
-            await Task.Delay(200);
             await TakeScreenshot(1, "16-B-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("100");
 
-            await Task.Delay(500);
             expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
             await TakeScreenshot("17-A-ScrumMasterEstimated");
             await ClientTest.AssertSelectedEstimation(expectedResult);
@@ -236,7 +222,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Bob estimates
             await ClientTests[1].AssertAvailableEstimations();
             await ClientTests[1].SelectEstimation("20");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(member, "20"),
@@ -252,7 +237,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTest.Disconnect();
             await TakeScreenshot("21-A-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot(1, "22-B-Disconnected");
             await ClientTests[1].AssertScrumMasterInTeam(scrumMaster);
             await ClientTests[1].AssertMembersInTeam(member);
@@ -321,7 +305,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[2].AssertMembersInTeam(member);
             await ClientTests[2].AssertObserversInTeam(observer);
 
-            await Task.Delay(200);
             await ClientTest.AssertObserversInTeam(observer);
             await ClientTests[1].AssertObserversInTeam(observer);
 
@@ -329,7 +312,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTest.StartEstimation();
             await TakeScreenshot("13-A-EstimationStarted");
 
-            await Task.Delay(200);
             await TakeScreenshot(1, "14-B-EstimationStarted");
             await ClientTests[1].AssertAvailableEstimations();
             await TakeScreenshot(2, "15-C-EstimationStarted");
@@ -337,7 +319,6 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             // Bob estimates
             await ClientTests[1].SelectEstimation("3");
-            await Task.Delay(500);
             var expectedResult = new[] { new KeyValuePair<string, string>(member, string.Empty) };
             await TakeScreenshot(1, "16-B-MemberEstimated");
             await ClientTests[1].AssertSelectedEstimation(expectedResult);
@@ -349,7 +330,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Alice estimates
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("2");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(scrumMaster, "2"),
@@ -366,7 +346,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].Disconnect();
             await TakeScreenshot(1, "20-B-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot("21-A-Disconnected");
             await ClientTest.AssertMembersInTeam();
             await ClientTest.AssertObserversInTeam(observer);
@@ -378,7 +357,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTest.Disconnect();
             await TakeScreenshot("23-A-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot(2, "24-C-Disconnected");
             await ClientTests[2].AssertScrumMasterInTeam(scrumMaster);
             await ClientTests[2].AssertMembersInTeam();
@@ -433,7 +411,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].AssertMembersInTeam(member1);
             await ClientTests[1].AssertObserversInTeam();
 
-            await Task.Delay(200);
             await ClientTest.AssertMembersInTeam(member1);
 
             // Alice starts estimation
@@ -441,7 +418,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("09-A-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
 
-            await Task.Delay(200);
             await TakeScreenshot(1, "10-B-EstimationStarted");
             await ClientTests[1].AssertAvailableEstimations();
 
@@ -460,7 +436,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[2].AssertMembersInTeam(member1, member2);
             await ClientTests[2].AssertObserversInTeam();
 
-            await Task.Delay(200);
             await ClientTest.AssertMembersInTeam(member1, member2);
             await TakeScreenshot("15-A-MemberJoiner");
             await ClientTests[1].AssertMembersInTeam(member1, member2);
@@ -469,7 +444,6 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             // Bob estimates
             await ClientTests[1].SelectEstimation("13");
-            await Task.Delay(500);
             var expectedResult = new[] { new KeyValuePair<string, string>(member1, string.Empty) };
             await TakeScreenshot(1, "17-B-MemberEstimated");
             await ClientTests[1].AssertSelectedEstimation(expectedResult);
@@ -481,7 +455,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Alice estimates
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("20");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(member1, "13"),
@@ -499,7 +472,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("23-A-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
 
-            await Task.Delay(200);
             await TakeScreenshot(1, "24-B-EstimationStarted");
             await ClientTests[1].AssertAvailableEstimations();
             await TakeScreenshot(2, "25-C-EstimationStarted");
@@ -507,7 +479,6 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             // Charlie estimates
             await ClientTests[2].SelectEstimation("20");
-            await Task.Delay(500);
             expectedResult = new[] { new KeyValuePair<string, string>(member2, string.Empty) };
             await TakeScreenshot(2, "26-C-MemberEstimated");
             await ClientTests[2].AssertSelectedEstimation(expectedResult);
@@ -520,7 +491,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Alice estimates
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("20");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(member2, string.Empty),
@@ -537,7 +507,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             // Bob estimates
             await ClientTests[1].AssertAvailableEstimations();
             await ClientTests[1].SelectEstimation("2");
-            await Task.Delay(500);
             expectedResult = new[]
             {
                 new KeyValuePair<string, string>(scrumMaster, "20"),
@@ -556,7 +525,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[1].Disconnect();
             await TakeScreenshot(1, "35-B-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot("36-A-Disconnected");
             await ClientTest.AssertMembersInTeam(member2);
             await TakeScreenshot(2, "37-C-Disconnected");
@@ -566,7 +534,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTests[2].Disconnect();
             await TakeScreenshot(2, "38-C-Disconnected");
 
-            await Task.Delay(200);
             await TakeScreenshot("39-A-Disconnected");
             await ClientTest.AssertMembersInTeam();
 

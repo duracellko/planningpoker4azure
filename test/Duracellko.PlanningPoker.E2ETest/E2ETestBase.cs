@@ -70,7 +70,7 @@ namespace Duracellko.PlanningPoker.E2ETest
 
             if (Server != null)
             {
-                Server.Dispose();
+                await Server.DisposeAsync();
                 Server = null;
             }
         }

@@ -48,7 +48,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await Page.GotoAsync(ServerUri.ToString());
             AppElement = Page.Locator("#app");
             await Assertions.Expect(AppElement).ToBeVisibleAsync();
-            await Task.Delay(2000);
         }
 
         public async Task AssertIndexPage()

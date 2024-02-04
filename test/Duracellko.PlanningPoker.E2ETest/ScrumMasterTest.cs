@@ -37,7 +37,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("05-EstimationStarted");
             await ClientTest.AssertAvailableEstimations();
             await ClientTest.SelectEstimation("1");
-            await Task.Delay(500);
             await TakeScreenshot("06-Estimated");
             await ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, "1"));
             await ClientTest.Disconnect();
@@ -81,7 +80,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await TakeScreenshot("05-EstimationStarted");
             await ClientTest.AssertAvailableEstimations(availableEstimations);
             await ClientTest.SelectEstimation(1);
-            await Task.Delay(500);
             await TakeScreenshot("06-Estimated");
             await ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, availableEstimations[1]));
             await ClientTest.Disconnect();
@@ -132,7 +130,6 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTest.FillJoinTeamForm(team, member);
             await TakeScreenshot("03-JoinTeamForm");
             await ClientTest.SubmitJoinTeamForm();
-            await Task.Delay(500);
             await ClientTest.AssertIndexPage();
             await TakeScreenshot("04-Error");
             await ClientTest.AssertMessageBox("Scrum Team 'My team' does not exist.");
@@ -170,30 +167,24 @@ namespace Duracellko.PlanningPoker.E2ETest
             await ClientTest.AssertObserversInTeam();
 
             await ClientTest.OpenSettingsDialog();
-            await Task.Delay(200);
             await TakeScreenshot("05-Settings");
             await ClientTest.AssertSettingsDialogIsOpen();
             await ClientTest.AssertSelectedDeckSetting("Standard", deckText, true);
             await ClientTest.ChangeDeck("Rating", newDeckText);
             await TakeScreenshot("06-ChangingDeck");
-            await Task.Delay(500);
             await ClientTest.CloseSettingsDialog();
-            await Task.Delay(200);
 
             await ClientTest.StartEstimation();
             await TakeScreenshot("07-EstimationStarted");
             await ClientTest.AssertAvailableEstimations(availableEstimations);
 
             await ClientTest.OpenSettingsDialog();
-            await Task.Delay(200);
             await TakeScreenshot("08-Settings");
             await ClientTest.AssertSettingsDialogIsOpen();
             await ClientTest.AssertSelectedDeckSetting("Rating", newDeckText, false);
             await ClientTest.CloseSettingsDialog();
-            await Task.Delay(200);
 
             await ClientTest.SelectEstimation(9);
-            await Task.Delay(500);
             await TakeScreenshot("09-Estimated");
             await ClientTest.AssertSelectedEstimation(new KeyValuePair<string, string>(scrumMaster, "10"));
             await ClientTest.Disconnect();
