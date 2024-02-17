@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using AngleSharp.Html.Dom;
-using AngleSharpWrappers;
 using Bunit;
+using Bunit.Web.AngleSharp;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
