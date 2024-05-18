@@ -41,7 +41,7 @@ namespace Duracellko.PlanningPoker.Azure
             IAzurePlanningPokerConfiguration? configuration,
             IScrumTeamRepository? repository,
             TaskProvider? taskProvider,
-            ILogger<PlanningPokerController> logger)
+            ILogger<AzurePlanningPokerController> logger)
             : base(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger)
         {
         }

@@ -27,11 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.21.0.86780" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\stylecop.json" />
   </ItemGroup>
 
