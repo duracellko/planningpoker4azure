@@ -91,7 +91,7 @@ namespace Duracellko.PlanningPoker.Web
                     sp.GetService<IAzurePlanningPokerConfiguration>(),
                     sp.GetService<IScrumTeamRepository>(),
                     sp.GetService<TaskProvider>(),
-                    sp.GetRequiredService<ILogger<PlanningPokerController>>()));
+                    sp.GetRequiredService<ILogger<AzurePlanningPokerController>>()));
                 services.AddSingleton<IAzurePlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
                 services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
                 services.AddSingleton<IInitializationStatusProvider>(sp => sp.GetRequiredService<AzurePlanningPokerController>());

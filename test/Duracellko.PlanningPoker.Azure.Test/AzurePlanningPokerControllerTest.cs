@@ -485,11 +485,11 @@ namespace Duracellko.PlanningPoker.Azure.Test
             IAzurePlanningPokerConfiguration? configuration = null,
             IScrumTeamRepository? repository = null,
             TaskProvider? taskProvider = null,
-            ILogger<Controllers.PlanningPokerController>? logger = null)
+            ILogger<AzurePlanningPokerController>? logger = null)
         {
             if (logger == null)
             {
-                logger = Mock.Of<ILogger<Controllers.PlanningPokerController>>();
+                logger = Mock.Of<ILogger<AzurePlanningPokerController>>();
             }
 
             return new AzurePlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
