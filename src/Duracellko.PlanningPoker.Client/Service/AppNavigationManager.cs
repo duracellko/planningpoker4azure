@@ -2,37 +2,36 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components;
 
-namespace Duracellko.PlanningPoker.Client.Service
+namespace Duracellko.PlanningPoker.Client.Service;
+
+/// <summary>
+/// Provides querying and mananging URI navigation.
+/// </summary>
+public class AppNavigationManager : INavigationManager
 {
+    private readonly NavigationManager _navigationManager;
+
     /// <summary>
-    /// Provides querying and mananging URI navigation.
+    /// Initializes a new instance of the <see cref="AppNavigationManager"/> class.
     /// </summary>
-    public class AppNavigationManager : INavigationManager
+    /// <param name="navigationManager">ASP.NET Core Components NavigationManager.</param>
+    public AppNavigationManager(NavigationManager navigationManager)
     {
-        private readonly NavigationManager _navigationManager;
+        _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppNavigationManager"/> class.
-        /// </summary>
-        /// <param name="navigationManager">ASP.NET Core Components NavigationManager.</param>
-        public AppNavigationManager(NavigationManager navigationManager)
-        {
-            _navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
-        }
+    /// <summary>
+    /// Gets the current URI. The <see cref="Uri" /> is always represented as an absolute URI in string form.
+    /// </summary>
+    public string Uri => _navigationManager.Uri;
 
-        /// <summary>
-        /// Gets the current URI. The <see cref="Uri" /> is always represented as an absolute URI in string form.
-        /// </summary>
-        public string Uri => _navigationManager.Uri;
-
-        /// <summary>
-        /// Navigates to the specified URI.
-        /// </summary>
-        /// <param name="uri">The destination URI. This can be absolute, or relative to the base URI.</param>
-        [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Follows NavigationManager from Blazor.")]
-        public void NavigateTo(string uri)
-        {
-            _navigationManager.NavigateTo(uri);
-        }
+    /// <summary>
+    /// Navigates to the specified URI.
+    /// </summary>
+    /// <param name="uri">The destination URI. This can be absolute, or relative to the base URI.</param>
+    [SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Follows NavigationManager from Blazor.")]
+    public void NavigateTo(string uri)
+    {
+        _navigationManager.NavigateTo(uri);
     }
 }

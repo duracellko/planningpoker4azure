@@ -3,89 +3,88 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Duracellko.PlanningPoker.Client.Service
+namespace Duracellko.PlanningPoker.Client.Service;
+
+/// <summary>
+/// Factory object that can start periodic invocation of specific action.
+/// </summary>
+public class TimerFactory : ITimerFactory
 {
+    private readonly TimeSpan _interval;
+    private Func<Action, Task>? _dispatcherDelegate;
+
     /// <summary>
-    /// Factory object that can start periodic invocation of specific action.
+    /// Initializes a new instance of the <see cref="TimerFactory" /> class.
     /// </summary>
-    public class TimerFactory : ITimerFactory
+    /// <param name="interval">The interval of created timers.</param>
+    public TimerFactory(TimeSpan interval)
     {
-        private readonly TimeSpan _interval;
-        private Func<Action, Task>? _dispatcherDelegate;
+        _interval = interval;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TimerFactory" /> class.
-        /// </summary>
-        /// <param name="interval">The interval of created timers.</param>
-        public TimerFactory(TimeSpan interval)
+    /// <summary>
+    /// Starts periodic invocation of specified action.
+    /// </summary>
+    /// <param name="action">The action to invoke periodically.</param>
+    /// <returns>The disposable object that should be disposed to stop the timer.</returns>
+    public IDisposable StartTimer(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        var dispatcherDelegate = _dispatcherDelegate;
+        if (dispatcherDelegate == null)
         {
-            _interval = interval;
+            throw new InvalidOperationException(Resources.Error_TimerStartedWithoutDispatcher);
         }
 
-        /// <summary>
-        /// Starts periodic invocation of specified action.
-        /// </summary>
-        /// <param name="action">The action to invoke periodically.</param>
-        /// <returns>The disposable object that should be disposed to stop the timer.</returns>
-        public IDisposable StartTimer(Action action)
+        return new DisposableTimer(action, dispatcherDelegate, _interval);
+    }
+
+    /// <summary>
+    /// Sets delegate that can invoke action on Dispatcher.
+    /// </summary>
+    /// <param name="dispatcherDelegate">The delegate to invoke action on Dispatcher.</param>
+    internal void SetDispatcherDelegate(Func<Action, Task>? dispatcherDelegate)
+    {
+        _dispatcherDelegate = dispatcherDelegate;
+    }
+
+    private sealed class DisposableTimer : IDisposable
+    {
+        private readonly Action _action;
+        private readonly Func<Action, Task> _dispatcherDelegate;
+        private Timer? _timer;
+
+        public DisposableTimer(Action action, Func<Action, Task> dispatcherDelegate, TimeSpan interval)
         {
-            ArgumentNullException.ThrowIfNull(action);
-
-            var dispatcherDelegate = _dispatcherDelegate;
-            if (dispatcherDelegate == null)
-            {
-                throw new InvalidOperationException(Resources.Error_TimerStartedWithoutDispatcher);
-            }
-
-            return new DisposableTimer(action, dispatcherDelegate, _interval);
-        }
-
-        /// <summary>
-        /// Sets delegate that can invoke action on Dispatcher.
-        /// </summary>
-        /// <param name="dispatcherDelegate">The delegate to invoke action on Dispatcher.</param>
-        internal void SetDispatcherDelegate(Func<Action, Task>? dispatcherDelegate)
-        {
+            _action = action;
             _dispatcherDelegate = dispatcherDelegate;
+
+            var timer = new Timer(interval.TotalMilliseconds);
+            _timer = timer;
+            timer.Elapsed += TimerOnElapsed;
+            timer.Start();
         }
 
-        private sealed class DisposableTimer : IDisposable
+        public void Dispose()
         {
-            private readonly Action _action;
-            private readonly Func<Action, Task> _dispatcherDelegate;
-            private Timer? _timer;
-
-            public DisposableTimer(Action action, Func<Action, Task> dispatcherDelegate, TimeSpan interval)
+            if (_timer != null)
             {
-                _action = action;
-                _dispatcherDelegate = dispatcherDelegate;
-
-                var timer = new Timer(interval.TotalMilliseconds);
-                _timer = timer;
-                timer.Elapsed += TimerOnElapsed;
-                timer.Start();
+                _timer.Dispose();
+                _timer = null;
             }
+        }
 
-            public void Dispose()
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Log timer event errors.")]
+        private async void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+        {
+            try
             {
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                    _timer = null;
-                }
+                await _dispatcherDelegate(_action);
             }
-
-            [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Log timer event errors.")]
-            private async void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+            catch (Exception ex)
             {
-                try
-                {
-                    await _dispatcherDelegate(_action);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                Console.WriteLine(ex);
             }
         }
     }

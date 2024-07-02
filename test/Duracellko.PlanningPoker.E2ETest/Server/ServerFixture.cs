@@ -10,155 +10,154 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Duracellko.PlanningPoker.E2ETest.Server
+namespace Duracellko.PlanningPoker.E2ETest.Server;
+
+public class ServerFixture : IAsyncDisposable, IDisposable
 {
-    public class ServerFixture : IAsyncDisposable, IDisposable
+    private bool _disposed;
+    private Uri? _uri;
+
+    ~ServerFixture()
     {
-        private bool _disposed;
-        private Uri? _uri;
+        Dispose(false);
+    }
 
-        ~ServerFixture()
+    public bool UseServerSide { get; set; }
+
+    public bool UseHttpClient { get; set; }
+
+    public IHost? WebHost { get; private set; }
+
+    public Uri? Uri
+    {
+        get
         {
-            Dispose(false);
+            if (WebHost == null)
+            {
+                return null;
+            }
+
+            if (_uri == null)
+            {
+                var server = (IServer)WebHost.Services.GetRequiredService(typeof(IServer));
+                var serverAddressesFeature = server.Features.Get<IServerAddressesFeature>();
+                if (serverAddressesFeature != null)
+                {
+                    var address = serverAddressesFeature.Addresses.Single();
+                    _uri = new Uri(address);
+                }
+            }
+
+            return _uri;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore().ConfigureAwait(false);
+        Dispose(false);
+        GC.SuppressFinalize(this);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public async Task Start()
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (WebHost != null)
+        {
+            throw new InvalidOperationException("WebHost is already started.");
         }
 
-        public bool UseServerSide { get; set; }
+        WebHost = Program.CreateWebApplication(GetProgramArguments());
+        await RunInBackgroundThread(() => WebHost.StartAsync()).ConfigureAwait(false);
+    }
 
-        public bool UseHttpClient { get; set; }
-
-        public IHost? WebHost { get; private set; }
-
-        public Uri? Uri
+    public async Task Stop()
+    {
+        if (WebHost != null)
         {
-            get
+            try
             {
-                if (WebHost == null)
-                {
-                    return null;
-                }
+                await WebHost.StopAsync().ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore time out error
+            }
 
-                if (_uri == null)
+            WebHost = null;
+            _uri = null;
+        }
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        if (!_disposed)
+        {
+            await Stop().ConfigureAwait(false);
+            _disposed = true;
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                RunInBackgroundThread(async () =>
                 {
-                    var server = (IServer)WebHost.Services.GetRequiredService(typeof(IServer));
-                    var serverAddressesFeature = server.Features.Get<IServerAddressesFeature>();
-                    if (serverAddressesFeature != null)
+                    try
                     {
-                        var address = serverAddressesFeature.Addresses.Single();
-                        _uri = new Uri(address);
+                        await Stop().ConfigureAwait(false);
                     }
-                }
-
-                return _uri;
-            }
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            await DisposeAsyncCore().ConfigureAwait(false);
-            Dispose(false);
-            GC.SuppressFinalize(this);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task Start()
-        {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-
-            if (WebHost != null)
-            {
-                throw new InvalidOperationException("WebHost is already started.");
-            }
-
-            WebHost = Program.CreateWebApplication(GetProgramArguments());
-            await RunInBackgroundThread(() => WebHost.StartAsync()).ConfigureAwait(false);
-        }
-
-        public async Task Stop()
-        {
-            if (WebHost != null)
-            {
-                try
-                {
-                    await WebHost.StopAsync().ConfigureAwait(false);
-                }
-                catch (TaskCanceledException)
-                {
-                    // Ignore time out error
-                }
-
-                WebHost = null;
-                _uri = null;
-            }
-        }
-
-        protected virtual async ValueTask DisposeAsyncCore()
-        {
-            if (!_disposed)
-            {
-                await Stop().ConfigureAwait(false);
-                _disposed = true;
-            }
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    RunInBackgroundThread(async () =>
+                    catch (TaskCanceledException)
                     {
-                        try
-                        {
-                            await Stop().ConfigureAwait(false);
-                        }
-                        catch (TaskCanceledException)
-                        {
-                            // Ignore time out error
-                        }
-                    }).Wait();
-                }
-
-                _disposed = true;
+                        // Ignore time out error
+                    }
+                }).Wait();
             }
-        }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Forward all exceptions to parent task.")]
-        private static Task RunInBackgroundThread(Func<Task> action)
+            _disposed = true;
+        }
+    }
+
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Forward all exceptions to parent task.")]
+    private static Task RunInBackgroundThread(Func<Task> action)
+    {
+        var isDone = new TaskCompletionSource();
+        new Thread(async () =>
         {
-            var isDone = new TaskCompletionSource();
-            new Thread(async () =>
+            try
             {
-                try
-                {
-                    await action().ConfigureAwait(false);
-                    isDone.SetResult();
-                }
-                catch (Exception ex)
-                {
-                    isDone.TrySetException(new AggregateException(ex));
-                }
-            }).Start();
+                await action().ConfigureAwait(false);
+                isDone.SetResult();
+            }
+            catch (Exception ex)
+            {
+                isDone.TrySetException(new AggregateException(ex));
+            }
+        }).Start();
 
-            return isDone.Task;
-        }
+        return isDone.Task;
+    }
 
-        private string[] GetProgramArguments()
+    private string[] GetProgramArguments()
+    {
+        var useServerSideValue = UseServerSide ? "Always" : "Never";
+
+        return new string[]
         {
-            var useServerSideValue = UseServerSide ? "Always" : "Never";
-
-            return new string[]
-            {
-                "--urls", "http://127.0.0.1:0",
-                "--applicationName", "Duracellko.PlanningPoker.Web",
-                "--PlanningPokerClient:UseServerSide", useServerSideValue,
-                "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
-            };
-        }
+            "--urls", "http://127.0.0.1:0",
+            "--applicationName", "Duracellko.PlanningPoker.Web",
+            "--PlanningPokerClient:UseServerSide", useServerSideValue,
+            "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
+        };
     }
 }

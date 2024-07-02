@@ -1,67 +1,66 @@
 ﻿using System;
 using Duracellko.PlanningPoker.Configuration;
 
-namespace Duracellko.PlanningPoker.Azure.Configuration
+namespace Duracellko.PlanningPoker.Azure.Configuration;
+
+/// <summary>
+/// Configuration section of planning poker for Azure platform.
+/// </summary>
+public class AzurePlanningPokerConfiguration : PlanningPokerConfiguration, IAzurePlanningPokerConfiguration
 {
     /// <summary>
-    /// Configuration section of planning poker for Azure platform.
+    /// Gets or sets a connection string to Azure ServiceBus.
     /// </summary>
-    public class AzurePlanningPokerConfiguration : PlanningPokerConfiguration, IAzurePlanningPokerConfiguration
+    /// <value>ServiceBus connection string.</value>
+    public string? ServiceBusConnectionString { get; set; }
+
+    /// <summary>
+    /// Gets or sets a topic for communication on Azure ServiceBus.
+    /// </summary>
+    /// <value>ServiceBus topic name.</value>
+    public string? ServiceBusTopic { get; set; }
+
+    /// <summary>
+    /// Gets or sets a time in seconds to wait for end of initialization phase.
+    /// </summary>
+    /// <value>The initialization wait time.</value>
+    public int InitializationTimeout { get; set; } = 60;
+
+    /// <summary>
+    /// Gets or sets a time in seconds to wait for any message in initialization phase.
+    /// </summary>
+    /// <value>The initialization message wait time.</value>
+    public int InitializationMessageTimeout { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets a time interval in seconds, when a planning poker node notifies other nodes about its activity and checks for inactive subscriptions.
+    /// </summary>
+    /// <value>The subscription maintenance time interval.</value>
+    public int SubscriptionMaintenanceInterval { get; set; } = 300;
+
+    /// <summary>
+    /// Gets or sets a time in seconds that an inactive subscription is deleted after.
+    /// </summary>
+    /// <value>The subscription inactivity time.</value>
+    public int SubscriptionInactivityTimeout { get; set; } = 900;
+
+    TimeSpan IAzurePlanningPokerConfiguration.InitializationTimeout
     {
-        /// <summary>
-        /// Gets or sets a connection string to Azure ServiceBus.
-        /// </summary>
-        /// <value>ServiceBus connection string.</value>
-        public string? ServiceBusConnectionString { get; set; }
+        get { return TimeSpan.FromSeconds(InitializationTimeout); }
+    }
 
-        /// <summary>
-        /// Gets or sets a topic for communication on Azure ServiceBus.
-        /// </summary>
-        /// <value>ServiceBus topic name.</value>
-        public string? ServiceBusTopic { get; set; }
+    TimeSpan IAzurePlanningPokerConfiguration.InitializationMessageTimeout
+    {
+        get { return TimeSpan.FromSeconds(InitializationMessageTimeout); }
+    }
 
-        /// <summary>
-        /// Gets or sets a time in seconds to wait for end of initialization phase.
-        /// </summary>
-        /// <value>The initialization wait time.</value>
-        public int InitializationTimeout { get; set; } = 60;
+    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionMaintenanceInterval
+    {
+        get { return TimeSpan.FromSeconds(SubscriptionMaintenanceInterval); }
+    }
 
-        /// <summary>
-        /// Gets or sets a time in seconds to wait for any message in initialization phase.
-        /// </summary>
-        /// <value>The initialization message wait time.</value>
-        public int InitializationMessageTimeout { get; set; } = 5;
-
-        /// <summary>
-        /// Gets or sets a time interval in seconds, when a planning poker node notifies other nodes about its activity and checks for inactive subscriptions.
-        /// </summary>
-        /// <value>The subscription maintenance time interval.</value>
-        public int SubscriptionMaintenanceInterval { get; set; } = 300;
-
-        /// <summary>
-        /// Gets or sets a time in seconds that an inactive subscription is deleted after.
-        /// </summary>
-        /// <value>The subscription inactivity time.</value>
-        public int SubscriptionInactivityTimeout { get; set; } = 900;
-
-        TimeSpan IAzurePlanningPokerConfiguration.InitializationTimeout
-        {
-            get { return TimeSpan.FromSeconds(InitializationTimeout); }
-        }
-
-        TimeSpan IAzurePlanningPokerConfiguration.InitializationMessageTimeout
-        {
-            get { return TimeSpan.FromSeconds(InitializationMessageTimeout); }
-        }
-
-        TimeSpan IAzurePlanningPokerConfiguration.SubscriptionMaintenanceInterval
-        {
-            get { return TimeSpan.FromSeconds(SubscriptionMaintenanceInterval); }
-        }
-
-        TimeSpan IAzurePlanningPokerConfiguration.SubscriptionInactivityTimeout
-        {
-            get { return TimeSpan.FromSeconds(SubscriptionInactivityTimeout); }
-        }
+    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionInactivityTimeout
+    {
+        get { return TimeSpan.FromSeconds(SubscriptionInactivityTimeout); }
     }
 }

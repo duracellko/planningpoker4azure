@@ -4,26 +4,25 @@ using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Controllers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
-namespace Duracellko.PlanningPoker.Web
+namespace Duracellko.PlanningPoker.Web;
+
+public class PlanningPokerApplication : IApplicationModelConvention
 {
-    public class PlanningPokerApplication : IApplicationModelConvention
+    public void Apply(ApplicationModel application)
     {
-        public void Apply(ApplicationModel application)
+        ArgumentNullException.ThrowIfNull(application);
+
+        // Remove PlanningPokerController, because it is not MVC controller.
+        var planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(PlanningPokerController));
+        if (planningPokerController != null)
         {
-            ArgumentNullException.ThrowIfNull(application);
+            application.Controllers.Remove(planningPokerController);
+        }
 
-            // Remove PlanningPokerController, because it is not MVC controller.
-            var planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(PlanningPokerController));
-            if (planningPokerController != null)
-            {
-                application.Controllers.Remove(planningPokerController);
-            }
-
-            planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(AzurePlanningPokerController));
-            if (planningPokerController != null)
-            {
-                application.Controllers.Remove(planningPokerController);
-            }
+        planningPokerController = application.Controllers.FirstOrDefault(c => c.ControllerType == typeof(AzurePlanningPokerController));
+        if (planningPokerController != null)
+        {
+            application.Controllers.Remove(planningPokerController);
         }
     }
 }

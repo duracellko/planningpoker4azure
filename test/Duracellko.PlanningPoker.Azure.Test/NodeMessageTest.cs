@@ -1,21 +1,20 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Duracellko.PlanningPoker.Azure.Test
+namespace Duracellko.PlanningPoker.Azure.Test;
+
+[TestClass]
+public class NodeMessageTest
 {
-    [TestClass]
-    public class NodeMessageTest
+    [TestMethod]
+    public void Constructor_MessageType_MessageTypeIsSet()
     {
-        [TestMethod]
-        public void Constructor_MessageType_MessageTypeIsSet()
-        {
-            // Arrange
-            var messageType = NodeMessageType.ScrumTeamMessage;
+        // Arrange
+        var messageType = NodeMessageType.ScrumTeamMessage;
 
-            // Act
-            var result = new NodeMessage(messageType);
+        // Act
+        var result = new NodeMessage(messageType);
 
-            // Verify
-            Assert.AreEqual<NodeMessageType>(messageType, result.MessageType);
-        }
+        // Verify
+        Assert.AreEqual<NodeMessageType>(messageType, result.MessageType);
     }
 }

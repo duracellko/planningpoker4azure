@@ -6,112 +6,111 @@ using Duracellko.PlanningPoker.Azure.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
-namespace Duracellko.PlanningPoker.Redis
+namespace Duracellko.PlanningPoker.Redis;
+
+/// <summary>
+/// The object provides health status of Redis database.
+/// </summary>
+public sealed class RedisHealthCheck : IHealthCheck, IDisposable
 {
+    private readonly IAzurePlanningPokerConfiguration _configuration;
+    private readonly object _redisLock = new object();
+    private ConnectionMultiplexer? _redis;
+    private bool _disposed;
+
     /// <summary>
-    /// The object provides health status of Redis database.
+    /// Initializes a new instance of the <see cref="RedisHealthCheck"/> class.
     /// </summary>
-    public sealed class RedisHealthCheck : IHealthCheck, IDisposable
+    /// <param name="configuration">The configuration with connection string to Redis database.</param>
+    public RedisHealthCheck(IAzurePlanningPokerConfiguration configuration)
     {
-        private readonly IAzurePlanningPokerConfiguration _configuration;
-        private readonly object _redisLock = new object();
-        private ConnectionMultiplexer? _redis;
-        private bool _disposed;
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RedisHealthCheck"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration with connection string to Redis database.</param>
-        public RedisHealthCheck(IAzurePlanningPokerConfiguration configuration)
+    private string ConnectionString
+    {
+        get
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            var connectionString = _configuration.ServiceBusConnectionString!;
+            if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
+            {
+                connectionString = connectionString.Substring(6);
+            }
+
+            return connectionString;
+        }
+    }
+
+    /// <summary>
+    /// Runs the health check, returning the status of the Redis database.
+    /// </summary>
+    /// <param name="context">A context object associated with the current execution.</param>
+    /// <param name="cancellationToken">A <see cref="System.Threading.CancellationToken"/> that can be used to cancel the health check.</param>
+    /// <returns>The health status of the Redis database.</returns>
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All errors are reported as unhealthy status.")]
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        try
+        {
+            var redis = await Connect();
+            await redis.GetDatabase().PingAsync();
+            return HealthCheckResult.Healthy(Resources.Health_RedisHealthy);
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy(Resources.Health_RedisUnhealthy, ex);
+        }
+    }
+
+    /// <summary>
+    /// Closes Redis connection and releases all resources.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
         }
 
-        private string ConnectionString
-        {
-            get
-            {
-                var connectionString = _configuration.ServiceBusConnectionString!;
-                if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
-                {
-                    connectionString = connectionString.Substring(6);
-                }
-
-                return connectionString;
-            }
-        }
-
-        /// <summary>
-        /// Runs the health check, returning the status of the Redis database.
-        /// </summary>
-        /// <param name="context">A context object associated with the current execution.</param>
-        /// <param name="cancellationToken">A <see cref="System.Threading.CancellationToken"/> that can be used to cancel the health check.</param>
-        /// <returns>The health status of the Redis database.</returns>
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All errors are reported as unhealthy status.")]
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-        {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-
-            try
-            {
-                var redis = await Connect();
-                await redis.GetDatabase().PingAsync();
-                return HealthCheckResult.Healthy(Resources.Health_RedisHealthy);
-            }
-            catch (Exception ex)
-            {
-                return HealthCheckResult.Unhealthy(Resources.Health_RedisUnhealthy, ex);
-            }
-        }
-
-        /// <summary>
-        /// Closes Redis connection and releases all resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            lock (_redisLock)
-            {
-                if (_redis != null)
-                {
-                    _redis.Dispose();
-                    _redis = null;
-                }
-            }
-
-            _disposed = true;
-        }
-
-        private async Task<ConnectionMultiplexer> Connect()
+        lock (_redisLock)
         {
             if (_redis != null)
             {
-                return _redis;
+                _redis.Dispose();
+                _redis = null;
             }
+        }
 
-            var redis = await ConnectionMultiplexer.ConnectAsync(ConnectionString);
+        _disposed = true;
+    }
 
-            var keepConnection = false;
-            lock (_redisLock)
-            {
-                if (_redis == null)
-                {
-                    _redis = redis;
-                    keepConnection = true;
-                }
-            }
-
-            if (!keepConnection)
-            {
-                await redis.CloseAsync();
-                await redis.DisposeAsync();
-            }
-
+    private async Task<ConnectionMultiplexer> Connect()
+    {
+        if (_redis != null)
+        {
             return _redis;
         }
+
+        var redis = await ConnectionMultiplexer.ConnectAsync(ConnectionString);
+
+        var keepConnection = false;
+        lock (_redisLock)
+        {
+            if (_redis == null)
+            {
+                _redis = redis;
+                keepConnection = true;
+            }
+        }
+
+        if (!keepConnection)
+        {
+            await redis.CloseAsync();
+            await redis.DisposeAsync();
+        }
+
+        return _redis;
     }
 }

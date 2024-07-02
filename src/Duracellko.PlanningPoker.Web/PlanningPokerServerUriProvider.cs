@@ -1,15 +1,14 @@
 ﻿using System;
 using Duracellko.PlanningPoker.Client.Service;
 
-namespace Duracellko.PlanningPoker.Web
-{
-    public class PlanningPokerServerUriProvider : IPlanningPokerUriProvider
-    {
-        public Uri? BaseUri { get; private set; }
+namespace Duracellko.PlanningPoker.Web;
 
-        public void InitializeBaseUri(Uri baseUri)
-        {
-            BaseUri = baseUri;
-        }
+public class PlanningPokerServerUriProvider : IPlanningPokerUriProvider
+{
+    public Uri? BaseUri { get; private set; }
+
+    public void InitializeBaseUri(Uri baseUri)
+    {
+        BaseUri = baseUri;
     }
 }

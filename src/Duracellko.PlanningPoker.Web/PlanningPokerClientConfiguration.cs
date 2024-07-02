@@ -1,11 +1,10 @@
 ﻿using Duracellko.PlanningPoker.Web.Model;
 
-namespace Duracellko.PlanningPoker.Web
-{
-    public class PlanningPokerClientConfiguration
-    {
-        public ServerSideConditions UseServerSide { get; set; }
+namespace Duracellko.PlanningPoker.Web;
 
-        public bool UseHttpClient { get; set; }
-    }
+public class PlanningPokerClientConfiguration
+{
+    public ServerSideConditions UseServerSide { get; set; }
+
+    public bool UseHttpClient { get; set; }
 }
