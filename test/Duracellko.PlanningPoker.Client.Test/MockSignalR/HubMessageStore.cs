@@ -4,39 +4,38 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.AspNetCore.SignalR.Protocol;
 
-namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
+namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
+
+internal sealed class HubMessageStore
 {
-    internal sealed class HubMessageStore
+    private readonly ConcurrentDictionary<long, HubMessage> _messages = new ConcurrentDictionary<long, HubMessage>();
+    private long _nextId;
+
+    public HubMessage this[long id]
     {
-        private readonly ConcurrentDictionary<long, HubMessage> _messages = new ConcurrentDictionary<long, HubMessage>();
-        private long _nextId;
+        get => _messages[id];
+    }
 
-        public HubMessage this[long id]
+    public long Add(HubMessage message)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        long nextId = Interlocked.Increment(ref _nextId);
+        if (!_messages.TryAdd(nextId, message))
         {
-            get => _messages[id];
+            throw new InvalidOperationException("Message ID should be unique.");
         }
 
-        public long Add(HubMessage message)
-        {
-            ArgumentNullException.ThrowIfNull(message);
+        return nextId;
+    }
 
-            long nextId = Interlocked.Increment(ref _nextId);
-            if (!_messages.TryAdd(nextId, message))
-            {
-                throw new InvalidOperationException("Message ID should be unique.");
-            }
+    public bool TryGetMessage(long id, [MaybeNullWhen(false)] out HubMessage message)
+    {
+        return _messages.TryGetValue(id, out message);
+    }
 
-            return nextId;
-        }
-
-        public bool TryGetMessage(long id, [MaybeNullWhen(false)] out HubMessage message)
-        {
-            return _messages.TryGetValue(id, out message);
-        }
-
-        public bool TryRemove(long id)
-        {
-            return _messages.TryRemove(id, out _);
-        }
+    public bool TryRemove(long id)
+    {
+        return _messages.TryRemove(id, out _);
     }
 }

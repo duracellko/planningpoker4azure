@@ -13,323 +13,322 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Duracellko.PlanningPoker.Client.Test.Components
+namespace Duracellko.PlanningPoker.Client.Test.Components;
+
+[TestClass]
+public sealed class JoinTeamPanelTest : IDisposable
 {
-    [TestClass]
-    public sealed class JoinTeamPanelTest : IDisposable
+    private readonly Bunit.TestContext _context = new Bunit.TestContext();
+
+    public void Dispose()
     {
-        private readonly Bunit.TestContext _context = new Bunit.TestContext();
+        _context.Dispose();
+    }
 
-        public void Dispose()
+    [TestMethod]
+    public void Initialized_NoValidationErrors()
+    {
+        var controller = CreateJoinTeamController();
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = target.Find("input[name=teamName]");
+        Assert.AreEqual("form-control", teamNameElement.ClassName);
+        var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+
+        var memberNameElement = target.Find("input[name=memberName]");
+        Assert.AreEqual("form-control", memberNameElement.ClassName);
+        validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+    }
+
+    [TestMethod]
+    public void SetTeamNameAndMemberName_NoValidationErrors()
+    {
+        var controller = CreateJoinTeamController();
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = target.Find("input[name=teamName]");
+        teamNameElement.Change(PlanningPokerData.TeamName);
+        var memberNameElement = target.Find("input[name=memberName]");
+        memberNameElement.Change(PlanningPokerData.MemberName);
+
+        teamNameElement = target.Find("input[name=teamName]");
+        Assert.AreEqual("form-control", teamNameElement.ClassName);
+        var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+
+        memberNameElement = target.Find("input[name=memberName]");
+        Assert.AreEqual("form-control", memberNameElement.ClassName);
+        validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+    }
+
+    [TestMethod]
+    public void SetTeamNameToEmpty_RequiredValidationError()
+    {
+        var controller = CreateJoinTeamController();
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = target.Find("input[name=teamName]");
+        teamNameElement.Change(PlanningPokerData.TeamName);
+        var memberNameElement = target.Find("input[name=memberName]");
+        memberNameElement.Change(PlanningPokerData.MemberName);
+
+        teamNameElement = target.Find("input[name=teamName]");
+        teamNameElement.Change(string.Empty);
+
+        teamNameElement = target.Find("input[name=teamName]");
+        Assert.AreEqual("form-control is-invalid", teamNameElement.ClassName);
+        var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(1, validationElements.Length);
+        Assert.AreEqual("Required", validationElements[0].TextContent);
+
+        memberNameElement = target.Find("input[name=memberName]");
+        Assert.AreEqual("form-control", memberNameElement.ClassName);
+        validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+    }
+
+    [TestMethod]
+    public void SetMemberNameToEmpty_RequiredValidationError()
+    {
+        var controller = CreateJoinTeamController();
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = target.Find("input[name=teamName]");
+        teamNameElement.Change(PlanningPokerData.TeamName);
+        var memberNameElement = target.Find("input[name=memberName]");
+        memberNameElement.Change(PlanningPokerData.MemberName);
+
+        memberNameElement = target.Find("input[name=memberName]");
+        memberNameElement.Change(string.Empty);
+
+        teamNameElement = target.Find("input[name=teamName]");
+        Assert.AreEqual("form-control", teamNameElement.ClassName);
+        var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(0, validationElements.Length);
+
+        memberNameElement = target.Find("input[name=memberName]");
+        Assert.AreEqual("form-control is-invalid", memberNameElement.ClassName);
+        validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
+        Assert.AreEqual(1, validationElements.Length);
+        Assert.AreEqual("Required", validationElements[0].TextContent);
+    }
+
+    [DataTestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void ClickJoinButton_SendsJoinTeamRequest(bool asObserver)
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var controller = CreateJoinTeamController(planningPokerClient: planningPokerClient.Object);
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = target.Find("input[name=teamName]");
+        teamNameElement.Change(PlanningPokerData.TeamName);
+        var memberNameElement = target.Find("input[name=memberName]");
+        memberNameElement.Change(PlanningPokerData.MemberName);
+        var asObserverElement = target.Find("input[name=asObserver]");
+        asObserverElement.Change(asObserver);
+
+        var createButtonElement = target.Find("button[type=submit]");
+        createButtonElement.Click();
+
+        planningPokerClient.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, asObserver, It.IsAny<CancellationToken>()));
+    }
+
+    [TestMethod]
+    public void InitializedWithTeamNameAndMemberName_TeamNameIsPreset()
+    {
+        var controller = CreateJoinTeamController();
+        InitializeContext(controller);
+
+        using var target = _context.RenderComponent<JoinTeamPanel>(
+            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
+            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        Assert.AreEqual(string.Empty, memberNameElement.Value);
+    }
+
+    [TestMethod]
+    public void InitializedWithTeamNameAndMemberName_ReconnectsToTeam()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+        var controller = CreateJoinTeamController(
+            planningPokerClient: planningPokerClient.Object,
+            memberCredentialsStore: memberCredentialsStore.Object);
+        InitializeContext(controller);
+
+        memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false))
+            .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+        planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(PlanningPokerData.GetReconnectTeamResult());
+
+        using var target = _context.RenderComponent<JoinTeamPanel>(
+            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
+            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+
+        memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false), Times.Once());
+        planningPokerClient.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()));
+        memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true), Times.Never());
+    }
+
+    [TestMethod]
+    public void InitializedWithTeamNameAndMemberNameAndReconnectFails_TeamNameIsPreset()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+        var controller = CreateJoinTeamController(
+            planningPokerClient: planningPokerClient.Object,
+            memberCredentialsStore: memberCredentialsStore.Object);
+        InitializeContext(controller);
+
+        memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false))
+            .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+        planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException());
+
+        using var target = _context.RenderComponent<JoinTeamPanel>(
+            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
+            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        Assert.AreEqual(string.Empty, memberNameElement.Value);
+    }
+
+    [TestMethod]
+    public void InitializedWithStoredCredentials_TeamNameAndMemberNameIsPreset()
+    {
+        var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+        var controller = CreateJoinTeamController(memberCredentialsStore: memberCredentialsStore.Object);
+        InitializeContext(controller);
+
+        memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+            .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+        using var target = _context.RenderComponent<JoinTeamPanel>();
+
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
+    }
+
+    [TestMethod]
+    public void InitializedWithAutoConnect_TeamNameAndMemberNameIsNotChanged()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+        var url = "http://planningpoker.duracellko.net/Index?AutoConnect=True&CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
+        var controller = CreateJoinTeamController(
+            planningPokerClient: planningPokerClient.Object,
+            memberCredentialsStore: memberCredentialsStore.Object,
+            url: url);
+        InitializeContext(controller);
+
+        planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
+        memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+            .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+        using var target = _context.RenderComponent<JoinTeamPanel>(
+            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
+            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        Assert.AreEqual("Hello", teamNameElement.Value);
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        Assert.AreEqual("World", memberNameElement.Value);
+    }
+
+    [TestMethod]
+    public void InitializedWithoutAutoConnect_MemberNameIsPresetFromStore()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
+        var url = "http://planningpoker.duracellko.net/Index?CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
+        var controller = CreateJoinTeamController(
+            planningPokerClient: planningPokerClient.Object,
+            memberCredentialsStore: memberCredentialsStore.Object,
+            url: url);
+        InitializeContext(controller);
+
+        planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
+        memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
+            .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
+
+        using var target = _context.RenderComponent<JoinTeamPanel>(
+            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
+            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        Assert.AreEqual("Hello", teamNameElement.Value);
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
+    }
+
+    private static JoinTeamController CreateJoinTeamController(
+        IPlanningPokerClient? planningPokerClient = null,
+        IMemberCredentialsStore? memberCredentialsStore = null,
+        string? url = null)
+    {
+        if (planningPokerClient == null)
         {
-            _context.Dispose();
+            var planningPokerClientMock = new Mock<IPlanningPokerClient>();
+            planningPokerClient = planningPokerClientMock.Object;
         }
 
-        [TestMethod]
-        public void Initialized_NoValidationErrors()
+        if (memberCredentialsStore == null)
         {
-            var controller = CreateJoinTeamController();
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = target.Find("input[name=teamName]");
-            Assert.AreEqual("form-control", teamNameElement.ClassName);
-            var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
-
-            var memberNameElement = target.Find("input[name=memberName]");
-            Assert.AreEqual("form-control", memberNameElement.ClassName);
-            validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
+            var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
+            memberCredentialsStore = memberCredentialsStoreMock.Object;
         }
 
-        [TestMethod]
-        public void SetTeamNameAndMemberName_NoValidationErrors()
+        var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
+        var messageBoxService = new Mock<IMessageBoxService>();
+        var busyIndicatorService = new Mock<IBusyIndicatorService>();
+        var navigationManager = new Mock<INavigationManager>();
+        var serviceTimeProvider = new Mock<IServiceTimeProvider>();
+
+        navigationManager.SetupGet(o => o.Uri).Returns(url ?? "http://planningpoker.duracellko.net/");
+
+        return new JoinTeamController(
+            planningPokerClient,
+            planningPokerInitializer.Object,
+            messageBoxService.Object,
+            busyIndicatorService.Object,
+            navigationManager.Object,
+            memberCredentialsStore,
+            serviceTimeProvider.Object);
+    }
+
+    private void InitializeContext(JoinTeamController controller, IMessageBoxService? messageBoxService = null)
+    {
+        if (messageBoxService == null)
         {
-            var controller = CreateJoinTeamController();
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = target.Find("input[name=teamName]");
-            teamNameElement.Change(PlanningPokerData.TeamName);
-            var memberNameElement = target.Find("input[name=memberName]");
-            memberNameElement.Change(PlanningPokerData.MemberName);
-
-            teamNameElement = target.Find("input[name=teamName]");
-            Assert.AreEqual("form-control", teamNameElement.ClassName);
-            var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
-
-            memberNameElement = target.Find("input[name=memberName]");
-            Assert.AreEqual("form-control", memberNameElement.ClassName);
-            validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
+            var messageBoxServiceMock = new Mock<IMessageBoxService>();
+            messageBoxService = messageBoxServiceMock.Object;
         }
 
-        [TestMethod]
-        public void SetTeamNameToEmpty_RequiredValidationError()
-        {
-            var controller = CreateJoinTeamController();
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = target.Find("input[name=teamName]");
-            teamNameElement.Change(PlanningPokerData.TeamName);
-            var memberNameElement = target.Find("input[name=memberName]");
-            memberNameElement.Change(PlanningPokerData.MemberName);
-
-            teamNameElement = target.Find("input[name=teamName]");
-            teamNameElement.Change(string.Empty);
-
-            teamNameElement = target.Find("input[name=teamName]");
-            Assert.AreEqual("form-control is-invalid", teamNameElement.ClassName);
-            var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(1, validationElements.Length);
-            Assert.AreEqual("Required", validationElements[0].TextContent);
-
-            memberNameElement = target.Find("input[name=memberName]");
-            Assert.AreEqual("form-control", memberNameElement.ClassName);
-            validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
-        }
-
-        [TestMethod]
-        public void SetMemberNameToEmpty_RequiredValidationError()
-        {
-            var controller = CreateJoinTeamController();
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = target.Find("input[name=teamName]");
-            teamNameElement.Change(PlanningPokerData.TeamName);
-            var memberNameElement = target.Find("input[name=memberName]");
-            memberNameElement.Change(PlanningPokerData.MemberName);
-
-            memberNameElement = target.Find("input[name=memberName]");
-            memberNameElement.Change(string.Empty);
-
-            teamNameElement = target.Find("input[name=teamName]");
-            Assert.AreEqual("form-control", teamNameElement.ClassName);
-            var validationElements = teamNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(0, validationElements.Length);
-
-            memberNameElement = target.Find("input[name=memberName]");
-            Assert.AreEqual("form-control is-invalid", memberNameElement.ClassName);
-            validationElements = memberNameElement.ParentElement!.GetElementsByClassName("invalid-feedback");
-            Assert.AreEqual(1, validationElements.Length);
-            Assert.AreEqual("Required", validationElements[0].TextContent);
-        }
-
-        [DataTestMethod]
-        [DataRow(false)]
-        [DataRow(true)]
-        public void ClickJoinButton_SendsJoinTeamRequest(bool asObserver)
-        {
-            var planningPokerClient = new Mock<IPlanningPokerClient>();
-            var controller = CreateJoinTeamController(planningPokerClient: planningPokerClient.Object);
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = target.Find("input[name=teamName]");
-            teamNameElement.Change(PlanningPokerData.TeamName);
-            var memberNameElement = target.Find("input[name=memberName]");
-            memberNameElement.Change(PlanningPokerData.MemberName);
-            var asObserverElement = target.Find("input[name=asObserver]");
-            asObserverElement.Change(asObserver);
-
-            var createButtonElement = target.Find("button[type=submit]");
-            createButtonElement.Click();
-
-            planningPokerClient.Verify(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, asObserver, It.IsAny<CancellationToken>()));
-        }
-
-        [TestMethod]
-        public void InitializedWithTeamNameAndMemberName_TeamNameIsPreset()
-        {
-            var controller = CreateJoinTeamController();
-            InitializeContext(controller);
-
-            using var target = _context.RenderComponent<JoinTeamPanel>(
-                ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-                ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
-
-            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
-            Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
-            Assert.AreEqual(string.Empty, memberNameElement.Value);
-        }
-
-        [TestMethod]
-        public void InitializedWithTeamNameAndMemberName_ReconnectsToTeam()
-        {
-            var planningPokerClient = new Mock<IPlanningPokerClient>();
-            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var controller = CreateJoinTeamController(
-                planningPokerClient: planningPokerClient.Object,
-                memberCredentialsStore: memberCredentialsStore.Object);
-            InitializeContext(controller);
-
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false))
-                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
-            planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(PlanningPokerData.GetReconnectTeamResult());
-
-            using var target = _context.RenderComponent<JoinTeamPanel>(
-                ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-                ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
-
-            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false), Times.Once());
-            planningPokerClient.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()));
-            memberCredentialsStore.Verify(o => o.GetCredentialsAsync(true), Times.Never());
-        }
-
-        [TestMethod]
-        public void InitializedWithTeamNameAndMemberNameAndReconnectFails_TeamNameIsPreset()
-        {
-            var planningPokerClient = new Mock<IPlanningPokerClient>();
-            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var controller = CreateJoinTeamController(
-                planningPokerClient: planningPokerClient.Object,
-                memberCredentialsStore: memberCredentialsStore.Object);
-            InitializeContext(controller);
-
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(false))
-                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
-            planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new InvalidOperationException());
-
-            using var target = _context.RenderComponent<JoinTeamPanel>(
-                ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-                ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
-
-            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
-            Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
-            Assert.AreEqual(string.Empty, memberNameElement.Value);
-        }
-
-        [TestMethod]
-        public void InitializedWithStoredCredentials_TeamNameAndMemberNameIsPreset()
-        {
-            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var controller = CreateJoinTeamController(memberCredentialsStore: memberCredentialsStore.Object);
-            InitializeContext(controller);
-
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
-                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
-
-            using var target = _context.RenderComponent<JoinTeamPanel>();
-
-            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
-            Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
-            Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
-        }
-
-        [TestMethod]
-        public void InitializedWithAutoConnect_TeamNameAndMemberNameIsNotChanged()
-        {
-            var planningPokerClient = new Mock<IPlanningPokerClient>();
-            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var url = "http://planningpoker.duracellko.net/Index?AutoConnect=True&CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
-            var controller = CreateJoinTeamController(
-                planningPokerClient: planningPokerClient.Object,
-                memberCredentialsStore: memberCredentialsStore.Object,
-                url: url);
-            InitializeContext(controller);
-
-            planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
-                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
-
-            using var target = _context.RenderComponent<JoinTeamPanel>(
-                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
-                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
-
-            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
-            Assert.AreEqual("Hello", teamNameElement.Value);
-            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
-            Assert.AreEqual("World", memberNameElement.Value);
-        }
-
-        [TestMethod]
-        public void InitializedWithoutAutoConnect_MemberNameIsPresetFromStore()
-        {
-            var planningPokerClient = new Mock<IPlanningPokerClient>();
-            var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
-            var url = "http://planningpoker.duracellko.net/Index?CallbackUri=http%3A%2F%2Fmy.app%2F&CallbackReference=2";
-            var controller = CreateJoinTeamController(
-                planningPokerClient: planningPokerClient.Object,
-                memberCredentialsStore: memberCredentialsStore.Object,
-                url: url);
-            InitializeContext(controller);
-
-            planningPokerClient.Setup(o => o.JoinTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, false, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new PlanningPokerException("Planning Poker Error", ErrorCodes.ScrumTeamNotExist, PlanningPokerData.TeamName));
-            memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
-                .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
-
-            using var target = _context.RenderComponent<JoinTeamPanel>(
-                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
-                ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
-
-            var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
-            Assert.AreEqual("Hello", teamNameElement.Value);
-            var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
-            Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
-        }
-
-        private static JoinTeamController CreateJoinTeamController(
-            IPlanningPokerClient? planningPokerClient = null,
-            IMemberCredentialsStore? memberCredentialsStore = null,
-            string? url = null)
-        {
-            if (planningPokerClient == null)
-            {
-                var planningPokerClientMock = new Mock<IPlanningPokerClient>();
-                planningPokerClient = planningPokerClientMock.Object;
-            }
-
-            if (memberCredentialsStore == null)
-            {
-                var memberCredentialsStoreMock = new Mock<IMemberCredentialsStore>();
-                memberCredentialsStore = memberCredentialsStoreMock.Object;
-            }
-
-            var planningPokerInitializer = new Mock<IPlanningPokerInitializer>();
-            var messageBoxService = new Mock<IMessageBoxService>();
-            var busyIndicatorService = new Mock<IBusyIndicatorService>();
-            var navigationManager = new Mock<INavigationManager>();
-            var serviceTimeProvider = new Mock<IServiceTimeProvider>();
-
-            navigationManager.SetupGet(o => o.Uri).Returns(url ?? "http://planningpoker.duracellko.net/");
-
-            return new JoinTeamController(
-                planningPokerClient,
-                planningPokerInitializer.Object,
-                messageBoxService.Object,
-                busyIndicatorService.Object,
-                navigationManager.Object,
-                memberCredentialsStore,
-                serviceTimeProvider.Object);
-        }
-
-        private void InitializeContext(JoinTeamController controller, IMessageBoxService? messageBoxService = null)
-        {
-            if (messageBoxService == null)
-            {
-                var messageBoxServiceMock = new Mock<IMessageBoxService>();
-                messageBoxService = messageBoxServiceMock.Object;
-            }
-
-            _context.Services.AddSingleton(controller);
-            _context.Services.AddSingleton(messageBoxService);
-        }
+        _context.Services.AddSingleton(controller);
+        _context.Services.AddSingleton(messageBoxService);
     }
 }

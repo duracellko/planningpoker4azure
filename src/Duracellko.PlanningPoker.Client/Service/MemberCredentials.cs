@@ -1,18 +1,17 @@
-﻿namespace Duracellko.PlanningPoker.Client.Service
+﻿namespace Duracellko.PlanningPoker.Client.Service;
+
+/// <summary>
+/// Information about team name and member name that user is connected to.
+/// </summary>
+public class MemberCredentials
 {
     /// <summary>
-    /// Information about team name and member name that user is connected to.
+    /// Gets or sets a name of team.
     /// </summary>
-    public class MemberCredentials
-    {
-        /// <summary>
-        /// Gets or sets a name of team.
-        /// </summary>
-        public string TeamName { get; set; } = string.Empty;
+    public string TeamName { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets a name of member.
-        /// </summary>
-        public string MemberName { get; set; } = string.Empty;
-    }
+    /// <summary>
+    /// Gets or sets a name of member.
+    /// </summary>
+    public string MemberName { get; set; } = string.Empty;
 }

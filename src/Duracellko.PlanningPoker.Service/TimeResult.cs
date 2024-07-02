@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace Duracellko.PlanningPoker.Service
+namespace Duracellko.PlanningPoker.Service;
+
+/// <summary>
+/// Response information about service current time.
+/// </summary>
+public class TimeResult
 {
     /// <summary>
-    /// Response information about service current time.
+    /// Gets or sets current time of service in UTC time zone.
     /// </summary>
-    public class TimeResult
-    {
-        /// <summary>
-        /// Gets or sets current time of service in UTC time zone.
-        /// </summary>
-        public DateTime CurrentUtcTime { get; set; }
-    }
+    public DateTime CurrentUtcTime { get; set; }
 }

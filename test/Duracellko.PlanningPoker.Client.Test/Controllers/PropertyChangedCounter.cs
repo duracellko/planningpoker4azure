@@ -1,39 +1,38 @@
 ﻿using System.ComponentModel;
 
-namespace Duracellko.PlanningPoker.Client.Test.Controllers
+namespace Duracellko.PlanningPoker.Client.Test.Controllers;
+
+public class PropertyChangedCounter
 {
-    public class PropertyChangedCounter
+    private INotifyPropertyChanged? _target;
+
+    public int Count { get; set; }
+
+    public INotifyPropertyChanged? Target
     {
-        private INotifyPropertyChanged? _target;
-
-        public int Count { get; set; }
-
-        public INotifyPropertyChanged? Target
+        get
         {
-            get
-            {
-                return _target;
-            }
-
-            set
-            {
-                if (_target != null)
-                {
-                    _target.PropertyChanged -= TargetOnPropertyChanged;
-                }
-
-                _target = value;
-
-                if (_target != null)
-                {
-                    _target.PropertyChanged += TargetOnPropertyChanged;
-                }
-            }
+            return _target;
         }
 
-        private void TargetOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        set
         {
-            Count++;
+            if (_target != null)
+            {
+                _target.PropertyChanged -= TargetOnPropertyChanged;
+            }
+
+            _target = value;
+
+            if (_target != null)
+            {
+                _target.PropertyChanged += TargetOnPropertyChanged;
+            }
         }
+    }
+
+    private void TargetOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Count++;
     }
 }

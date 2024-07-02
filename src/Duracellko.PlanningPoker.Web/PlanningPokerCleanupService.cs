@@ -8,79 +8,78 @@ using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Domain;
 using Microsoft.Extensions.Hosting;
 
-namespace Duracellko.PlanningPoker.Web
+namespace Duracellko.PlanningPoker.Web;
+
+public sealed class PlanningPokerCleanupService : IHostedService, IDisposable
 {
-    public sealed class PlanningPokerCleanupService : IHostedService, IDisposable
+    private readonly IPlanningPoker _planningPoker;
+    private readonly IScrumTeamRepository _teamRepository;
+    private readonly IPlanningPokerConfiguration _configuration;
+
+    private System.Timers.Timer? _cleanupTimer;
+
+    public PlanningPokerCleanupService(IPlanningPoker planningPoker, IScrumTeamRepository teamRepository, IPlanningPokerConfiguration configuration)
     {
-        private readonly IPlanningPoker _planningPoker;
-        private readonly IScrumTeamRepository _teamRepository;
-        private readonly IPlanningPokerConfiguration _configuration;
+        _planningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
+        _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
-        private System.Timers.Timer? _cleanupTimer;
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        var timerInterval = _configuration.ClientInactivityCheckInterval;
 
-        public PlanningPokerCleanupService(IPlanningPoker planningPoker, IScrumTeamRepository teamRepository, IPlanningPokerConfiguration configuration)
+        _cleanupTimer = new System.Timers.Timer(timerInterval.TotalMilliseconds);
+        _cleanupTimer.Elapsed += new ElapsedEventHandler(CleanupTimerOnElapsed);
+        _cleanupTimer.Start();
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        Dispose();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        if (_cleanupTimer != null)
         {
-            _planningPoker = planningPoker ?? throw new ArgumentNullException(nameof(planningPoker));
-            _teamRepository = teamRepository ?? throw new ArgumentNullException(nameof(teamRepository));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _cleanupTimer.Dispose();
+            _cleanupTimer = null;
         }
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+    private void CleanupTimerOnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        DisconnectInactiveMembers();
+        DeleteExpiredScrumTeams();
+    }
+
+    [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
+    private void DisconnectInactiveMembers()
+    {
+        try
         {
-            var timerInterval = _configuration.ClientInactivityCheckInterval;
-
-            _cleanupTimer = new System.Timers.Timer(timerInterval.TotalMilliseconds);
-            _cleanupTimer.Elapsed += new ElapsedEventHandler(CleanupTimerOnElapsed);
-            _cleanupTimer.Start();
-
-            return Task.CompletedTask;
+            _planningPoker.DisconnectInactiveObservers();
         }
-
-        public Task StopAsync(CancellationToken cancellationToken)
+        catch (Exception)
         {
-            Dispose();
-            return Task.CompletedTask;
+            // ignore and try next time
         }
+    }
 
-        public void Dispose()
+    [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
+    private void DeleteExpiredScrumTeams()
+    {
+        try
         {
-            if (_cleanupTimer != null)
-            {
-                _cleanupTimer.Dispose();
-                _cleanupTimer = null;
-            }
+            _teamRepository.DeleteExpiredScrumTeams();
         }
-
-        private void CleanupTimerOnElapsed(object? sender, ElapsedEventArgs e)
+        catch (Exception)
         {
-            DisconnectInactiveMembers();
-            DeleteExpiredScrumTeams();
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
-        private void DisconnectInactiveMembers()
-        {
-            try
-            {
-                _planningPoker.DisconnectInactiveObservers();
-            }
-            catch (Exception)
-            {
-                // ignore and try next time
-            }
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Ignore error and try next time.")]
-        private void DeleteExpiredScrumTeams()
-        {
-            try
-            {
-                _teamRepository.DeleteExpiredScrumTeams();
-            }
-            catch (Exception)
-            {
-                // ignore and try next time
-            }
+            // ignore and try next time
         }
     }
 }

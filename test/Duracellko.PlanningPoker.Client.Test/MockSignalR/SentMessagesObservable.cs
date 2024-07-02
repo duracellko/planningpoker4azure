@@ -9,135 +9,134 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Protocol;
 
-namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
+namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
+
+internal sealed class SentMessagesObservable : IObservable<HubMessage>
 {
-    internal sealed class SentMessagesObservable : IObservable<HubMessage>
+    private readonly PipeReader _reader;
+    private readonly HubMessageStore _messageStore;
+    private readonly ConcurrentDictionary<long, IObserver<HubMessage>> _observers = new ConcurrentDictionary<long, IObserver<HubMessage>>();
+    private long _nextId;
+
+    internal SentMessagesObservable(PipeReader reader, HubMessageStore messageStore)
     {
-        private readonly PipeReader _reader;
-        private readonly HubMessageStore _messageStore;
-        private readonly ConcurrentDictionary<long, IObserver<HubMessage>> _observers = new ConcurrentDictionary<long, IObserver<HubMessage>>();
-        private long _nextId;
+        _reader = reader;
+        _messageStore = messageStore;
+    }
 
-        internal SentMessagesObservable(PipeReader reader, HubMessageStore messageStore)
+    public IDisposable Subscribe(IObserver<HubMessage> observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+
+        long observerId = Interlocked.Increment(ref _nextId);
+        if (!_observers.TryAdd(observerId, observer))
         {
-            _reader = reader;
-            _messageStore = messageStore;
+            throw new InvalidOperationException("Observer ID should be unique.");
         }
 
-        public IDisposable Subscribe(IObserver<HubMessage> observer)
+        return new Subscriber(this, observerId);
+    }
+
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions are sent to observers.")]
+    internal async Task ReadMessages(CancellationToken cancellationToken)
+    {
+        bool completed = false;
+        try
         {
-            ArgumentNullException.ThrowIfNull(observer);
-
-            long observerId = Interlocked.Increment(ref _nextId);
-            if (!_observers.TryAdd(observerId, observer))
+            while (!cancellationToken.IsCancellationRequested)
             {
-                throw new InvalidOperationException("Observer ID should be unique.");
-            }
+                var result = await _reader.ReadAsync(cancellationToken).ConfigureAwait(false);
 
-            return new Subscriber(this, observerId);
-        }
-
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions are sent to observers.")]
-        internal async Task ReadMessages(CancellationToken cancellationToken)
-        {
-            bool completed = false;
-            try
-            {
-                while (!cancellationToken.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                 {
-                    var result = await _reader.ReadAsync(cancellationToken).ConfigureAwait(false);
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    var buffer = result.Buffer;
-                    ReadMessages(ref buffer);
-                    _reader.AdvanceTo(buffer.Start, buffer.End);
-
-                    if (result.IsCompleted)
-                    {
-                        break;
-                    }
+                    break;
                 }
-            }
-            catch (Exception ex)
-            {
-                SetError(ex);
-                completed = true;
-            }
-            finally
-            {
-                await _reader.CompleteAsync().ConfigureAwait(false);
-                if (!completed)
+
+                var buffer = result.Buffer;
+                ReadMessages(ref buffer);
+                _reader.AdvanceTo(buffer.Start, buffer.End);
+
+                if (result.IsCompleted)
                 {
-                    Complete();
+                    break;
                 }
             }
         }
-
-        private void ReadMessages(ref ReadOnlySequence<byte> buffer)
+        catch (Exception ex)
         {
-            Span<byte> messageIdBytes = stackalloc byte[8];
-            while (buffer.Length >= 8)
+            SetError(ex);
+            completed = true;
+        }
+        finally
+        {
+            await _reader.CompleteAsync().ConfigureAwait(false);
+            if (!completed)
             {
-                var messageIdBuffer = buffer.Slice(0, 8);
-                messageIdBuffer.CopyTo(messageIdBytes);
-                long messageId = BitConverter.ToInt64(messageIdBytes);
-                ReadMessage(messageId);
-
-                buffer = buffer.Slice(8);
+                Complete();
             }
         }
+    }
 
-        private void ReadMessage(long messageId)
+    private void ReadMessages(ref ReadOnlySequence<byte> buffer)
+    {
+        Span<byte> messageIdBytes = stackalloc byte[8];
+        while (buffer.Length >= 8)
         {
-            var message = _messageStore[messageId];
-            foreach (var observer in GetObservers())
-            {
-                observer.OnNext(message);
-            }
+            var messageIdBuffer = buffer.Slice(0, 8);
+            messageIdBuffer.CopyTo(messageIdBytes);
+            long messageId = BitConverter.ToInt64(messageIdBytes);
+            ReadMessage(messageId);
 
-            _messageStore.TryRemove(messageId);
+            buffer = buffer.Slice(8);
+        }
+    }
+
+    private void ReadMessage(long messageId)
+    {
+        var message = _messageStore[messageId];
+        foreach (var observer in GetObservers())
+        {
+            observer.OnNext(message);
         }
 
-        private void Complete()
+        _messageStore.TryRemove(messageId);
+    }
+
+    private void Complete()
+    {
+        foreach (var observer in GetObservers())
         {
-            foreach (var observer in GetObservers())
-            {
-                observer.OnCompleted();
-            }
+            observer.OnCompleted();
+        }
+    }
+
+    private void SetError(Exception error)
+    {
+        foreach (var observer in GetObservers())
+        {
+            observer.OnError(error);
+        }
+    }
+
+    private IEnumerable<IObserver<HubMessage>> GetObservers()
+    {
+        return _observers.ToArray().Select(p => p.Value);
+    }
+
+    private sealed class Subscriber : IDisposable
+    {
+        private readonly SentMessagesObservable _parent;
+        private readonly long _observerId;
+
+        public Subscriber(SentMessagesObservable parent, long observerId)
+        {
+            _parent = parent;
+            _observerId = observerId;
         }
 
-        private void SetError(Exception error)
+        public void Dispose()
         {
-            foreach (var observer in GetObservers())
-            {
-                observer.OnError(error);
-            }
-        }
-
-        private IEnumerable<IObserver<HubMessage>> GetObservers()
-        {
-            return _observers.ToArray().Select(p => p.Value);
-        }
-
-        private sealed class Subscriber : IDisposable
-        {
-            private readonly SentMessagesObservable _parent;
-            private readonly long _observerId;
-
-            public Subscriber(SentMessagesObservable parent, long observerId)
-            {
-                _parent = parent;
-                _observerId = observerId;
-            }
-
-            public void Dispose()
-            {
-                _parent._observers.TryRemove(_observerId, out _);
-            }
+            _parent._observers.TryRemove(_observerId, out _);
         }
     }
 }

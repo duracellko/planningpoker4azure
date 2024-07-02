@@ -6,65 +6,64 @@ using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Duracellko.PlanningPoker.Client.Test.MockSignalR
+namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
+
+public sealed class MockHubConnection : IDisposable, IAsyncDisposable
 {
-    public sealed class MockHubConnection : IDisposable, IAsyncDisposable
+    private readonly HubMessageStore _messageStore = new HubMessageStore();
+    private readonly InMemoryTransport _transport;
+    private readonly Lazy<HubConnection> _hubConnection;
+
+    private IServiceProvider? _serviceProvider;
+    private ILoggerFactory? _loggerFactory;
+
+    public MockHubConnection()
     {
-        private readonly HubMessageStore _messageStore = new HubMessageStore();
-        private readonly InMemoryTransport _transport;
-        private readonly Lazy<HubConnection> _hubConnection;
+        _transport = new InMemoryTransport(_messageStore);
+        _hubConnection = new Lazy<HubConnection>(CreateHubConnection, LazyThreadSafetyMode.None);
+        HubConnectionBuilder = new MockHubConnectionBuilder(this);
+    }
 
-        private IServiceProvider? _serviceProvider;
-        private ILoggerFactory? _loggerFactory;
+    public HubConnection HubConnection => _hubConnection.Value;
 
-        public MockHubConnection()
+    public IHubConnectionBuilder HubConnectionBuilder { get; }
+
+    public IObservable<HubMessage> SentMessages => _transport.SentMessages;
+
+    public Task ReceiveMessage(HubMessage message, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        return _transport.ReceiveMessage(message, cancellationToken);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection.IsValueCreated)
         {
-            _transport = new InMemoryTransport(_messageStore);
-            _hubConnection = new Lazy<HubConnection>(CreateHubConnection, LazyThreadSafetyMode.None);
-            HubConnectionBuilder = new MockHubConnectionBuilder(this);
+            await _hubConnection.Value.DisposeAsync().ConfigureAwait(false);
         }
 
-        public HubConnection HubConnection => _hubConnection.Value;
+        _transport.Dispose();
+        _loggerFactory?.Dispose();
+        (_serviceProvider as IDisposable)?.Dispose();
+    }
 
-        public IHubConnectionBuilder HubConnectionBuilder { get; }
-
-        public IObservable<HubMessage> SentMessages => _transport.SentMessages;
-
-        public Task ReceiveMessage(HubMessage message, CancellationToken cancellationToken)
+    public void Dispose()
+    {
+        var disposeTask = DisposeAsync();
+        if (!disposeTask.IsCompleted)
         {
-            ArgumentNullException.ThrowIfNull(message);
-
-            return _transport.ReceiveMessage(message, cancellationToken);
+            disposeTask.AsTask().Wait();
         }
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            if (_hubConnection.IsValueCreated)
-            {
-                await _hubConnection.Value.DisposeAsync().ConfigureAwait(false);
-            }
-
-            _transport.Dispose();
-            _loggerFactory?.Dispose();
-            (_serviceProvider as IDisposable)?.Dispose();
-        }
-
-        public void Dispose()
-        {
-            var disposeTask = DisposeAsync();
-            if (!disposeTask.IsCompleted)
-            {
-                disposeTask.AsTask().Wait();
-            }
-        }
-
-        private HubConnection CreateHubConnection()
-        {
-            var connectionFactory = new MockConnectionFactory(_transport);
-            var protocol = new MessageStoreHubProtocol(_messageStore);
-            _serviceProvider = HubConnectionBuilder.Services.BuildServiceProvider();
-            _loggerFactory = _serviceProvider.GetService<ILoggerFactory>() ?? new LoggerFactory();
-            return new HubConnection(connectionFactory, protocol, new MockEndPoint(), _serviceProvider, _loggerFactory);
-        }
+    private HubConnection CreateHubConnection()
+    {
+        var connectionFactory = new MockConnectionFactory(_transport);
+        var protocol = new MessageStoreHubProtocol(_messageStore);
+        _serviceProvider = HubConnectionBuilder.Services.BuildServiceProvider();
+        _loggerFactory = _serviceProvider.GetService<ILoggerFactory>() ?? new LoggerFactory();
+        return new HubConnection(connectionFactory, protocol, new MockEndPoint(), _serviceProvider, _loggerFactory);
     }
 }

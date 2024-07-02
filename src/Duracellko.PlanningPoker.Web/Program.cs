@@ -23,184 +23,183 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Duracellko.PlanningPoker.Web
+namespace Duracellko.PlanningPoker.Web;
+
+public static class Program
 {
-    public static class Program
+    private static readonly Lazy<string[]> SupportedCultures = new Lazy<string[]>(() => LocalizationService.GetSupportedCultures().ToArray());
+
+    public static void Main(string[] args)
     {
-        private static readonly Lazy<string[]> SupportedCultures = new Lazy<string[]>(() => LocalizationService.GetSupportedCultures().ToArray());
+        using var app = CreateWebApplication(args);
+        app.Run();
+    }
 
-        public static void Main(string[] args)
+    public static WebApplication CreateWebApplication(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        ConfigureServices(builder.Services, builder.Configuration);
+
+        var app = builder.Build();
+        ConfigureApp(app, app, app.Environment);
+
+        return app;
+    }
+
+    private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddApplicationInsightsTelemetry();
+        services.AddControllers()
+            .AddApplicationPart(typeof(PlanningPokerService).Assembly)
+            .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
+        services.AddSignalR();
+
+        var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
+        var razorComponentsBuilder = services.AddRazorComponents();
+
+        if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
         {
-            using var app = CreateWebApplication(args);
-            app.Run();
+            razorComponentsBuilder = razorComponentsBuilder.AddInteractiveWebAssemblyComponents();
         }
 
-        public static WebApplication CreateWebApplication(string[] args)
+        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
         {
-            var builder = WebApplication.CreateBuilder(args);
-            ConfigureServices(builder.Services, builder.Configuration);
-
-            var app = builder.Build();
-            ConfigureApp(app, app, app.Environment);
-
-            return app;
+            razorComponentsBuilder.AddInteractiveServerComponents();
         }
 
-        private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        var healthChecks = services.AddHealthChecks()
+            .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
+            .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository")
+            .AddApplicationInsightsPublisher();
+
+        var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
+        var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
+
+        services.AddSingleton<DateTimeProvider>();
+        services.AddSingleton<GuidProvider>();
+        services.AddSingleton<DeckProvider>();
+        services.AddSingleton<ScrumTeamSerializer>();
+        services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
+
+        if (isAzure)
         {
-            services.AddApplicationInsightsTelemetry();
-            services.AddControllers()
-                .AddApplicationPart(typeof(PlanningPokerService).Assembly)
-                .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
-            services.AddSignalR();
+            services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
+            services.AddSingleton(sp => new AzurePlanningPokerController(
+                sp.GetService<DateTimeProvider>(),
+                sp.GetService<GuidProvider>(),
+                sp.GetService<DeckProvider>(),
+                sp.GetService<IAzurePlanningPokerConfiguration>(),
+                sp.GetService<IScrumTeamRepository>(),
+                sp.GetService<TaskProvider>(),
+                sp.GetRequiredService<ILogger<AzurePlanningPokerController>>()));
+            services.AddSingleton<IAzurePlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
+            services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
+            services.AddSingleton<IInitializationStatusProvider>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
+            services.AddSingleton<PlanningPokerAzureNode>();
+            services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
+            services.AddSingleton<IMessageConverter, MessageConverter>();
+            services.AddSingleton<IRedisMessageConverter, RedisMessageConverter>();
 
-            var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
-            var razorComponentsBuilder = services.AddRazorComponents();
-
-            if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
+            if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("REDIS:", StringComparison.Ordinal))
             {
-                razorComponentsBuilder = razorComponentsBuilder.AddInteractiveWebAssemblyComponents();
-            }
-
-            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
-            {
-                razorComponentsBuilder.AddInteractiveServerComponents();
-            }
-
-            var healthChecks = services.AddHealthChecks()
-                .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
-                .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository")
-                .AddApplicationInsightsPublisher();
-
-            var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
-            var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
-
-            services.AddSingleton<DateTimeProvider>();
-            services.AddSingleton<GuidProvider>();
-            services.AddSingleton<DeckProvider>();
-            services.AddSingleton<ScrumTeamSerializer>();
-            services.AddSingleton<IPlanningPokerConfiguration>(planningPokerConfiguration);
-
-            if (isAzure)
-            {
-                services.AddSingleton<IAzurePlanningPokerConfiguration>(planningPokerConfiguration);
-                services.AddSingleton(sp => new AzurePlanningPokerController(
-                    sp.GetService<DateTimeProvider>(),
-                    sp.GetService<GuidProvider>(),
-                    sp.GetService<DeckProvider>(),
-                    sp.GetService<IAzurePlanningPokerConfiguration>(),
-                    sp.GetService<IScrumTeamRepository>(),
-                    sp.GetService<TaskProvider>(),
-                    sp.GetRequiredService<ILogger<AzurePlanningPokerController>>()));
-                services.AddSingleton<IAzurePlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
-                services.AddSingleton<IPlanningPoker>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
-                services.AddSingleton<IInitializationStatusProvider>(sp => sp.GetRequiredService<AzurePlanningPokerController>());
-                services.AddSingleton<PlanningPokerAzureNode>();
-                services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
-                services.AddSingleton<IMessageConverter, MessageConverter>();
-                services.AddSingleton<IRedisMessageConverter, RedisMessageConverter>();
-
-                if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("REDIS:", StringComparison.Ordinal))
-                {
-                    services.AddSingleton<IServiceBus, RedisServiceBus>();
-                    healthChecks.AddCheck<RedisHealthCheck>("Redis");
-                }
-                else
-                {
-                    services.AddSingleton<IServiceBus, AzureServiceBus>();
-                    healthChecks.AddCheck<AzureServiceBusHealthCheck>("AzureServiceBus");
-                }
+                services.AddSingleton<IServiceBus, RedisServiceBus>();
+                healthChecks.AddCheck<RedisHealthCheck>("Redis");
             }
             else
             {
-                services.AddSingleton<IPlanningPoker>(sp => new PlanningPokerController(
-                    sp.GetService<DateTimeProvider>(),
-                    sp.GetService<GuidProvider>(),
-                    sp.GetService<DeckProvider>(),
-                    sp.GetService<IPlanningPokerConfiguration>(),
-                    sp.GetService<IScrumTeamRepository>(),
-                    sp.GetService<TaskProvider>(),
-                    sp.GetRequiredService<ILogger<PlanningPokerController>>()));
-                services.AddSingleton<IInitializationStatusProvider, ReadyInitializationStatusProvider>();
-            }
-
-            if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
-            {
-                services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
-                services.AddSingleton<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
-            }
-            else
-            {
-                services.AddSingleton<IScrumTeamRepository, EmptyScrumTeamRepository>();
-            }
-
-            services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
-            services.AddSingleton<ClientScriptsLibrary>();
-            services.AddTransient<HomeModel>();
-
-            services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
-
-            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
-            {
-                services.AddSingleton<HttpClient>();
-                services.AddSingleton<PlanningPokerServerUriProvider>();
-                services.AddSingleton<Client.Service.IPlanningPokerUriProvider>(sp => sp.GetRequiredService<PlanningPokerServerUriProvider>());
-                services.AddSingleton<IHostedService, HttpClientSetupService>();
-
-                // Register services used by client on server-side.
-                Client.Startup.ConfigureServices(services, true, clientConfiguration.UseHttpClient);
+                services.AddSingleton<IServiceBus, AzureServiceBus>();
+                healthChecks.AddCheck<AzureServiceBusHealthCheck>("AzureServiceBus");
             }
         }
-
-        private static void ConfigureApp(IApplicationBuilder app, IEndpointRouteBuilder endpoints, IWebHostEnvironment env)
+        else
         {
-            var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
+            services.AddSingleton<IPlanningPoker>(sp => new PlanningPokerController(
+                sp.GetService<DateTimeProvider>(),
+                sp.GetService<GuidProvider>(),
+                sp.GetService<DeckProvider>(),
+                sp.GetService<IPlanningPokerConfiguration>(),
+                sp.GetService<IScrumTeamRepository>(),
+                sp.GetService<TaskProvider>(),
+                sp.GetRequiredService<ILogger<PlanningPokerController>>()));
+            services.AddSingleton<IInitializationStatusProvider, ReadyInitializationStatusProvider>();
+        }
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
+        if (!string.IsNullOrEmpty(planningPokerConfiguration.RepositoryFolder))
+        {
+            services.AddTransient<IScrumTeamRepository, FileScrumTeamRepository>();
+            services.AddSingleton<IFileScrumTeamRepositorySettings, FileScrumTeamRepositorySettings>();
+        }
+        else
+        {
+            services.AddSingleton<IScrumTeamRepository, EmptyScrumTeamRepository>();
+        }
 
-                if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
-                {
-                    app.UseWebAssemblyDebugging();
-                }
-            }
+        services.AddSingleton<IHostedService, PlanningPokerCleanupService>();
+        services.AddSingleton<ClientScriptsLibrary>();
+        services.AddTransient<HomeModel>();
 
-            app.UseRequestLocalization(SupportedCultures.Value);
+        services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
 
-            var rewriteOptions = new RewriteOptions()
-                .AddRewrite(@"^appsettings\.json$", "configuration", false);
-            app.UseRewriter(rewriteOptions);
+        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+        {
+            services.AddSingleton<HttpClient>();
+            services.AddSingleton<PlanningPokerServerUriProvider>();
+            services.AddSingleton<Client.Service.IPlanningPokerUriProvider>(sp => sp.GetRequiredService<PlanningPokerServerUriProvider>());
+            services.AddSingleton<IHostedService, HttpClientSetupService>();
 
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseAntiforgery();
+            // Register services used by client on server-side.
+            Client.Startup.ConfigureServices(services, true, clientConfiguration.UseHttpClient);
+        }
+    }
 
-            endpoints.MapHealthChecks("/health");
-            endpoints.MapControllers();
-            endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
-            var componentsEndpoint = endpoints.MapRazorComponents<Components.App>()
-                .AddAdditionalAssemblies(typeof(Client.AppLoader).Assembly);
+    private static void ConfigureApp(IApplicationBuilder app, IEndpointRouteBuilder endpoints, IWebHostEnvironment env)
+    {
+        var clientConfiguration = app.ApplicationServices.GetRequiredService<PlanningPokerClientConfiguration>();
+
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
 
             if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
             {
-                componentsEndpoint = componentsEndpoint.AddInteractiveWebAssemblyRenderMode();
-            }
-
-            if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
-            {
-                componentsEndpoint.AddInteractiveServerRenderMode();
+                app.UseWebAssemblyDebugging();
             }
         }
 
-        private static AzurePlanningPokerConfiguration GetPlanningPokerConfiguration(IConfiguration configuration)
+        app.UseRequestLocalization(SupportedCultures.Value);
+
+        var rewriteOptions = new RewriteOptions()
+            .AddRewrite(@"^appsettings\.json$", "configuration", false);
+        app.UseRewriter(rewriteOptions);
+
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAntiforgery();
+
+        endpoints.MapHealthChecks("/health");
+        endpoints.MapControllers();
+        endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
+        var componentsEndpoint = endpoints.MapRazorComponents<Components.App>()
+            .AddAdditionalAssemblies(typeof(Client.AppLoader).Assembly);
+
+        if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
         {
-            return configuration.GetSection("PlanningPoker").Get<AzurePlanningPokerConfiguration>() ?? new AzurePlanningPokerConfiguration();
+            componentsEndpoint = componentsEndpoint.AddInteractiveWebAssemblyRenderMode();
         }
 
-        private static PlanningPokerClientConfiguration GetPlanningPokerClientConfiguration(IConfiguration configuration)
+        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
         {
-            return configuration.GetSection("PlanningPokerClient").Get<PlanningPokerClientConfiguration>() ?? new PlanningPokerClientConfiguration();
+            componentsEndpoint.AddInteractiveServerRenderMode();
         }
+    }
+
+    private static AzurePlanningPokerConfiguration GetPlanningPokerConfiguration(IConfiguration configuration)
+    {
+        return configuration.GetSection("PlanningPoker").Get<AzurePlanningPokerConfiguration>() ?? new AzurePlanningPokerConfiguration();
+    }
+
+    private static PlanningPokerClientConfiguration GetPlanningPokerClientConfiguration(IConfiguration configuration)
+    {
+        return configuration.GetSection("PlanningPokerClient").Get<PlanningPokerClientConfiguration>() ?? new PlanningPokerClientConfiguration();
     }
 }

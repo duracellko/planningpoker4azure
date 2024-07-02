@@ -1,45 +1,44 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Duracellko.PlanningPoker.Domain.Test
+namespace Duracellko.PlanningPoker.Domain.Test;
+
+[TestClass]
+public class EstimationParticipantStatusTest
 {
-    [TestClass]
-    public class EstimationParticipantStatusTest
+    [TestMethod]
+    public void Constructor_MemberNameSpecified_MemberNameIsSet()
     {
-        [TestMethod]
-        public void Constructor_MemberNameSpecified_MemberNameIsSet()
-        {
-            // Arrange
-            var name = "Member";
+        // Arrange
+        var name = "Member";
 
-            // Act
-            var result = new EstimationParticipantStatus(name, false);
+        // Act
+        var result = new EstimationParticipantStatus(name, false);
 
-            // Verify
-            Assert.AreEqual<string>(name, result.MemberName);
-        }
+        // Verify
+        Assert.AreEqual<string>(name, result.MemberName);
+    }
 
-        [TestMethod]
-        public void Constructor_MemberNameNotSpecified_ArgumentNullException()
-        {
-            // Arrange
-            string? name = null;
+    [TestMethod]
+    public void Constructor_MemberNameNotSpecified_ArgumentNullException()
+    {
+        // Arrange
+        string? name = null;
 
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => new EstimationParticipantStatus(name!, false));
-        }
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => new EstimationParticipantStatus(name!, false));
+    }
 
-        [TestMethod]
-        public void Constructor_EstimatedSpecified_EstimatedIsSet()
-        {
-            // Arrange
-            var estimated = true;
+    [TestMethod]
+    public void Constructor_EstimatedSpecified_EstimatedIsSet()
+    {
+        // Arrange
+        var estimated = true;
 
-            // Act
-            _ = new EstimationParticipantStatus("Member", estimated);
+        // Act
+        _ = new EstimationParticipantStatus("Member", estimated);
 
-            // Verify
-            Assert.IsTrue(estimated);
-        }
+        // Verify
+        Assert.IsTrue(estimated);
     }
 }
