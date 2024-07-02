@@ -4,7 +4,7 @@ Param (
 )
 
 $projectPath = $PSScriptRoot
-$pesterVersion = '5.5.0'
+$pesterVersion = '5.6.1'
 $redisVersion = '7.2'
 
 $imageTag = 'local-test'
