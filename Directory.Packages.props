@@ -8,14 +8,14 @@
     <PackageVersion Include="AutoMapper" Version="13.0.1" />
     <PackageVersion Include="AspNetCore.HealthChecks.Publisher.ApplicationInsights" Version="8.0.1" />
     <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.17.5" />
-    <PackageVersion Include="bunit" Version="1.28.9" />
+    <PackageVersion Include="bunit" Version="1.29.5" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageVersion Include="Microsoft.Playwright.MSTest" Version="1.44.0" />
+    <PackageVersion Include="Microsoft.Playwright.MSTest" Version="1.45.0" />
     <PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.4.3" />
@@ -26,7 +26,7 @@
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="9.28.0.94264" />
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="9.29.0.95321" />
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>
 
