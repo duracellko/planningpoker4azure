@@ -20,6 +20,8 @@ public class RabbitServiceBus : IServiceBus, IDisposable
 {
     private const string DefaultExchangeName = "PlanningPoker";
 
+    private static readonly TimeSpan PublishTimeout = TimeSpan.FromSeconds(5);
+
     private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
     private readonly IMessageConverter _messageConverter;
     private readonly GuidProvider _guidProvider;
@@ -68,7 +70,11 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        await Task.Run(() => SendMessageInternal(message));
+        var shouldRetry = await Task.Run(() => SendMessage(message, false));
+        if (shouldRetry)
+        {
+            await Task.Run(() => SendMessage(message, true));
+        }
     }
 
     /// <summary>
@@ -90,7 +96,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         var receivingChannel = _receivingChannel!;
         var consumer = new EventingBasicConsumer(receivingChannel);
         consumer.Received += ConsumerOnReceived;
-        receivingChannel.BasicConsume(queueName, true, consumer);
+        receivingChannel.BasicConsume(queueName, false, consumer);
         _logger.QueueCreated(_exchangeName, nodeId);
         return Task.CompletedTask;
     }
@@ -153,7 +159,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     }
 
     [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
-    private void SendMessageInternal(NodeMessage message)
+    private bool SendMessage(NodeMessage message, bool isRetry)
     {
         var connection = _connection;
         if (connection == null)
@@ -165,17 +171,25 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         try
         {
             sendingChannel = connection.CreateModel();
+            sendingChannel.ConfirmSelect();
 
             var properties = CreateBasicProperties(message, sendingChannel);
             properties.Headers = _messageConverter.GetMessageHeaders(message);
             var body = _messageConverter.GetMessageBody(message);
 
             sendingChannel.BasicPublish(_exchangeName, string.Empty, properties, body);
+            sendingChannel.WaitForConfirmsOrDie(PublishTimeout);
             _logger.SendMessage(properties.MessageId);
+            return false;
         }
         catch (Exception ex)
         {
-            _logger.ErrorSendMessage(ex);
+            if (isRetry)
+            {
+                _logger.ErrorSendMessage(ex);
+            }
+
+            return !isRetry;
         }
         finally
         {
@@ -188,7 +202,8 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     private void ConsumerOnReceived(object? sender, BasicDeliverEventArgs e)
     {
         var nodeId = _nodeId;
-        if (nodeId != null)
+        var receivingChannel = _receivingChannel;
+        if (nodeId != null && receivingChannel != null)
         {
             var headers = e.BasicProperties.Headers;
             var senderId = _messageConverter.GetHeader(headers, MessageConverter.SenderIdPropertyName);
@@ -206,10 +221,12 @@ public class RabbitServiceBus : IServiceBus, IDisposable
             {
                 var nodeMessage = _messageConverter.GetNodeMessage(headers, e.Body);
                 _observableMessages.OnNext(nodeMessage);
+                receivingChannel.BasicAck(e.DeliveryTag, false);
                 _logger.MessageProcessed(_exchangeName, nodeId, messageId);
             }
             catch (Exception ex)
             {
+                receivingChannel.BasicNack(e.DeliveryTag, false, false);
                 _logger.ErrorProcessMessage(ex, _exchangeName, nodeId, messageId);
             }
         }
