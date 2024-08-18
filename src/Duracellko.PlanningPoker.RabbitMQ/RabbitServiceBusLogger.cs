@@ -42,9 +42,14 @@ internal static class RabbitServiceBusLogger
         new EventId(BaseEventId + 7, nameof(QueueClosed)),
         "RabbitMQ queue was closed (Channel: {Channel}, NodeID: {NodeId})");
 
+    private static readonly Action<ILogger, string?, string?, Exception?> _errorClosingQueue = LoggerMessage.Define<string?, string?>(
+        LogLevel.Error,
+        new EventId(BaseEventId + 8, nameof(ErrorClosingQueue)),
+        "Closing RabbitMQ queue failed (Channel: {Channel}, NodeID: {NodeId})");
+
     private static readonly Action<ILogger, string?, string?, Exception?> _connectionCallbackError = LoggerMessage.Define<string?, string?>(
         LogLevel.Error,
-        new EventId(BaseEventId + 8, nameof(ConnectionCallbackError)),
+        new EventId(BaseEventId + 9, nameof(ConnectionCallbackError)),
         "RabbitMQ connection callback failed (Channel: {Channel}, NodeID: {NodeId})");
 
     public static void SendMessage(this ILogger logger, string? messageId)
@@ -80,6 +85,11 @@ internal static class RabbitServiceBusLogger
     public static void QueueClosed(this ILogger logger, string? channel, string? nodeId)
     {
         _queueClosed(logger, channel, nodeId, null);
+    }
+
+    public static void ErrorClosingQueue(this ILogger logger, Exception exception, string? channel, string? nodeId)
+    {
+        _errorClosingQueue(logger, channel, nodeId, exception);
     }
 
     public static void ConnectionCallbackError(this ILogger logger, Exception exception, string? channel, string? nodeId)

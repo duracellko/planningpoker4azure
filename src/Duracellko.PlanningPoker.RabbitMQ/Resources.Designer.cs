@@ -68,5 +68,23 @@ namespace Duracellko.PlanningPoker.RabbitMQ {
                 return ResourceManager.GetString("Error_RabbitMQNotInitialized", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RabbitMQ connection is healthy..
+        /// </summary>
+        internal static string Health_RabbitHealthy {
+            get {
+                return ResourceManager.GetString("Health_RabbitHealthy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RabbitMQ is disconnected..
+        /// </summary>
+        internal static string Health_RabbitUnhealthy {
+            get {
+                return ResourceManager.GetString("Health_RabbitUnhealthy", resourceCulture);
+            }
+        }
     }
 }

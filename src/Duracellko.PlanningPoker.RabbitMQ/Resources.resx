@@ -120,4 +120,10 @@
   <data name="Error_RabbitMQNotInitialized" xml:space="preserve">
     <value>RabbitMQ is not initialized.</value>
   </data>
+  <data name="Health_RabbitHealthy" xml:space="preserve">
+    <value>RabbitMQ connection is healthy.</value>
+  </data>
+  <data name="Health_RabbitUnhealthy" xml:space="preserve">
+    <value>RabbitMQ is disconnected.</value>
+  </data>
 </root>

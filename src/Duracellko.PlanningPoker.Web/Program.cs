@@ -103,7 +103,9 @@ public static class Program
 
             if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("RABBITMQ:", StringComparison.Ordinal))
             {
-                services.AddSingleton<IServiceBus, RabbitMQ.RabbitServiceBus>();
+                services.AddSingleton<RabbitMQ.RabbitServiceBus>();
+                services.AddSingleton<IServiceBus>(sp => sp.GetRequiredService<RabbitMQ.RabbitServiceBus>());
+                healthChecks.AddCheck<RabbitMQ.RabbitHealthCheck>("RabbitMQ");
             }
             else if (planningPokerConfiguration.ServiceBusConnectionString.StartsWith("REDIS:", StringComparison.Ordinal))
             {
