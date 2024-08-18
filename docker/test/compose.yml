@@ -2,9 +2,10 @@ services:
   planningpoker-r1:
     image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
     depends_on:
-      - redis
+      rabbitmq:
+        condition: service_healthy
     environment:
-      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__ServiceBusConnectionString: "RABBITMQ:amqp://planningpoker:${PLANNINGPOKER_APP_RABBITMQ_PASSWORD}@rabbitmq/"
       PlanningPoker__InitializationMessageTimeout: 3
       PlanningPokerClient__UseHttpClient: true
     ports:
@@ -13,9 +14,10 @@ services:
   planningpoker-r2:
     image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
     depends_on:
-      - redis
+      rabbitmq:
+        condition: service_healthy
     environment:
-      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__ServiceBusConnectionString: "RABBITMQ:amqp://planningpoker:${PLANNINGPOKER_APP_RABBITMQ_PASSWORD}@rabbitmq/"
       PlanningPoker__InitializationMessageTimeout: 3
       PlanningPokerClient__UseHttpClient: true
     ports:
@@ -24,19 +26,24 @@ services:
   planningpoker-r3:
     image: ${PLANNINGPOKER_IMAGENAME:-duracellko/planningpoker:local-test}
     depends_on:
-      - redis
+      rabbitmq:
+        condition: service_healthy
     environment:
-      PlanningPoker__ServiceBusConnectionString: "REDIS:redis,user=planningpoker,password=${PLANNINGPOKER_APP_REDIS_PASSWORD}"
+      PlanningPoker__ServiceBusConnectionString: "RABBITMQ:amqp://planningpoker:${PLANNINGPOKER_APP_RABBITMQ_PASSWORD}@rabbitmq/"
       PlanningPoker__InitializationMessageTimeout: 3
       PlanningPokerClient__UseHttpClient: true
     ports:
       - "${PLANNINGPOKER_APP3_PORT:-5003}:8080"
 
-  redis:
-    image: redis:${PLANNINGPOKER_REDIS_VERSION:-latest}
-    volumes:
-      - type: bind
-        source: ./redis.conf
-        target: /usr/local/etc/redis/redis.conf
-        read_only: true
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+  rabbitmq:
+    image: rabbitmq:${PLANNINGPOKER_RABBITMQ_VERSION:-latest}
+    environment:
+      RABBITMQ_DEFAULT_USER: planningpoker
+      RABBITMQ_DEFAULT_PASS: ${PLANNINGPOKER_APP_RABBITMQ_PASSWORD}
+    healthcheck:
+      test: "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms && rabbitmq-diagnostics -q check_port_listener 5672"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+      start_interval: 2s

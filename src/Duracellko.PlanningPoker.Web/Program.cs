@@ -98,9 +98,16 @@ public static class Program
             services.AddSingleton<PlanningPokerAzureNode>();
             services.AddSingleton<IHostedService, AzurePlanningPokerNodeService>();
             services.AddSingleton<IMessageConverter, MessageConverter>();
+            services.AddSingleton<RabbitMQ.IMessageConverter, RabbitMQ.MessageConverter>();
             services.AddSingleton<IRedisMessageConverter, RedisMessageConverter>();
 
-            if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("REDIS:", StringComparison.Ordinal))
+            if (planningPokerConfiguration.ServiceBusConnectionString!.StartsWith("RABBITMQ:", StringComparison.Ordinal))
+            {
+                services.AddSingleton<RabbitMQ.RabbitServiceBus>();
+                services.AddSingleton<IServiceBus>(sp => sp.GetRequiredService<RabbitMQ.RabbitServiceBus>());
+                healthChecks.AddCheck<RabbitMQ.RabbitHealthCheck>("RabbitMQ");
+            }
+            else if (planningPokerConfiguration.ServiceBusConnectionString.StartsWith("REDIS:", StringComparison.Ordinal))
             {
                 services.AddSingleton<IServiceBus, RedisServiceBus>();
                 healthChecks.AddCheck<RedisHealthCheck>("Redis");

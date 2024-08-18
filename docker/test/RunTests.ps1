@@ -5,7 +5,7 @@ Param (
 
 $projectPath = $PSScriptRoot
 $pesterVersion = '5.6.1'
-$redisVersion = '7.4'
+$rabbitmqVersion = '3.13'
 
 $imageTag = 'local-test'
 if (![string]::IsNullOrEmpty($PlanningPokerImageTag)) {
@@ -13,8 +13,7 @@ if (![string]::IsNullOrEmpty($PlanningPokerImageTag)) {
 }
 
 $composeProjectName = 'planningpoker'
-$redisAppPassword = (New-Guid).ToString()
-$redisAdminPassword = (New-Guid).ToString()
+$rabbitmqPassword = (New-Guid).ToString()
 $applicationPorts = @(5001, 5002, 5003)
 
 function RandomizeApplicationPorts() {
@@ -31,45 +30,15 @@ function SetupEnvironmentVariables() {
         [Parameter(Mandatory = $true)]
         [int[]] $ApplicationPorts,
         [Parameter(Mandatory = $true)]
-        [string] $AppPassword
+        [string] $RabbitMQPassword
     )
 
     $env:PLANNINGPOKER_IMAGENAME = 'duracellko/planningpoker:' + $AppImageTag
     $env:PLANNINGPOKER_APP1_PORT = $ApplicationPorts[0]
     $env:PLANNINGPOKER_APP2_PORT = $ApplicationPorts[1]
     $env:PLANNINGPOKER_APP3_PORT = $ApplicationPorts[2]
-    $env:PLANNINGPOKER_APP_REDIS_PASSWORD = $AppPassword
-    $env:PLANNINGPOKER_REDIS_VERSION = $redisVersion
-}
-
-function PrepareRedisConfiguration() {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string] $AppPassword,
-        [Parameter(Mandatory = $true)]
-        [string] $AdminPassword
-    )
-
-    $configurationPath = Join-Path -Path $projectPath -ChildPath 'redis.conf'
-    $configuration = Get-Content -Path $configurationPath -Raw
-    $configuration = $configuration.Replace('${PLANNINGPOKER_ADMIN_PASSWORD}', $AdminPassword)
-    $configuration = $configuration.Replace('${PLANNINGPOKER_APP_PASSWORD}', $AppPassword)
-    Set-Content -Path $configurationPath -Value $configuration -NoNewline
-}
-
-function RevertRedisConfiguration() {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string] $AppPassword,
-        [Parameter(Mandatory = $true)]
-        [string] $AdminPassword
-    )
-
-    $configurationPath = Join-Path -Path $projectPath -ChildPath 'redis.conf'
-    $configuration = Get-Content -Path $configurationPath -Raw
-    $configuration = $configuration.Replace($AdminPassword, '${PLANNINGPOKER_ADMIN_PASSWORD}')
-    $configuration = $configuration.Replace($AppPassword, '${PLANNINGPOKER_APP_PASSWORD}')
-    Set-Content -Path $configurationPath -Value $configuration -NoNewline
+    $env:PLANNINGPOKER_APP_RABBITMQ_PASSWORD = $RabbitMQPassword
+    $env:PLANNINGPOKER_RABBITMQ_VERSION = $rabbitmqVersion
 }
 
 function ComposeDockerUp() {
@@ -118,8 +87,7 @@ $composeFilePath = Join-Path -Path $projectPath -ChildPath 'compose.yml'
 
 try {
     RandomizeApplicationPorts
-    SetupEnvironmentVariables -AppImageTag $imageTag -ApplicationPorts $applicationPorts -AppPassword $redisAppPassword
-    PrepareRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
+    SetupEnvironmentVariables -AppImageTag $imageTag -ApplicationPorts $applicationPorts -RabbitMQPassword $rabbitmqPassword
 
     ComposeDockerUp -ComposePath $composeFilePath -ProjectName $composeProjectName
 
@@ -157,6 +125,5 @@ try {
     }
 }
 finally {
-    RevertRedisConfiguration -AppPassword $redisAppPassword -AdminPassword $redisAdminPassword
     ComposeDockerDown -ComposePath $composeFilePath -ProjectName $composeProjectName
 }
