@@ -158,11 +158,14 @@ PlanningPoker solution contains following projects:
 * **PlanningPoker.Web** is host application. It starts ASP.NET Core hosting, dependency injection and loads configuration.
 * **PlanningPoker.Client** is Blazor SPA client. It containes 2 pages, Blazor components and communication with the server.
 * **PlanningPoker.Azure** contains modified host of domain objects used on Windows Azure platform. Additionally it implements communication between cloud instances using [Service Bus](https://azure.microsoft.com/products/service-bus/).
+* **PlanningPoker.RabbitMQ** contains extension to use [RabbitMQ](https://www.rabbitmq.com/) instead of Azure Service Bus.
 * **PlanningPoker.Redis** contains extension to use [Redis PubSub](https://redis.com/glossary/pub-sub/) instead of Azure Service Bus.
 * **PlanningPoker.Domain.Test** contains unit-tests of domain classes.
 * **PlanningPoker.Test** contains unit-tests of PlanningPoker project classes.
 * **PlanningPoker.Client.Test** contains unit-tests of client application.
 * **PlanningPoker.Azure.Test** contains unit-tests of classes in PlanningPoker.Azure project.
+* **PlanningPoker.RabbitMQ.Test** contains unit-tests of classes in PlanningPoker.RabbitMQ project.
+* **PlanningPoker.Redis.Test** contains unit-tests of classes in PlanningPoker.Redis project.
 * **PlanningPoker.E2ETest** contains end-2-end tests of full system. Tests are implemented using Selenium and tests mostly Chrome browser and partially Firefox.
 
 ## Attributions
