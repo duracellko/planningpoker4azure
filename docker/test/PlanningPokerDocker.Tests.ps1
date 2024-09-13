@@ -123,12 +123,19 @@ BeforeAll {
         Invoke-RestMethod -Uri $uri | Out-Null
     }
 
-    function Get-Messages([int] $Index) {
+    function Get-Messages([int] $Index, [int] $AtLeast = 1) {
         $session = $sessions[$Index]
         $uri = "$($session.BaseUri)$($apiPath)GetMessages?teamName=$teamName&memberName=$($session.Name)&sessionId=$($session.SessionId)&lastMessageId=$($session.LastMessageId)"
-        $response = Invoke-RestMethod -Uri $uri
 
-        $response | Should -Not -BeNullOrEmpty
+        $messageCount = 0
+        $response = @()
+        while ($messageCount -lt $AtLeast) {
+            $response = Invoke-RestMethod -Uri $uri
+            $response | Should -Not -BeNullOrEmpty
+            $messageCount = $response.Length
+        }
+
+        $response.Length | Should -BeGreaterOrEqual $AtLeast
         $lastMessageId = $response[-1].Id
         $lastMessageId | Should -Not -BeNullOrEmpty
         $lastMessageId | Should -BeGreaterThan 0
@@ -279,7 +286,7 @@ Describe 'Planning Poker' {
 
         Submit-Estimation -Index 0 -Estimation 1
 
-        $response = Get-Messages -Index 0
+        $response = Get-Messages -Index 0 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
@@ -296,7 +303,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be 8
 
-        $response = Get-Messages -Index 1
+        $response = Get-Messages -Index 1 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
@@ -313,7 +320,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be 8
 
-        $response = Get-Messages -Index 2
+        $response = Get-Messages -Index 2 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
@@ -459,7 +466,7 @@ Describe 'Planning Poker' {
 
         Submit-Estimation -Index 1 -Estimation 0.5
 
-        $response = Get-Messages -Index 0
+        $response = Get-Messages -Index 0 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
@@ -480,7 +487,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be -1111100
 
-        $response = Get-Messages -Index 1
+        $response = Get-Messages -Index 1 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
@@ -501,7 +508,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be -1111100
 
-        $response = Get-Messages -Index 2
+        $response = Get-Messages -Index 2 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
@@ -671,7 +678,7 @@ Describe 'Planning Poker' {
         # Continue estimation
         Submit-Estimation -Index 1 -Estimation 1
 
-        $response = Get-Messages -Index 0
+        $response = Get-Messages -Index 0 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
@@ -692,7 +699,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be 3
 
-        $response = Get-Messages -Index 1
+        $response = Get-Messages -Index 1 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
@@ -713,7 +720,7 @@ Describe 'Planning Poker' {
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
         $estimationResultItem.Estimation.Value | Should -Be 3
 
-        $response = Get-Messages -Index 2
+        $response = Get-Messages -Index 2 -AtLeast 2
         $response.Length | Should -Be 2
         $response[0].Type | Should -Be $MessageTypes.MemberEstimated
         $response[0].Member.Type | Should -Be $MemberTypes.Member
