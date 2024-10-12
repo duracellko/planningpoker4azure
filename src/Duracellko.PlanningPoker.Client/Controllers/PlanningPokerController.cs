@@ -138,6 +138,31 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         Enumerable.Empty<MemberItem>();
 
     /// <summary>
+    /// Gets count of total members and members with estimations.
+    /// </summary>
+    public string? MembersCount
+    {
+        get
+        {
+            var members = Members.ToList();
+            if (members.Count > 0)
+            {
+                if (ScrumTeam?.State == TeamState.EstimationInProgress)
+                {
+                    var estimatedMembersCount = members.Count(m => m.HasEstimated);
+                    return $"{estimatedMembersCount}/{members.Count}";
+                }
+                else
+                {
+                    return members.Count.ToString();
+                }
+            }
+
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Gets collection of observer names, who just observe estimation.
     /// </summary>
     public IEnumerable<MemberItem> Observers => ScrumTeam?.Observers

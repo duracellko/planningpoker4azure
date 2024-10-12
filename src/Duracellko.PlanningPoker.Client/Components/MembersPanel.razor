@@ -17,7 +17,15 @@
             </li>
         </ul>
 
-        <div class="card-header">@UIResources.MembersPanel_MembersLabel</div>
+        <div class="card-header">
+            @UIResources.MembersPanel_MembersLabel
+            @if (!string.IsNullOrEmpty(Controller.MembersCount))
+            {
+                <div class="float-end">
+                    <small><span class="badge rounded-pill text-bg-secondary">@Controller.MembersCount</span></small>
+                </div>
+            }
+        </div>
         <ul class="list-group list-group-flush">
             @foreach (var member in Controller.Members)
             {
@@ -40,7 +48,15 @@
             }
         </ul>
 
-        <div class="card-header">@UIResources.MembersPanel_ObserversLabel</div>
+        <div class="card-header">
+            @UIResources.MembersPanel_ObserversLabel
+            @if (Controller.Observers.Any())
+            {
+                <div class="float-end">
+                    <small><span class="badge rounded-pill text-bg-secondary">@Controller.Observers.Count()</span></small>
+                </div>
+            }
+        </div>
         <ul class="list-group list-group-flush">
             @foreach (var observer in Controller.Observers)
             {
