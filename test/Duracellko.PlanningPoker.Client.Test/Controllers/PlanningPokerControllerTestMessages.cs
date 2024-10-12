@@ -94,6 +94,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { PlanningPokerData.ObserverName };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("2", target.MembersCount);
     }
 
     [TestMethod]
@@ -125,6 +126,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { "New observer" };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("1", target.MembersCount);
     }
 
     [TestMethod]
@@ -165,6 +167,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { PlanningPokerData.ObserverName };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("0/3", target.MembersCount);
     }
 
     [TestMethod]
@@ -196,6 +199,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { PlanningPokerData.ObserverName };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target, skipScrumMaster: true);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -234,6 +238,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { PlanningPokerData.ObserverName };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -265,6 +270,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = Array.Empty<string>();
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("1", target.MembersCount);
     }
 
     [TestMethod]
@@ -297,6 +303,7 @@ public class PlanningPokerControllerTestMessages
         expectedMembers = new string[] { PlanningPokerData.ObserverName };
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("1", target.MembersCount);
     }
 
     [TestMethod]
@@ -326,6 +333,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -356,6 +364,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -386,6 +395,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -416,6 +426,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsTrue(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("1", target.MembersCount);
     }
 
     [TestMethod]
@@ -459,6 +470,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsNotNull(target.ScrumMaster);
         Assert.IsFalse(target.ScrumMaster.HasEstimated);
         PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
+        Assert.AreEqual("1/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -502,6 +514,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsNotNull(target.ScrumMaster);
         Assert.IsTrue(target.ScrumMaster.HasEstimated);
         PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, false);
+        Assert.AreEqual("0/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -559,6 +572,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsNotNull(target.ScrumMaster);
         Assert.IsTrue(target.ScrumMaster.HasEstimated);
         PlanningPokerControllerTest.AssertMemberHasEstimated(target, PlanningPokerData.MemberName, true);
+        Assert.AreEqual("1/1", target.MembersCount);
     }
 
     [TestMethod]
@@ -674,6 +688,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsTrue(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("4", target.MembersCount);
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
@@ -764,6 +779,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("4", target.MembersCount);
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
@@ -861,6 +877,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("5", target.MembersCount);
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
@@ -963,6 +980,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsFalse(target.CanChangeDeck);
         PlanningPokerControllerTest.AssertCanPostEstimationResultIsFalse(target);
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
+        Assert.AreEqual("5", target.MembersCount);
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
