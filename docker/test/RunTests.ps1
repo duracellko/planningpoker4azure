@@ -5,7 +5,7 @@ Param (
 
 $projectPath = $PSScriptRoot
 $pesterVersion = '5.6.1'
-$rabbitmqVersion = '3.13'
+$rabbitmqVersion = '4.0'
 
 $imageTag = 'local-test'
 if (![string]::IsNullOrEmpty($PlanningPokerImageTag)) {
