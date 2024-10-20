@@ -3,7 +3,7 @@
 namespace Duracellko.PlanningPoker.Client.Service;
 
 /// <summary>
-/// Error that the user is disconnected from the team and the service does not accept any requets from the particular user.
+/// Error that the user is disconnected from the team and the service does not accept any requests from the particular user.
 /// </summary>
 public class UserDisconnectedException : Exception
 {
