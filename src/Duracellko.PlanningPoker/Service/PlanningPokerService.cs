@@ -349,32 +349,43 @@ public class PlanningPokerService : ControllerBase
 
         Task<IEnumerable<D.Message>> receiveMessagesTask;
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName);
-
-            if (member == null)
+            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
-            }
+                teamLock.Lock();
+                var team = teamLock.Team;
+                var member = team.FindMemberOrObserver(memberName);
 
-            // Removes old messages, which the member has already read, from the member's message queue.
-            try
-            {
-                member.AcknowledgeMessages(sessionId, lastMessageId);
-            }
-            catch (ArgumentException ex) when (ex.ParamName == "sessionId")
-            {
-                return NotFound(ex.Message);
-            }
+                if (member == null)
+                {
+                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
+                }
 
-            // Updates last activity on member to record time, when member checked for new messages.
-            // also notifies to save the team into repository
-            member.UpdateActivity();
+                // Removes old messages, which the member has already read, from the member's message queue.
+                try
+                {
+                    member.AcknowledgeMessages(sessionId, lastMessageId);
+                }
+                catch (ArgumentException ex) when (ex.ParamName == "sessionId")
+                {
+                    return NotFound(ex.Message);
+                }
 
-            receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
+                // Updates last activity on member to record time, when member checked for new messages.
+                // also notifies to save the team into repository
+                member.UpdateActivity();
+
+                receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
+            }
+        }
+        catch (D.PlanningPokerException ex)
+        {
+            return BadRequest(CreatePlanningPokerExceptionResponse(ex));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
         }
 
         var messages = await receiveMessagesTask;

@@ -1723,7 +1723,7 @@ public class PlanningPokerServiceTest
     }
 
     [TestMethod]
-    public async Task GetMessages_InvalidMemberSessionId_HubException()
+    public async Task GetMessages_InvalidMemberSessionId_NotFoundResponse()
     {
         // Arrange
         var guid = Guid.NewGuid();
