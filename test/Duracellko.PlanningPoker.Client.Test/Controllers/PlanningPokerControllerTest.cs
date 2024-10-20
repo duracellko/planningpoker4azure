@@ -2119,6 +2119,22 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(timerDuration, target.TimerDuration);
     }
 
+    [TestMethod]
+    public async Task NotifyUserDisconnected_DisplaysMessage()
+    {
+        var scrumTeam = PlanningPokerData.GetScrumTeam();
+        var teamResult = CreateTeamResult(scrumTeam);
+
+        var messageBoxService = new Mock<IMessageBoxService>();
+        using var target = CreateController(messageBoxService: messageBoxService.Object);
+
+        await target.InitializeTeam(teamResult, PlanningPokerData.MemberName, null);
+        target.NotifyUserDisconnected();
+
+        const string expectedMessage = "You got disconnected from the team. Please, restart the application or refresh the page to start again.";
+        messageBoxService.Verify(o => o.ShowMessage(expectedMessage, "Error"));
+    }
+
     internal static void AssertNoMemberHasEstimated(PlanningPokerController controller, bool skipScrumMaster = false)
     {
         if (!skipScrumMaster)
@@ -2159,6 +2175,7 @@ public class PlanningPokerControllerTest
     private static PlanningPokerController CreateController(
         IPlanningPokerClient? planningPokerClient = null,
         IBusyIndicatorService? busyIndicator = null,
+        IMessageBoxService? messageBoxService = null,
         IMemberCredentialsStore? memberCredentialsStore = null,
         ITimerFactory? timerFactory = null,
         DateTimeProvider? dateTimeProvider = null,
@@ -2177,6 +2194,12 @@ public class PlanningPokerControllerTest
         {
             var busyIndicatorMock = new Mock<IBusyIndicatorService>();
             busyIndicator = busyIndicatorMock.Object;
+        }
+
+        if (messageBoxService == null)
+        {
+            var messageBoxServiceMock = new Mock<IMessageBoxService>();
+            messageBoxService = messageBoxServiceMock.Object;
         }
 
         if (memberCredentialsStore == null)
@@ -2217,6 +2240,7 @@ public class PlanningPokerControllerTest
         var result = new PlanningPokerController(
             planningPokerClient,
             busyIndicator,
+            messageBoxService,
             memberCredentialsStore,
             timerFactory,
             dateTimeProvider,

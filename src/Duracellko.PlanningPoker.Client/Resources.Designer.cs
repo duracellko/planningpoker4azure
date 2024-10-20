@@ -106,6 +106,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User got disconnected from the Scrum Team..
+        /// </summary>
+        internal static string Error_UserDisconnected {
+            get {
+                return ResourceManager.GetString("Error_UserDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ½.
         /// </summary>
         internal static string Estimation_Half {

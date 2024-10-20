@@ -269,6 +269,7 @@ public class PlanningPokerControllerTestEstimationSummary
     {
         var planningPokerClient = new Mock<IPlanningPokerClient>();
         var busyIndicator = new Mock<IBusyIndicatorService>();
+        var messageBoxService = new Mock<IMessageBoxService>();
         var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
         var timerFactory = new Mock<ITimerFactory>();
         var dateTimeProvider = new DateTimeProviderMock();
@@ -284,6 +285,7 @@ public class PlanningPokerControllerTestEstimationSummary
         return new PlanningPokerController(
             planningPokerClient.Object,
             busyIndicator.Object,
+            messageBoxService.Object,
             memberCredentialsStore.Object,
             timerFactory.Object,
             dateTimeProvider,

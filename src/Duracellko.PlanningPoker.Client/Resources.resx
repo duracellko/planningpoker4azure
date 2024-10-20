@@ -132,6 +132,9 @@
   <data name="Error_UnsupportedEstimationSummaryFunction" xml:space="preserve">
     <value>Estimation summary function {0} is not supported.</value>
   </data>
+  <data name="Error_UserDisconnected" xml:space="preserve">
+    <value>User got disconnected from the Scrum Team.</value>
+  </data>
   <data name="Estimation_Half" xml:space="preserve">
     <value>½</value>
   </data>

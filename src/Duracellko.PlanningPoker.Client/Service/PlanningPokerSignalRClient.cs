@@ -248,7 +248,15 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
     {
         return InvokeOperation(async () =>
         {
-            var hubConnection = await EnsureConnected(cancellationToken);
+            HubConnection hubConnection;
+            try
+            {
+                hubConnection = await EnsureConnected(cancellationToken);
+            }
+            catch (OperationCanceledException ex)
+            {
+                throw new UserDisconnectedException(ex);
+            }
 
             try
             {
@@ -270,6 +278,10 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
                 var result = await getMessagesTask;
                 ScrumTeamMapper.ConvertMessages(result);
                 return result;
+            }
+            catch (HubException ex)
+            {
+                throw new UserDisconnectedException(ex);
             }
             finally
             {
@@ -346,20 +358,13 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
         {
             return await operation();
         }
+        catch (UserDisconnectedException)
+        {
+            throw;
+        }
         catch (HubException ex)
         {
-            var exceptionMessage = GetHubExceptionMessage(ex);
-            if (!string.IsNullOrEmpty(exceptionMessage) &&
-                exceptionMessage.Contains("Invalid session ID", StringComparison.OrdinalIgnoreCase))
-            {
-                // Invalid session ID is not network error. New session was opened
-                // and this client should not reconnect.
-                throw new PlanningPokerException(exceptionMessage);
-            }
-            else
-            {
-                throw ScrumTeamMapper.GetPlanningPokerException(exceptionMessage, ex);
-            }
+            throw ScrumTeamMapper.GetPlanningPokerException(GetHubExceptionMessage(ex), ex);
         }
         catch (TaskCanceledException)
         {

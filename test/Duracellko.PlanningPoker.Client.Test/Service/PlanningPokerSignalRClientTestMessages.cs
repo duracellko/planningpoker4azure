@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -306,6 +307,29 @@ public class PlanningPokerSignalRClientTestMessages
         var estimationResult = ((EstimationResultMessage)result[2]).EstimationResult;
         Assert.AreEqual(5.0, estimationResult[0].Estimation!.Value);
         Assert.AreEqual(40.0, estimationResult[1].Estimation!.Value);
+    }
+
+    [TestMethod]
+    public async Task GetMessages_HubException_UserDisconnectedException()
+    {
+        var sessionId = Guid.NewGuid();
+        await using var fixture = new PlanningPokerSignalRClientFixture();
+
+        var resultTask = fixture.Target.GetMessages(PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 0, fixture.CancellationToken);
+
+        var sentMessage = await fixture.GetSentMessage();
+        Assert.IsNotNull(sentMessage);
+        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
+        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.AreEqual(RequestName, sentInvocationMessage.Target);
+        var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 0L };
+        CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+        var errorMessage = @"ArgumentException:{""Message"":""Invalid Session ID.""}";
+        var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, errorMessage, null, false);
+        await fixture.ReceiveMessage(returnMessage);
+
+        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => resultTask);
     }
 
     private static async Task ProvideMessages(PlanningPokerSignalRClientFixture fixture, params Message[] messages)

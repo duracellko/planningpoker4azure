@@ -178,6 +178,15 @@ namespace Duracellko.PlanningPoker.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You got disconnected from the team. Please, restart the application or refresh the page to start again..
+        /// </summary>
+        internal static string Error_UserDisconnected {
+            get {
+                return ResourceManager.GetString("Error_UserDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89.
         /// </summary>
         internal static string EstimationDeck_Fibonacci {
