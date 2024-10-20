@@ -1327,6 +1327,7 @@ public class PlanningPokerControllerTestMessages
     {
         var planningPokerClient = new Mock<IPlanningPokerClient>();
         var busyIndicator = new Mock<IBusyIndicatorService>();
+        var messageBoxService = new Mock<IMessageBoxService>();
         var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
         var timerSettingsRepository = new Mock<ITimerSettingsRepository>();
         var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
@@ -1351,6 +1352,7 @@ public class PlanningPokerControllerTestMessages
         var result = new PlanningPokerController(
             planningPokerClient.Object,
             busyIndicator.Object,
+            messageBoxService.Object,
             memberCredentialsStore.Object,
             timerFactory,
             dateTimeProvider,

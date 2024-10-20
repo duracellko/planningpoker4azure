@@ -83,6 +83,10 @@ public class MessageReceiver
                     }
                 }
             }
+            catch (UserDisconnectedException)
+            {
+                _planningPokerController.NotifyUserDisconnected();
+            }
             catch (TaskCanceledException)
             {
                 // Ignore exception. Job was stopped regularly.

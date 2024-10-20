@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
@@ -282,5 +284,27 @@ public class PlanningPokerClientTestMessages
         Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
         Assert.AreEqual(40.0, estimationResult.Estimation!.Value);
+    }
+
+    [TestMethod]
+    public async Task GetMessages_NotFoundResponse_UserDisconnectedException()
+    {
+        var httpMock = new MockHttpMessageHandler();
+        httpMock.When(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages")
+            .Respond(HttpStatusCode.NotFound, "text/plain", "Invalid Session ID.");
+        var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
+
+        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task GetMessages_BadRequestResponse_UserDisconnectedException()
+    {
+        var httpMock = new MockHttpMessageHandler();
+        httpMock.When(PlanningPokerClientTest.BaseUrl + $"api/PlanningPokerService/GetMessages")
+            .Respond(HttpStatusCode.BadRequest, "text/plain", "Team does not exist.");
+        var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
+
+        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
     }
 }

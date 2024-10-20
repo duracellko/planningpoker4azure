@@ -21,6 +21,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
 
     private readonly IPlanningPokerClient _planningPokerService;
     private readonly IBusyIndicatorService _busyIndicator;
+    private readonly IMessageBoxService _messageBoxService;
     private readonly IMemberCredentialsStore _memberCredentialsStore;
     private readonly ITimerFactory _timerFactory;
     private readonly DateTimeProvider _dateTimeProvider;
@@ -42,6 +43,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// </summary>
     /// <param name="planningPokerService">Planning poker client to send messages to server.</param>
     /// <param name="busyIndicator">Service to show busy indicator, when operation is in progress.</param>
+    /// <param name="messageBoxService">Service to show a message to the user.</param>
     /// <param name="memberCredentialsStore">Service to save and load member credentials.</param>
     /// <param name="timerFactory">Factory object to create timer for periodic actions.</param>
     /// <param name="dateTimeProvider">The provider of current time.</param>
@@ -51,6 +53,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     public PlanningPokerController(
         IPlanningPokerClient planningPokerService,
         IBusyIndicatorService busyIndicator,
+        IMessageBoxService messageBoxService,
         IMemberCredentialsStore memberCredentialsStore,
         ITimerFactory timerFactory,
         DateTimeProvider dateTimeProvider,
@@ -60,6 +63,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     {
         _planningPokerService = planningPokerService ?? throw new ArgumentNullException(nameof(planningPokerService));
         _busyIndicator = busyIndicator ?? throw new ArgumentNullException(nameof(busyIndicator));
+        _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
         _memberCredentialsStore = memberCredentialsStore ?? throw new ArgumentNullException(nameof(memberCredentialsStore));
         _timerFactory = timerFactory ?? throw new ArgumentNullException(nameof(timerFactory));
         _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
@@ -544,6 +548,14 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         {
             ProcessMessage(message);
         }
+    }
+
+    /// <summary>
+    /// Notifies that the user got disconnected and cannot receive messages anymore.
+    /// </summary>
+    public void NotifyUserDisconnected()
+    {
+        _messageBoxService.ShowMessage(UIResources.Error_UserDisconnected, UIResources.MessagePanel_Error);
     }
 
     private static string GetMemberName(EstimationResultItem item) => item.Member?.Name ?? string.Empty;

@@ -258,10 +258,27 @@ public class PlanningPokerClient : IPlanningPokerClient
         var encodedLastMessageId = _urlEncoder.Encode(lastMessageId.ToString(CultureInfo.InvariantCulture));
         var uri = $"GetMessages?teamName={encodedTeamName}&memberName={encodedMemberName}&sessionId={encodedSessionId}&lastMessageId={encodedLastMessageId}";
 
-        var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
+        try
+        {
+            var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
 
-        ScrumTeamMapper.ConvertMessages(result);
-        return result;
+            ScrumTeamMapper.ConvertMessages(result);
+            return result;
+        }
+        catch (PlanningPokerException ex)
+        {
+            if (ex.InnerException == null)
+            {
+                throw new UserDisconnectedException();
+            }
+
+            if (ex.InnerException is HttpRequestException httpRequestException && httpRequestException.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new UserDisconnectedException();
+            }
+
+            throw;
+        }
     }
 
     /// <summary>

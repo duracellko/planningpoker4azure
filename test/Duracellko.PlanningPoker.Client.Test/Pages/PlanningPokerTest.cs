@@ -94,6 +94,7 @@ public sealed class PlanningPokerTest : IDisposable
     {
         var planningPokerClient = new Mock<IPlanningPokerClient>();
         var busyIndicatorService = new Mock<IBusyIndicatorService>();
+        var messageBoxService = new Mock<IMessageBoxService>();
         var memberCredentialsStore = new Mock<IMemberCredentialsStore>();
         var timerFactory = new Mock<ITimerFactory>();
         var dateTimeProvider = new DateTimeProviderMock();
@@ -103,6 +104,7 @@ public sealed class PlanningPokerTest : IDisposable
         return new PlanningPokerController(
             planningPokerClient.Object,
             busyIndicatorService.Object,
+            messageBoxService.Object,
             memberCredentialsStore.Object,
             timerFactory.Object,
             dateTimeProvider,
