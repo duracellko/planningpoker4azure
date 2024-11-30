@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -115,6 +116,7 @@ public class MessageJsonConverter : JsonConverter<Message>
         return string.Equals(reader.GetString(), propertyName, stringComparison);
     }
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Handles special cases only. Other cases produce empty message.")]
     private static Message CreateMessageFromData(ref MessageData messageData)
     {
         Message message;

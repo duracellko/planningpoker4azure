@@ -247,8 +247,8 @@ public class PlanningPokerControllerWithRepositoryTest
         var master = team.SetScrumMaster("master");
         master.UpdateActivity();
 
-        bool firstLoad = true;
-        bool firstReturn = true;
+        var firstLoad = true;
+        var firstReturn = true;
         PlanningPokerController? target = null;
 
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
@@ -580,8 +580,8 @@ public class PlanningPokerControllerWithRepositoryTest
         var master = team.SetScrumMaster("master");
         master.UpdateActivity();
 
-        bool firstLoad = true;
-        bool firstReturn = true;
+        var firstLoad = true;
+        var firstReturn = true;
         PlanningPokerController? target = null;
         ScrumTeam? createdTeam = null;
 

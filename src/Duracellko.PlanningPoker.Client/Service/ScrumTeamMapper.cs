@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Duracellko.PlanningPoker.Service;
 
@@ -92,6 +93,7 @@ internal static class ScrumTeamMapper
         return new PlanningPokerException(value, innerException);
     }
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Handles only messages with estimation values.")]
     private static void ConvertMessage(Message message)
     {
         switch (message.Type)

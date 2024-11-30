@@ -256,8 +256,7 @@ public class PlanningPokerService : ControllerBase
         {
             teamLock.Lock();
             var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            if (member != null)
+            if (team.FindMemberOrObserver(memberName) is D.Member member)
             {
                 member.Estimation = new D.Estimation(domainEstimation);
             }

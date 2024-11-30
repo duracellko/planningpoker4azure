@@ -26,7 +26,7 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
 
     public async Task<HubMessage?> GetNextAsync()
     {
-        bool moreMessages = true;
+        var moreMessages = true;
         Exception? error = null;
         while (true)
         {

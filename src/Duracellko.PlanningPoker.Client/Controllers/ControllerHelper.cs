@@ -122,7 +122,7 @@ internal static class ControllerHelper
             return null;
         }
 
-        string? message = exception.Error switch
+        var message = exception.Error switch
         {
             ErrorCodes.ScrumTeamNotExist => UIResources.Error_ScrumTeamNotExist,
             ErrorCodes.ScrumTeamAlreadyExists => UIResources.Error_ScrumTeamAlreadyExists,
@@ -145,15 +145,15 @@ internal static class ControllerHelper
             return null;
         }
 
-        bool autoConnect = false;
+        var autoConnect = false;
         string? callbackUrl = null;
         string? callbackReference = null;
 
         var token = new StringBuilder();
         string? name = null;
-        for (int i = 0; i < query.Length; i++)
+        for (var i = 0; i < query.Length; i++)
         {
-            char c = query[i];
+            var c = query[i];
             switch (c)
             {
                 case '&':

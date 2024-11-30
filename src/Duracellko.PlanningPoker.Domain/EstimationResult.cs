@@ -38,12 +38,7 @@ public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimati
         foreach (var estimationResultItem in estimationResult)
         {
             var memberName = estimationResultItem.Key;
-            var member = team.FindMemberOrObserver(memberName) as Member;
-            if (member == null)
-            {
-                member = new Member(team, memberName);
-            }
-
+            var member = team.FindMemberOrObserver(memberName) as Member ?? new Member(team, memberName);
             _estimations.Add(member, estimationResultItem.Value);
         }
     }

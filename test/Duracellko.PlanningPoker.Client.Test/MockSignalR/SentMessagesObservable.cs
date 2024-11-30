@@ -28,7 +28,7 @@ internal sealed class SentMessagesObservable : IObservable<HubMessage>
     {
         ArgumentNullException.ThrowIfNull(observer);
 
-        long observerId = Interlocked.Increment(ref _nextId);
+        var observerId = Interlocked.Increment(ref _nextId);
         if (!_observers.TryAdd(observerId, observer))
         {
             throw new InvalidOperationException("Observer ID should be unique.");
@@ -40,7 +40,7 @@ internal sealed class SentMessagesObservable : IObservable<HubMessage>
     [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions are sent to observers.")]
     internal async Task ReadMessages(CancellationToken cancellationToken)
     {
-        bool completed = false;
+        var completed = false;
         try
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -84,7 +84,7 @@ internal sealed class SentMessagesObservable : IObservable<HubMessage>
         {
             var messageIdBuffer = buffer.Slice(0, 8);
             messageIdBuffer.CopyTo(messageIdBytes);
-            long messageId = BitConverter.ToInt64(messageIdBytes);
+            var messageId = BitConverter.ToInt64(messageIdBytes);
             ReadMessage(messageId);
 
             buffer = buffer.Slice(8);

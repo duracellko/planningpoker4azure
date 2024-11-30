@@ -319,7 +319,7 @@ public class PlanningPokerControllerTestEstimationSummary
         };
         estimationResult.Add(estimationResultItem);
 
-        for (int i = 0; i < scrumTeam.Members.Count; i++)
+        for (var i = 0; i < scrumTeam.Members.Count; i++)
         {
             var member = scrumTeam.Members[i];
             estimationResultItem = new EstimationResultItem

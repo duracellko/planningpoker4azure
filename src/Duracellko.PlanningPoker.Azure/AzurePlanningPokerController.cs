@@ -166,7 +166,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
         base.OnTeamAdded(team);
         team.MessageReceived += ScrumTeamOnMessageReceived;
 
-        bool isInitializingTeam = false;
+        var isInitializingTeam = false;
         if (!_initialized)
         {
             lock (_teamsToInitializeLock)
@@ -275,15 +275,9 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
         base.OnBeforeGetScrumTeam(teamName);
     }
 
-    private TimeSpan InitializationTimeout
-    {
-        get
-        {
-            var configuration = Configuration as IAzurePlanningPokerConfiguration;
-            return configuration != null ? configuration.InitializationTimeout : TimeSpan.FromMinutes(1.0);
-        }
-    }
+    private TimeSpan InitializationTimeout => Configuration is IAzurePlanningPokerConfiguration configuration ? configuration.InitializationTimeout : TimeSpan.FromMinutes(1.0);
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Handles special cases only. Other cases produce empty message.")]
     private void ScrumTeamOnMessageReceived(object? sender, MessageReceivedEventArgs e)
     {
         var team = (ScrumTeam)(sender ?? throw new ArgumentNullException(nameof(sender)));
@@ -305,8 +299,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
                 break;
             case MessageType.MemberEstimated:
                 var memberEstimatedMessage = (MemberMessage)e.Message;
-                var member = memberEstimatedMessage.Member as Member;
-                if (member != null && member.Estimation != null)
+                if (memberEstimatedMessage.Member is Member member && member.Estimation != null)
                 {
                     scrumTeamMessage = new ScrumTeamMemberEstimationMessage(team.Name, memberEstimatedMessage.MessageType)
                     {

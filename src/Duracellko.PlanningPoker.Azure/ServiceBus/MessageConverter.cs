@@ -82,9 +82,11 @@ public class MessageConverter : IMessageConverter
             messageSubtype = (string)messageSubtypeObject;
         }
 
-        var result = new NodeMessage(messageType);
-        result.SenderNodeId = (string)message.ApplicationProperties[SenderIdPropertyName];
-        result.RecipientNodeId = (string)message.ApplicationProperties[RecipientIdPropertyName];
+        var result = new NodeMessage(messageType)
+        {
+            SenderNodeId = (string)message.ApplicationProperties[SenderIdPropertyName],
+            RecipientNodeId = (string)message.ApplicationProperties[RecipientIdPropertyName]
+        };
 
         switch (result.MessageType)
         {
@@ -118,6 +120,9 @@ public class MessageConverter : IMessageConverter
             case NodeMessageType.TeamList:
             case NodeMessageType.RequestTeams:
                 result.Data = ConvertFromMessageBody<string[]>(message.Body);
+                break;
+            case NodeMessageType.RequestTeamList:
+            default:
                 break;
         }
 

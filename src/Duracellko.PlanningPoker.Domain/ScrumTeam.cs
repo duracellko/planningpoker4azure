@@ -364,17 +364,15 @@ public class ScrumTeam
     /// <returns>The serialization data.</returns>
     public virtual Serialization.ScrumTeamData GetData()
     {
-        var result = new Serialization.ScrumTeamData
+        return new Serialization.ScrumTeamData
         {
             Name = Name,
             AvailableEstimations = AvailableEstimations.ToList(),
             State = State,
-            TimerEndTime = TimerEndTime
+            TimerEndTime = TimerEndTime,
+            Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList(),
+            EstimationResult = _estimationResult?.GetData()
         };
-
-        result.Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList();
-        result.EstimationResult = _estimationResult?.GetData();
-        return result;
     }
 
     /// <summary>

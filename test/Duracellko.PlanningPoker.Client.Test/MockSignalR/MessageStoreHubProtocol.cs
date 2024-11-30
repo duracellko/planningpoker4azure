@@ -26,7 +26,7 @@ internal sealed class MessageStoreHubProtocol : IHubProtocol
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        long id = _messageStore.Add(message);
+        var id = _messageStore.Add(message);
         return BitConverter.GetBytes(id);
     }
 
@@ -35,7 +35,7 @@ internal sealed class MessageStoreHubProtocol : IHubProtocol
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(output);
 
-        long messageId = _messageStore.Add(message);
+        var messageId = _messageStore.Add(message);
         var messageIdBytes = output.GetSpan(8);
         BitConverter.TryWriteBytes(messageIdBytes, messageId);
         output.Advance(8);
@@ -53,7 +53,7 @@ internal sealed class MessageStoreHubProtocol : IHubProtocol
         Span<byte> messageIdBytes = stackalloc byte[8];
         messageIdBuffer.CopyTo(messageIdBytes);
 
-        long messageId = BitConverter.ToInt64(messageIdBytes);
+        var messageId = BitConverter.ToInt64(messageIdBytes);
         message = _messageStore[messageId];
         _messageStore.TryRemove(messageId);
 

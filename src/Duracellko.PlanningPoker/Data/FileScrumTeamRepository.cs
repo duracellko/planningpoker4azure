@@ -109,7 +109,7 @@ public class FileScrumTeamRepository : IScrumTeamRepository
             throw new ArgumentNullException(nameof(teamName));
         }
 
-        string file = GetFileName(teamName);
+        var file = GetFileName(teamName);
         file = Path.Combine(Folder, file);
 
         ScrumTeam? result = null;
@@ -152,7 +152,7 @@ public class FileScrumTeamRepository : IScrumTeamRepository
 
         InitializeFolder();
 
-        string file = GetFileName(team.Name);
+        var file = GetFileName(team.Name);
         file = Path.Combine(Folder, file);
 
         using (var stream = File.Create(file))
@@ -174,7 +174,7 @@ public class FileScrumTeamRepository : IScrumTeamRepository
             throw new ArgumentNullException(nameof(teamName));
         }
 
-        string file = GetFileName(teamName);
+        var file = GetFileName(teamName);
         file = Path.Combine(Folder, file);
 
         if (File.Exists(file))
@@ -262,10 +262,10 @@ public class FileScrumTeamRepository : IScrumTeamRepository
         var name = Path.GetFileNameWithoutExtension(filename);
 
         var result = new StringBuilder(name.Length);
-        int specialPosition = 0;
-        for (int i = 0; i < name.Length; i++)
+        var specialPosition = 0;
+        for (var i = 0; i < name.Length; i++)
         {
-            char c = name[i];
+            var c = name[i];
             if (specialPosition == 0)
             {
                 if (c == SpecialCharacter)
@@ -317,10 +317,10 @@ public class FileScrumTeamRepository : IScrumTeamRepository
     {
         var result = new StringBuilder(teamName.Length + 10);
         var invalidChars = _invalidCharacters.Value;
-        for (int i = 0; i < teamName.Length; i++)
+        for (var i = 0; i < teamName.Length; i++)
         {
-            char c = teamName[i];
-            bool isSpecial = Array.BinarySearch<char>(invalidChars, c, Comparer<char>.Default) >= 0;
+            var c = teamName[i];
+            var isSpecial = Array.BinarySearch<char>(invalidChars, c, Comparer<char>.Default) >= 0;
             isSpecial = isSpecial || (c != ' ' && char.IsWhiteSpace(c));
 
             if (isSpecial)

@@ -16,9 +16,9 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -141,9 +141,9 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -255,10 +255,10 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
-        string observer = "Charlie";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
+        var observer = "Charlie";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -376,10 +376,10 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member1 = "Bob";
-        string member2 = "Charlie";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member1 = "Bob";
+        var member2 = "Charlie";
 
         // Alice creates team
         await ClientTest.OpenApplication();

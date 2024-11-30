@@ -17,7 +17,7 @@ internal sealed class HubMessageStore
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        long nextId = Interlocked.Increment(ref _nextId);
+        var nextId = Interlocked.Increment(ref _nextId);
         if (!_messages.TryAdd(nextId, message))
         {
             throw new InvalidOperationException("Message ID should be unique.");

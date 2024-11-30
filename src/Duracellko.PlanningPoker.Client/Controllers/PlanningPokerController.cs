@@ -563,8 +563,8 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         {
             if (estimation.Estimation != null)
             {
-                double key = GetEstimationValueKey(estimation.Estimation.Value);
-                if (estimationValueCounts.TryGetValue(key, out int count))
+                var key = GetEstimationValueKey(estimation.Estimation.Value);
+                if (estimationValueCounts.TryGetValue(key, out var count))
                 {
                     estimationValueCounts[key] = count + 1;
                 }
@@ -640,6 +640,9 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
                 break;
             case MessageType.TimerCanceled:
                 OnTimerCanceled();
+                break;
+            case MessageType.Empty:
+            default:
                 break;
         }
 

@@ -107,7 +107,7 @@ public abstract class E2ETestBase : PageTest
     protected async Task StartClients()
     {
         Assert.IsNotNull(Server);
-        for (int i = 0; i < SetupClientsCount; i++)
+        for (var i = 0; i < SetupClientsCount; i++)
         {
             IPage page;
             if (i == 0)
@@ -146,8 +146,10 @@ public abstract class E2ETestBase : PageTest
     private async Task AssertServerIsHealthy()
     {
         Assert.IsNotNull(Server);
-        var client = new HttpClient();
-        client.BaseAddress = Server.Uri;
+        var client = new HttpClient
+        {
+            BaseAddress = Server.Uri
+        };
         var response = await client.GetStringAsync(new Uri("health", UriKind.Relative));
         Assert.AreEqual("Healthy", response);
     }
@@ -167,8 +169,10 @@ public abstract class E2ETestBase : PageTest
     private async Task AssertClientConnectionType()
     {
         Assert.IsNotNull(Server);
-        var client = new HttpClient();
-        client.BaseAddress = Server.Uri;
+        var client = new HttpClient
+        {
+            BaseAddress = Server.Uri
+        };
         var response = await client.GetStringAsync(new Uri("configuration", UriKind.Relative));
         Assert.IsNotNull(response);
 

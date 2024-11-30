@@ -94,9 +94,11 @@ public class MessageConverter : IMessageConverter
         var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), messageTypeValue!);
         var messageSubtype = GetHeader(headers, MessageSubtypePropertyName);
 
-        var result = new NodeMessage(messageType);
-        result.SenderNodeId = GetHeader(headers, SenderIdPropertyName);
-        result.RecipientNodeId = GetHeader(headers, RecipientIdPropertyName);
+        var result = new NodeMessage(messageType)
+        {
+            SenderNodeId = GetHeader(headers, SenderIdPropertyName),
+            RecipientNodeId = GetHeader(headers, RecipientIdPropertyName)
+        };
 
         switch (result.MessageType)
         {
@@ -130,6 +132,9 @@ public class MessageConverter : IMessageConverter
             case NodeMessageType.TeamList:
             case NodeMessageType.RequestTeams:
                 result.Data = ConvertFromMessageBody<string[]>(body);
+                break;
+            case NodeMessageType.RequestTeamList:
+            default:
                 break;
         }
 

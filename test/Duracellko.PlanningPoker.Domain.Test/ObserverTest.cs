@@ -94,8 +94,10 @@ public class ObserverTest
         // Arrange
         var sessionId = Guid.NewGuid();
         var team = new ScrumTeam("test team");
-        var target = new Observer(team, "test");
-        target.SessionId = sessionId;
+        var target = new Observer(team, "test")
+        {
+            SessionId = sessionId
+        };
 
         // Act
         target.AcknowledgeMessages(sessionId, lastMessageId);
@@ -113,8 +115,10 @@ public class ObserverTest
     {
         // Arrange
         var team = new ScrumTeam("test team");
-        var target = new Observer(team, "test");
-        target.SessionId = Guid.NewGuid();
+        var target = new Observer(team, "test")
+        {
+            SessionId = Guid.NewGuid()
+        };
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.NewGuid(), lastMessageId));

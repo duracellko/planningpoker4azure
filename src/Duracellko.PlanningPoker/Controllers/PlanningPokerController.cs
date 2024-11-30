@@ -293,7 +293,7 @@ public class PlanningPokerController : IPlanningPoker
     private void ScrumTeamOnMessageReceived(object? sender, MessageReceivedEventArgs e)
     {
         var team = (ScrumTeam)(sender ?? throw new ArgumentNullException(nameof(sender)));
-        bool saveTeam = true;
+        var saveTeam = true;
 
         LogScrumTeamMessage(team, e.Message);
 
@@ -316,7 +316,7 @@ public class PlanningPokerController : IPlanningPoker
     private Tuple<ScrumTeam, object>? LoadScrumTeam(string teamName)
     {
         Tuple<ScrumTeam, object>? result = null;
-        bool retry = true;
+        var retry = true;
 
         while (retry)
         {

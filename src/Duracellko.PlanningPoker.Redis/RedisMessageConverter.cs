@@ -72,9 +72,11 @@ public class RedisMessageConverter : IRedisMessageConverter
 
         data = ReadString(data, out var messageSubtype);
 
-        var result = new NodeMessage(messageType);
-        result.SenderNodeId = senderNodeId;
-        result.RecipientNodeId = recipientNodeId;
+        var result = new NodeMessage(messageType)
+        {
+            SenderNodeId = senderNodeId,
+            RecipientNodeId = recipientNodeId
+        };
 
         switch (result.MessageType)
         {
@@ -108,6 +110,9 @@ public class RedisMessageConverter : IRedisMessageConverter
             case NodeMessageType.TeamList:
             case NodeMessageType.RequestTeams:
                 result.Data = ReadObject<string[]>(data);
+                break;
+            case NodeMessageType.RequestTeamList:
+            default:
                 break;
         }
 

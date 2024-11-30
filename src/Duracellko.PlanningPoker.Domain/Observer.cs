@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -200,7 +201,7 @@ public class Observer
     /// <returns>The serialization data.</returns>
     protected internal virtual Serialization.MemberData GetData()
     {
-        var result = new Serialization.MemberData
+        return new Serialization.MemberData
         {
             Name = Name,
             MemberType = Serialization.MemberType.Observer,
@@ -208,10 +209,8 @@ public class Observer
             LastMessageId = _lastMessageId,
             SessionId = SessionId,
             IsDormant = IsDormant,
+            Messages = Messages.Select(m => m.GetData()).ToList()
         };
-
-        result.Messages = Messages.Select(m => m.GetData()).ToList();
-        return result;
     }
 
     /// <summary>
@@ -223,6 +222,7 @@ public class Observer
         MessageReceived?.Invoke(this, e);
     }
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Team messages are out of scope of Observer.")]
     private Message CreateMessage(Serialization.MessageData messageData)
     {
         switch (messageData.MessageType)

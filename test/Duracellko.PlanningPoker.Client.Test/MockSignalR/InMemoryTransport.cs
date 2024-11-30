@@ -84,7 +84,7 @@ internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
 
     private static async Task ProvideServerHandshake(PipeReader reader, PipeWriter writer, CancellationToken cancellationToken)
     {
-        bool isHandshakeCompleted = false;
+        var isHandshakeCompleted = false;
         while (!isHandshakeCompleted)
         {
             var result = await reader.ReadAsync(cancellationToken).ConfigureAwait(false);

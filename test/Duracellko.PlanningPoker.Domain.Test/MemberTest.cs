@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -96,6 +97,7 @@ public class MemberTest
     }
 
     [TestMethod]
+    [SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "Property set is in Act section.")]
     public void Estimation_SetAndGet_ReturnsTheValue()
     {
         // Arrange
@@ -112,6 +114,7 @@ public class MemberTest
     }
 
     [TestMethod]
+    [SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "Property set is in Act section.")]
     public void Estimation_SetTwiceAndGet_ReturnsTheValue()
     {
         // Arrange
@@ -235,6 +238,7 @@ public class MemberTest
     }
 
     [TestMethod]
+    [SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "Property set is in Act section.")]
     public void Estimation_SetTwiceToDifferentValues_EstimationIsChanged()
     {
         // Arrange

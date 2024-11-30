@@ -224,9 +224,9 @@ public class AzureServiceBus : IServiceBus, IDisposable
             DefaultMessageTimeToLive = _serviceBusTokenTimeOut
         };
 
-        string sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
-        string senderIdPropertyName = ServiceBus.MessageConverter.SenderIdPropertyName;
-        string recipientIdPropertyName = ServiceBus.MessageConverter.RecipientIdPropertyName;
+        var sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
+        var senderIdPropertyName = ServiceBus.MessageConverter.SenderIdPropertyName;
+        var recipientIdPropertyName = ServiceBus.MessageConverter.RecipientIdPropertyName;
         var filter = new SqlRuleFilter(string.Format(CultureInfo.InvariantCulture, sqlPattern, senderIdPropertyName, recipientIdPropertyName, nodeId));
         var subscriptionRuleOptions = new CreateRuleOptions("RecipientFilter", filter);
 
