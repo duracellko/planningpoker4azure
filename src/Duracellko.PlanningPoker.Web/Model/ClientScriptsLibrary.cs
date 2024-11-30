@@ -13,8 +13,8 @@ public class ClientScriptsLibrary
 {
     private const string LibManFileName = "libman.json";
 
-    private readonly List<ClientScriptReference> _cascadingStyleSheets = new List<ClientScriptReference>();
-    private readonly List<ClientScriptReference> _javaScripts = new List<ClientScriptReference>();
+    private readonly List<ClientScriptReference> _cascadingStyleSheets = [];
+    private readonly List<ClientScriptReference> _javaScripts = [];
     private readonly Lock _initializationLock = new();
 
     private bool _initialized;

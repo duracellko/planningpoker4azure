@@ -11,8 +11,7 @@ namespace Duracellko.PlanningPoker.Domain;
 [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Interface implemetnation members are grouped together.")]
 public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimation?>>
 {
-    private readonly Dictionary<Member, Estimation?> _estimations = new Dictionary<Member, Estimation?>();
-    private bool _isReadOnly;
+    private readonly Dictionary<Member, Estimation?> _estimations = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EstimationResult"/> class.
@@ -64,7 +63,7 @@ public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimati
 
         set
         {
-            if (_isReadOnly)
+            if (IsReadOnly)
             {
                 throw new InvalidOperationException(Resources.Error_EstimationResultIsReadOnly);
             }
@@ -85,27 +84,21 @@ public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimati
     /// <returns>
     ///   <c>True</c> if the specified member contains member; otherwise, <c>false</c>.
     /// </returns>
-    public bool ContainsMember(Member member)
-    {
-        return _estimations.ContainsKey(member);
-    }
+    public bool ContainsMember(Member member) => _estimations.ContainsKey(member);
 
     /// <summary>
     /// Sets the collection as read only. Mostly used after all members picked their estimations.
     /// </summary>
     public void SetReadOnly()
     {
-        _isReadOnly = true;
+        IsReadOnly = true;
     }
 
     /// <summary>
     /// Gets the number of elements contained in the collection.
     /// </summary>
     /// <value>The number of elements.</value>
-    public int Count
-    {
-        get { return _estimations.Count; }
-    }
+    public int Count => _estimations.Count;
 
     /// <summary>
     /// Gets a value indicating whether this instance is read only.
@@ -113,24 +106,15 @@ public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimati
     /// <value>
     ///     <c>True</c> if this instance is read only; otherwise, <c>false</c>.
     /// </value>
-    public bool IsReadOnly
-    {
-        get { return _isReadOnly; }
-    }
+    public bool IsReadOnly { get; private set; }
 
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
     /// <returns>A <see cref="System.Collections.Generic.IEnumerator&lt;T&gt;"/> that can be used to iterate through the collection.</returns>
-    public IEnumerator<KeyValuePair<Member, Estimation?>> GetEnumerator()
-    {
-        return _estimations.GetEnumerator();
-    }
+    public IEnumerator<KeyValuePair<Member, Estimation?>> GetEnumerator() => _estimations.GetEnumerator();
 
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
     bool ICollection<KeyValuePair<Member, Estimation?>>.Contains(KeyValuePair<Member, Estimation?> item)
     {

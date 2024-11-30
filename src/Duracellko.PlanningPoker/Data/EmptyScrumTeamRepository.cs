@@ -12,10 +12,7 @@ public class EmptyScrumTeamRepository : IScrumTeamRepository
     /// <summary>
     /// Gets a collection of Scrum team names.
     /// </summary>
-    public IEnumerable<string> ScrumTeamNames
-    {
-        get { return Enumerable.Empty<string>(); }
-    }
+    public IEnumerable<string> ScrumTeamNames => Enumerable.Empty<string>();
 
     /// <summary>
     /// Loads the Scrum team from repository.
@@ -24,10 +21,7 @@ public class EmptyScrumTeamRepository : IScrumTeamRepository
     /// <returns>
     /// The Scrum team with specified name.
     /// </returns>
-    public ScrumTeam? LoadScrumTeam(string teamName)
-    {
-        return null;
-    }
+    public ScrumTeam? LoadScrumTeam(string teamName) => null;
 
     /// <summary>
     /// Saves the Scrum team to repository.

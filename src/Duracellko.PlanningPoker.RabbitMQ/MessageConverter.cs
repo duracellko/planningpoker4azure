@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -86,6 +87,7 @@ public class MessageConverter : IMessageConverter
     /// <param name="headers">Headers of the message to convert.</param>
     /// <param name="body">Body of the message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
     public NodeMessage GetNodeMessage(IDictionary<string, object> headers, ReadOnlyMemory<byte> body)
     {
         ArgumentNullException.ThrowIfNull(headers);
@@ -179,10 +181,7 @@ public class MessageConverter : IMessageConverter
         }
     }
 
-    private static T? ConvertFromMessageBody<T>(ReadOnlyMemory<byte> body)
-    {
-        return JsonSerializer.Deserialize<T>(body.Span, _jsonSerializerOptions);
-    }
+    private static T? ConvertFromMessageBody<T>(ReadOnlyMemory<byte> body) => JsonSerializer.Deserialize<T>(body.Span, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(ReadOnlyMemory<byte> body)
     {

@@ -11,8 +11,8 @@ namespace Duracellko.PlanningPoker.Domain;
 [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Events are placed together with protected methods.")]
 public class ScrumTeam
 {
-    private readonly List<Member> _members = new List<Member>();
-    private readonly List<Observer> _observers = new List<Observer>();
+    private readonly List<Member> _members = [];
+    private readonly List<Observer> _observers = [];
     private readonly GuidProvider _guidProvider;
 
     private EstimationResult? _estimationResult;

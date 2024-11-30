@@ -31,18 +31,15 @@ dotnet_diagnostic.CA2007.severity = none
 
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1000.severity = none
+dotnet_diagnostic.SA1010.severity = none
 dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1309.severity = none
 dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1513.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1652.severity = none
 
 dotnet_diagnostic.IDE0022.severity = none
-dotnet_diagnostic.IDE0025.severity = none
-dotnet_diagnostic.IDE0028.severity = none
-dotnet_diagnostic.IDE0030.severity = none
-dotnet_diagnostic.IDE0032.severity = none
-dotnet_diagnostic.IDE0045.severity = none
 dotnet_diagnostic.IDE0046.severity = none
 dotnet_diagnostic.IDE0057.severity = none
 dotnet_diagnostic.IDE0058.severity = none

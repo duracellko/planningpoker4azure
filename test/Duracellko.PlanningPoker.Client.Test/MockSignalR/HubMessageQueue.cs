@@ -60,15 +60,9 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
         return _queue.TryDequeue(out message);
     }
 
-    public IEnumerator<HubMessage> GetEnumerator()
-    {
-        return _queue.GetEnumerator();
-    }
+    public IEnumerator<HubMessage> GetEnumerator() => _queue.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _queue.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => _queue.GetEnumerator();
 
     public void Dispose()
     {

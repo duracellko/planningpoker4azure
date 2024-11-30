@@ -106,7 +106,7 @@ public class InitializationList
     {
         lock (_listLock)
         {
-            _list = new List<string>();
+            _list = [];
         }
     }
 }

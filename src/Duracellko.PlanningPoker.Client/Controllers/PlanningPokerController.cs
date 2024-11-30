@@ -285,6 +285,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// <param name="username">Name of user joining the Scrum Team.</param>
     /// <param name="applicationCallback">Application reference for callback after an estimation ended.</param>
     /// <returns>Asynchronous operation.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has 3 branches.")]
     public async Task InitializeTeam(TeamResult teamInfo, string username, ApplicationCallbackReference? applicationCallback)
     {
         ArgumentNullException.ThrowIfNull(teamInfo);
@@ -302,12 +303,12 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
 
         if (scrumTeam.Members == null)
         {
-            scrumTeam.Members = new List<TeamMember>();
+            scrumTeam.Members = [];
         }
 
         if (scrumTeam.Observers == null)
         {
-            scrumTeam.Observers = new List<TeamMember>();
+            scrumTeam.Observers = [];
         }
 
         ScrumTeam = scrumTeam;
@@ -706,7 +707,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             return;
         }
 
-        _memberEstimations = new List<MemberEstimation>();
+        _memberEstimations = [];
         EstimationSummary = null;
         ScrumTeam.State = TeamState.EstimationInProgress;
         _hasJoinedEstimation = true;

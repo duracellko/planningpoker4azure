@@ -71,12 +71,7 @@ internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
 
     private static string GetPropertyName(string propertyName, JsonSerializerOptions options)
     {
-        if (options.PropertyNamingPolicy != null)
-        {
-            return options.PropertyNamingPolicy.ConvertName(propertyName);
-        }
-
-        return propertyName;
+        return options.PropertyNamingPolicy != null ? options.PropertyNamingPolicy.ConvertName(propertyName) : propertyName;
     }
 
     private static bool IsPropertyName(ref Utf8JsonReader reader, string propertyName, JsonSerializerOptions options)

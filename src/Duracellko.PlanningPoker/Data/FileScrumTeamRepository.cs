@@ -60,13 +60,7 @@ public class FileScrumTeamRepository : IScrumTeamRepository
     /// <value>
     /// The storage folder.
     /// </value>
-    public string Folder
-    {
-        get
-        {
-            return _folder.Value;
-        }
-    }
+    public string Folder => _folder.Value;
 
     /// <summary>
     /// Gets a collection of Scrum team names.
@@ -300,10 +294,7 @@ public class FileScrumTeamRepository : IScrumTeamRepository
         return result.ToString();
     }
 
-    private string GetFolder()
-    {
-        return _settings.Folder;
-    }
+    private string GetFolder() => _settings.Folder;
 
     private void InitializeFolder()
     {

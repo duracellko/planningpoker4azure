@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
@@ -36,6 +37,7 @@ public class MessageConverter : IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Converted message of ServiceBusMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has 3 branches.")]
     public ServiceBusMessage ConvertToServiceBusMessage(NodeMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -71,6 +73,7 @@ public class MessageConverter : IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
     public NodeMessage ConvertToNodeMessage(ServiceBusReceivedMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -149,10 +152,7 @@ public class MessageConverter : IMessageConverter
         }
     }
 
-    private static T? ConvertFromMessageBody<T>(BinaryData body)
-    {
-        return JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
-    }
+    private static T? ConvertFromMessageBody<T>(BinaryData body) => JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(BinaryData body)
     {

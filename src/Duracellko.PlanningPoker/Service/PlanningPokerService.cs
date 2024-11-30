@@ -238,19 +238,12 @@ public class PlanningPokerService : ControllerBase
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        double? domainEstimation;
-        if (estimation == -1111111.0)
+        double? domainEstimation = estimation switch
         {
-            domainEstimation = null;
-        }
-        else if (estimation == Estimation.PositiveInfinity)
-        {
-            domainEstimation = double.PositiveInfinity;
-        }
-        else
-        {
-            domainEstimation = estimation;
-        }
+            -1111111.0 => null,
+            Estimation.PositiveInfinity => double.PositiveInfinity,
+            _ => estimation
+        };
 
         using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
         {

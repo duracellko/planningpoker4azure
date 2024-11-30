@@ -160,8 +160,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 8,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = PlanningPokerData.ScrumMasterName, Type = PlanningPokerData.ScrumMasterType },
@@ -181,7 +181,7 @@ public class PlanningPokerSignalRClientTestMessages
                     Member = new TeamMember { Name = PlanningPokerData.ObserverName, Type = PlanningPokerData.MemberType },
                     Estimation = new Estimation { Value = Estimation.PositiveInfinity }
                 }
-            }
+            ]
         };
         await ProvideMessages(fixture, message);
 
@@ -207,8 +207,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 22,
             Type = MessageType.AvailableEstimationsChanged,
-            Estimations = new List<Estimation>
-            {
+            Estimations =
+            [
                 new Estimation { Value = 0 },
                 new Estimation { Value = 0.5 },
                 new Estimation { Value = 1 },
@@ -218,7 +218,7 @@ public class PlanningPokerSignalRClientTestMessages
                 new Estimation { Value = 100 },
                 new Estimation { Value = Estimation.PositiveInfinity },
                 new Estimation()
-            }
+            ]
         };
         await ProvideMessages(fixture, message);
 
@@ -281,8 +281,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 10,
             Type = MessageType.MemberEstimated,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = PlanningPokerData.ScrumMasterName, Type = PlanningPokerData.ScrumMasterType },
@@ -293,7 +293,7 @@ public class PlanningPokerSignalRClientTestMessages
                     Member = new TeamMember { Name = PlanningPokerData.MemberName, Type = PlanningPokerData.MemberType },
                     Estimation = new Estimation { Value = 40 }
                 }
-            }
+            ]
         };
         await ProvideMessages(fixture, estimationStartedMessage, memberEstimatedMessage, estimationEndedMessage);
 

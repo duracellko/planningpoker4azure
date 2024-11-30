@@ -16,10 +16,7 @@ public class MessageJsonConverter : JsonConverter<Message>
     /// </summary>
     /// <param name="typeToConvert">The type to compare against.</param>
     /// <returns><c>true</c> if the type can be converted; otherwise, <c>false</c>.</returns>
-    public override bool CanConvert(Type typeToConvert)
-    {
-        return typeof(Message).IsAssignableFrom(typeToConvert);
-    }
+    public override bool CanConvert(Type typeToConvert) => typeof(Message).IsAssignableFrom(typeToConvert);
 
     /// <summary>
     /// Reads and converts the JSON to type T.
@@ -101,12 +98,7 @@ public class MessageJsonConverter : JsonConverter<Message>
 
     private static string GetPropertyName(string propertyName, JsonSerializerOptions options)
     {
-        if (options.PropertyNamingPolicy != null)
-        {
-            return options.PropertyNamingPolicy.ConvertName(propertyName);
-        }
-
-        return propertyName;
+        return options.PropertyNamingPolicy != null ? options.PropertyNamingPolicy.ConvertName(propertyName) : propertyName;
     }
 
     private static bool IsPropertyName(ref Utf8JsonReader reader, string propertyName, JsonSerializerOptions options)

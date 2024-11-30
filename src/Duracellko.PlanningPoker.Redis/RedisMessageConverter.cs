@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -52,6 +53,7 @@ public class RedisMessageConverter : IRedisMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
     public NodeMessage ConvertToNodeMessage(RedisValue message)
     {
         if (message.IsNullOrEmpty)
@@ -205,10 +207,7 @@ public class RedisMessageConverter : IRedisMessageConverter
         }
     }
 
-    private static T? ReadObject<T>(ReadOnlySpan<byte> data)
-    {
-        return JsonSerializer.Deserialize<T>(data, _jsonSerializerOptions);
-    }
+    private static T? ReadObject<T>(ReadOnlySpan<byte> data) => JsonSerializer.Deserialize<T>(data, _jsonSerializerOptions);
 
     private static byte[] ReadBinary(ReadOnlySpan<byte> data)
     {

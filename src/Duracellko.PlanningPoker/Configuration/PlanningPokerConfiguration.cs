@@ -39,23 +39,11 @@ public class PlanningPokerConfiguration : IPlanningPokerConfiguration
     /// <value>The repository file expiration time.</value>
     public int RepositoryTeamExpiration { get; set; } = 1200;
 
-    TimeSpan IPlanningPokerConfiguration.ClientInactivityTimeout
-    {
-        get { return TimeSpan.FromSeconds(ClientInactivityTimeout); }
-    }
+    TimeSpan IPlanningPokerConfiguration.ClientInactivityTimeout => TimeSpan.FromSeconds(ClientInactivityTimeout);
 
-    TimeSpan IPlanningPokerConfiguration.ClientInactivityCheckInterval
-    {
-        get { return TimeSpan.FromSeconds(ClientInactivityCheckInterval); }
-    }
+    TimeSpan IPlanningPokerConfiguration.ClientInactivityCheckInterval => TimeSpan.FromSeconds(ClientInactivityCheckInterval);
 
-    TimeSpan IPlanningPokerConfiguration.WaitForMessageTimeout
-    {
-        get { return TimeSpan.FromSeconds(WaitForMessageTimeout); }
-    }
+    TimeSpan IPlanningPokerConfiguration.WaitForMessageTimeout => TimeSpan.FromSeconds(WaitForMessageTimeout);
 
-    TimeSpan IPlanningPokerConfiguration.RepositoryTeamExpiration
-    {
-        get { return TimeSpan.FromSeconds(RepositoryTeamExpiration); }
-    }
+    TimeSpan IPlanningPokerConfiguration.RepositoryTeamExpiration => TimeSpan.FromSeconds(RepositoryTeamExpiration);
 }

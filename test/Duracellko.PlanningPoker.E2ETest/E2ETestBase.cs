@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.E2ETest;
 [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Disposable objects are disposed in TestCleanup.")]
 public abstract class E2ETestBase : PageTest
 {
-    private readonly List<IBrowserContext> _contexts = new List<IBrowserContext>();
+    private readonly List<IBrowserContext> _contexts = [];
 
     private int _setupClientsCount = 1;
 
@@ -23,7 +23,7 @@ public abstract class E2ETestBase : PageTest
 
     protected ServerFixture? Server { get; private set; }
 
-    protected IList<ClientTest> ClientTests { get; } = new List<ClientTest>();
+    protected IList<ClientTest> ClientTests { get; } = [];
 
     protected ClientTest ClientTest => ClientTests[0];
 

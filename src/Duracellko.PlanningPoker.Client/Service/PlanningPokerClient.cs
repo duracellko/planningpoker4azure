@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
@@ -161,6 +162,7 @@ public class PlanningPokerClient : IPlanningPokerClient
     /// <returns>
     /// Asynchronous operation.
     /// </returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has 3 branches.")]
     public Task SubmitEstimation(string teamName, string memberName, double? estimation, CancellationToken cancellationToken)
     {
         var encodedTeamName = _urlEncoder.Encode(teamName);

@@ -30,10 +30,7 @@ internal static class ServiceEntityMapper
     /// </summary>
     /// <param name="value">Service deck value.</param>
     /// <returns>Domain deck value.</returns>
-    public static D.Deck Map(Deck value)
-    {
-        return (D.Deck)value;
-    }
+    public static D.Deck Map(Deck value) => (D.Deck)value;
 
     /// <summary>
     /// Maps <see cref="D.PlanningPokerException"/> to error data object.

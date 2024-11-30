@@ -35,10 +35,7 @@ public sealed class Estimation : IEquatable<Estimation>
     /// </summary>
     /// <param name="other">The other Estimation to compare with.</param>
     /// <returns><c>True</c> if the specified Estimation is equal to this instance; otherwise, <c>false</c>.</returns>
-    public bool Equals(Estimation? other)
-    {
-        return other != null && Value == other.Value;
-    }
+    public bool Equals(Estimation? other) => other != null && Value == other.Value;
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -47,10 +44,7 @@ public sealed class Estimation : IEquatable<Estimation>
     /// <returns>
     ///   <c>True</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object? obj)
-    {
-        return obj is Estimation estimation && Equals(estimation);
-    }
+    public override bool Equals(object? obj) => obj is Estimation estimation && Equals(estimation);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -58,8 +52,5 @@ public sealed class Estimation : IEquatable<Estimation>
     /// <returns>
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
     /// </returns>
-    public override int GetHashCode()
-    {
-        return Value.HasValue ? Value.GetHashCode() : int.MinValue;
-    }
+    public override int GetHashCode() => Value.HasValue ? Value.GetHashCode() : int.MinValue;
 }

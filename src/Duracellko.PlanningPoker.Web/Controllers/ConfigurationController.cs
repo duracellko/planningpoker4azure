@@ -15,8 +15,5 @@ public class ConfigurationController : ControllerBase
     public PlanningPokerClientConfiguration ClientConfiguration { get; }
 
     [HttpGet]
-    public ActionResult GetConfiguration()
-    {
-        return Ok(ClientConfiguration);
-    }
+    public ActionResult GetConfiguration() => Ok(ClientConfiguration);
 }

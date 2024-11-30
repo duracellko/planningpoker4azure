@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -641,8 +640,8 @@ public class PlanningPokerControllerTestMessages
         {
             Id = 10,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
@@ -668,7 +667,7 @@ public class PlanningPokerControllerTestMessages
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
                     Estimation = new Estimation { Value = 2 }
                 }
-            }
+            ]
         };
 
         StartEstimation(target);
@@ -735,8 +734,8 @@ public class PlanningPokerControllerTestMessages
         {
             Id = 10,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
@@ -761,7 +760,7 @@ public class PlanningPokerControllerTestMessages
                 {
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
                 }
-            }
+            ]
         };
 
         StartEstimation(target);
@@ -827,8 +826,8 @@ public class PlanningPokerControllerTestMessages
         {
             Id = 10,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -859,7 +858,7 @@ public class PlanningPokerControllerTestMessages
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                     Estimation = new Estimation { Value = 20 }
                 }
-            }
+            ]
         };
 
         StartEstimation(target);
@@ -930,8 +929,8 @@ public class PlanningPokerControllerTestMessages
         {
             Id = 10,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -962,7 +961,7 @@ public class PlanningPokerControllerTestMessages
                     Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                     Estimation = new Estimation { Value = 5 }
                 }
-            }
+            ]
         };
 
         StartEstimation(target);
@@ -1029,8 +1028,8 @@ public class PlanningPokerControllerTestMessages
         {
             Id = 5,
             Type = MessageType.AvailableEstimationsChanged,
-            Estimations = new List<Estimation>
-            {
+            Estimations =
+            [
                 new Estimation { Value = 0 },
                 new Estimation { Value = 0.5 },
                 new Estimation { Value = 1 },
@@ -1040,7 +1039,7 @@ public class PlanningPokerControllerTestMessages
                 new Estimation { Value = 100 },
                 new Estimation { Value = double.PositiveInfinity },
                 new Estimation()
-            }
+            ]
         };
         target.ProcessMessages(new Message[] { message });
 

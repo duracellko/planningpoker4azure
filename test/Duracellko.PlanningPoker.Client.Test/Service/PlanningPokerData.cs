@@ -23,14 +23,14 @@ public static class PlanningPokerData
         {
             Name = TeamName,
             ScrumMaster = new TeamMember { Name = ScrumMasterName, Type = ScrumMasterType },
-            Members = new List<TeamMember>
-            {
+            Members =
+            [
                 new TeamMember { Name = ScrumMasterName, Type = ScrumMasterType }
-            },
-            Observers = new List<TeamMember>(),
+            ],
+            Observers = [],
             State = state,
-            AvailableEstimations = new List<Estimation>
-            {
+            AvailableEstimations =
+            [
                 new Estimation { Value = 0 },
                 new Estimation { Value = 0.5 },
                 new Estimation { Value = 1 },
@@ -44,9 +44,9 @@ public static class PlanningPokerData
                 new Estimation { Value = 100 },
                 new Estimation { Value = Estimation.PositiveInfinity },
                 new Estimation(),
-            },
-            EstimationResult = estimationResult ?? new List<EstimationResultItem>(),
-            EstimationParticipants = estimationParticipants ?? new List<EstimationParticipantStatus>()
+            ],
+            EstimationResult = estimationResult ?? [],
+            EstimationParticipants = estimationParticipants ?? []
         };
 
         if (member)
@@ -64,8 +64,8 @@ public static class PlanningPokerData
 
     public static IList<EstimationResultItem> GetEstimationResult(double? scrumMasterEstimation = 5, double? memberEstimation = 20)
     {
-        return new List<EstimationResultItem>
-        {
+        return
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Name = ScrumMasterName, Type = ScrumMasterType },
@@ -76,16 +76,16 @@ public static class PlanningPokerData
                 Member = new TeamMember { Name = MemberName, Type = MemberType },
                 Estimation = GetEstimation(memberEstimation)
             }
-        };
+        ];
     }
 
     public static IList<EstimationParticipantStatus> GetEstimationParticipants(bool scrumMaster = true, bool member = false)
     {
-        return new List<EstimationParticipantStatus>
-        {
+        return
+        [
             new EstimationParticipantStatus { MemberName = ScrumMasterName, Estimated = scrumMaster },
             new EstimationParticipantStatus { MemberName = MemberName, Estimated = member }
-        };
+        ];
     }
 
     public static TeamResult GetTeamResult(ScrumTeam scrumTeam)

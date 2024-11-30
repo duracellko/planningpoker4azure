@@ -118,10 +118,7 @@ internal sealed class SentMessagesObservable : IObservable<HubMessage>
         }
     }
 
-    private IEnumerable<IObserver<HubMessage>> GetObservers()
-    {
-        return _observers.ToArray().Select(p => p.Value);
-    }
+    private IEnumerable<IObserver<HubMessage>> GetObservers() => _observers.ToArray().Select(p => p.Value);
 
     private sealed class Subscriber : IDisposable
     {

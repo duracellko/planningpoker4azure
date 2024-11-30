@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,11 +63,11 @@ public sealed class PlanningPokerDeskTest : IDisposable
 
         var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
         reconnectResult.ScrumTeam!.State = TeamState.EstimationInProgress;
-        reconnectResult.ScrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        reconnectResult.ScrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = true },
             new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
-        };
+        ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
         using var target = _context.RenderComponent<PlanningPokerDesk>();
@@ -124,8 +123,8 @@ public sealed class PlanningPokerDeskTest : IDisposable
 
         var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
         reconnectResult.ScrumTeam!.State = TeamState.EstimationFinished;
-        reconnectResult.ScrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        reconnectResult.ScrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -136,7 +135,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
                 Estimation = new Estimation { Value = 3 }
             }
-        };
+        ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
         using var target = _context.RenderComponent<PlanningPokerDesk>();
@@ -171,20 +170,20 @@ public sealed class PlanningPokerDeskTest : IDisposable
         InitializeContext(controller);
 
         var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
-        reconnectResult.ScrumTeam!.AvailableEstimations = new List<Estimation>
-        {
+        reconnectResult.ScrumTeam!.AvailableEstimations =
+        [
             new Estimation() { Value = -999509 },
             new Estimation() { Value = -999508 },
             new Estimation() { Value = -999507 },
             new Estimation() { Value = -999506 },
             new Estimation() { Value = -999505 }
-        };
+        ];
         reconnectResult.ScrumTeam.State = TeamState.EstimationInProgress;
-        reconnectResult.ScrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        reconnectResult.ScrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus() { MemberName = PlanningPokerData.ScrumMasterName, Estimated = false },
             new EstimationParticipantStatus() { MemberName = PlanningPokerData.MemberName, Estimated = false }
-        };
+        ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
         using var target = _context.RenderComponent<PlanningPokerDesk>();
@@ -217,17 +216,17 @@ public sealed class PlanningPokerDeskTest : IDisposable
         InitializeContext(controller);
 
         var reconnectResult = PlanningPokerData.GetReconnectTeamResult();
-        reconnectResult.ScrumTeam!.AvailableEstimations = new List<Estimation>
-        {
+        reconnectResult.ScrumTeam!.AvailableEstimations =
+        [
             new Estimation() { Value = -999909 },
             new Estimation() { Value = -999908 },
             new Estimation() { Value = -999907 },
             new Estimation() { Value = -999906 },
             new Estimation() { Value = -999905 }
-        };
+        ];
         reconnectResult.ScrumTeam.State = TeamState.EstimationFinished;
-        reconnectResult.ScrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        reconnectResult.ScrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -238,7 +237,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
                 Estimation = new Estimation { Value = -999909 }
             }
-        };
+        ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
         using var target = _context.RenderComponent<PlanningPokerDesk>();

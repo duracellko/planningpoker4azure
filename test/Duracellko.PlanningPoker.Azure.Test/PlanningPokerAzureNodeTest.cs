@@ -1602,8 +1602,5 @@ public class PlanningPokerAzureNodeTest
         return JsonSerializer.SerializeToUtf8Bytes(scrumTeam.GetData(), _serializerOptions);
     }
 
-    private static AzurePlanningPokerConfiguration CreateConfigutartion()
-    {
-        return new AzurePlanningPokerConfiguration();
-    }
+    private static AzurePlanningPokerConfiguration CreateConfigutartion() => new AzurePlanningPokerConfiguration();
 }
