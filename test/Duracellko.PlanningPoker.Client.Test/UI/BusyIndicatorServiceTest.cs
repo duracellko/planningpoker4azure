@@ -1,5 +1,4 @@
-﻿using System;
-using Duracellko.PlanningPoker.Client.UI;
+﻿using Duracellko.PlanningPoker.Client.UI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Client.Test.UI;
@@ -102,7 +101,7 @@ public class BusyIndicatorServiceTest
     private static BusyIndicatorService CreateBusyIndicatorService(BusyIndicatorHandler? handler = null)
     {
         var result = new BusyIndicatorService();
-        result.SetBusyIndicatorHandler(handler != null ? handler.SetVisibility : default(Action<bool>));
+        result.SetBusyIndicatorHandler(handler != null ? handler.SetVisibility : default);
         return result;
     }
 

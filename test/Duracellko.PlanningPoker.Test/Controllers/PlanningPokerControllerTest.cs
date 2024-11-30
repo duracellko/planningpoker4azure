@@ -390,7 +390,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null!, default(CancellationToken)));
+        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null!, default));
     }
 
     [TestMethod]
@@ -408,7 +408,7 @@ public class PlanningPokerControllerTest
             teamLock.Team.ScrumMaster!.StartEstimation();
 
             // Act
-            var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default(CancellationToken));
+            var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default);
             result = messagesTask.Result;
         }
 
@@ -432,7 +432,7 @@ public class PlanningPokerControllerTest
             var member = teamLock.Team.Join("member", false);
 
             // Act
-            messagesTask = target.GetMessagesAsync(member, default(CancellationToken));
+            messagesTask = target.GetMessagesAsync(member, default);
         }
 
         Assert.IsFalse(messagesTask.IsCompleted);
@@ -495,7 +495,7 @@ public class PlanningPokerControllerTest
             teamLock.Lock();
 
             // Act
-            messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, default(CancellationToken));
+            messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, default);
         }
 
         Assert.IsFalse(messagesTask.IsCompleted);

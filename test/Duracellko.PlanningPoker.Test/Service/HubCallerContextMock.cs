@@ -11,7 +11,7 @@ internal sealed class HubCallerContextMock : HubCallerContext
 {
     private string _connectionId = string.Empty;
 
-    public override CancellationToken ConnectionAborted => default(CancellationToken);
+    public override CancellationToken ConnectionAborted => default;
 
     public override string ConnectionId => _connectionId;
 

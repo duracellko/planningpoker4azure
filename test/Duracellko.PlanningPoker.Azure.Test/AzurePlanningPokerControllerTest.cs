@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Data;
@@ -286,7 +285,7 @@ public class AzurePlanningPokerControllerTest
         // Act
         var task = Task.Factory.StartNew<IScrumTeamLock>(
             () => target.CreateScrumTeam("test", "master", Deck.Standard),
-            default(CancellationToken),
+            default,
             TaskCreationOptions.None,
             TaskScheduler.Default);
         Assert.IsFalse(task.IsCompleted);
@@ -354,7 +353,7 @@ public class AzurePlanningPokerControllerTest
         target.SetTeamsInitializingList(["test team", "team2"]);
 
         // Act
-        var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+        var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default, TaskCreationOptions.None, TaskScheduler.Default);
         Assert.IsFalse(task.IsCompleted);
         await Task.Delay(50);
         Assert.IsFalse(task.IsCompleted);

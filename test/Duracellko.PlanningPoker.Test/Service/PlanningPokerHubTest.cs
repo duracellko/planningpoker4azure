@@ -78,7 +78,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<string>(TeamName, resultTeam.Name);
         Assert.IsNotNull(resultTeam.ScrumMaster);
         Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-        Assert.AreEqual<string>(typeof(D.ScrumMaster).Name, resultTeam.ScrumMaster.Type);
+        Assert.AreEqual<string>(nameof(D.ScrumMaster), resultTeam.ScrumMaster.Type);
     }
 
     [TestMethod]
@@ -206,7 +206,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(resultTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -283,7 +283,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(resultTeam.Observers);
         var expectedObservers = new string[] { ObserverName };
         CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.Observer).Name };
+        var expectedMemberTypes = new string[] { nameof(D.Observer) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Observers.Select(m => m.Type).ToList());
     }
 
@@ -423,7 +423,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -461,7 +461,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -503,7 +503,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
 
         Assert.IsNotNull(result.ScrumTeam.Observers);
@@ -545,7 +545,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
 
         Assert.IsFalse(team.ScrumMaster!.IsDormant);
