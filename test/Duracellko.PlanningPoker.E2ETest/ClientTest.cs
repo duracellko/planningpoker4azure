@@ -10,10 +10,10 @@ namespace Duracellko.PlanningPoker.E2ETest;
 
 public class ClientTest
 {
-    private static readonly string[] _availableEstimations = new string[]
-    {
+    private static readonly string[] _availableEstimations =
+    [
         "0", "\u00BD", "1", "2", "3", "5", "8", "13", "20", "40", "100", "\u221E", "?"
-    };
+    ];
 
     public ClientTest(IPage page, Uri serverUri)
     {

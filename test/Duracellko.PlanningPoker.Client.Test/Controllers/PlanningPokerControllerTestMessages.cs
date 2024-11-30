@@ -41,7 +41,7 @@ public class PlanningPokerControllerTestMessages
         using var target = CreateController(propertyChangedCounter);
         await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
-        target.ProcessMessages(Enumerable.Empty<Message>());
+        target.ProcessMessages([]);
 
         Assert.AreEqual(0, propertyChangedCounter.Count);
         Assert.AreEqual(-1, target.LastMessageId);
@@ -90,7 +90,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(0, target.LastMessageId);
         var expectedMembers = new string[] { "New member", PlanningPokerData.MemberName };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { PlanningPokerData.ObserverName };
+        expectedMembers = [PlanningPokerData.ObserverName];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("2", target.MembersCount);
@@ -122,7 +122,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(1, target.LastMessageId);
         var expectedMembers = new string[] { PlanningPokerData.MemberName };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { "New observer" };
+        expectedMembers = ["New observer"];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("1", target.MembersCount);
@@ -157,13 +157,13 @@ public class PlanningPokerControllerTestMessages
                 Name = "New member"
             }
         };
-        target.ProcessMessages(new Message[] { message1, message2 });
+        target.ProcessMessages([message1, message2]);
 
         Assert.AreEqual(2, propertyChangedCounter.Count);
         Assert.AreEqual(2, target.LastMessageId);
         var expectedMembers = new string[] { "New member", PlanningPokerData.MemberName, "XYZ" };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { PlanningPokerData.ObserverName };
+        expectedMembers = [PlanningPokerData.ObserverName];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("0/3", target.MembersCount);
@@ -195,7 +195,7 @@ public class PlanningPokerControllerTestMessages
         Assert.IsNull(target.ScrumMaster);
         var expectedMembers = new string[] { PlanningPokerData.MemberName };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { PlanningPokerData.ObserverName };
+        expectedMembers = [PlanningPokerData.ObserverName];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target, skipScrumMaster: true);
         Assert.AreEqual("0/1", target.MembersCount);
@@ -234,7 +234,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
         var expectedMembers = new string[] { "New member" };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { PlanningPokerData.ObserverName };
+        expectedMembers = [PlanningPokerData.ObserverName];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("0/1", target.MembersCount);
@@ -266,7 +266,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
         var expectedMembers = new string[] { PlanningPokerData.MemberName };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = Array.Empty<string>();
+        expectedMembers = [];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("1", target.MembersCount);
@@ -299,7 +299,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, target.ScrumMaster.Name);
         var expectedMembers = new string[] { PlanningPokerData.MemberName };
         CollectionAssert.AreEqual(expectedMembers, target.Members.Select(m => m.Name).ToList());
-        expectedMembers = new string[] { PlanningPokerData.ObserverName };
+        expectedMembers = [PlanningPokerData.ObserverName];
         CollectionAssert.AreEqual(expectedMembers, target.Observers.Select(m => m.Name).ToList());
         PlanningPokerControllerTest.AssertNoMemberHasEstimated(target);
         Assert.AreEqual("1", target.MembersCount);
@@ -545,7 +545,7 @@ public class PlanningPokerControllerTestMessages
             }
         };
         StartEstimation(target);
-        target.ProcessMessages(new Message[] { message2, message1 });
+        target.ProcessMessages([message2, message1]);
 
         Assert.AreEqual(3, propertyChangedCounter.Count);
         Assert.AreEqual(6, target.LastMessageId);
@@ -672,8 +672,8 @@ public class PlanningPokerControllerTestMessages
 
         StartEstimation(target);
         ProcessMessage(target, message1);
-        target.ProcessMessages(new Message[] { message2, message3, message4 });
-        target.ProcessMessages(new Message[] { message5, message });
+        target.ProcessMessages([message2, message3, message4]);
+        target.ProcessMessages([message5, message]);
 
         Assert.AreEqual(7, propertyChangedCounter.Count);
         Assert.AreEqual(10, target.LastMessageId);
@@ -1041,7 +1041,7 @@ public class PlanningPokerControllerTestMessages
                 new Estimation()
             ]
         };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         Assert.AreEqual(1, propertyChangedCounter.Count);
         Assert.AreEqual(5, target.LastMessageId);
@@ -1367,7 +1367,7 @@ public class PlanningPokerControllerTestMessages
 
     private static void ProcessMessage(PlanningPokerController controller, Message message)
     {
-        controller.ProcessMessages(new Message[] { message });
+        controller.ProcessMessages([message]);
     }
 
     private static void StartEstimation(PlanningPokerController controller)

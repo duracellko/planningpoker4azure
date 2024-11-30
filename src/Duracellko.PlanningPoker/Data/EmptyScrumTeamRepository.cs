@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Data;
@@ -12,7 +11,7 @@ public class EmptyScrumTeamRepository : IScrumTeamRepository
     /// <summary>
     /// Gets a collection of Scrum team names.
     /// </summary>
-    public IEnumerable<string> ScrumTeamNames => Enumerable.Empty<string>();
+    public IEnumerable<string> ScrumTeamNames => [];
 
     /// <summary>
     /// Loads the Scrum team from repository.

@@ -61,10 +61,12 @@ public class ScrumTeam
             throw new ArgumentException(Resources.Error_EmptyScrumTeamName, nameof(scrumTeamData));
         }
 
+        ArgumentNullException.ThrowIfNull(scrumTeamData.AvailableEstimations);
+
         DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
         _guidProvider = guidProvider ?? GuidProvider.Default;
         Name = scrumTeamData.Name;
-        AvailableEstimations = scrumTeamData.AvailableEstimations.ToArray();
+        AvailableEstimations = [.. scrumTeamData.AvailableEstimations];
         State = scrumTeamData.State;
         TimerEndTime = scrumTeamData.TimerEndTime.HasValue ? DateTime.SpecifyKind(scrumTeamData.TimerEndTime.Value, DateTimeKind.Utc) : null;
 

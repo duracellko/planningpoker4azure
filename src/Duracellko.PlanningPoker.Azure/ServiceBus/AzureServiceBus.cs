@@ -366,7 +366,7 @@ public class AzureServiceBus : IServiceBus, IDisposable
     {
         if (_serviceBusAdministrationClient == null)
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         var subscriptions = await _serviceBusAdministrationClient.GetSubscriptionsAsync(_topicName).ToListAsync();

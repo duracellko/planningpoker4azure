@@ -34,7 +34,7 @@ public class PlanningPokerSignalRClientTestMessages
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
+        var notifyMessage = new InvocationMessage(ResponseName, [new List<Message>()]);
         await fixture.ReceiveMessage(notifyMessage);
 
         await resultTask;
@@ -59,7 +59,7 @@ public class PlanningPokerSignalRClientTestMessages
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
+        var notifyMessage = new InvocationMessage(ResponseName, [new List<Message>()]);
         await fixture.ReceiveMessage(notifyMessage);
 
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
@@ -345,7 +345,7 @@ public class PlanningPokerSignalRClientTestMessages
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { messages.ToList() });
+        var notifyMessage = new InvocationMessage(ResponseName, [messages.ToList()]);
         await fixture.ReceiveMessage(notifyMessage);
     }
 }

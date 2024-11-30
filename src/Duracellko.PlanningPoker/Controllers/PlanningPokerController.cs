@@ -486,7 +486,7 @@ public class PlanningPokerController : IPlanningPoker
                 }
                 else
                 {
-                    return Enumerable.Empty<Message>();
+                    return [];
                 }
             }
             finally

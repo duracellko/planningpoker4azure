@@ -21,7 +21,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+        repository.SetupGet(r => r.ScrumTeamNames).Returns(["team1", "team2"]);
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
@@ -38,7 +38,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+        repository.SetupGet(r => r.ScrumTeamNames).Returns(["team1", "team2"]);
         repository.Setup(r => r.LoadScrumTeam("team1")).Returns((ScrumTeam?)null);
         repository.Setup(r => r.LoadScrumTeam("team3")).Returns((ScrumTeam?)null);
         var target = CreatePlanningPokerController(repository: repository.Object);
@@ -66,7 +66,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+        repository.SetupGet(r => r.ScrumTeamNames).Returns([]);
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
@@ -632,7 +632,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
         repository.Setup(r => r.LoadScrumTeam("team")).Returns(team);
         repository.Setup(r => r.DeleteScrumTeam("team"));
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+        repository.SetupGet(r => r.ScrumTeamNames).Returns([]);
 
         timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 14, 0, DateTimeKind.Utc));
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);

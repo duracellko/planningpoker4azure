@@ -12,14 +12,14 @@ namespace Duracellko.PlanningPoker.Client.Test.Service;
 [TestClass]
 public class ServiceTimeProviderTest
 {
-    public static IEnumerable<object[]> TestData { get; } = new[]
-    {
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 2, DateTimeKind.Utc), TimeSpan.Zero },
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc), TimeSpan.FromSeconds(1) },
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 1, DateTimeKind.Utc), TimeSpan.FromSeconds(-1) },
-        new object[] { new DateTime(2021, 11, 18, 22, 10, 22, DateTimeKind.Utc), TimeSpan.FromSeconds(42560) },
-        new object[] { new DateTime(2021, 11, 18, 9, 59, 58, DateTimeKind.Utc), TimeSpan.FromSeconds(-1264) },
-    };
+    public static IEnumerable<object[]> TestData { get; } =
+    [
+        [new DateTime(2021, 11, 18, 10, 21, 2, DateTimeKind.Utc), TimeSpan.Zero],
+        [new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc), TimeSpan.FromSeconds(1)],
+        [new DateTime(2021, 11, 18, 10, 21, 1, DateTimeKind.Utc), TimeSpan.FromSeconds(-1)],
+        [new DateTime(2021, 11, 18, 22, 10, 22, DateTimeKind.Utc), TimeSpan.FromSeconds(42560)],
+        [new DateTime(2021, 11, 18, 9, 59, 58, DateTimeKind.Utc), TimeSpan.FromSeconds(-1264)],
+    ];
 
     [TestMethod]
     public void ServiceTimeOffset_AfterConstruction_ZeroOffset()

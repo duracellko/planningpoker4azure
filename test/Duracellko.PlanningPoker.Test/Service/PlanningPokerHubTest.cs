@@ -1752,7 +1752,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
         planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster!, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<D.Message>()).Verifiable();
+            .ReturnsAsync([]).Verifiable();
 
         IList<Message>? result = null;
         var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);

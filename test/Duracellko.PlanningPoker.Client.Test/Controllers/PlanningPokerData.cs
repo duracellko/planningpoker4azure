@@ -18,10 +18,10 @@ public static class PlanningPokerData
     public const string MemberName = "Test member";
     public const string ObserverName = "Test observer";
 
-    public static IReadOnlyList<string> MemberNames { get; } = new string[]
-    {
+    public static IReadOnlyList<string> MemberNames { get; } =
+    [
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
-    };
+    ];
 
     public static ScrumTeam GetScrumTeam()
     {

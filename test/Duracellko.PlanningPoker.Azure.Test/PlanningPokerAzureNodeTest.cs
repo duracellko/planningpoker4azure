@@ -380,7 +380,7 @@ public class PlanningPokerAzureNodeTest
             SessionId = Guid.NewGuid()
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -478,7 +478,7 @@ public class PlanningPokerAzureNodeTest
             MemberType = "ScrumMaster"
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -531,7 +531,7 @@ public class PlanningPokerAzureNodeTest
 
         var message = new ScrumTeamMessage(TeamName, MessageType.EstimationStarted);
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -585,7 +585,7 @@ public class PlanningPokerAzureNodeTest
 
         var message = new ScrumTeamMessage(TeamName, MessageType.EstimationCanceled);
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -648,7 +648,7 @@ public class PlanningPokerAzureNodeTest
             Estimation = 5.0
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -711,7 +711,7 @@ public class PlanningPokerAzureNodeTest
             Estimations = deck.Select(e => e.Value).ToList()
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -790,7 +790,7 @@ public class PlanningPokerAzureNodeTest
             AcknowledgedMessageId = 2
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -940,7 +940,7 @@ public class PlanningPokerAzureNodeTest
         var endTime = new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc);
         var message = new ScrumTeamTimerMessage(TeamName, MessageType.TimerStarted) { EndTime = endTime };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -1001,7 +1001,7 @@ public class PlanningPokerAzureNodeTest
 
         var message = new ScrumTeamMessage(TeamName, MessageType.TimerCanceled);
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -1058,7 +1058,7 @@ public class PlanningPokerAzureNodeTest
         var target = CreatePlanningPokerAzureNode(planningPoker.Object, serviceBus.Object, CreateConfigutartion());
 
         var nodeMessage = new NodeMessage(NodeMessageType.TeamCreated) { Data = CreateSerializedBasicTeam() };
-        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, new string[] { TeamName }, nodeMessage);
+        var sendMessages = SetupServiceBus(serviceBus, target.NodeId, [TeamName], nodeMessage);
 
         SetupPlanningPoker(planningPoker, null, true);
         planningPoker.Setup(p => p.DateTimeProvider).Returns(new DateTimeProviderMock()).Verifiable();
@@ -1513,7 +1513,7 @@ public class PlanningPokerAzureNodeTest
 
         var emptyTeamListMessage = new NodeMessage(NodeMessageType.TeamList)
         {
-            Data = initializationTeamList ?? Array.Empty<string>(),
+            Data = initializationTeamList ?? [],
             RecipientNodeId = nodeId
         };
 

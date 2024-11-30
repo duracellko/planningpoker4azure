@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Domain.Test;
@@ -12,7 +11,7 @@ public class EstimationResultMessageTest
     {
         // Arrange
         var type = MessageType.EstimationEnded;
-        var estimationResult = new EstimationResult(Enumerable.Empty<Member>());
+        var estimationResult = new EstimationResult([]);
 
         // Act
         var result = new EstimationResultMessage(type, estimationResult);

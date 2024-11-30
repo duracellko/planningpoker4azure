@@ -292,7 +292,7 @@ public class AzurePlanningPokerControllerTest
         Assert.IsFalse(task.IsCompleted);
         await Task.Delay(50);
         Assert.IsFalse(task.IsCompleted);
-        target.SetTeamsInitializingList(Enumerable.Empty<string>());
+        target.SetTeamsInitializingList([]);
         await task.WaitAsync(TimeSpan.FromSeconds(1));
 
         // Verify
@@ -305,7 +305,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test" });
+        target.SetTeamsInitializingList(["test"]);
 
         // Act
         var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
@@ -351,7 +351,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test team", "team2" });
+        target.SetTeamsInitializingList(["test team", "team2"]);
 
         // Act
         var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
@@ -371,7 +371,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test team", "team2" });
+        target.SetTeamsInitializingList(["test team", "team2"]);
         target.InitializeScrumTeam(new ScrumTeam("test team"));
 
         // Act
@@ -405,7 +405,7 @@ public class AzurePlanningPokerControllerTest
         var target = CreateAzurePlanningPokerController(repository: repository.Object);
 
         // Act
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
 
         // Verify
         repository.Verify(r => r.DeleteAll());
@@ -421,7 +421,7 @@ public class AzurePlanningPokerControllerTest
         target.EndInitialization();
 
         // Act
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
 
         // Verify
         repository.Verify(r => r.DeleteAll(), Times.Never());
@@ -434,7 +434,7 @@ public class AzurePlanningPokerControllerTest
         // Arrange
         var target = CreateAzurePlanningPokerController();
         var team = new ScrumTeam("team");
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         Assert.IsFalse(target.IsInitialized);
 
         // Act
@@ -452,7 +452,7 @@ public class AzurePlanningPokerControllerTest
         // Arrange
         var target = CreateAzurePlanningPokerController();
         var team = new ScrumTeam("team");
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         ScrumTeamMessage? message = null;
         target.ObservableMessages.Subscribe(m => message = m);
 
@@ -468,7 +468,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         Assert.IsFalse(target.IsInitialized);
 
         // Act

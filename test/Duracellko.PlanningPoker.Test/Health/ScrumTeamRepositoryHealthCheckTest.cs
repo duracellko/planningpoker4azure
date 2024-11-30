@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Data;
 using Duracellko.PlanningPoker.Health;
@@ -18,7 +17,7 @@ public class ScrumTeamRepositoryHealthCheckTest
     {
         // Arrange
         var scrumTeamRepository = new Mock<IScrumTeamRepository>();
-        scrumTeamRepository.SetupGet(o => o.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+        scrumTeamRepository.SetupGet(o => o.ScrumTeamNames).Returns([]);
         var target = new ScrumTeamRepositoryHealthCheck(scrumTeamRepository.Object);
 
         // Act
@@ -34,7 +33,7 @@ public class ScrumTeamRepositoryHealthCheckTest
     {
         // Arrange
         var scrumTeamRepository = new Mock<IScrumTeamRepository>();
-        scrumTeamRepository.SetupGet(o => o.ScrumTeamNames).Returns(new[] { "MyTeam" });
+        scrumTeamRepository.SetupGet(o => o.ScrumTeamNames).Returns(["MyTeam"]);
         var target = new ScrumTeamRepositoryHealthCheck(scrumTeamRepository.Object);
 
         // Act

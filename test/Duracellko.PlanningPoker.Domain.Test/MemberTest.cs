@@ -9,26 +9,26 @@ namespace Duracellko.PlanningPoker.Domain.Test;
 [TestClass]
 public class MemberTest
 {
-    private static readonly DateTime[] NowData = new[]
-    {
+    private static readonly DateTime[] NowData =
+    [
         new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc),
         new DateTime(2022, 5, 4, 23, 23, 30, DateTimeKind.Utc),
         new DateTime(2019, 2, 14, 12, 0, 0, DateTimeKind.Utc),
-    };
+    ];
 
-    private static readonly TimeSpan[] DurationData = new[]
-    {
+    private static readonly TimeSpan[] DurationData =
+    [
         new TimeSpan(1, 5, 45),
         new TimeSpan(0, 45, 0),
         new TimeSpan(0, 0, 1),
-    };
+    ];
 
-    private static readonly DateTime[] ExpectedEndTimeData = new[]
-    {
+    private static readonly DateTime[] ExpectedEndTimeData =
+    [
         new DateTime(2021, 11, 17, 10, 3, 46, DateTimeKind.Utc),
         new DateTime(2022, 5, 5, 0, 8, 30, DateTimeKind.Utc),
         new DateTime(2019, 2, 14, 12, 0, 1, DateTimeKind.Utc),
-    };
+    ];
 
     public static IEnumerable<object[]> TimerTestData => Enumerable.Range(0, 3)
         .Select(i => new object[] { NowData[i], DurationData[i], ExpectedEndTimeData[i] });

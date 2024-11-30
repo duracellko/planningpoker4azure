@@ -26,7 +26,7 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = "MessageType";
     private const string MessageSubtypePropertyName = "MessageSubtype";
 
-    private static readonly BinaryData _emptyBinaryData = new(Array.Empty<byte>());
+    private static readonly BinaryData _emptyBinaryData = new([]);
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals

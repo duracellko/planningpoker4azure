@@ -9,11 +9,11 @@ namespace Duracellko.PlanningPoker.Test.Service;
 [TestClass]
 public class JsonSerializationTest
 {
-    public static IEnumerable<object[]> JsonTestData { get; } = new[]
-    {
-        new object[] { JsonSerializerDefaults.General },
-        new object[] { JsonSerializerDefaults.Web },
-    };
+    public static IEnumerable<object[]> JsonTestData { get; } =
+    [
+        [JsonSerializerDefaults.General],
+        [JsonSerializerDefaults.Web],
+    ];
 
     [DataTestMethod]
     [DynamicData(nameof(JsonTestData))]

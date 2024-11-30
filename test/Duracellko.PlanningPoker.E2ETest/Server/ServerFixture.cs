@@ -152,12 +152,12 @@ public class ServerFixture : IAsyncDisposable, IDisposable
     {
         var useServerSideValue = UseServerSide ? "Always" : "Never";
 
-        return new string[]
-        {
+        return
+        [
             "--urls", "http://127.0.0.1:0",
             "--applicationName", "Duracellko.PlanningPoker.Web",
             "--PlanningPokerClient:UseServerSide", useServerSideValue,
             "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
-        };
+        ];
     }
 }
