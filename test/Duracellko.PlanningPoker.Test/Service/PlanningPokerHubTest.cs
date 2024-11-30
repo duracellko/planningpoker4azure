@@ -1500,8 +1500,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
-        var memberMessage = (MemberMessage)result[0];
+        Assert.IsInstanceOfType<MemberMessage>(result[0], out var memberMessage);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
 
@@ -1555,8 +1554,7 @@ public sealed class PlanningPokerHubTest : IDisposable
 
         Assert.AreEqual<long>(5, result[3].Id);
         Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
-        Assert.IsInstanceOfType(result[3], typeof(EstimationResultMessage));
-        var estimationResultMessage = (EstimationResultMessage)result[3];
+        Assert.IsInstanceOfType<EstimationResultMessage>(result[3], out var estimationResultMessage);
 
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
         var expectedResult = new Tuple<string, double>[]
@@ -1606,8 +1604,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)result[0];
+        Assert.IsInstanceOfType<EstimationSetMessage>(result[0], out var estimationSetMessage);
 
         var estimations = estimationSetMessage.Estimations;
         Assert.IsNotNull(estimations);
@@ -1696,8 +1693,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<int>(2, result.Count);
         Assert.AreEqual<long>(2, result[1].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
-        Assert.IsInstanceOfType(result[1], typeof(MemberMessage));
-        var memberMessage = (MemberMessage)result[1];
+        Assert.IsInstanceOfType<MemberMessage>(result[1], out var memberMessage);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
     }
@@ -1738,8 +1734,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
-        var timerMessage = (TimerMessage)result[0];
+        Assert.IsInstanceOfType<TimerMessage>(result[0], out var timerMessage);
         Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), timerMessage.EndTime);
     }
 

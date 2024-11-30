@@ -131,9 +131,9 @@ public class PlanningPokerAzureNodeTest
         Assert.AreEqual<NodeMessageType>(NodeMessageType.TeamCreated, nodeMessage.MessageType);
         Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
         Assert.IsNotNull(nodeMessage.Data);
-        Assert.IsInstanceOfType(nodeMessage.Data, typeof(byte[]));
+        Assert.IsInstanceOfType<byte[]>(nodeMessage.Data, out var data);
         var expectedData = SerializeScrumTeam(team);
-        CollectionAssert.AreEqual(expectedData, (byte[])nodeMessage.Data);
+        CollectionAssert.AreEqual(expectedData, data);
     }
 
     [TestMethod]
@@ -360,7 +360,7 @@ public class PlanningPokerAzureNodeTest
         teamLock.Verify();
         var observer = team.FindMemberOrObserver(MemberName);
         Assert.IsNotNull(observer);
-        Assert.IsInstanceOfType(observer, typeof(Member));
+        Assert.IsInstanceOfType<Member>(observer);
         Assert.AreEqual<string>(MemberName, observer.Name);
         Assert.AreEqual<Guid>(sessionId, observer.SessionId);
     }
@@ -428,7 +428,7 @@ public class PlanningPokerAzureNodeTest
         teamLock.Verify();
         var observer = team.FindMemberOrObserver(ObserverName);
         Assert.IsNotNull(observer);
-        Assert.IsInstanceOfType(observer, typeof(Observer));
+        Assert.IsInstanceOfType<Observer>(observer);
         Assert.AreEqual<string>(ObserverName, observer.Name);
         Assert.AreEqual<Guid>(sessionId, observer.SessionId);
     }
@@ -1417,9 +1417,9 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
         Assert.IsNotNull(initializeTeamMessage);
         Assert.IsNotNull(initializeTeamMessage.Data);
-        Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
+        Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data, out var data);
         var expectedData = SerializeScrumTeam(team);
-        CollectionAssert.AreEqual(expectedData, (byte[])initializeTeamMessage.Data);
+        CollectionAssert.AreEqual(expectedData, data);
         Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
     }
 
@@ -1454,8 +1454,8 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
         Assert.IsNotNull(initializeTeamMessage);
         Assert.IsNotNull(initializeTeamMessage.Data);
-        Assert.IsInstanceOfType(initializeTeamMessage.Data, typeof(byte[]));
-        Assert.AreEqual<string>("Deleted:" + TeamName, Encoding.UTF8.GetString((byte[])initializeTeamMessage.Data));
+        Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data, out var data);
+        Assert.AreEqual<string>("Deleted:" + TeamName, Encoding.UTF8.GetString(data));
         Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
     }
 

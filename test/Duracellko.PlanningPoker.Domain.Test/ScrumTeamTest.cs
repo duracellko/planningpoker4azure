@@ -302,8 +302,7 @@ public class ScrumTeamTest
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -322,8 +321,7 @@ public class ScrumTeamTest
         Assert.AreEqual<int>(1, observer.Messages.Count());
         var message = observer.Messages.First();
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -359,8 +357,7 @@ public class ScrumTeamTest
         Assert.AreEqual<int>(1, member.Messages.Count());
         var message = member.Messages.First();
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -448,7 +445,7 @@ public class ScrumTeamTest
 
         // Verify
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType(result, typeof(Member));
+        Assert.IsInstanceOfType<Member>(result);
         Assert.AreEqual<ScrumTeam>(target, result.Team);
         Assert.AreEqual<string>(name, result.Name);
         Assert.IsFalse(result.IsDormant);
@@ -790,8 +787,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -808,8 +804,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsTrue(master.HasMessage);
         var message = master.Messages.First();
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -875,8 +870,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsTrue(observer.HasMessage);
         var message = observer.Messages.First();
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(result, memberMessage.Member);
     }
 
@@ -1076,8 +1070,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(master, memberMessage.Member);
     }
 
@@ -1116,8 +1109,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -1176,8 +1168,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsTrue(master.HasMessage);
         var message = master.Messages.First();
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -1271,8 +1262,7 @@ public class ScrumTeamTest
         // Verify
         Assert.IsTrue(observer.HasMessage);
         var message = observer.Messages.First();
-        Assert.IsInstanceOfType(message, typeof(MemberMessage));
-        var memberMessage = (MemberMessage)message;
+        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -1577,8 +1567,7 @@ public class ScrumTeamTest
         var message = eventArgs.Message;
         Assert.IsNotNull(message);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)message;
+        Assert.IsInstanceOfType<EstimationSetMessage>(message, out var estimationSetMessage);
         Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
@@ -1600,8 +1589,7 @@ public class ScrumTeamTest
         var message = master.Messages.Last();
         Assert.IsNotNull(message);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)message;
+        Assert.IsInstanceOfType<EstimationSetMessage>(message, out var estimationSetMessage);
         Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
@@ -1642,8 +1630,7 @@ public class ScrumTeamTest
         var message = member.Messages.Last();
         Assert.IsNotNull(message);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)message;
+        Assert.IsInstanceOfType<EstimationSetMessage>(message, out var estimationSetMessage);
         Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
@@ -1684,8 +1671,7 @@ public class ScrumTeamTest
         var message = observer.Messages.Last();
         Assert.IsNotNull(message);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
-        Assert.IsInstanceOfType(message, typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)message;
+        Assert.IsInstanceOfType<EstimationSetMessage>(message, out var estimationSetMessage);
         Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
     }
 

@@ -25,8 +25,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -53,8 +52,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -319,8 +317,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -336,8 +333,7 @@ public class PlanningPokerSignalRClientTestMessages
     {
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
