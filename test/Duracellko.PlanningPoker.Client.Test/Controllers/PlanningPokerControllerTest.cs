@@ -2214,10 +2214,7 @@ public class PlanningPokerControllerTest
             timerFactory = timerFactoryMock.Object;
         }
 
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = new DateTimeProviderMock();
-        }
+        dateTimeProvider ??= new DateTimeProviderMock();
 
         if (serviceTimeProvider == null)
         {

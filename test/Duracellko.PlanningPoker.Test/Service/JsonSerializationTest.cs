@@ -60,8 +60,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam
@@ -118,8 +118,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam
@@ -216,8 +216,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam

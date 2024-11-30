@@ -15,7 +15,7 @@ public class Observer
 {
     private static readonly CompositeFormat _errorInvalidMessageType = CompositeFormat.Parse(Resources.Error_InvalidMessageType);
 
-    private readonly Queue<Message> _messages = new Queue<Message>();
+    private readonly Queue<Message> _messages = new();
     private long _lastMessageId;
 
     /// <summary>

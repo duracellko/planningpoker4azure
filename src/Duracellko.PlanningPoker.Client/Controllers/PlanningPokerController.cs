@@ -301,15 +301,8 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             throw new ArgumentNullException(nameof(username));
         }
 
-        if (scrumTeam.Members == null)
-        {
-            scrumTeam.Members = [];
-        }
-
-        if (scrumTeam.Observers == null)
-        {
-            scrumTeam.Observers = [];
-        }
+        scrumTeam.Members ??= [];
+        scrumTeam.Observers ??= [];
 
         ScrumTeam = scrumTeam;
         User = FindTeamMember(username);

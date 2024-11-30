@@ -20,7 +20,7 @@ namespace Duracellko.PlanningPoker.Azure;
 [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Destructor is placed together with Dispose.")]
 public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
 {
-    private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
+    private readonly Subject<ScrumTeamMessage> _observableMessages = new();
     private readonly Lock _teamsToInitializeLock = new();
     private HashSet<string>? _teamsToInitialize;
     private volatile bool _initialized;

@@ -487,11 +487,7 @@ public class AzurePlanningPokerControllerTest
         TaskProvider? taskProvider = null,
         ILogger<AzurePlanningPokerController>? logger = null)
     {
-        if (logger == null)
-        {
-            logger = Mock.Of<ILogger<AzurePlanningPokerController>>();
-        }
-
+        logger ??= Mock.Of<ILogger<AzurePlanningPokerController>>();
         return new AzurePlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
     }
 }

@@ -161,10 +161,7 @@ public class ServiceTimeProviderTest
             planningPokerClient = planningPokerClientMock.Object;
         }
 
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = new DateTimeProviderMock();
-        }
+        dateTimeProvider ??= new DateTimeProviderMock();
 
         return new ServiceTimeProvider(planningPokerClient, dateTimeProvider);
     }

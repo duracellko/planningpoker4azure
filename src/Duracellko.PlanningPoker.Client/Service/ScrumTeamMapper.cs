@@ -82,7 +82,7 @@ internal static class ScrumTeamMapper
         var index = value.IndexOf(prefix, StringComparison.OrdinalIgnoreCase);
         if (index >= 0)
         {
-            var dataJson = value.Substring(index + prefix.Length);
+            var dataJson = value[(index + prefix.Length)..];
             var data = JsonSerializer.Deserialize<PlanningPokerExceptionData>(dataJson);
             if (data != null)
             {

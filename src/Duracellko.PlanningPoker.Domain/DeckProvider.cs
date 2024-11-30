@@ -12,71 +12,71 @@ public class DeckProvider
 {
     private static readonly CompositeFormat _errorDeckNotSupported = CompositeFormat.Parse(Resources.Error_DeckNotSupported);
 
-    private readonly IEnumerable<Estimation> _standardDeck = new Estimation[]
-    {
-        new Estimation(0.0),
-        new Estimation(0.5),
-        new Estimation(1.0),
-        new Estimation(2.0),
-        new Estimation(3.0),
-        new Estimation(5.0),
-        new Estimation(8.0),
-        new Estimation(13.0),
-        new Estimation(20.0),
-        new Estimation(40.0),
-        new Estimation(100.0),
-        new Estimation(double.PositiveInfinity),
-        new Estimation()
-    };
+    private readonly IEnumerable<Estimation> _standardDeck =
+    [
+        new(0.0),
+        new(0.5),
+        new(1.0),
+        new(2.0),
+        new(3.0),
+        new(5.0),
+        new(8.0),
+        new(13.0),
+        new(20.0),
+        new(40.0),
+        new(100.0),
+        new(double.PositiveInfinity),
+        new()
+    ];
 
-    private readonly IEnumerable<Estimation> _fibonacciDeck = new Estimation[]
-    {
-        new Estimation(0.0),
-        new Estimation(1.0),
-        new Estimation(2.0),
-        new Estimation(3.0),
-        new Estimation(5.0),
-        new Estimation(8.0),
-        new Estimation(13.0),
-        new Estimation(21.0),
-        new Estimation(34.0),
-        new Estimation(55.0),
-        new Estimation(89.0),
-        new Estimation(double.PositiveInfinity),
-        new Estimation()
-    };
+    private readonly IEnumerable<Estimation> _fibonacciDeck =
+    [
+        new(0.0),
+        new(1.0),
+        new(2.0),
+        new(3.0),
+        new(5.0),
+        new(8.0),
+        new(13.0),
+        new(21.0),
+        new(34.0),
+        new(55.0),
+        new(89.0),
+        new(double.PositiveInfinity),
+        new()
+    ];
 
-    private readonly IEnumerable<Estimation> _ratingDeck = new Estimation[]
-    {
-        new Estimation(1.0),
-        new Estimation(2.0),
-        new Estimation(3.0),
-        new Estimation(4.0),
-        new Estimation(5.0),
-        new Estimation(6.0),
-        new Estimation(7.0),
-        new Estimation(8.0),
-        new Estimation(9.0),
-        new Estimation(10.0)
-    };
+    private readonly IEnumerable<Estimation> _ratingDeck =
+    [
+        new(1.0),
+        new(2.0),
+        new(3.0),
+        new(4.0),
+        new(5.0),
+        new(6.0),
+        new(7.0),
+        new(8.0),
+        new(9.0),
+        new(10.0)
+    ];
 
-    private readonly IEnumerable<Estimation> _tshirtSizes = new Estimation[]
-    {
-        new Estimation(-999509.0), // XS
-        new Estimation(-999508.0), // S
-        new Estimation(-999507.0), // M
-        new Estimation(-999506.0), // L
-        new Estimation(-999505.0), // XL
-    };
+    private readonly IEnumerable<Estimation> _tshirtSizes =
+    [
+        new(-999509.0), // XS
+        new(-999508.0), // S
+        new(-999507.0), // M
+        new(-999506.0), // L
+        new(-999505.0), // XL
+    ];
 
-    private readonly IEnumerable<Estimation> _rockPaperScissorsLizardSpock = new Estimation[]
-    {
-        new Estimation(-999909.0), // Rock
-        new Estimation(-999908.0), // Paper
-        new Estimation(-999907.0), // Scissors
-        new Estimation(-999906.0), // Lizard
-        new Estimation(-999905.0), // Spock
-    };
+    private readonly IEnumerable<Estimation> _rockPaperScissorsLizardSpock =
+    [
+        new(-999909.0), // Rock
+        new(-999908.0), // Paper
+        new(-999907.0), // Scissors
+        new(-999906.0), // Lizard
+        new(-999905.0), // Spock
+    ];
 
     /// <summary>
     /// Gets the default estimation deck provider.
@@ -91,21 +91,15 @@ public class DeckProvider
     /// <returns>The collection of estimation cards.</returns>
     public IEnumerable<Estimation> GetDeck(Deck deck)
     {
-        switch (deck)
+        return deck switch
         {
-            case Deck.Standard:
-                return _standardDeck;
-            case Deck.Fibonacci:
-                return _fibonacciDeck;
-            case Deck.Rating:
-                return _ratingDeck;
-            case Deck.Tshirt:
-                return _tshirtSizes;
-            case Deck.RockPaperScissorsLizardSpock:
-                return _rockPaperScissorsLizardSpock;
-            default:
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorDeckNotSupported, deck), nameof(deck));
-        }
+            Deck.Standard => _standardDeck,
+            Deck.Fibonacci => _fibonacciDeck,
+            Deck.Rating => _ratingDeck,
+            Deck.Tshirt => _tshirtSizes,
+            Deck.RockPaperScissorsLizardSpock => _rockPaperScissorsLizardSpock,
+            _ => throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorDeckNotSupported, deck), nameof(deck)),
+        };
     }
 
     /// <summary>

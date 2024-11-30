@@ -29,7 +29,7 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = PropertyPrefix + "MessageType";
     private const string MessageSubtypePropertyName = PropertyPrefix + "MessageSubtype";
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
     };
@@ -67,7 +67,7 @@ public class MessageConverter : IMessageConverter
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
+        if (message.MessageType is NodeMessageType.InitializeTeam or NodeMessageType.TeamCreated)
         {
             return ConvertToMessageBody((byte[])message.Data!);
         }
@@ -169,31 +169,25 @@ public class MessageConverter : IMessageConverter
 
     private static ReadOnlyMemory<byte> ConvertToMessageBody(byte[] data)
     {
-        using (var dataStream = new MemoryStream())
+        using var dataStream = new MemoryStream();
+        using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
         {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
-            {
-                deflateStream.Write(data, 0, data.Length);
-                deflateStream.Flush();
-            }
-
-            return dataStream.ToArray();
+            deflateStream.Write(data, 0, data.Length);
+            deflateStream.Flush();
         }
+
+        return dataStream.ToArray();
     }
 
     private static T? ConvertFromMessageBody<T>(ReadOnlyMemory<byte> body) => JsonSerializer.Deserialize<T>(body.Span, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(ReadOnlyMemory<byte> body)
     {
-        using (var dataStream = new MemoryStream(body.ToArray()))
-        {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress))
-            {
-                using var memoryStream = new MemoryStream();
-                deflateStream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
+        using var dataStream = new MemoryStream(body.ToArray());
+        using var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress);
+        using var memoryStream = new MemoryStream();
+        deflateStream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
 
     private static void SetHeader(Dictionary<string, object> headers, string key, string? value)

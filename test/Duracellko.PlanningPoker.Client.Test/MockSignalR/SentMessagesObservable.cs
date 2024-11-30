@@ -15,7 +15,7 @@ internal sealed class SentMessagesObservable : IObservable<HubMessage>
 {
     private readonly PipeReader _reader;
     private readonly HubMessageStore _messageStore;
-    private readonly ConcurrentDictionary<long, IObserver<HubMessage>> _observers = new ConcurrentDictionary<long, IObserver<HubMessage>>();
+    private readonly ConcurrentDictionary<long, IObserver<HubMessage>> _observers = new();
     private long _nextId;
 
     internal SentMessagesObservable(PipeReader reader, HubMessageStore messageStore)

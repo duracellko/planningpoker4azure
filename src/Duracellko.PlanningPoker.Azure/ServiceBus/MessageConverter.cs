@@ -26,8 +26,8 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = "MessageType";
     private const string MessageSubtypePropertyName = "MessageSubtype";
 
-    private static readonly BinaryData _emptyBinaryData = new BinaryData(Array.Empty<byte>());
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private static readonly BinaryData _emptyBinaryData = new(Array.Empty<byte>());
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
     };
@@ -43,7 +43,7 @@ public class MessageConverter : IMessageConverter
         ArgumentNullException.ThrowIfNull(message);
 
         BinaryData messageBody;
-        if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
+        if (message.MessageType is NodeMessageType.InitializeTeam or NodeMessageType.TeamCreated)
         {
             messageBody = ConvertToMessageBody((byte[])message.Data!);
         }
@@ -140,30 +140,24 @@ public class MessageConverter : IMessageConverter
 
     private static BinaryData ConvertToMessageBody(byte[] data)
     {
-        using (var dataStream = new MemoryStream())
+        using var dataStream = new MemoryStream();
+        using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
         {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
-            {
-                deflateStream.Write(data, 0, data.Length);
-                deflateStream.Flush();
-            }
-
-            return BinaryData.FromBytes(dataStream.ToArray());
+            deflateStream.Write(data, 0, data.Length);
+            deflateStream.Flush();
         }
+
+        return BinaryData.FromBytes(dataStream.ToArray());
     }
 
     private static T? ConvertFromMessageBody<T>(BinaryData body) => JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(BinaryData body)
     {
-        using (var dataStream = body.ToStream())
-        {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress))
-            {
-                using var memoryStream = new MemoryStream();
-                deflateStream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
+        using var dataStream = body.ToStream();
+        using var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress);
+        using var memoryStream = new MemoryStream();
+        deflateStream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
 }

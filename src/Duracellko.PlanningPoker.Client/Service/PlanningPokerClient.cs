@@ -298,27 +298,23 @@ public class PlanningPokerClient : IPlanningPokerClient
     {
         try
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, BaseUri + requestUri))
+            using var request = new HttpRequestMessage(HttpMethod.Get, BaseUri + requestUri);
+            using var response = await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
+            if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
             {
-                using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken))
-                {
-                    if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
-                    {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        throw ScrumTeamMapper.GetPlanningPokerException(content);
-                    }
-
-                    response.EnsureSuccessStatusCode();
-
-                    if (response.Content == null)
-                    {
-                        throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
-                    }
-
-                    var result = await response.Content.ReadFromJsonAsync<T>(default(JsonSerializerOptions), cancellationToken);
-                    return result ?? throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
-                }
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw ScrumTeamMapper.GetPlanningPokerException(content);
             }
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.Content == null)
+            {
+                throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<T>(default(JsonSerializerOptions), cancellationToken);
+            return result ?? throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
         }
         catch (HttpRequestException ex)
         {
@@ -330,20 +326,16 @@ public class PlanningPokerClient : IPlanningPokerClient
     {
         try
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, BaseUri + requestUri))
+            using var request = new HttpRequestMessage(HttpMethod.Get, BaseUri + requestUri);
+            using var response = await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
+            if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
             {
-                using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken))
-                {
-                    if (response.StatusCode == HttpStatusCode.BadRequest && response.Content != null)
-                    {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        throw ScrumTeamMapper.GetPlanningPokerException(content);
-                    }
-                    else if (!response.IsSuccessStatusCode)
-                    {
-                        throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
-                    }
-                }
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw ScrumTeamMapper.GetPlanningPokerException(content);
+            }
+            else if (!response.IsSuccessStatusCode)
+            {
+                throw new PlanningPokerException(UIResources.PlanningPokerService_UnexpectedError);
             }
         }
         catch (HttpRequestException ex)

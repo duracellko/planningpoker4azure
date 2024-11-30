@@ -17,7 +17,7 @@ public sealed class PlanningPokerTest : IDisposable
 {
     private const string BaseUrl = "http://planningpoker.duracellko.net/PlanningPoker?";
 
-    private readonly Bunit.TestContext _context = new Bunit.TestContext();
+    private readonly Bunit.TestContext _context = new();
 
     public void Dispose()
     {

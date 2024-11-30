@@ -27,7 +27,7 @@ namespace Duracellko.PlanningPoker.Web;
 
 public static class Program
 {
-    private static readonly Lazy<string[]> SupportedCultures = new Lazy<string[]>(() => LocalizationService.GetSupportedCultures().ToArray());
+    private static readonly Lazy<string[]> SupportedCultures = new(() => LocalizationService.GetSupportedCultures().ToArray());
 
     public static void Main(string[] args)
     {

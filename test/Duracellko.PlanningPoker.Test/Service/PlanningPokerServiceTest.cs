@@ -1517,8 +1517,8 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
         var expectedResult = new Tuple<string, double>[]
         {
-            new Tuple<string, double>(ScrumMasterName, 1.0),
-            new Tuple<string, double>(MemberName, 2.0)
+            new(ScrumMasterName, 1.0),
+            new(MemberName, 2.0)
         };
         CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
 
@@ -1836,11 +1836,7 @@ public class PlanningPokerServiceTest
 
     private static PlanningPokerService CreatePlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider? dateTimeProvider = null)
     {
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = D.DateTimeProvider.Default;
-        }
-
+        dateTimeProvider ??= D.DateTimeProvider.Default;
         return new PlanningPokerService(planningPoker, dateTimeProvider, D.DeckProvider.Default);
     }
 

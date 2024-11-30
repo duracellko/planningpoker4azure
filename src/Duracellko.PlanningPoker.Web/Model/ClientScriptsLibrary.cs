@@ -90,8 +90,8 @@ public class ClientScriptsLibrary
         }
 
         var separatorPosition = libraryFullName.IndexOf('@', StringComparison.Ordinal);
-        var libraryName = libraryFullName.Substring(0, separatorPosition);
-        var libraryVersion = libraryFullName.Substring(separatorPosition + 1);
+        var libraryName = libraryFullName[..separatorPosition];
+        var libraryVersion = libraryFullName[(separatorPosition + 1)..];
 
         var libraryFiles = libraryElement.GetProperty("files").EnumerateArray()
             .Select(f => f.GetString());

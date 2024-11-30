@@ -8,7 +8,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 
 internal sealed class HubMessageStore
 {
-    private readonly ConcurrentDictionary<long, HubMessage> _messages = new ConcurrentDictionary<long, HubMessage>();
+    private readonly ConcurrentDictionary<long, HubMessage> _messages = new();
     private long _nextId;
 
     public HubMessage this[long id] => _messages[id];

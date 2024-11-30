@@ -28,7 +28,7 @@ public class PlanningPokerAzureNodeTest
     private const string MemberName = "member";
     private const string ObserverName = "observer";
 
-    private static readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+    private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
     };
@@ -1467,10 +1467,7 @@ public class PlanningPokerAzureNodeTest
         DateTimeProvider? dateTimeProvider = null,
         GuidProvider? guidProvider = null)
     {
-        if (logger == null)
-        {
-            logger = Mock.Of<ILogger<PlanningPokerAzureNode>>();
-        }
+        logger ??= Mock.Of<ILogger<PlanningPokerAzureNode>>();
 
         var serializer = new ScrumTeamSerializer(
             dateTimeProvider ?? new DateTimeProviderMock(),
@@ -1602,5 +1599,5 @@ public class PlanningPokerAzureNodeTest
         return JsonSerializer.SerializeToUtf8Bytes(scrumTeam.GetData(), _serializerOptions);
     }
 
-    private static AzurePlanningPokerConfiguration CreateConfigutartion() => new AzurePlanningPokerConfiguration();
+    private static AzurePlanningPokerConfiguration CreateConfigutartion() => new();
 }

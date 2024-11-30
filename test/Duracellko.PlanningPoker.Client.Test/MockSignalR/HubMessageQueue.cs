@@ -11,9 +11,9 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Collection is queue.")]
 public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposable
 {
-    private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
+    private readonly ConcurrentQueue<HubMessage> _queue = new();
     private IDisposable? _subscription;
-    private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception?)>();
+    private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new();
 
     public HubMessageQueue(IObservable<HubMessage> messages)
     {
@@ -95,7 +95,7 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
 
         public void OnNext(HubMessage value)
         {
-            if (!(value is PingMessage))
+            if (value is not PingMessage)
             {
                 _parent._queue.Enqueue(value);
                 _parent.NotifyMessageReceived(true, null);

@@ -22,7 +22,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
 
     private static readonly TimeSpan PublishTimeout = TimeSpan.FromSeconds(5);
 
-    private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
+    private readonly Subject<NodeMessage> _observableMessages = new();
     private readonly IMessageConverter _messageConverter;
     private readonly GuidProvider _guidProvider;
     private readonly ILogger<RabbitServiceBus> _logger;
@@ -247,7 +247,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         var uri = Configuration.ServiceBusConnectionString!;
         if (uri.StartsWith("RABBITMQ:", StringComparison.Ordinal))
         {
-            uri = uri.Substring(9);
+            uri = uri[9..];
         }
 
         return new ConnectionFactory()
@@ -269,8 +269,8 @@ public class RabbitServiceBus : IServiceBus, IDisposable
             var separatorIndex = topic.IndexOf(';', StringComparison.Ordinal);
             if (separatorIndex > 0 && separatorIndex < topic.Length - 1)
             {
-                _sendingExchangeName = topic.Substring(0, separatorIndex);
-                _receivingExchangeName = topic.Substring(separatorIndex + 1);
+                _sendingExchangeName = topic[..separatorIndex];
+                _receivingExchangeName = topic[(separatorIndex + 1)..];
             }
             else
             {

@@ -10,8 +10,8 @@ namespace Duracellko.PlanningPoker.Service;
 /// </summary>
 internal static class ServiceEntityMapper
 {
-    private static readonly Lazy<IConfigurationProvider> Configuration = new Lazy<IConfigurationProvider>(CreateMapperConfiguration);
-    private static readonly Lazy<IMapper> MappingEngine = new Lazy<IMapper>(() => new Mapper(Configuration.Value));
+    private static readonly Lazy<IConfigurationProvider> Configuration = new(CreateMapperConfiguration);
+    private static readonly Lazy<IMapper> MappingEngine = new(() => new Mapper(Configuration.Value));
 
     /// <summary>
     /// Maps the specified source entity to destination entity.

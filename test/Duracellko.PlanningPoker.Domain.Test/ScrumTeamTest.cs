@@ -735,7 +735,7 @@ public class ScrumTeamTest
         Assert.IsNotNull(target.EstimationResult);
         var expectedResult = new KeyValuePair<Member, Estimation>[]
         {
-            new KeyValuePair<Member, Estimation>(master, masterEstimation)
+            new(master, masterEstimation)
         };
         CollectionAssert.AreEquivalent(expectedResult, target.EstimationResult.ToList());
     }
@@ -1008,8 +1008,8 @@ public class ScrumTeamTest
         Assert.IsNotNull(target.EstimationResult);
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(master, masterEstimation),
-            new KeyValuePair<Member, Estimation?>(member, null)
+            new(master, masterEstimation),
+            new(member, null)
         };
         CollectionAssert.AreEquivalent(expectedResult, target.EstimationResult.ToList());
     }

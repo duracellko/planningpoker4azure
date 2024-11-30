@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Controllers;
 /// </summary>
 public class PlanningPokerController : IPlanningPoker
 {
-    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new(StringComparer.OrdinalIgnoreCase);
     private readonly DeckProvider _deckProvider;
     private readonly TaskProvider _taskProvider;
     private readonly ILogger<PlanningPokerController> _logger;
@@ -233,12 +233,10 @@ public class PlanningPokerController : IPlanningPoker
         var teamTuples = _scrumTeams.ToArray();
         foreach (var teamTuple in teamTuples)
         {
-            using (var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2))
-            {
-                teamLock.Lock();
-                _logger.DisconnectingInactiveObservers(teamLock.Team.Name);
-                teamLock.Team.DisconnectInactiveObservers(inactivityTime);
-            }
+            using var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2);
+            teamLock.Lock();
+            _logger.DisconnectingInactiveObservers(teamLock.Team.Name);
+            teamLock.Team.DisconnectInactiveObservers(inactivityTime);
         }
     }
 
@@ -440,7 +438,7 @@ public class PlanningPokerController : IPlanningPoker
     /// </summary>
     private sealed class ReceiveMessagesTask
     {
-        private readonly TaskCompletionSource<IEnumerable<Message>> _taskCompletionSource = new TaskCompletionSource<IEnumerable<Message>>();
+        private readonly TaskCompletionSource<IEnumerable<Message>> _taskCompletionSource = new();
 
         private readonly ScrumTeamLock _scrumTeamLock;
         private readonly Observer _observer;
@@ -469,60 +467,52 @@ public class PlanningPokerController : IPlanningPoker
         /// <returns>Messages received by observer or empty collection if timeed out.</returns>
         public async Task<IEnumerable<Message>> GetMessagesAsync(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            using var timeoutCancellationTokenSource = new CancellationTokenSource();
+            using var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
+            try
             {
-                using (var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token))
+                _observer.MessageReceived += ObserverOnMessageReceived;
+                _isReceivedEventHandlerHooked = true;
+
+                var messagesReceivedTask = _taskCompletionSource.Task;
+                var timeoutTask = _taskProvider.Delay(timeout, combinedCancellationTokenSource.Token);
+                var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (completedTask == messagesReceivedTask)
                 {
-                    try
-                    {
-                        _observer.MessageReceived += ObserverOnMessageReceived;
-                        _isReceivedEventHandlerHooked = true;
+                    return await messagesReceivedTask;
+                }
+                else
+                {
+                    return Enumerable.Empty<Message>();
+                }
+            }
+            finally
+            {
+                await timeoutCancellationTokenSource.CancelAsync();
 
-                        var messagesReceivedTask = _taskCompletionSource.Task;
-                        var timeoutTask = _taskProvider.Delay(timeout, combinedCancellationTokenSource.Token);
-                        var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
-
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        if (completedTask == messagesReceivedTask)
-                        {
-                            return await messagesReceivedTask;
-                        }
-                        else
-                        {
-                            return Enumerable.Empty<Message>();
-                        }
-                    }
-                    finally
-                    {
-                        await timeoutCancellationTokenSource.CancelAsync();
-
-                        if (_isReceivedEventHandlerHooked)
-                        {
-                            using (var teamLock = _scrumTeamLock)
-                            {
-                                teamLock.Lock();
-                                _observer.MessageReceived -= ObserverOnMessageReceived;
-                                _isReceivedEventHandlerHooked = false;
-                            }
-                        }
-                    }
+                if (_isReceivedEventHandlerHooked)
+                {
+                    using var teamLock = _scrumTeamLock;
+                    teamLock.Lock();
+                    _observer.MessageReceived -= ObserverOnMessageReceived;
+                    _isReceivedEventHandlerHooked = false;
                 }
             }
         }
 
         private void ObserverOnMessageReceived(object? sender, EventArgs e)
         {
-            using (var teamLock = _scrumTeamLock)
-            {
-                teamLock.Lock();
+            using var teamLock = _scrumTeamLock;
+            teamLock.Lock();
 
-                _observer.MessageReceived -= ObserverOnMessageReceived;
-                _isReceivedEventHandlerHooked = false;
+            _observer.MessageReceived -= ObserverOnMessageReceived;
+            _isReceivedEventHandlerHooked = false;
 
-                IEnumerable<Message> messages = _observer.Messages.ToList();
-                _taskCompletionSource.TrySetResult(messages);
-            }
+            IEnumerable<Message> messages = _observer.Messages.ToList();
+            _taskCompletionSource.TrySetResult(messages);
         }
     }
 }

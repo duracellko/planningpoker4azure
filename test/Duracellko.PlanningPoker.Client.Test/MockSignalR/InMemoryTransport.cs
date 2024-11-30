@@ -9,11 +9,11 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 
 internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
 {
-    private readonly Pipe _receivePipe = new Pipe();
-    private readonly Pipe _sendPipe = new Pipe();
+    private readonly Pipe _receivePipe = new();
+    private readonly Pipe _sendPipe = new();
     private readonly HubMessageStore _messageStore;
     private readonly SentMessagesObservable _sentMessagesObservable;
-    private readonly CancellationTokenSource _closeCancellationToken = new CancellationTokenSource();
+    private readonly CancellationTokenSource _closeCancellationToken = new();
     private readonly IDisposable _sentMessagesSubscription;
     private bool _messageReadingStarted;
 

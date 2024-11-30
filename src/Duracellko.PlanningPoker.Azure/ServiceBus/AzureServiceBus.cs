@@ -25,8 +25,8 @@ public class AzureServiceBus : IServiceBus, IDisposable
 
     private static readonly TimeSpan _serviceBusTokenTimeOut = TimeSpan.FromMinutes(1);
 
-    private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
-    private readonly ConcurrentDictionary<string, DateTime> _nodes = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+    private readonly Subject<NodeMessage> _observableMessages = new();
+    private readonly ConcurrentDictionary<string, DateTime> _nodes = new(StringComparer.OrdinalIgnoreCase);
     private readonly ILogger<AzureServiceBus> _logger;
 
     private volatile string? _nodeId;

@@ -104,13 +104,12 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.IsNotNull(teamLock);
-            Assert.IsNotNull(teamLock.Team);
-            Assert.AreEqual<string>("team", teamLock.Team.Name);
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.IsNotNull(teamLock);
+        Assert.IsNotNull(teamLock.Team);
+        Assert.AreEqual<string>("team", teamLock.Team.Name);
     }
 
     [TestMethod]
@@ -120,12 +119,11 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.IsNotNull(teamLock.Team.ScrumMaster);
-            Assert.AreEqual<string>("master", teamLock.Team.ScrumMaster.Name);
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.IsNotNull(teamLock.Team.ScrumMaster);
+        Assert.AreEqual<string>("master", teamLock.Team.ScrumMaster.Name);
     }
 
     [TestMethod]
@@ -135,16 +133,15 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        var expectedCollection = new double?[]
         {
-            // Verify
-            var expectedCollection = new double?[]
-            {
                 0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
-            };
-            var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
-            CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
-        }
+        };
+        var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
+        CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
     }
 
     [TestMethod]
@@ -154,16 +151,15 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Fibonacci))
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Fibonacci);
+
+        // Verify
+        var expectedCollection = new double?[]
         {
-            // Verify
-            var expectedCollection = new double?[]
-            {
                 0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, double.PositiveInfinity, null
-            };
-            var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
-            CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
-        }
+        };
+        var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
+        CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
     }
 
     [TestMethod]
@@ -173,16 +169,15 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.RockPaperScissorsLizardSpock))
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.RockPaperScissorsLizardSpock);
+
+        // Verify
+        var expectedCollection = new double?[]
         {
-            // Verify
-            var expectedCollection = new double?[]
-            {
                 -999909.0, -999908.0, -999907.0, -999906.0, -999905.0
-            };
-            var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
-            CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
-        }
+        };
+        var availableEstimations = teamLock.Team.AvailableEstimations.Select(e => e.Value).ToList();
+        CollectionAssert.AreEquivalent(expectedCollection, availableEstimations);
     }
 
     [TestMethod]
@@ -229,11 +224,10 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController(dateTimeProvider: dateTimeProvider);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.AreEqual<DateTimeProvider>(dateTimeProvider, teamLock.Team.DateTimeProvider);
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.AreEqual<DateTimeProvider>(dateTimeProvider, teamLock.Team.DateTimeProvider);
     }
 
     [TestMethod]
@@ -463,23 +457,21 @@ public class PlanningPokerControllerTest
     [TestMethod]
     public async Task GetMessagesAsync_TaskIsCancelled_ThrowsTaskCancelledException()
     {
-        using (var cancellationToken = new CancellationTokenSource())
+        using var cancellationToken = new CancellationTokenSource();
+        Task<IEnumerable<Message>> messagesTask;
+
+        // Arrange
+        var target = CreatePlanningPokerController();
+        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
         {
-            Task<IEnumerable<Message>> messagesTask;
+            teamLock.Lock();
 
-            // Arrange
-            var target = CreatePlanningPokerController();
-            using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-            {
-                teamLock.Lock();
-
-                // Act
-                messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, cancellationToken.Token);
-            }
-
-            await cancellationToken.CancelAsync();
-            await Assert.ThrowsExceptionAsync<OperationCanceledException>(() => messagesTask);
+            // Act
+            messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, cancellationToken.Token);
         }
+
+        await cancellationToken.CancelAsync();
+        await Assert.ThrowsExceptionAsync<OperationCanceledException>(() => messagesTask);
     }
 
     [TestMethod]

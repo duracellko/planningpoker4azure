@@ -402,7 +402,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
 
         var messagePrefix = "HubException: ";
         var index = exceptionMessage.IndexOf(messagePrefix, StringComparison.OrdinalIgnoreCase);
-        return index < 0 ? exceptionMessage : exceptionMessage.Substring(index + messagePrefix.Length);
+        return index < 0 ? exceptionMessage : exceptionMessage[(index + messagePrefix.Length)..];
     }
 
     private void OnNotify(IList<Message> messages)
@@ -513,10 +513,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
         var exception = arg ?? new InvalidOperationException();
         lock (_reconnectingLock)
         {
-            if (_reconnectingTask == null)
-            {
-                _reconnectingTask = new TaskCompletionSource<bool>();
-            }
+            _reconnectingTask ??= new TaskCompletionSource<bool>();
         }
 
         lock (_getMessagesLock)

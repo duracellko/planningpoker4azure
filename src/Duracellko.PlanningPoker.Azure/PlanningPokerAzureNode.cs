@@ -23,7 +23,7 @@ public class PlanningPokerAzureNode : IDisposable
     private const string DeletedTeamPrefix = "Deleted:";
     private static readonly byte[] DeletedTeamPrefixBytes = Encoding.UTF8.GetBytes(DeletedTeamPrefix);
 
-    private readonly InitializationList _teamsToInitialize = new InitializationList();
+    private readonly InitializationList _teamsToInitialize = new();
     private readonly ScrumTeamSerializer _scrumTeamSerializer;
     private readonly ILogger<PlanningPokerAzureNode> _logger;
 
@@ -207,7 +207,7 @@ public class PlanningPokerAzureNode : IDisposable
     {
         var teamMessages = PlanningPoker.ObservableMessages.Where(m => !string.Equals(m.TeamName, _processingScrumTeamName, StringComparison.OrdinalIgnoreCase));
         var nodeTeamMessages = teamMessages
-            .Where(m => m.MessageType != MessageType.Empty && m.MessageType != MessageType.TeamCreated && m.MessageType != MessageType.EstimationEnded)
+            .Where(m => m.MessageType is not MessageType.Empty and not MessageType.TeamCreated and not MessageType.EstimationEnded)
             .Select(m => new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = m });
         var createTeamMessages = (IObservable<NodeMessage>)teamMessages.Where(m => m.MessageType == MessageType.TeamCreated)
             .Select(m => CreateTeamCreatedMessage(m.TeamName))
@@ -233,15 +233,13 @@ public class PlanningPokerAzureNode : IDisposable
     {
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            return new NodeMessage(NodeMessageType.TeamCreated)
             {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                return new NodeMessage(NodeMessageType.TeamCreated)
-                {
-                    Data = SerializeScrumTeam(team)
-                };
-            }
+                Data = SerializeScrumTeam(team)
+            };
         }
         catch (Exception ex)
         {
@@ -279,10 +277,9 @@ public class PlanningPokerAzureNode : IDisposable
                 try
                 {
                     _processingScrumTeamName = scrumTeam.Name;
-                    using (var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam))
-                    {
-                        // The team can be released just after attaching.
-                    }
+
+                    // The team can be released just after attaching.
+                    using var teamLock = PlanningPoker.AttachScrumTeam(scrumTeam);
                 }
                 finally
                 {
@@ -346,179 +343,161 @@ public class PlanningPokerAzureNode : IDisposable
 
     private void OnMemberJoinedMessage(string teamName, ScrumTeamMemberMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                var isObserver = string.Equals(message.MemberType, nameof(Observer), StringComparison.OrdinalIgnoreCase);
-                var observer = team.Join(message.MemberName, isObserver);
-                observer.SessionId = message.SessionId;
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            var isObserver = string.Equals(message.MemberType, nameof(Observer), StringComparison.OrdinalIgnoreCase);
+            var observer = team.Join(message.MemberName, isObserver);
+            observer.SessionId = message.SessionId;
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnMemberDisconnectedMessage(string teamName, ScrumTeamMemberMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                team.Disconnect(message.MemberName);
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            team.Disconnect(message.MemberName);
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnEstimationStartedMessage(string teamName)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                team.ScrumMaster?.StartEstimation();
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            team.ScrumMaster?.StartEstimation();
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnEstimationCanceledMessage(string teamName)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                team.ScrumMaster?.CancelEstimation();
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            team.ScrumMaster?.CancelEstimation();
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnMemberEstimatedMessage(string teamName, ScrumTeamMemberEstimationMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
+            _processingScrumTeamName = team.Name;
+            if (team.FindMemberOrObserver(message.MemberName) is Member member)
             {
-                _processingScrumTeamName = team.Name;
-                if (team.FindMemberOrObserver(message.MemberName) is Member member)
-                {
-                    member.Estimation = new Estimation(message.Estimation);
-                }
+                member.Estimation = new Estimation(message.Estimation);
             }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnAvailableEstimationsChangedMessage(string teamName, ScrumTeamEstimationSetMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                var newAvailableEstimations = message.Estimations.Select(e => new Estimation(e)).ToList();
-                team.ChangeAvailableEstimations(newAvailableEstimations);
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            var newAvailableEstimations = message.Estimations.Select(e => new Estimation(e)).ToList();
+            team.ChangeAvailableEstimations(newAvailableEstimations);
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnTimerStartedMessage(string teamName, ScrumTeamTimerMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
+            _processingScrumTeamName = team.Name;
+            var remainingTimerDuration = message.EndTime - team.DateTimeProvider.UtcNow;
+            if (remainingTimerDuration > TimeSpan.Zero)
             {
-                _processingScrumTeamName = team.Name;
-                var remainingTimerDuration = message.EndTime - team.DateTimeProvider.UtcNow;
-                if (remainingTimerDuration > TimeSpan.Zero)
-                {
-                    team.ScrumMaster?.StartTimer(remainingTimerDuration);
-                }
+                team.ScrumMaster?.StartTimer(remainingTimerDuration);
             }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnTimerCanceledMessage(string teamName)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
-            {
-                _processingScrumTeamName = team.Name;
-                team.ScrumMaster?.CancelTimer();
-            }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+            _processingScrumTeamName = team.Name;
+            team.ScrumMaster?.CancelTimer();
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
     private void OnMemberActivityMessage(string teamName, ScrumTeamMemberMessage message)
     {
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        try
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            try
+            _processingScrumTeamName = team.Name;
+            var observer = team.FindMemberOrObserver(message.MemberName);
+            if (observer != null)
             {
-                _processingScrumTeamName = team.Name;
-                var observer = team.FindMemberOrObserver(message.MemberName);
-                if (observer != null)
-                {
-                    observer.SessionId = message.SessionId;
-                    observer.AcknowledgeMessages(message.SessionId, message.AcknowledgedMessageId);
-                    observer.UpdateActivity();
-                }
+                observer.SessionId = message.SessionId;
+                observer.AcknowledgeMessages(message.SessionId, message.AcknowledgedMessageId);
+                observer.UpdateActivity();
             }
-            finally
-            {
-                _processingScrumTeamName = null;
-            }
+        }
+        finally
+        {
+            _processingScrumTeamName = null;
         }
     }
 
@@ -685,11 +664,9 @@ public class PlanningPokerAzureNode : IDisposable
                 byte[]? scrumTeamData = null;
                 try
                 {
-                    using (var teamLock = PlanningPoker.GetScrumTeam(scrumTeamName))
-                    {
-                        teamLock.Lock();
-                        scrumTeamData = SerializeScrumTeam(teamLock.Team);
-                    }
+                    using var teamLock = PlanningPoker.GetScrumTeam(scrumTeamName);
+                    teamLock.Lock();
+                    scrumTeamData = SerializeScrumTeam(teamLock.Team);
                 }
                 catch (Exception)
                 {
@@ -712,18 +689,14 @@ public class PlanningPokerAzureNode : IDisposable
 
     private byte[] SerializeScrumTeam(ScrumTeam scrumTeam)
     {
-        using (var stream = new MemoryStream())
-        {
-            _scrumTeamSerializer.Serialize(stream, scrumTeam);
-            return stream.ToArray();
-        }
+        using var stream = new MemoryStream();
+        _scrumTeamSerializer.Serialize(stream, scrumTeam);
+        return stream.ToArray();
     }
 
     private ScrumTeam DeserializeScrumTeam(byte[] json)
     {
-        using (var stream = new MemoryStream(json))
-        {
-            return _scrumTeamSerializer.Deserialize(stream);
-        }
+        using var stream = new MemoryStream(json);
+        return _scrumTeamSerializer.Deserialize(stream);
     }
 }

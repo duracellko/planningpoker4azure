@@ -34,7 +34,7 @@ public sealed class RedisHealthCheck : IHealthCheck, IDisposable
             var connectionString = _configuration.ServiceBusConnectionString!;
             if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
             {
-                connectionString = connectionString.Substring(6);
+                connectionString = connectionString[6..];
             }
 
             return connectionString;

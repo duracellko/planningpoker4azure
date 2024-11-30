@@ -22,8 +22,8 @@ public class EstimationResultTest
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(member, null),
-            new KeyValuePair<Member, Estimation?>(master, null),
+            new(member, null),
+            new(master, null),
         };
         CollectionAssert.AreEquivalent(expectedResult, result.ToList());
     }
@@ -77,8 +77,8 @@ public class EstimationResultTest
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(member, null),
-            new KeyValuePair<Member, Estimation?>(master, estimation),
+            new(member, null),
+            new(master, estimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, target.ToList());
     }
@@ -99,8 +99,8 @@ public class EstimationResultTest
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(master, null),
-            new KeyValuePair<Member, Estimation?>(member, estimation),
+            new(master, null),
+            new(member, estimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, target.ToList());
     }

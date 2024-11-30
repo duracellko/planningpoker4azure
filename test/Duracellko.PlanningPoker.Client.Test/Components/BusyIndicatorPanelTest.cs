@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class BusyIndicatorPanelTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new Bunit.TestContext();
+    private readonly Bunit.TestContext _context = new();
 
     public void Dispose()
     {

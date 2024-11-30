@@ -170,8 +170,8 @@ public class MemberTest
         Assert.IsNotNull(team.EstimationResult);
         var expectedResult = new KeyValuePair<Member, Estimation>[]
         {
-            new KeyValuePair<Member, Estimation>(master, masterEstimation),
-            new KeyValuePair<Member, Estimation>(member, memberEstimation),
+            new(master, masterEstimation),
+            new(member, memberEstimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, team.EstimationResult.ToList());
     }
@@ -196,8 +196,8 @@ public class MemberTest
         Assert.IsNotNull(team.EstimationResult);
         var expectedResult = new KeyValuePair<Member, Estimation>[]
         {
-            new KeyValuePair<Member, Estimation>(master, masterEstimation),
-            new KeyValuePair<Member, Estimation>(member, memberEstimation),
+            new(master, masterEstimation),
+            new(member, memberEstimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, team.EstimationResult.ToList());
     }

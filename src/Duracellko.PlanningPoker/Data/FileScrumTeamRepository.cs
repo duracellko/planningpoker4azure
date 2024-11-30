@@ -111,10 +111,8 @@ public class FileScrumTeamRepository : IScrumTeamRepository
         {
             try
             {
-                using (var stream = File.OpenRead(file))
-                {
-                    result = _scrumTeamSerializer.Deserialize(stream);
-                }
+                using var stream = File.OpenRead(file);
+                result = _scrumTeamSerializer.Deserialize(stream);
             }
             catch (IOException)
             {
