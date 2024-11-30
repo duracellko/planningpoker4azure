@@ -1550,7 +1550,7 @@ public class PlanningPokerAzureNodeTest
             });
     }
 
-    [return: NotNullIfNotNull("team")]
+    [return: NotNullIfNotNull(nameof(team))]
     private static Mock<IScrumTeamLock>? SetupPlanningPoker(Mock<IAzurePlanningPoker> planningPoker, ScrumTeam? team, bool noEnd = false)
     {
         planningPoker.Setup(p => p.SetTeamsInitializingList(It.IsAny<IEnumerable<string>>()));

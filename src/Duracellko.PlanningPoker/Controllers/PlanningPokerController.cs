@@ -206,8 +206,7 @@ public class PlanningPokerController : IPlanningPoker
         }
 
         // not need to load from repository, because team was already obtained
-        Tuple<ScrumTeam, object>? teamTuple;
-        if (!_scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
+        if (!_scrumTeams.TryGetValue(observer.Team.Name, out var teamTuple) || teamTuple.Item1 != observer.Team)
         {
             throw new PlanningPokerException(Service.ErrorCodes.ScrumTeamNotExist, observer.Team.Name);
         }

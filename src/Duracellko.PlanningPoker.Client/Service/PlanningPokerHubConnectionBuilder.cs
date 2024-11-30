@@ -11,7 +11,7 @@ public class PlanningPokerHubConnectionBuilder : IHubConnectionBuilder
 {
     private const string ServiceUri = "signalr/PlanningPoker";
 
-    private static TimeSpan[] _reconnectDelays = new[]
+    private static readonly TimeSpan[] _reconnectDelays = new[]
     {
         TimeSpan.FromSeconds(0),
         TimeSpan.FromSeconds(0.5),

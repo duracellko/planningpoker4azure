@@ -55,7 +55,7 @@ public class EmptyScrumTeamRepository : IScrumTeamRepository
         // do nothing
     }
 
-            /// <summary>
+    /// <summary>
     /// Deletes all Scrum teams.
     /// </summary>
     public void DeleteAll()

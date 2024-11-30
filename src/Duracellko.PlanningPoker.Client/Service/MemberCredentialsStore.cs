@@ -15,7 +15,7 @@ public class MemberCredentialsStore : IMemberCredentialsStore
     /// <summary>
     /// Initializes a new instance of the <see cref="MemberCredentialsStore"/> class.
     /// </summary>
-    /// <param name="jsInterop">JavaScript runtime to execute JavaScript functions.</param>
+    /// <param name="jsRuntime">JavaScript runtime to execute JavaScript functions.</param>
     public MemberCredentialsStore(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));

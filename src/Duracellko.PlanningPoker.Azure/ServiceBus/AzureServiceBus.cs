@@ -355,7 +355,7 @@ public class AzureServiceBus : IServiceBus, IDisposable
                     lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
                 {
                     await DeleteSubscription(subscription);
-                    _nodes.TryRemove(subscription, out lastSubscriptionActivity);
+                    _nodes.TryRemove(subscription, out _);
                     _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
                 }
             }

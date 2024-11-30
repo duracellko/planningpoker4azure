@@ -62,7 +62,7 @@ public sealed class PlanningPokerTest : IDisposable
     public void Initialized_TeamNameAndMemberNameProvided_OpensIndexPage(string? queryString)
     {
         var navigationManager = new Mock<INavigationManager>();
-        navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl);
+        navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
         using var target = _context.RenderComponent<PlanningPokerPage>(

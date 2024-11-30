@@ -11,10 +11,7 @@ internal sealed class HubMessageStore
     private readonly ConcurrentDictionary<long, HubMessage> _messages = new ConcurrentDictionary<long, HubMessage>();
     private long _nextId;
 
-    public HubMessage this[long id]
-    {
-        get => _messages[id];
-    }
+    public HubMessage this[long id] => _messages[id];
 
     public long Add(HubMessage message)
     {

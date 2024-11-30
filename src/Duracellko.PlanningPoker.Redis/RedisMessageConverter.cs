@@ -79,19 +79,19 @@ public class RedisMessageConverter : IRedisMessageConverter
         switch (result.MessageType)
         {
             case NodeMessageType.ScrumTeamMessage:
-                if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(messageSubtype, nameof(ScrumTeamMemberMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ReadObject<ScrumTeamMemberMessage>(data);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamMemberEstimationMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ReadObject<ScrumTeamMemberEstimationMessage>(data);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamEstimationSetMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ReadObject<ScrumTeamEstimationSetMessage>(data);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamTimerMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ReadObject<ScrumTeamTimerMessage>(data);
                 }

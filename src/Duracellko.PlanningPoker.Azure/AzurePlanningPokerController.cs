@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
@@ -20,7 +21,7 @@ namespace Duracellko.PlanningPoker.Azure;
 public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
 {
     private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
-    private readonly object _teamsToInitializeLock = new object();
+    private readonly Lock _teamsToInitializeLock = new();
     private HashSet<string>? _teamsToInitialize;
     private volatile bool _initialized;
 
@@ -201,7 +202,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
     {
         if (!_initialized)
         {
-            bool teamListInitialized = false;
+            bool teamListInitialized;
             lock (_teamsToInitializeLock)
             {
                 teamListInitialized = _teamsToInitialize != null;
@@ -249,7 +250,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
     {
         if (!_initialized)
         {
-            bool teamInitialized = false;
+            bool teamInitialized;
             lock (_teamsToInitializeLock)
             {
                 teamInitialized = _teamsToInitialize != null && !_teamsToInitialize.Contains(teamName);

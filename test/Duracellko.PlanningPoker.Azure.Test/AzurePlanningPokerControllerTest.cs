@@ -29,7 +29,7 @@ public class AzurePlanningPokerControllerTest
         var messages = new List<ScrumTeamMessage>();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         target.CreateScrumTeam("test", "master", Deck.Standard);
         target.Dispose();
 
@@ -50,7 +50,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.Join("member", false);
         target.Dispose();
 
@@ -75,7 +75,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.Disconnect("master");
         target.Dispose();
 
@@ -100,7 +100,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster!.AcknowledgeMessages(guid, 2);
         teamLock.Team.ScrumMaster.UpdateActivity();
         target.Dispose();
@@ -127,7 +127,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster!.StartEstimation();
         target.Dispose();
 
@@ -148,7 +148,7 @@ public class AzurePlanningPokerControllerTest
         teamLock.Team.ScrumMaster!.StartEstimation();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.CancelEstimation();
         target.Dispose();
 
@@ -169,7 +169,7 @@ public class AzurePlanningPokerControllerTest
         teamLock.Team.ScrumMaster!.StartEstimation();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.Estimation = new Estimation(3.0);
         target.Dispose();
 
@@ -194,7 +194,7 @@ public class AzurePlanningPokerControllerTest
         var deck = DeckProvider.Default.GetDeck(Deck.Fibonacci);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ChangeAvailableEstimations(deck);
         target.Dispose();
 
@@ -221,7 +221,7 @@ public class AzurePlanningPokerControllerTest
         dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc));
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         member.StartTimer(TimeSpan.FromSeconds(112));
         target.Dispose();
 
@@ -248,7 +248,7 @@ public class AzurePlanningPokerControllerTest
         dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 50, 0, DateTimeKind.Utc));
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.CancelTimer();
         target.Dispose();
 

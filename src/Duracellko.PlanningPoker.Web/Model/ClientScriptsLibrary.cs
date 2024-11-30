@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duracellko.PlanningPoker.Web.Model;
@@ -14,7 +15,7 @@ public class ClientScriptsLibrary
 
     private readonly List<ClientScriptReference> _cascadingStyleSheets = new List<ClientScriptReference>();
     private readonly List<ClientScriptReference> _javaScripts = new List<ClientScriptReference>();
-    private readonly object _initializationLock = new object();
+    private readonly Lock _initializationLock = new();
 
     private bool _initialized;
 
@@ -95,13 +96,13 @@ public class ClientScriptsLibrary
         var libraryFiles = libraryElement.GetProperty("files").EnumerateArray()
             .Select(f => f.GetString());
 
-        var cssFile = libraryFiles.FirstOrDefault(f => IsCascadingStyleSheet(f));
+        var cssFile = libraryFiles.FirstOrDefault(IsCascadingStyleSheet);
         if (cssFile != null)
         {
             yield return new ClientScriptReference(libraryName, libraryVersion, cssFile);
         }
 
-        var jsFile = libraryFiles.FirstOrDefault(f => IsJavaScript(f));
+        var jsFile = libraryFiles.FirstOrDefault(IsJavaScript);
         if (jsFile != null)
         {
             yield return new ClientScriptReference(libraryName, libraryVersion, jsFile);

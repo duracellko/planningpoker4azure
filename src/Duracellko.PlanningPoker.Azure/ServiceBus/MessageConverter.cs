@@ -89,19 +89,19 @@ public class MessageConverter : IMessageConverter
         switch (result.MessageType)
         {
             case NodeMessageType.ScrumTeamMessage:
-                if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(messageSubtype, nameof(ScrumTeamMemberMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamMemberEstimationMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamEstimationSetMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamEstimationSetMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamTimerMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamTimerMessage>(message.Body);
                 }

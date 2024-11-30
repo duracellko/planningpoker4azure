@@ -320,7 +320,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
 
         if (message.Data != null)
         {
-            properties.ContentType = message.Data is byte[] ? "application/octet-stream" : "application/json";
+            properties.ContentType = (message.Data is byte[]) ? "application/octet-stream" : "application/json";
         }
 
         return properties;

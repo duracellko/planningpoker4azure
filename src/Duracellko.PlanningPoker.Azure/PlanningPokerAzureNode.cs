@@ -352,7 +352,7 @@ public class PlanningPokerAzureNode : IDisposable
             try
             {
                 _processingScrumTeamName = team.Name;
-                var isObserver = string.Equals(message.MemberType, typeof(Observer).Name, StringComparison.OrdinalIgnoreCase);
+                var isObserver = string.Equals(message.MemberType, nameof(Observer), StringComparison.OrdinalIgnoreCase);
                 var observer = team.Join(message.MemberName, isObserver);
                 observer.SessionId = message.SessionId;
             }
@@ -699,7 +699,7 @@ public class PlanningPokerAzureNode : IDisposable
                 var initializeTeamMessage = new NodeMessage(NodeMessageType.InitializeTeam)
                 {
                     RecipientNodeId = message.SenderNodeId,
-                    Data = scrumTeamData != null ? scrumTeamData : CreateDeletedTeamData(scrumTeamName)
+                    Data = scrumTeamData ?? CreateDeletedTeamData(scrumTeamName)
                 };
                 SendNodeMessage(initializeTeamMessage);
             }

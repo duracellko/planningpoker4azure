@@ -14,8 +14,8 @@ namespace Duracellko.PlanningPoker.Client.Service;
 public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposable
 {
     private readonly IHubConnectionBuilder _hubConnectionBuilder;
-    private readonly object _reconnectingLock = new object();
-    private readonly object _getMessagesLock = new object();
+    private readonly Lock _reconnectingLock = new();
+    private readonly Lock _getMessagesLock = new();
 
     private HubConnection? _hubConnection;
     private bool _disposed;

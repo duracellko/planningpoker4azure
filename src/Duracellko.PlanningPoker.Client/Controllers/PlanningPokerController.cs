@@ -97,11 +97,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// </summary>
     public bool IsConnected
     {
-        get
-        {
-            return _isConnected;
-        }
-
+        get => _isConnected;
         private set
         {
             if (_isConnected != value)
@@ -582,7 +578,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         return estimationResult
             .OrderByDescending(i => i.Estimation != null ? estimationValueCounts[GetEstimationValueKey(i.Estimation.Value)] : 0)
             .ThenBy(i => i.Estimation?.Value, EstimationComparer.Default)
-            .ThenBy(i => GetMemberName(i), StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(GetMemberName, StringComparer.CurrentCultureIgnoreCase)
             .Select(i => i.Estimation != null ? new MemberEstimation(GetMemberName(i), i.Estimation.Value) : new MemberEstimation(GetMemberName(i)))
             .ToList();
     }
@@ -790,7 +786,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         return result;
     }
 
-    [return: NotNullIfNotNull("member")]
+    [return: NotNullIfNotNull(nameof(member))]
     private MemberItem? CreateMemberItem(TeamMember? member)
     {
         if (member == null)

@@ -10,11 +10,7 @@ public class PropertyChangedCounter
 
     public INotifyPropertyChanged? Target
     {
-        get
-        {
-            return _target;
-        }
-
+        get => _target;
         set
         {
             if (_target != null)

@@ -221,7 +221,7 @@ public class ScrumMasterTest
         master.StartEstimation();
 
         // Act
-        Assert.ThrowsException<InvalidOperationException>(() => master.StartEstimation());
+        Assert.ThrowsException<InvalidOperationException>(master.StartEstimation);
     }
 
     [TestMethod]

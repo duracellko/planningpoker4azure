@@ -101,19 +101,19 @@ public class MessageConverter : IMessageConverter
         switch (result.MessageType)
         {
             case NodeMessageType.ScrumTeamMessage:
-                if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(messageSubtype, nameof(ScrumTeamMemberMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamMemberEstimationMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamEstimationSetMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamEstimationSetMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamTimerMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamTimerMessage>(body);
                 }
@@ -192,7 +192,7 @@ public class MessageConverter : IMessageConverter
         }
     }
 
-    private static void SetHeader(IDictionary<string, object> headers, string key, string? value)
+    private static void SetHeader(Dictionary<string, object> headers, string key, string? value)
     {
         if (value != null)
         {

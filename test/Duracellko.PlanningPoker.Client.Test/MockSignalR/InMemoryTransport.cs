@@ -47,7 +47,7 @@ internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
     {
         var messageId = _messageStore.Add(message);
 
-        void WriteLong(IBufferWriter<byte> buffer, long value)
+        static void WriteLong(IBufferWriter<byte> buffer, long value)
         {
             var span = buffer.GetSpan(8);
             BitConverter.TryWriteBytes(span, value);
