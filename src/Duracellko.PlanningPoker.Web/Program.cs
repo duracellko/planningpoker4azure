@@ -35,10 +35,15 @@ public static class Program
         app.Run();
     }
 
-    public static WebApplication CreateWebApplication(string[] args)
+    public static WebApplication CreateWebApplication(string[] args, bool useStaticWebAssets = false)
     {
         var builder = WebApplication.CreateBuilder(args);
         ConfigureServices(builder.Services, builder.Configuration);
+
+        if (useStaticWebAssets)
+        {
+            builder.WebHost.UseStaticWebAssets();
+        }
 
         var app = builder.Build();
         ConfigureApp(app, app, app.Environment);
@@ -186,6 +191,7 @@ public static class Program
         endpoints.MapHealthChecks("/health");
         endpoints.MapControllers();
         endpoints.MapHub<PlanningPokerHub>("/signalr/PlanningPoker");
+        endpoints.MapStaticAssets();
         var componentsEndpoint = endpoints.MapRazorComponents<Components.App>()
             .AddAdditionalAssemblies(typeof(Client.AppLoader).Assembly);
 

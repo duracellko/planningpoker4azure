@@ -26,11 +26,17 @@ try {
 
     Write-Host "Step: unit tests" -ForegroundColor Green
     $testFiles = [System.Collections.Generic.List[string]]::new()
-    $testPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net8.0"
-    Get-ChildItem -Path $testPath -Filter '*.Test.dll' | ForEach-Object { $testFiles.Add($_.FullName) }
+    $binPath = Join-Path -Path $scriptDir -ChildPath "artifacts\bin"
+    $testDirectories = Get-ChildItem -Path $binPath -Filter '*.Test' -Directory
+    $testDirectories | ForEach-Object {
+        $testProjectName = Split-Path -Path $_ -Leaf
+        $testFile = Join-Path -Path $_ -ChildPath $buildConfiguration
+        $testFile = Join-Path -Path $testFile -ChildPath "$testProjectName.dll"
+        $testFiles.Add($testFile)
+    }
     $testAssemblies = $testFiles.ToArray()
 
-    Write-Host "dotnet test $testAssembliesString --logger:trx"
+    Write-Host "dotnet test $testAssemblies --logger:trx"
     & dotnet test $testAssemblies --logger:trx
     if (!$?) {
         throw "dotnet test failed"
@@ -41,14 +47,14 @@ try {
         Write-Host "Phase: End-2-End tests" -ForegroundColor Green
 
         Write-Host "Step: playwright install" -ForegroundColor Green
-        $playwrightPath = Join-Path -Path $scriptDir -ChildPath "Build\bin\$buildConfiguration\net8.0\playwright.ps1"
+        $playwrightPath = Join-Path -Path $scriptDir -ChildPath "artifacts\bin\Duracellko.PlanningPoker.E2ETest\$buildConfiguration\playwright.ps1"
         & $playwrightPath install chromium
         if (!$?) {
             throw "playwright install failed"
         }
     
         Write-Host "Step: End-2-End tests" -ForegroundColor Green
-        $e2eTestPath = Join-Path -Path $testPath -ChildPath 'Duracellko.PlanningPoker.E2ETest.dll'
+        $e2eTestPath = Join-Path -Path $binPath -ChildPath "Duracellko.PlanningPoker.E2ETest\$buildConfiguration\Duracellko.PlanningPoker.E2ETest.dll"
         Write-Host "dotnet test `"$e2eTestPath`" --logger:trx"
         & dotnet test $e2eTestPath --logger:trx
         if (!$?) {
@@ -63,14 +69,15 @@ try {
         throw "dotnet publish failed"
     }
 
-    $publishFolder = Join-Path -Path $scriptDir -ChildPath "Build\web\$buildConfiguration\net8.0\publish"
+    $publishFolder = Join-Path -Path $scriptDir -ChildPath "artifacts\publish\Duracellko.PlanningPoker.Web\$buildConfiguration"
     $dockerAppFolder = Join-Path -Path $scriptDir -ChildPath "docker\app"
     if (!(Test-Path -Path $dockerAppFolder)) {
         New-Item -Path $dockerAppFolder -ItemType Directory
     }
 
+    $exclude = @('*.xml', 'libman.json', '*.config', 'appsettings.Development.json')
     Get-ChildItem -Path $dockerAppFolder | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $publishFolder | Copy-Item -Destination $dockerAppFolder -Recurse
+    Get-ChildItem -Path $publishFolder -Exclude $exclude | Copy-Item -Destination $dockerAppFolder -Recurse
 }
 catch {
     throw

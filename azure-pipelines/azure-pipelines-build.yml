@@ -22,7 +22,7 @@ jobs:
   - task: UseDotNet@2
     displayName: Install .NET SDK
     inputs:
-      version: 8.0.x
+      version: 9.0.x
 
   - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
     displayName: 'PowerShell UpdateVersion.ps1'
@@ -46,10 +46,11 @@ jobs:
     displayName: dotnet test
     inputs:
       command: test
-      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net8.0/*.Test.dll'
+      projects: $(UnitTestProjects)
+      arguments: --configuration $(BuildConfiguration) --no-build
       testRunTitle: Planning Poker
 
-  - pwsh: '.\Build\bin\$(BuildConfiguration)\net8.0\playwright.ps1 install chromium'
+  - pwsh: '.\artifacts\bin\Duracellko.PlanningPoker.E2ETest\$(BuildConfiguration)\playwright.ps1 install chromium'
     displayName: Install Playwright
     workingDirectory: $(Build.SourcesDirectory)
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
@@ -58,7 +59,7 @@ jobs:
     displayName: dotnet test Duracellko.PlanningPoker.E2ETest
     inputs:
       command: test
-      projects: '$(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net8.0/Duracellko.PlanningPoker.E2ETest.dll'
+      projects: '$(Build.SourcesDirectory)/artifacts/bin/Duracellko.PlanningPoker.E2ETest/$(BuildConfiguration)/Duracellko.PlanningPoker.E2ETest.dll'
       testRunTitle: Planning Poker E2E
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))
 
@@ -77,7 +78,7 @@ jobs:
     inputs:
       archiveType: zip
       archiveFile: $(Build.StagingDirectory)/web/web.zip
-      rootFolderOrFile: $(Build.SourcesDirectory)/Build/web/$(BuildConfiguration)/net8.0/publish
+      rootFolderOrFile: $(Build.SourcesDirectory)/artifacts/publish/Duracellko.PlanningPoker.Web/$(BuildConfiguration)
       includeRootFolder: false
       replaceExistingArchive: true
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
@@ -92,7 +93,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy screenshots
     inputs:
-      SourceFolder: $(Build.SourcesDirectory)/Build/bin/$(BuildConfiguration)/net8.0/Screenshots
+      SourceFolder: $(Build.SourcesDirectory)/artifacts/bin/Duracellko.PlanningPoker.E2ETest/$(BuildConfiguration)/Screenshots
       TargetFolder: $(Build.Build.StagingDirectory)/screenshots
       CleanTargetFolder: true
     condition: and(succeeded(), eq(variables['RunEnd2EndTests'], 'true'))

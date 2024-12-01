@@ -74,7 +74,7 @@ public class ServerFixture : IAsyncDisposable, IDisposable
             throw new InvalidOperationException("WebHost is already started.");
         }
 
-        WebHost = Program.CreateWebApplication(GetProgramArguments());
+        WebHost = Program.CreateWebApplication(GetProgramArguments(), true);
         await RunInBackgroundThread(() => WebHost.StartAsync()).ConfigureAwait(false);
     }
 
