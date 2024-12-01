@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Controllers;
 /// </summary>
 public class PlanningPokerController : IPlanningPoker
 {
-    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, Lock>> _scrumTeams = new(StringComparer.OrdinalIgnoreCase);
     private readonly DeckProvider _deckProvider;
     private readonly TaskProvider _taskProvider;
     private readonly ILogger<PlanningPokerController> _logger;
@@ -115,8 +115,8 @@ public class PlanningPokerController : IPlanningPoker
         var availableEstimations = _deckProvider.GetDeck(deck);
         var team = new ScrumTeam(teamName, availableEstimations, DateTimeProvider, GuidProvider);
         team.SetScrumMaster(scrumMasterName);
-        var teamLock = new object();
-        var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var teamTuple = new Tuple<ScrumTeam, Lock>(team, teamLock);
 
         // loads team from repository and adds it to in-memory collection
         LoadScrumTeam(teamName);
@@ -142,8 +142,8 @@ public class PlanningPokerController : IPlanningPoker
         ArgumentNullException.ThrowIfNull(team);
 
         var teamName = team.Name;
-        var teamLock = new object();
-        var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var teamTuple = new Tuple<ScrumTeam, Lock>(team, teamLock);
 
         // loads team from repository and adds it to in-memory collection
         LoadScrumTeam(teamName);
@@ -311,9 +311,9 @@ public class PlanningPokerController : IPlanningPoker
         }
     }
 
-    private Tuple<ScrumTeam, object>? LoadScrumTeam(string teamName)
+    private Tuple<ScrumTeam, Lock>? LoadScrumTeam(string teamName)
     {
-        Tuple<ScrumTeam, object>? result = null;
+        Tuple<ScrumTeam, Lock>? result = null;
         var retry = true;
 
         while (retry)
@@ -348,10 +348,10 @@ public class PlanningPokerController : IPlanningPoker
         Repository.SaveScrumTeam(team);
     }
 
-    private Tuple<ScrumTeam, object>? AttachLoadedScrumTeam(ScrumTeam team)
+    private Tuple<ScrumTeam, Lock>? AttachLoadedScrumTeam(ScrumTeam team)
     {
-        var teamLock = new object();
-        var result = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var result = new Tuple<ScrumTeam, Lock>(team, teamLock);
         if (_scrumTeams.TryAdd(team.Name, result))
         {
             OnTeamAdded(team);
@@ -384,7 +384,7 @@ public class PlanningPokerController : IPlanningPoker
     /// </summary>
     private sealed class ScrumTeamLock : IScrumTeamLock
     {
-        private readonly object _lockObject;
+        private readonly Lock _lockObject;
         private bool _locked;
 
         /// <summary>
@@ -392,7 +392,7 @@ public class PlanningPokerController : IPlanningPoker
         /// </summary>
         /// <param name="team">The Scrum team.</param>
         /// <param name="lockObj">The object used to lock the Scrum team.</param>
-        public ScrumTeamLock(ScrumTeam team, object lockObj)
+        public ScrumTeamLock(ScrumTeam team, Lock lockObj)
         {
             Team = team;
             _lockObject = lockObj;
@@ -413,7 +413,7 @@ public class PlanningPokerController : IPlanningPoker
         {
             if (!_locked)
             {
-                Monitor.TryEnter(_lockObject, 10000, ref _locked);
+                _locked = _lockObject.TryEnter(10000);
                 if (!_locked)
                 {
                     throw new TimeoutException(Resources.Error_ScrumTeamTimeout);
@@ -428,7 +428,7 @@ public class PlanningPokerController : IPlanningPoker
         {
             if (_locked)
             {
-                Monitor.Exit(_lockObject);
+                _lockObject.Exit();
             }
         }
     }

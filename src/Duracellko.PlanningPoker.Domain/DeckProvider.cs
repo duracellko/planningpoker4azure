@@ -66,7 +66,7 @@ public class DeckProvider
         new(-999508.0), // S
         new(-999507.0), // M
         new(-999506.0), // L
-        new(-999505.0), // XL
+        new(-999505.0) // XL
     ];
 
     private readonly IEnumerable<Estimation> _rockPaperScissorsLizardSpock =
@@ -75,7 +75,7 @@ public class DeckProvider
         new(-999908.0), // Paper
         new(-999907.0), // Scissors
         new(-999906.0), // Lizard
-        new(-999905.0), // Spock
+        new(-999905.0) // Spock
     ];
 
     /// <summary>
@@ -98,7 +98,7 @@ public class DeckProvider
             Deck.Rating => _ratingDeck,
             Deck.Tshirt => _tshirtSizes,
             Deck.RockPaperScissorsLizardSpock => _rockPaperScissorsLizardSpock,
-            _ => throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorDeckNotSupported, deck), nameof(deck)),
+            _ => throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorDeckNotSupported, deck), nameof(deck))
         };
     }
 
