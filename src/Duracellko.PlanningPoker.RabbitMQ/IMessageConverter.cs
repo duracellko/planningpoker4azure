@@ -14,7 +14,7 @@ public interface IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Headers of the message.</returns>
-    IDictionary<string, object> GetMessageHeaders(NodeMessage message);
+    IDictionary<string, object?> GetMessageHeaders(NodeMessage message);
 
     /// <summary>
     /// Gets body of RabbitMQ message converted from <see cref="T:NodeMessage"/>.
@@ -29,7 +29,7 @@ public interface IMessageConverter
     /// <param name="headers">Headers of the message to convert.</param>
     /// <param name="body">Body of the message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
-    NodeMessage GetNodeMessage(IDictionary<string, object> headers, ReadOnlyMemory<byte> body);
+    NodeMessage GetNodeMessage(IDictionary<string, object?> headers, ReadOnlyMemory<byte> body);
 
     /// <summary>
     /// Gets decoded value of Rabbit MQ message header with specified key.
@@ -37,5 +37,5 @@ public interface IMessageConverter
     /// <param name="headers">The collection of header key-value pairs.</param>
     /// <param name="key">The key to get header value for.</param>
     /// <returns>Value header with specified key.</returns>
-    string? GetHeader(IDictionary<string, object> headers, string key);
+    string? GetHeader(IDictionary<string, object?> headers, string key);
 }
