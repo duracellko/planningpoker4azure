@@ -73,7 +73,7 @@ public class PlanningPokerServiceTest
         Assert.AreEqual<string>(TeamName, resultTeam.Name);
         Assert.IsNotNull(resultTeam.ScrumMaster);
         Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-        Assert.AreEqual<string>(typeof(D.ScrumMaster).Name, resultTeam.ScrumMaster.Type);
+        Assert.AreEqual<string>(nameof(D.ScrumMaster), resultTeam.ScrumMaster.Type);
     }
 
     [TestMethod]
@@ -202,7 +202,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(resultTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -277,7 +277,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(resultTeam.Observers);
         var expectedObservers = new string[] { ObserverName };
         CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.Observer).Name };
+        var expectedMemberTypes = new string[] { nameof(D.Observer) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Observers.Select(m => m.Type).ToList());
     }
 
@@ -414,7 +414,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -452,7 +452,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
@@ -494,7 +494,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
 
         Assert.IsNotNull(result.ScrumTeam.Observers);
@@ -536,7 +536,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(result.ScrumTeam.Members);
         var expectedMembers = new string[] { ScrumMasterName, MemberName };
         CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-        var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
         CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
 
         Assert.IsFalse(team.ScrumMaster!.IsDormant);
@@ -556,7 +556,7 @@ public class PlanningPokerServiceTest
         var result = target.ReconnectTeam(TeamName, MemberName);
 
         // Verify
-        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
     }
 
     [TestMethod]
@@ -1452,7 +1452,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1463,8 +1463,7 @@ public class PlanningPokerServiceTest
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
-        var memberMessage = (MemberMessage)result[0];
+        Assert.IsInstanceOfType<MemberMessage>(result[0], out var memberMessage);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
 
@@ -1492,7 +1491,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 1, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 1, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1511,14 +1510,13 @@ public class PlanningPokerServiceTest
 
         Assert.AreEqual<long>(5, result[3].Id);
         Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
-        Assert.IsInstanceOfType(result[3], typeof(EstimationResultMessage));
-        var estimationResultMessage = (EstimationResultMessage)result[3];
+        Assert.IsInstanceOfType<EstimationResultMessage>(result[3], out var estimationResultMessage);
 
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
         var expectedResult = new Tuple<string, double>[]
         {
-            new Tuple<string, double>(ScrumMasterName, 1.0),
-            new Tuple<string, double>(MemberName, 2.0)
+            new(ScrumMasterName, 1.0),
+            new(MemberName, 2.0)
         };
         CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
 
@@ -1544,7 +1542,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, MemberName, guid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, MemberName, guid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1555,8 +1553,7 @@ public class PlanningPokerServiceTest
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)result[0];
+        Assert.IsInstanceOfType<EstimationSetMessage>(result[0], out var estimationSetMessage);
 
         var estimations = estimationSetMessage.Estimations;
         Assert.IsNotNull(estimations);
@@ -1591,7 +1588,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1620,7 +1617,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, guid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1631,8 +1628,7 @@ public class PlanningPokerServiceTest
         Assert.AreEqual<int>(2, result.Count);
         Assert.AreEqual<long>(2, result[1].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
-        Assert.IsInstanceOfType(result[1], typeof(MemberMessage));
-        var memberMessage = (MemberMessage)result[1];
+        Assert.IsInstanceOfType<MemberMessage>(result[1], out var memberMessage);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
     }
@@ -1655,7 +1651,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, MemberName, guid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, MemberName, guid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1666,8 +1662,7 @@ public class PlanningPokerServiceTest
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
-        var timerMessage = (TimerMessage)result[0];
+        Assert.IsInstanceOfType<TimerMessage>(result[0], out var timerMessage);
         Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), timerMessage.EndTime);
     }
 
@@ -1680,11 +1675,11 @@ public class PlanningPokerServiceTest
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
         planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster!, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<D.Message>()).Verifiable();
+            .ReturnsAsync([]).Verifiable();
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0, default);
         var result = resultAction.Value;
 
         // Verify
@@ -1708,15 +1703,15 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0, default);
         var result = resultAction.Result;
 
         // Verify
         planningPoker.Verify();
         teamLock.Verify();
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
-        var resultValue = ((NotFoundObjectResult)result).Value?.ToString();
+        Assert.IsInstanceOfType<NotFoundObjectResult>(result, out var notFoundObjectResult);
+        var resultValue = notFoundObjectResult.Value?.ToString();
         Assert.IsNotNull(resultValue);
         Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));
         Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
@@ -1743,15 +1738,15 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 1, default(CancellationToken));
+        var resultAction = await target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 1, default);
         var result = resultAction.Result;
 
         // Verify
         planningPoker.Verify();
         teamLock.Verify();
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
-        var resultValue = ((NotFoundObjectResult)result).Value?.ToString();
+        Assert.IsInstanceOfType<NotFoundObjectResult>(result, out var notFoundObjectResult);
+        var resultValue = notFoundObjectResult.Value?.ToString();
         Assert.IsNotNull(resultValue);
         Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));
         Assert.AreEqual(messageCount, member.Messages.Count());
@@ -1765,7 +1760,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1776,7 +1771,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1787,7 +1782,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
+        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1798,7 +1793,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default(CancellationToken)));
+        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1836,11 +1831,7 @@ public class PlanningPokerServiceTest
 
     private static PlanningPokerService CreatePlanningPokerService(D.IPlanningPoker planningPoker, D.DateTimeProvider? dateTimeProvider = null)
     {
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = D.DateTimeProvider.Default;
-        }
-
+        dateTimeProvider ??= D.DateTimeProvider.Default;
         return new PlanningPokerService(planningPoker, dateTimeProvider, D.DeckProvider.Default);
     }
 

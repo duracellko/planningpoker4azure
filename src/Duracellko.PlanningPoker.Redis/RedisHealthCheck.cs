@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Redis;
 public sealed class RedisHealthCheck : IHealthCheck, IDisposable
 {
     private readonly IAzurePlanningPokerConfiguration _configuration;
-    private readonly object _redisLock = new object();
+    private readonly Lock _redisLock = new();
     private ConnectionMultiplexer? _redis;
     private bool _disposed;
 
@@ -34,7 +34,7 @@ public sealed class RedisHealthCheck : IHealthCheck, IDisposable
             var connectionString = _configuration.ServiceBusConnectionString!;
             if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
             {
-                connectionString = connectionString.Substring(6);
+                connectionString = connectionString[6..];
             }
 
             return connectionString;
@@ -86,6 +86,7 @@ public sealed class RedisHealthCheck : IHealthCheck, IDisposable
         _disposed = true;
     }
 
+    [SuppressMessage("Maintainability", "CA1508:Avoid dead conditional code", Justification = "Connection can be created by another thread.")]
     private async Task<ConnectionMultiplexer> Connect()
     {
         if (_redis != null)

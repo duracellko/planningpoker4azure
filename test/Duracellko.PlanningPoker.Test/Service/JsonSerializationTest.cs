@@ -9,11 +9,11 @@ namespace Duracellko.PlanningPoker.Test.Service;
 [TestClass]
 public class JsonSerializationTest
 {
-    public static IEnumerable<object[]> JsonTestData { get; } = new[]
-    {
-        new object[] { JsonSerializerDefaults.General },
-        new object[] { JsonSerializerDefaults.Web },
-    };
+    public static IEnumerable<object[]> JsonTestData { get; } =
+    [
+        [JsonSerializerDefaults.General],
+        [JsonSerializerDefaults.Web],
+    ];
 
     [DataTestMethod]
     [DynamicData(nameof(JsonTestData))]
@@ -26,13 +26,13 @@ public class JsonSerializationTest
             Name = "Test Team",
             State = TeamState.Initial,
             ScrumMaster = scrumMaster,
-            Members = new List<TeamMember> { scrumMaster },
-            AvailableEstimations = new List<Estimation>
-            {
+            Members = [scrumMaster],
+            AvailableEstimations =
+            [
                 new Estimation { Value = null },
                 new Estimation { Value = 1 },
                 new Estimation { Value = 2 }
-            }
+            ]
         };
 
         var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
@@ -60,8 +60,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam
@@ -70,17 +70,17 @@ public class JsonSerializationTest
             State = TeamState.EstimationFinished,
             ScrumMaster = scrumMaster,
             TimerEndTime = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc),
-            Members = new List<TeamMember> { scrumMaster, teamMember },
-            Observers = new List<TeamMember>
-            {
+            Members = [scrumMaster, teamMember],
+            Observers =
+            [
                 new TeamMember { Name = "Jane", Type = "Observer" }
-            },
+            ],
             AvailableEstimations = availableEstimations,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem { Member = scrumMaster, Estimation = availableEstimations[1] },
                 new EstimationResultItem { Member = teamMember, Estimation = availableEstimations[0] }
-            }
+            ]
         };
 
         var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
@@ -118,8 +118,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam
@@ -127,14 +127,14 @@ public class JsonSerializationTest
             Name = "Test Team",
             State = TeamState.EstimationInProgress,
             ScrumMaster = scrumMaster,
-            Members = new List<TeamMember> { scrumMaster, teamMember },
-            Observers = new List<TeamMember>(),
+            Members = [scrumMaster, teamMember],
+            Observers = [],
             AvailableEstimations = availableEstimations,
-            EstimationParticipants = new List<EstimationParticipantStatus>
-            {
+            EstimationParticipants =
+            [
                 new EstimationParticipantStatus { MemberName = teamMember.Name, Estimated = true },
                 new EstimationParticipantStatus { MemberName = scrumMaster.Name, Estimated = false }
-            }
+            ]
         };
 
         var result = SerializeAndDeserialize(scrumTeam, jsonSerializerDefaults);
@@ -171,13 +171,13 @@ public class JsonSerializationTest
             State = TeamState.Initial,
             ScrumMaster = scrumMaster,
             TimerEndTime = new DateTime(2022, 3, 4, 5, 6, 7, DateTimeKind.Utc),
-            Members = new List<TeamMember> { scrumMaster },
-            AvailableEstimations = new List<Estimation>
-            {
+            Members = [scrumMaster],
+            AvailableEstimations =
+            [
                 new Estimation { Value = null },
                 new Estimation { Value = 1 },
                 new Estimation { Value = 2 }
-            }
+            ]
         };
 
         var reconnectTeamResult = new ReconnectTeamResult
@@ -216,8 +216,8 @@ public class JsonSerializationTest
 
         var availableEstimations = new List<Estimation>
         {
-            new Estimation { Value = 1 },
-            new Estimation { Value = 2 }
+            new() { Value = 1 },
+            new() { Value = 2 }
         };
 
         var scrumTeam = new ScrumTeam
@@ -225,14 +225,14 @@ public class JsonSerializationTest
             Name = "Test Team",
             State = TeamState.EstimationInProgress,
             ScrumMaster = scrumMaster,
-            Members = new List<TeamMember> { scrumMaster, teamMember },
-            Observers = new List<TeamMember>(),
+            Members = [scrumMaster, teamMember],
+            Observers = [],
             AvailableEstimations = availableEstimations,
-            EstimationParticipants = new List<EstimationParticipantStatus>
-            {
+            EstimationParticipants =
+            [
                 new EstimationParticipantStatus { MemberName = teamMember.Name, Estimated = true },
                 new EstimationParticipantStatus { MemberName = scrumMaster.Name, Estimated = false }
-            }
+            ]
         };
 
         var reconnectTeamResult = new ReconnectTeamResult
@@ -321,8 +321,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType(result, typeof(MemberMessage));
-        var memberMessageResult = (MemberMessage)result;
+        Assert.IsInstanceOfType<MemberMessage>(result, out var memberMessageResult);
         Assert.IsNotNull(memberMessageResult.Member);
         Assert.AreEqual(message.Member.Name, memberMessageResult.Member.Name);
         Assert.AreEqual(message.Member.Type, memberMessageResult.Member.Type);
@@ -336,8 +335,8 @@ public class JsonSerializationTest
         {
             Id = 10,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = "master", Type = "ScrumMaster" },
@@ -348,7 +347,7 @@ public class JsonSerializationTest
                     Member = new TeamMember { Name = "dev", Type = "Member" },
                     Estimation = new Estimation { Value = 13 }
                 }
-            }
+            ]
         };
 
         var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
@@ -357,8 +356,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType(result, typeof(EstimationResultMessage));
-        var estimationResult = (EstimationResultMessage)result;
+        Assert.IsInstanceOfType<EstimationResultMessage>(result, out var estimationResult);
         Assert.AreEqual(message.EstimationResult[0].Member!.Name, estimationResult.EstimationResult[0].Member!.Name);
         Assert.AreEqual(message.EstimationResult[0].Member!.Type, estimationResult.EstimationResult[0].Member!.Type);
         Assert.AreEqual(message.EstimationResult[0].Estimation!.Value, estimationResult.EstimationResult[0].Estimation!.Value);
@@ -375,8 +373,8 @@ public class JsonSerializationTest
         {
             Id = 11,
             Type = MessageType.AvailableEstimationsChanged,
-            Estimations = new List<Estimation>
-            {
+            Estimations =
+            [
                 new Estimation
                 {
                     Value = 0
@@ -402,7 +400,7 @@ public class JsonSerializationTest
                     Value = Estimation.PositiveInfinity
                 },
                 new Estimation()
-            }
+            ]
         };
 
         var result = SerializeAndDeserialize<Message>(message, jsonSerializerDefaults);
@@ -411,8 +409,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType(result, typeof(EstimationSetMessage));
-        var estimationSetMessage = (EstimationSetMessage)result;
+        Assert.IsInstanceOfType<EstimationSetMessage>(result, out var estimationSetMessage);
         Assert.AreEqual(7, estimationSetMessage.Estimations.Count);
         Assert.AreEqual(0.0, estimationSetMessage.Estimations[0].Value);
         Assert.AreEqual(0.5, estimationSetMessage.Estimations[1].Value);
@@ -440,8 +437,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType(result, typeof(TimerMessage));
-        var timerMessageResult = (TimerMessage)result;
+        Assert.IsInstanceOfType<TimerMessage>(result, out var timerMessageResult);
         Assert.AreEqual(message.EndTime, timerMessageResult.EndTime);
     }
 

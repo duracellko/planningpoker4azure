@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 
 namespace Duracellko.PlanningPoker.Domain;
@@ -12,8 +11,8 @@ namespace Duracellko.PlanningPoker.Domain;
 [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Events are placed together with protected methods.")]
 public class ScrumTeam
 {
-    private readonly List<Member> _members = new List<Member>();
-    private readonly List<Observer> _observers = new List<Observer>();
+    private readonly List<Member> _members = [];
+    private readonly List<Observer> _observers = [];
     private readonly GuidProvider _guidProvider;
 
     private EstimationResult? _estimationResult;
@@ -62,10 +61,12 @@ public class ScrumTeam
             throw new ArgumentException(Resources.Error_EmptyScrumTeamName, nameof(scrumTeamData));
         }
 
+        ArgumentNullException.ThrowIfNull(scrumTeamData.AvailableEstimations);
+
         DateTimeProvider = dateTimeProvider ?? DateTimeProvider.Default;
         _guidProvider = guidProvider ?? GuidProvider.Default;
         Name = scrumTeamData.Name;
-        AvailableEstimations = scrumTeamData.AvailableEstimations.ToArray();
+        AvailableEstimations = [.. scrumTeamData.AvailableEstimations];
         State = scrumTeamData.State;
         TimerEndTime = scrumTeamData.TimerEndTime.HasValue ? DateTime.SpecifyKind(scrumTeamData.TimerEndTime.Value, DateTimeKind.Utc) : null;
 
@@ -365,17 +366,15 @@ public class ScrumTeam
     /// <returns>The serialization data.</returns>
     public virtual Serialization.ScrumTeamData GetData()
     {
-        var result = new Serialization.ScrumTeamData
+        return new Serialization.ScrumTeamData
         {
             Name = Name,
             AvailableEstimations = AvailableEstimations.ToList(),
             State = State,
-            TimerEndTime = TimerEndTime
+            TimerEndTime = TimerEndTime,
+            Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList(),
+            EstimationResult = _estimationResult?.GetData()
         };
-
-        result.Members = UnionMembersAndObservers().Select(m => m.GetData()).ToList();
-        result.EstimationResult = _estimationResult?.GetData();
-        return result;
     }
 
     /// <summary>

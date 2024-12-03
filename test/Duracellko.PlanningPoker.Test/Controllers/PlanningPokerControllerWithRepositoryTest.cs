@@ -21,7 +21,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+        repository.SetupGet(r => r.ScrumTeamNames).Returns(["team1", "team2"]);
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
@@ -38,7 +38,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(new string[] { "team1", "team2" });
+        repository.SetupGet(r => r.ScrumTeamNames).Returns(["team1", "team2"]);
         repository.Setup(r => r.LoadScrumTeam("team1")).Returns((ScrumTeam?)null);
         repository.Setup(r => r.LoadScrumTeam("team3")).Returns((ScrumTeam?)null);
         var target = CreatePlanningPokerController(repository: repository.Object);
@@ -66,7 +66,7 @@ public class PlanningPokerControllerWithRepositoryTest
     {
         // Arrange
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+        repository.SetupGet(r => r.ScrumTeamNames).Returns([]);
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
@@ -87,12 +87,11 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.IsNotNull(teamLock);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.IsNotNull(teamLock);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
     }
 
     [TestMethod]
@@ -167,13 +166,12 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-            repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+        repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
     }
 
     [TestMethod]
@@ -198,13 +196,12 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            // Verify
-            Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-            repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
-        }
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+
+        // Verify
+        Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+        repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
     }
 
     [TestMethod]
@@ -247,8 +244,8 @@ public class PlanningPokerControllerWithRepositoryTest
         var master = team.SetScrumMaster("master");
         master.UpdateActivity();
 
-        bool firstLoad = true;
-        bool firstReturn = true;
+        var firstLoad = true;
+        var firstReturn = true;
         PlanningPokerController? target = null;
 
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
@@ -261,10 +258,8 @@ public class PlanningPokerControllerWithRepositoryTest
                     firstLoad = false;
                     try
                     {
-                        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-                        {
-                            Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
-                        }
+                        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+                        Assert.AreNotEqual<ScrumTeam>(team, teamLock.Team);
                     }
                     catch (ArgumentException)
                     {
@@ -306,12 +301,11 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.AttachScrumTeam(team))
-        {
-            // Verify
-            Assert.IsNotNull(teamLock);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-        }
+        using var teamLock = target.AttachScrumTeam(team);
+
+        // Verify
+        Assert.IsNotNull(teamLock);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
     }
 
     [TestMethod]
@@ -399,13 +393,12 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        using (var teamLock = target.GetScrumTeam("team"))
-        {
-            // Verify
-            Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-            repository.Verify(r => r.DeleteScrumTeam("team"), Times.Never());
-        }
+        using var teamLock = target.GetScrumTeam("team");
+
+        // Verify
+        Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+        repository.Verify(r => r.DeleteScrumTeam("team"), Times.Never());
     }
 
     [TestMethod]
@@ -558,13 +551,12 @@ public class PlanningPokerControllerWithRepositoryTest
             // Obtain team only
         }
 
-        using (var teamLock = target.GetScrumTeam("team"))
-        {
-            // Verify
-            Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-            repository.Verify(r => r.DeleteScrumTeam("team"), Times.Never());
-        }
+        using var teamLock = target.GetScrumTeam("team");
+
+        // Verify
+        Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+        repository.Verify(r => r.DeleteScrumTeam("team"), Times.Never());
     }
 
     [TestMethod]
@@ -580,8 +572,8 @@ public class PlanningPokerControllerWithRepositoryTest
         var master = team.SetScrumMaster("master");
         master.UpdateActivity();
 
-        bool firstLoad = true;
-        bool firstReturn = true;
+        var firstLoad = true;
+        var firstReturn = true;
         PlanningPokerController? target = null;
         ScrumTeam? createdTeam = null;
 
@@ -593,10 +585,9 @@ public class PlanningPokerControllerWithRepositoryTest
                 if (firstLoad)
                 {
                     firstLoad = false;
-                    using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-                    {
-                        createdTeam = teamLock.Team;
-                    }
+
+                    using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+                    createdTeam = teamLock.Team;
                 }
             }).Returns<string>(n =>
             {
@@ -641,23 +632,21 @@ public class PlanningPokerControllerWithRepositoryTest
         var repository = new Mock<IScrumTeamRepository>(MockBehavior.Strict);
         repository.Setup(r => r.LoadScrumTeam("team")).Returns(team);
         repository.Setup(r => r.DeleteScrumTeam("team"));
-        repository.SetupGet(r => r.ScrumTeamNames).Returns(Enumerable.Empty<string>());
+        repository.SetupGet(r => r.ScrumTeamNames).Returns([]);
 
         timeProvider.SetUtcNow(new DateTime(2015, 1, 1, 10, 14, 0, DateTimeKind.Utc));
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        using (var teamLock = target.GetScrumTeam("team"))
-        {
-            teamLock.Team.Disconnect(master.Name);
-            var result = target.ScrumTeamNames;
+        using var teamLock = target.GetScrumTeam("team");
+        teamLock.Team.Disconnect(master.Name);
+        var result = target.ScrumTeamNames;
 
-            // Verify
-            Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
-            Assert.IsFalse(result.Any());
-            repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
-            repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
-        }
+        // Verify
+        Assert.AreEqual<ScrumTeam>(team, teamLock.Team);
+        Assert.IsFalse(result.Any());
+        repository.Verify(r => r.LoadScrumTeam("team"), Times.Once());
+        repository.Verify(r => r.DeleteScrumTeam("team"), Times.Once());
     }
 
     [TestMethod]
@@ -670,13 +659,11 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            teamLock.Team.ScrumMaster!.UpdateActivity();
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+        teamLock.Team.ScrumMaster!.UpdateActivity();
 
-            // Verify
-            repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
-        }
+        // Verify
+        repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
     }
 
     [TestMethod]
@@ -689,13 +676,11 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            teamLock.Team.Join("member", false);
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+        teamLock.Team.Join("member", false);
 
-            // Verify
-            repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
-        }
+        // Verify
+        repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
     }
 
     [TestMethod]
@@ -708,13 +693,11 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        using (var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard))
-        {
-            teamLock.Team.ScrumMaster!.StartEstimation();
+        using var teamLock = target.CreateScrumTeam("team", "master", Deck.Standard);
+        teamLock.Team.ScrumMaster!.StartEstimation();
 
-            // Verify
-            repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
-        }
+        // Verify
+        repository.Verify(r => r.SaveScrumTeam(teamLock.Team), Times.Once());
     }
 
     private static PlanningPokerController CreatePlanningPokerController(
@@ -726,11 +709,7 @@ public class PlanningPokerControllerWithRepositoryTest
         TaskProvider? taskProvider = null,
         ILogger<PlanningPokerController>? logger = null)
     {
-        if (logger == null)
-        {
-            logger = Mock.Of<ILogger<PlanningPokerController>>();
-        }
-
+        logger ??= Mock.Of<ILogger<PlanningPokerController>>();
         return new PlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
     }
 }

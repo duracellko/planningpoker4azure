@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,19 +41,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <!-- Copy wwwroot to outbut build directory for E2E tests -->
-  <Target Name="CopyWwwrootToOutput" AfterTargets="AfterBuild">
-    <ItemGroup>
-      <ClientWwwrootFiles Include="wwwroot\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(ClientWwwrootFiles)" DestinationFiles="@(ClientWwwrootFiles->'$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
-  </Target>
-
-  <Target Name="DeleteWwwrootFromOutput" BeforeTargets="BeforeClean">
-    <ItemGroup>
-      <ClientOutputWwwrootFiles Include="$(OutDir)wwwroot\**\*.*" />
-    </ItemGroup>
-    <Delete Files="@(ClientOutputWwwrootFiles)" />
-  </Target>
-  
 </Project>

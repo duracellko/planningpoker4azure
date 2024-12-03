@@ -350,9 +350,8 @@ public class FileScrumTeamRepositoryTest
     {
         var path = Path.Join(_rootFolder!.FullName, name);
         var result = new FileInfo(path);
-        using (var writer = result.CreateText())
-        {
-            writer.Write(Guid.NewGuid().ToString());
-        }
+
+        using var writer = result.CreateText();
+        writer.Write(Guid.NewGuid().ToString());
     }
 }

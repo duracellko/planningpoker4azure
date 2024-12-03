@@ -16,9 +16,9 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -71,11 +71,11 @@ public class PlanningPokerTest : E2ETestBase
         // Alice estimates
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("3");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(scrumMaster, "3"),
             new KeyValuePair<string, string>(member, "8")
-        };
+        ];
         await TakeScreenshot("13-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await TakeScreenshot(1, "14-B-ScrumMasterEstimated");
@@ -100,7 +100,7 @@ public class PlanningPokerTest : E2ETestBase
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("\u00BD");
 
-        expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
+        expectedResult = [new KeyValuePair<string, string>(scrumMaster, string.Empty)];
         await TakeScreenshot("19-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await ClientTest.AssertNotAvailableEstimations();
@@ -110,11 +110,11 @@ public class PlanningPokerTest : E2ETestBase
         // Bob estimates
         await ClientTests[1].AssertAvailableEstimations();
         await ClientTests[1].SelectEstimation("\u221E");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(scrumMaster, "\u00BD"),
             new KeyValuePair<string, string>(member, "\u221E")
-        };
+        ];
         await TakeScreenshot(1, "21-B-MemberEstimated");
         await ClientTests[1].AssertSelectedEstimation(expectedResult);
         await TakeScreenshot("22-A-MemberEstimated");
@@ -141,9 +141,9 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -213,7 +213,7 @@ public class PlanningPokerTest : E2ETestBase
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("100");
 
-        expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
+        expectedResult = [new KeyValuePair<string, string>(scrumMaster, string.Empty)];
         await TakeScreenshot("17-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await TakeScreenshot(1, "18-B-ScrumMasterEstimated");
@@ -222,11 +222,11 @@ public class PlanningPokerTest : E2ETestBase
         // Bob estimates
         await ClientTests[1].AssertAvailableEstimations();
         await ClientTests[1].SelectEstimation("20");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(member, "20"),
             new KeyValuePair<string, string>(scrumMaster, "100")
-        };
+        ];
         await TakeScreenshot(1, "19-B-MemberEstimated");
         await ClientTests[1].AssertSelectedEstimation(expectedResult);
         await ClientTests[1].AssertNotAvailableEstimations();
@@ -255,10 +255,10 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member = "Bob";
-        string observer = "Charlie";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
+        var observer = "Charlie";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -330,11 +330,11 @@ public class PlanningPokerTest : E2ETestBase
         // Alice estimates
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("2");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(scrumMaster, "2"),
             new KeyValuePair<string, string>(member, "3")
-        };
+        ];
         await TakeScreenshot("17-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await TakeScreenshot(1, "18-B-ScrumMasterEstimated");
@@ -376,10 +376,10 @@ public class PlanningPokerTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "Duracellko.NET";
-        string scrumMaster = "Alice";
-        string member1 = "Bob";
-        string member2 = "Charlie";
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member1 = "Bob";
+        var member2 = "Charlie";
 
         // Alice creates team
         await ClientTest.OpenApplication();
@@ -455,11 +455,11 @@ public class PlanningPokerTest : E2ETestBase
         // Alice estimates
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("20");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(member1, "13"),
             new KeyValuePair<string, string>(scrumMaster, "20")
-        };
+        ];
         await TakeScreenshot("20-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await TakeScreenshot(1, "21-B-ScrumMasterEstimated");
@@ -479,7 +479,7 @@ public class PlanningPokerTest : E2ETestBase
 
         // Charlie estimates
         await ClientTests[2].SelectEstimation("20");
-        expectedResult = new[] { new KeyValuePair<string, string>(member2, string.Empty) };
+        expectedResult = [new KeyValuePair<string, string>(member2, string.Empty)];
         await TakeScreenshot(2, "26-C-MemberEstimated");
         await ClientTests[2].AssertSelectedEstimation(expectedResult);
         await ClientTests[2].AssertNotAvailableEstimations();
@@ -491,11 +491,11 @@ public class PlanningPokerTest : E2ETestBase
         // Alice estimates
         await ClientTest.AssertAvailableEstimations();
         await ClientTest.SelectEstimation("20");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(member2, string.Empty),
             new KeyValuePair<string, string>(scrumMaster, string.Empty)
-        };
+        ];
         await TakeScreenshot("29-A-ScrumMasterEstimated");
         await ClientTest.AssertSelectedEstimation(expectedResult);
         await ClientTest.AssertNotAvailableEstimations();
@@ -507,12 +507,12 @@ public class PlanningPokerTest : E2ETestBase
         // Bob estimates
         await ClientTests[1].AssertAvailableEstimations();
         await ClientTests[1].SelectEstimation("2");
-        expectedResult = new[]
-        {
+        expectedResult =
+        [
             new KeyValuePair<string, string>(scrumMaster, "20"),
             new KeyValuePair<string, string>(member2, "20"),
             new KeyValuePair<string, string>(member1, "2")
-        };
+        ];
         await TakeScreenshot(1, "32-B-MemberEstimated");
         await ClientTests[1].AssertSelectedEstimation(expectedResult);
         await ClientTests[1].AssertNotAvailableEstimations();

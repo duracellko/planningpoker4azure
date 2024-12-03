@@ -9,11 +9,11 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 
 internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
 {
-    private readonly Pipe _receivePipe = new Pipe();
-    private readonly Pipe _sendPipe = new Pipe();
+    private readonly Pipe _receivePipe = new();
+    private readonly Pipe _sendPipe = new();
     private readonly HubMessageStore _messageStore;
     private readonly SentMessagesObservable _sentMessagesObservable;
-    private readonly CancellationTokenSource _closeCancellationToken = new CancellationTokenSource();
+    private readonly CancellationTokenSource _closeCancellationToken = new();
     private readonly IDisposable _sentMessagesSubscription;
     private bool _messageReadingStarted;
 
@@ -47,7 +47,7 @@ internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
     {
         var messageId = _messageStore.Add(message);
 
-        void WriteLong(IBufferWriter<byte> buffer, long value)
+        static void WriteLong(IBufferWriter<byte> buffer, long value)
         {
             var span = buffer.GetSpan(8);
             BitConverter.TryWriteBytes(span, value);
@@ -84,7 +84,7 @@ internal sealed class InMemoryTransport : IDuplexPipe, IDisposable
 
     private static async Task ProvideServerHandshake(PipeReader reader, PipeWriter writer, CancellationToken cancellationToken)
     {
-        bool isHandshakeCompleted = false;
+        var isHandshakeCompleted = false;
         while (!isHandshakeCompleted)
         {
             var result = await reader.ReadAsync(cancellationToken).ConfigureAwait(false);

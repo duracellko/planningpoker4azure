@@ -22,7 +22,7 @@ public class EstimationTest
     public void Constructor_Zero_ValueIsZero()
     {
         // Arrange
-        double value = 0.0;
+        var value = 0.0;
 
         // Act
         var result = new Estimation(value);
@@ -35,7 +35,7 @@ public class EstimationTest
     public void Constructor_3point3_ValueIs3point3()
     {
         // Arrange
-        double value = 3.3;
+        var value = 3.3;
 
         // Act
         var result = new Estimation(value);
@@ -48,7 +48,7 @@ public class EstimationTest
     public void Constructor_PositiveInfinity_ValueIsPositiveInfinity()
     {
         // Arrange
-        double value = double.PositiveInfinity;
+        var value = double.PositiveInfinity;
 
         // Act
         var result = new Estimation(value);
@@ -61,7 +61,7 @@ public class EstimationTest
     public void Constructor_NotANumber_ValueIsNaN()
     {
         // Arrange
-        double value = double.NaN;
+        var value = double.NaN;
 
         // Act
         var result = new Estimation(value);

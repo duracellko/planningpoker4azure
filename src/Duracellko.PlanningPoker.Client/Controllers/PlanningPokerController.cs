@@ -97,11 +97,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// </summary>
     public bool IsConnected
     {
-        get
-        {
-            return _isConnected;
-        }
-
+        get => _isConnected;
         private set
         {
             if (_isConnected != value)
@@ -289,6 +285,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// <param name="username">Name of user joining the Scrum Team.</param>
     /// <param name="applicationCallback">Application reference for callback after an estimation ended.</param>
     /// <returns>Asynchronous operation.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has 3 branches.")]
     public async Task InitializeTeam(TeamResult teamInfo, string username, ApplicationCallbackReference? applicationCallback)
     {
         ArgumentNullException.ThrowIfNull(teamInfo);
@@ -304,15 +301,8 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             throw new ArgumentNullException(nameof(username));
         }
 
-        if (scrumTeam.Members == null)
-        {
-            scrumTeam.Members = new List<TeamMember>();
-        }
-
-        if (scrumTeam.Observers == null)
-        {
-            scrumTeam.Observers = new List<TeamMember>();
-        }
+        scrumTeam.Members ??= [];
+        scrumTeam.Observers ??= [];
 
         ScrumTeam = scrumTeam;
         User = FindTeamMember(username);
@@ -567,8 +557,8 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         {
             if (estimation.Estimation != null)
             {
-                double key = GetEstimationValueKey(estimation.Estimation.Value);
-                if (estimationValueCounts.TryGetValue(key, out int count))
+                var key = GetEstimationValueKey(estimation.Estimation.Value);
+                if (estimationValueCounts.TryGetValue(key, out var count))
                 {
                     estimationValueCounts[key] = count + 1;
                 }
@@ -582,7 +572,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         return estimationResult
             .OrderByDescending(i => i.Estimation != null ? estimationValueCounts[GetEstimationValueKey(i.Estimation.Value)] : 0)
             .ThenBy(i => i.Estimation?.Value, EstimationComparer.Default)
-            .ThenBy(i => GetMemberName(i), StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(GetMemberName, StringComparer.CurrentCultureIgnoreCase)
             .Select(i => i.Estimation != null ? new MemberEstimation(GetMemberName(i), i.Estimation.Value) : new MemberEstimation(GetMemberName(i)))
             .ToList();
     }
@@ -644,6 +634,9 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
                 break;
             case MessageType.TimerCanceled:
                 OnTimerCanceled();
+                break;
+            case MessageType.Empty:
+            default:
                 break;
         }
 
@@ -707,7 +700,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             return;
         }
 
-        _memberEstimations = new List<MemberEstimation>();
+        _memberEstimations = [];
         EstimationSummary = null;
         ScrumTeam.State = TeamState.EstimationInProgress;
         _hasJoinedEstimation = true;
@@ -790,7 +783,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
         return result;
     }
 
-    [return: NotNullIfNotNull("member")]
+    [return: NotNullIfNotNull(nameof(member))]
     private MemberItem? CreateMemberItem(TeamMember? member)
     {
         if (member == null)

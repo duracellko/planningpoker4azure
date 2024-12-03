@@ -18,21 +18,21 @@ public class PlanningPokerControllerTest
 {
     private CultureInfo? _originalCultureInfo;
 
-    public static IEnumerable<object[]> TimerStartedTestData { get; } = new[]
-    {
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 5, DateTimeKind.Utc), TimeSpan.Zero, TimeSpan.FromSeconds(2) },
-        new object[] { new DateTime(2021, 11, 18, 10, 22, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(87) },
-        new object[] { new DateTime(2021, 11, 18, 10, 20, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(-55), TimeSpan.FromSeconds(37) },
-        new object[] { new DateTime(2021, 11, 18, 10, 30, 19, DateTimeKind.Utc), TimeSpan.FromSeconds(-91), TimeSpan.FromSeconds(647) }
-    };
+    public static IEnumerable<object[]> TimerStartedTestData { get; } =
+    [
+        [new DateTime(2021, 11, 18, 10, 21, 5, DateTimeKind.Utc), TimeSpan.Zero, TimeSpan.FromSeconds(2)],
+        [new DateTime(2021, 11, 18, 10, 22, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(87)],
+        [new DateTime(2021, 11, 18, 10, 20, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(-55), TimeSpan.FromSeconds(37)],
+        [new DateTime(2021, 11, 18, 10, 30, 19, DateTimeKind.Utc), TimeSpan.FromSeconds(-91), TimeSpan.FromSeconds(647)]
+    ];
 
-    public static IEnumerable<object[]> TimerFinishedTestData { get; } = new[]
-    {
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc), TimeSpan.Zero },
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(55) },
-        new object[] { new DateTime(2021, 11, 18, 10, 21, 1, DateTimeKind.Utc), TimeSpan.FromSeconds(-1) },
-        new object[] { new DateTime(2021, 11, 18, 10, 18, 21, DateTimeKind.Utc), TimeSpan.FromSeconds(-21) }
-    };
+    public static IEnumerable<object[]> TimerFinishedTestData { get; } =
+    [
+        [new DateTime(2021, 11, 18, 10, 21, 3, DateTimeKind.Utc), TimeSpan.Zero],
+        [new DateTime(2021, 11, 18, 10, 21, 45, DateTimeKind.Utc), TimeSpan.FromSeconds(55)],
+        [new DateTime(2021, 11, 18, 10, 21, 1, DateTimeKind.Utc), TimeSpan.FromSeconds(-1)],
+        [new DateTime(2021, 11, 18, 10, 18, 21, DateTimeKind.Utc), TimeSpan.FromSeconds(-21)]
+    ];
 
     [TestInitialize]
     public void TestInitialize()
@@ -504,8 +504,8 @@ public class PlanningPokerControllerTest
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
         scrumTeam.State = TeamState.EstimationFinished;
-        scrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        scrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
@@ -531,7 +531,7 @@ public class PlanningPokerControllerTest
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
                 Estimation = new Estimation { Value = 2 }
             }
-        };
+        ];
         var teamResult = CreateTeamResult(scrumTeam);
         using var target = CreateController();
 
@@ -590,8 +590,8 @@ public class PlanningPokerControllerTest
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
         scrumTeam.State = TeamState.EstimationFinished;
-        scrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        scrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 1" },
@@ -616,7 +616,7 @@ public class PlanningPokerControllerTest
             {
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" },
             }
-        };
+        ];
 
         var sessionId = Guid.NewGuid();
         var reconnectTeamResult = new ReconnectTeamResult
@@ -684,8 +684,8 @@ public class PlanningPokerControllerTest
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
         scrumTeam.State = TeamState.EstimationFinished;
-        scrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        scrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -716,7 +716,7 @@ public class PlanningPokerControllerTest
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                 Estimation = new Estimation { Value = 20 }
             }
-        };
+        ];
 
         var sessionId = Guid.NewGuid();
         var reconnectTeamResult = new ReconnectTeamResult
@@ -789,8 +789,8 @@ public class PlanningPokerControllerTest
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 1" });
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" });
         scrumTeam.State = TeamState.EstimationFinished;
-        scrumTeam.EstimationResult = new List<EstimationResultItem>
-        {
+        scrumTeam.EstimationResult =
+        [
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
@@ -821,7 +821,7 @@ public class PlanningPokerControllerTest
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester 2" },
                 Estimation = new Estimation { Value = 5 }
             }
-        };
+        ];
         var teamResult = CreateTeamResult(scrumTeam);
         using var target = CreateController();
 
@@ -882,7 +882,7 @@ public class PlanningPokerControllerTest
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         scrumTeam.State = TeamState.EstimationFinished;
-        scrumTeam.EstimationResult = new List<EstimationResultItem>();
+        scrumTeam.EstimationResult = [];
         var teamResult = CreateTeamResult(scrumTeam);
         using var target = CreateController();
 
@@ -915,13 +915,13 @@ public class PlanningPokerControllerTest
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Developer 2" });
         scrumTeam.Members.Add(new TeamMember { Type = PlanningPokerData.MemberType, Name = "Tester" });
         scrumTeam.State = TeamState.EstimationInProgress;
-        scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        scrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus { MemberName = PlanningPokerData.ScrumMasterName, Estimated = true },
             new EstimationParticipantStatus { MemberName = "Tester", Estimated = false },
             new EstimationParticipantStatus { MemberName = "Developer 1", Estimated = true },
             new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = true }
-        };
+        ];
         var reconnectTeamResult = new ReconnectTeamResult
         {
             ScrumTeam = scrumTeam,
@@ -979,7 +979,7 @@ public class PlanningPokerControllerTest
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         scrumTeam.State = TeamState.EstimationInProgress;
-        scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>();
+        scrumTeam.EstimationParticipants = [];
         var reconnectTeamResult = new ReconnectTeamResult
         {
             ScrumTeam = scrumTeam,
@@ -1049,10 +1049,10 @@ public class PlanningPokerControllerTest
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         scrumTeam.State = TeamState.EstimationInProgress;
-        scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        scrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = false }
-        };
+        ];
         var reconnectTeamResult = new ReconnectTeamResult
         {
             ScrumTeam = scrumTeam,
@@ -1085,10 +1085,10 @@ public class PlanningPokerControllerTest
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         scrumTeam.State = TeamState.EstimationInProgress;
-        scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        scrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus { MemberName = PlanningPokerData.MemberName, Estimated = true }
-        };
+        ];
         var reconnectTeamResult = new ReconnectTeamResult
         {
             ScrumTeam = scrumTeam,
@@ -1125,10 +1125,10 @@ public class PlanningPokerControllerTest
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         scrumTeam.State = TeamState.EstimationInProgress;
-        scrumTeam.EstimationParticipants = new List<EstimationParticipantStatus>
-        {
+        scrumTeam.EstimationParticipants =
+        [
             new EstimationParticipantStatus { MemberName = PlanningPokerData.ScrumMasterName, Estimated = false }
-        };
+        ];
         var reconnectTeamResult = new ReconnectTeamResult
         {
             ScrumTeam = scrumTeam,
@@ -1768,7 +1768,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         await target.SelectEstimation(5);
 
@@ -1785,7 +1785,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.MemberName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         await target.SelectEstimation(double.PositiveInfinity);
 
@@ -1802,7 +1802,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.MemberName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         await target.SelectEstimation(null);
 
@@ -1832,7 +1832,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         Assert.IsTrue(target.CanSelectEstimation);
 
@@ -1850,7 +1850,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         Assert.IsTrue(target.CanSelectEstimation);
 
@@ -1868,7 +1868,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         Assert.IsTrue(target.CanSelectEstimation);
 
@@ -1894,7 +1894,7 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
-        target.ProcessMessages(new Message[] { message });
+        target.ProcessMessages([message]);
 
         var result = target.SelectEstimation(5);
 
@@ -2214,10 +2214,7 @@ public class PlanningPokerControllerTest
             timerFactory = timerFactoryMock.Object;
         }
 
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = new DateTimeProviderMock();
-        }
+        dateTimeProvider ??= new DateTimeProviderMock();
 
         if (serviceTimeProvider == null)
         {

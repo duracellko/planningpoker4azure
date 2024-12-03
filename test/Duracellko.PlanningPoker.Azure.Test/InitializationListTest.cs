@@ -40,7 +40,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         var result = target.ContainsOrNotInit("team2");
@@ -54,7 +54,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         var result = target.ContainsOrNotInit("team3");
@@ -97,7 +97,7 @@ public class InitializationListTest
         var target = new InitializationList();
 
         // Act
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Verify
         Assert.IsFalse(target.IsEmpty);
@@ -112,7 +112,7 @@ public class InitializationListTest
         var target = new InitializationList();
 
         // Act
-        var result = target.Setup(new string[] { "team1", "team2" });
+        var result = target.Setup(["team1", "team2"]);
 
         // Verify
         Assert.IsTrue(result);
@@ -123,10 +123,10 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1" });
+        target.Setup(["team1"]);
 
         // Act
-        target.Setup(new string[] { "team3", "team4" });
+        target.Setup(["team3", "team4"]);
 
         // Verify
         Assert.IsFalse(target.IsEmpty);
@@ -139,10 +139,10 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1" });
+        target.Setup(["team1"]);
 
         // Act
-        var result = target.Setup(new string[] { "team3", "team4" });
+        var result = target.Setup(["team3", "team4"]);
 
         // Verify
         Assert.IsFalse(result);
@@ -156,7 +156,7 @@ public class InitializationListTest
         target.Clear();
 
         // Act
-        target.Setup(new string[] { "team3", "team4" });
+        target.Setup(["team3", "team4"]);
 
         // Verify
         Assert.IsTrue(target.IsEmpty);
@@ -172,7 +172,7 @@ public class InitializationListTest
         target.Clear();
 
         // Act
-        var result = target.Setup(new string[] { "team3", "team4" });
+        var result = target.Setup(["team3", "team4"]);
 
         // Verify
         Assert.IsFalse(result);
@@ -193,7 +193,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         target.Remove("team2");
@@ -209,7 +209,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team2", "team2" });
+        target.Setup(["team2", "team2"]);
 
         // Act
         target.Remove("team2");
@@ -225,7 +225,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         var result = target.Remove("team2");
@@ -239,7 +239,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         target.Remove("team3");
@@ -255,7 +255,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         var result = target.Remove("team3");
@@ -269,7 +269,7 @@ public class InitializationListTest
     {
         // Arrange
         var target = new InitializationList();
-        target.Setup(new string[] { "team1", "team2" });
+        target.Setup(["team1", "team2"]);
 
         // Act
         target.Clear();

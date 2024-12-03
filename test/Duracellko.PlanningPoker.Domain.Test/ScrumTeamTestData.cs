@@ -15,13 +15,13 @@ internal static class ScrumTeamTestData
 
     public static IEnumerable<Estimation> GetCustomEstimationDeck()
     {
-        return new Estimation[]
-        {
-            new Estimation(99),
-            new Estimation(-1),
-            new Estimation(),
-            new Estimation(22.34),
-            new Estimation(-100.2)
-        };
+        return
+        [
+            new(99),
+            new(-1),
+            new(),
+            new(22.34),
+            new(-100.2)
+        ];
     }
 }

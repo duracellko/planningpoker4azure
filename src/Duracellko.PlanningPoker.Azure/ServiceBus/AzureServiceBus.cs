@@ -25,8 +25,8 @@ public class AzureServiceBus : IServiceBus, IDisposable
 
     private static readonly TimeSpan _serviceBusTokenTimeOut = TimeSpan.FromMinutes(1);
 
-    private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
-    private readonly ConcurrentDictionary<string, DateTime> _nodes = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+    private readonly Subject<NodeMessage> _observableMessages = new();
+    private readonly ConcurrentDictionary<string, DateTime> _nodes = new(StringComparer.OrdinalIgnoreCase);
     private readonly ILogger<AzureServiceBus> _logger;
 
     private volatile string? _nodeId;
@@ -224,9 +224,9 @@ public class AzureServiceBus : IServiceBus, IDisposable
             DefaultMessageTimeToLive = _serviceBusTokenTimeOut
         };
 
-        string sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
-        string senderIdPropertyName = ServiceBus.MessageConverter.SenderIdPropertyName;
-        string recipientIdPropertyName = ServiceBus.MessageConverter.RecipientIdPropertyName;
+        var sqlPattern = "{0} <> '{2}' AND ({1} IS NULL OR {1} = '{2}')";
+        var senderIdPropertyName = ServiceBus.MessageConverter.SenderIdPropertyName;
+        var recipientIdPropertyName = ServiceBus.MessageConverter.RecipientIdPropertyName;
         var filter = new SqlRuleFilter(string.Format(CultureInfo.InvariantCulture, sqlPattern, senderIdPropertyName, recipientIdPropertyName, nodeId));
         var subscriptionRuleOptions = new CreateRuleOptions("RecipientFilter", filter);
 
@@ -355,7 +355,7 @@ public class AzureServiceBus : IServiceBus, IDisposable
                     lastSubscriptionActivity < DateTime.UtcNow - Configuration.SubscriptionInactivityTimeout)
                 {
                     await DeleteSubscription(subscription);
-                    _nodes.TryRemove(subscription, out lastSubscriptionActivity);
+                    _nodes.TryRemove(subscription, out _);
                     _logger.InactiveSubscriptionDeleted(_nodeId, subscription);
                 }
             }
@@ -366,7 +366,7 @@ public class AzureServiceBus : IServiceBus, IDisposable
     {
         if (_serviceBusAdministrationClient == null)
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         var subscriptions = await _serviceBusAdministrationClient.GetSubscriptionsAsync(_topicName).ToListAsync();

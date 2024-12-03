@@ -17,13 +17,13 @@ public class EstimationResultTest
         var member = (Member)team.Join("member", false);
 
         // Act
-        var result = new EstimationResult(new Member[] { master, member });
+        var result = new EstimationResult([master, member]);
 
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(member, null),
-            new KeyValuePair<Member, Estimation?>(master, null),
+            new(member, null),
+            new(master, null),
         };
         CollectionAssert.AreEquivalent(expectedResult, result.ToList());
     }
@@ -58,7 +58,7 @@ public class EstimationResultTest
         var member = (Member)team.Join("member", false);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => new EstimationResult(new Member[] { master, member, master }));
+        Assert.ThrowsException<ArgumentException>(() => new EstimationResult([master, member, master]));
     }
 
     [TestMethod]
@@ -68,7 +68,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master, member });
+        var target = new EstimationResult([master, member]);
         var estimation = new Estimation();
 
         // Act
@@ -77,8 +77,8 @@ public class EstimationResultTest
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(member, null),
-            new KeyValuePair<Member, Estimation?>(master, estimation),
+            new(member, null),
+            new(master, estimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, target.ToList());
     }
@@ -90,7 +90,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master, member });
+        var target = new EstimationResult([master, member]);
         var estimation = new Estimation();
 
         // Act
@@ -99,8 +99,8 @@ public class EstimationResultTest
         // Verify
         var expectedResult = new KeyValuePair<Member, Estimation?>[]
         {
-            new KeyValuePair<Member, Estimation?>(master, null),
-            new KeyValuePair<Member, Estimation?>(member, estimation),
+            new(master, null),
+            new(member, estimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, target.ToList());
     }
@@ -112,7 +112,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master });
+        var target = new EstimationResult([master]);
         var estimation = new Estimation();
 
         // Act
@@ -126,7 +126,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master, member });
+        var target = new EstimationResult([master, member]);
         var estimation = new Estimation();
 
         // Act
@@ -141,7 +141,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master });
+        var target = new EstimationResult([master]);
 
         // Act
         Assert.ThrowsException<KeyNotFoundException>(() => target[member]);
@@ -154,7 +154,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master, member });
+        var target = new EstimationResult([master, member]);
 
         // Act
         var result = target.ContainsMember(member);
@@ -170,7 +170,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master });
+        var target = new EstimationResult([master]);
 
         // Act
         var result = target.ContainsMember(member);
@@ -186,7 +186,7 @@ public class EstimationResultTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        var target = new EstimationResult(new Member[] { master, member });
+        var target = new EstimationResult([master, member]);
 
         // Act
         var result = target.Count;
@@ -199,7 +199,7 @@ public class EstimationResultTest
     public void SetReadOnly_Execute_SetsIsReadOnly()
     {
         // Arrange
-        var target = new EstimationResult(Enumerable.Empty<Member>());
+        var target = new EstimationResult([]);
 
         // Act
         target.SetReadOnly();
@@ -212,7 +212,7 @@ public class EstimationResultTest
     public void SetReadOnly_GetAfterConstruction_ReturnsFalse()
     {
         // Arrange
-        var target = new EstimationResult(Enumerable.Empty<Member>());
+        var target = new EstimationResult([]);
 
         // Act
         var result = target.IsReadOnly;

@@ -37,10 +37,7 @@ internal sealed class PlanningPokerSignalRClientFixture : IAsyncDisposable
         return Mock.ReceiveMessage(message, CancellationToken);
     }
 
-    public Task<HubMessage?> GetSentMessage()
-    {
-        return SentMessages.GetNextAsync();
-    }
+    public Task<HubMessage?> GetSentMessage() => SentMessages.GetNextAsync();
 
     public async ValueTask DisposeAsync()
     {

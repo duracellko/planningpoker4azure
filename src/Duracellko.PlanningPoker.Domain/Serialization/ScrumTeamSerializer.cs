@@ -10,7 +10,7 @@ namespace Duracellko.PlanningPoker.Domain.Serialization;
 /// </summary>
 public class ScrumTeamSerializer
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions();
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new();
 
     private readonly DateTimeProvider _dateTimeProvider;
     private readonly GuidProvider _guidProvider;

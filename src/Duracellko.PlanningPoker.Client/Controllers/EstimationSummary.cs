@@ -53,17 +53,13 @@ public class EstimationSummary
     /// <returns>The calculated estimation summary value.</returns>
     public double? GetValue(EstimationSummaryFunction function)
     {
-        switch (function)
+        return function switch
         {
-            case EstimationSummaryFunction.Average:
-                return Average;
-            case EstimationSummaryFunction.Median:
-                return Median;
-            case EstimationSummaryFunction.Sum:
-                return Sum;
-            default:
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorUnsupportedEstimationSummaryFunction, function), nameof(function));
-        }
+            EstimationSummaryFunction.Average => Average,
+            EstimationSummaryFunction.Median => Median,
+            EstimationSummaryFunction.Sum => Sum,
+            _ => throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorUnsupportedEstimationSummaryFunction, function), nameof(function)),
+        };
     }
 
     private static bool IsNumericEstimation(MemberEstimation memberEstimation)

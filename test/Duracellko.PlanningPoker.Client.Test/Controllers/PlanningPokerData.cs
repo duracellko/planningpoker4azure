@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Service;
@@ -17,10 +18,10 @@ public static class PlanningPokerData
     public const string MemberName = "Test member";
     public const string ObserverName = "Test observer";
 
-    public static IReadOnlyList<string> MemberNames { get; } = new string[]
-    {
+    public static IReadOnlyList<string> MemberNames { get; } =
+    [
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
-    };
+    ];
 
     public static ScrumTeam GetScrumTeam()
     {
@@ -32,8 +33,8 @@ public static class PlanningPokerData
                 Name = ScrumMasterName,
                 Type = ScrumMasterType
             },
-            Members = new List<TeamMember>()
-            {
+            Members =
+            [
                 new TeamMember
                 {
                     Name = ScrumMasterName,
@@ -44,15 +45,15 @@ public static class PlanningPokerData
                     Name = MemberName,
                     Type = MemberType
                 }
-            },
-            Observers = new List<TeamMember>()
-            {
+            ],
+            Observers =
+            [
                 new TeamMember
                 {
                     Name = ObserverName,
                     Type = ObserverType
                 }
-            },
+            ],
             State = TeamState.Initial,
             AvailableEstimations = GetAvailableEstimations()
         };
@@ -87,10 +88,11 @@ public static class PlanningPokerData
         };
     }
 
+    [SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = "Creates always new instance.")]
     public static IList<Estimation> GetAvailableEstimations()
     {
-        return new List<Estimation>
-        {
+        return
+        [
             new Estimation() { Value = 0.0 },
             new Estimation() { Value = 0.5 },
             new Estimation() { Value = 1.0 },
@@ -104,7 +106,7 @@ public static class PlanningPokerData
             new Estimation() { Value = 100.0 },
             new Estimation() { Value = double.PositiveInfinity },
             new Estimation() { Value = null }
-        };
+        ];
     }
 
     public static TeamResult GetTeamResult(ScrumTeam? scrumTeam = null)

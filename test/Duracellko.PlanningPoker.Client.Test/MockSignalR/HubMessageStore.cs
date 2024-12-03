@@ -8,19 +8,16 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 
 internal sealed class HubMessageStore
 {
-    private readonly ConcurrentDictionary<long, HubMessage> _messages = new ConcurrentDictionary<long, HubMessage>();
+    private readonly ConcurrentDictionary<long, HubMessage> _messages = new();
     private long _nextId;
 
-    public HubMessage this[long id]
-    {
-        get => _messages[id];
-    }
+    public HubMessage this[long id] => _messages[id];
 
     public long Add(HubMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        long nextId = Interlocked.Increment(ref _nextId);
+        var nextId = Interlocked.Increment(ref _nextId);
         if (!_messages.TryAdd(nextId, message))
         {
             throw new InvalidOperationException("Message ID should be unique.");

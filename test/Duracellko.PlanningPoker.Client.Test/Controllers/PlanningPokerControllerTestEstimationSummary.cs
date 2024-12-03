@@ -163,7 +163,7 @@ public class PlanningPokerControllerTestEstimationSummary
             Id = 10,
             Type = MessageType.EstimationStarted
         };
-        target.ProcessMessages(new Message[] { estimationStartedMessage });
+        target.ProcessMessages([estimationStartedMessage]);
 
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -252,7 +252,7 @@ public class PlanningPokerControllerTestEstimationSummary
             Id = 1,
             Type = MessageType.EstimationStarted
         };
-        controller.ProcessMessages(new Message[] { estimationStartedMessage });
+        controller.ProcessMessages([estimationStartedMessage]);
 
         var estimationResultMessage = new EstimationResultMessage
         {
@@ -260,7 +260,7 @@ public class PlanningPokerControllerTestEstimationSummary
             Type = MessageType.EstimationEnded,
             EstimationResult = GetScrumTeamEstimations(scrumTeam, estimations)
         };
-        controller.ProcessMessages(new Message[] { estimationResultMessage });
+        controller.ProcessMessages([estimationResultMessage]);
 
         return controller;
     }
@@ -319,7 +319,7 @@ public class PlanningPokerControllerTestEstimationSummary
         };
         estimationResult.Add(estimationResultItem);
 
-        for (int i = 0; i < scrumTeam.Members.Count; i++)
+        for (var i = 0; i < scrumTeam.Members.Count; i++)
         {
             var member = scrumTeam.Members[i];
             estimationResultItem = new EstimationResultItem

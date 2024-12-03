@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -28,7 +29,7 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = PropertyPrefix + "MessageType";
     private const string MessageSubtypePropertyName = PropertyPrefix + "MessageSubtype";
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
     };
@@ -66,7 +67,7 @@ public class MessageConverter : IMessageConverter
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
+        if (message.MessageType is NodeMessageType.InitializeTeam or NodeMessageType.TeamCreated)
         {
             return ConvertToMessageBody((byte[])message.Data!);
         }
@@ -86,6 +87,7 @@ public class MessageConverter : IMessageConverter
     /// <param name="headers">Headers of the message to convert.</param>
     /// <param name="body">Body of the message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
     public NodeMessage GetNodeMessage(IDictionary<string, object> headers, ReadOnlyMemory<byte> body)
     {
         ArgumentNullException.ThrowIfNull(headers);
@@ -94,26 +96,28 @@ public class MessageConverter : IMessageConverter
         var messageType = (NodeMessageType)Enum.Parse(typeof(NodeMessageType), messageTypeValue!);
         var messageSubtype = GetHeader(headers, MessageSubtypePropertyName);
 
-        var result = new NodeMessage(messageType);
-        result.SenderNodeId = GetHeader(headers, SenderIdPropertyName);
-        result.RecipientNodeId = GetHeader(headers, RecipientIdPropertyName);
+        var result = new NodeMessage(messageType)
+        {
+            SenderNodeId = GetHeader(headers, SenderIdPropertyName),
+            RecipientNodeId = GetHeader(headers, RecipientIdPropertyName)
+        };
 
         switch (result.MessageType)
         {
             case NodeMessageType.ScrumTeamMessage:
-                if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(messageSubtype, nameof(ScrumTeamMemberMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamMemberEstimationMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamEstimationSetMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamEstimationSetMessage>(body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamTimerMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamTimerMessage>(body);
                 }
@@ -130,6 +134,9 @@ public class MessageConverter : IMessageConverter
             case NodeMessageType.TeamList:
             case NodeMessageType.RequestTeams:
                 result.Data = ConvertFromMessageBody<string[]>(body);
+                break;
+            case NodeMessageType.RequestTeamList:
+            default:
                 break;
         }
 
@@ -162,37 +169,28 @@ public class MessageConverter : IMessageConverter
 
     private static ReadOnlyMemory<byte> ConvertToMessageBody(byte[] data)
     {
-        using (var dataStream = new MemoryStream())
+        using var dataStream = new MemoryStream();
+        using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
         {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
-            {
-                deflateStream.Write(data, 0, data.Length);
-                deflateStream.Flush();
-            }
-
-            return dataStream.ToArray();
+            deflateStream.Write(data, 0, data.Length);
+            deflateStream.Flush();
         }
+
+        return dataStream.ToArray();
     }
 
-    private static T? ConvertFromMessageBody<T>(ReadOnlyMemory<byte> body)
-    {
-        return JsonSerializer.Deserialize<T>(body.Span, _jsonSerializerOptions);
-    }
+    private static T? ConvertFromMessageBody<T>(ReadOnlyMemory<byte> body) => JsonSerializer.Deserialize<T>(body.Span, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(ReadOnlyMemory<byte> body)
     {
-        using (var dataStream = new MemoryStream(body.ToArray()))
-        {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress))
-            {
-                using var memoryStream = new MemoryStream();
-                deflateStream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
+        using var dataStream = new MemoryStream(body.ToArray());
+        using var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress);
+        using var memoryStream = new MemoryStream();
+        deflateStream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
 
-    private static void SetHeader(IDictionary<string, object> headers, string key, string? value)
+    private static void SetHeader(Dictionary<string, object> headers, string key, string? value)
     {
         if (value != null)
         {

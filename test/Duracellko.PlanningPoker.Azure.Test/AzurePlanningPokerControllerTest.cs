@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Data;
@@ -29,7 +28,7 @@ public class AzurePlanningPokerControllerTest
         var messages = new List<ScrumTeamMessage>();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         target.CreateScrumTeam("test", "master", Deck.Standard);
         target.Dispose();
 
@@ -50,7 +49,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.Join("member", false);
         target.Dispose();
 
@@ -58,8 +57,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(1, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamMemberMessage));
-        var memberMessage = (ScrumTeamMemberMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
         Assert.AreEqual<string>("member", memberMessage.MemberName);
         Assert.AreEqual<string>("Member", memberMessage.MemberType);
         Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
@@ -75,7 +73,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.Disconnect("master");
         target.Dispose();
 
@@ -83,8 +81,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(1, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamMemberMessage));
-        var memberMessage = (ScrumTeamMemberMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
     }
@@ -100,7 +97,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster!.AcknowledgeMessages(guid, 2);
         teamLock.Team.ScrumMaster.UpdateActivity();
         target.Dispose();
@@ -109,8 +106,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(1, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.MemberActivity, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamMemberMessage));
-        var memberMessage = (ScrumTeamMemberMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
         Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
@@ -127,7 +123,7 @@ public class AzurePlanningPokerControllerTest
         var teamLock = target.CreateScrumTeam("test", "master", Deck.Standard);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster!.StartEstimation();
         target.Dispose();
 
@@ -148,7 +144,7 @@ public class AzurePlanningPokerControllerTest
         teamLock.Team.ScrumMaster!.StartEstimation();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.CancelEstimation();
         target.Dispose();
 
@@ -169,7 +165,7 @@ public class AzurePlanningPokerControllerTest
         teamLock.Team.ScrumMaster!.StartEstimation();
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.Estimation = new Estimation(3.0);
         target.Dispose();
 
@@ -177,8 +173,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(2, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamMemberEstimationMessage));
-        var memberMessage = (ScrumTeamMemberEstimationMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamMemberEstimationMessage>(messages[0], out var memberMessage);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<double?>(3.0, memberMessage.Estimation);
     }
@@ -194,7 +189,7 @@ public class AzurePlanningPokerControllerTest
         var deck = DeckProvider.Default.GetDeck(Deck.Fibonacci);
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ChangeAvailableEstimations(deck);
         target.Dispose();
 
@@ -202,8 +197,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(1, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamEstimationSetMessage));
-        var estimationSetMessage = (ScrumTeamEstimationSetMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamEstimationSetMessage>(messages[0], out var estimationSetMessage);
         var expectedEstimations = new double?[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, double.PositiveInfinity, null };
         CollectionAssert.AreEqual(expectedEstimations, estimationSetMessage.Estimations.ToList());
     }
@@ -221,7 +215,7 @@ public class AzurePlanningPokerControllerTest
         dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 49, 31, DateTimeKind.Utc));
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         member.StartTimer(TimeSpan.FromSeconds(112));
         target.Dispose();
 
@@ -229,8 +223,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<int>(1, messages.Count);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType(messages[0], typeof(ScrumTeamTimerMessage));
-        var timerMessage = (ScrumTeamTimerMessage)messages[0];
+        Assert.IsInstanceOfType<ScrumTeamTimerMessage>(messages[0], out var timerMessage);
         Assert.AreEqual<DateTime>(new DateTime(2021, 11, 16, 23, 51, 23, DateTimeKind.Utc), timerMessage.EndTime);
     }
 
@@ -248,7 +241,7 @@ public class AzurePlanningPokerControllerTest
         dateTimeProvider.SetUtcNow(new DateTime(2021, 11, 16, 23, 50, 0, DateTimeKind.Utc));
 
         // Act
-        target.ObservableMessages.Subscribe(m => messages.Add(m));
+        target.ObservableMessages.Subscribe(messages.Add);
         teamLock.Team.ScrumMaster.CancelTimer();
         target.Dispose();
 
@@ -286,13 +279,13 @@ public class AzurePlanningPokerControllerTest
         // Act
         var task = Task.Factory.StartNew<IScrumTeamLock>(
             () => target.CreateScrumTeam("test", "master", Deck.Standard),
-            default(CancellationToken),
+            default,
             TaskCreationOptions.None,
             TaskScheduler.Default);
         Assert.IsFalse(task.IsCompleted);
         await Task.Delay(50);
         Assert.IsFalse(task.IsCompleted);
-        target.SetTeamsInitializingList(Enumerable.Empty<string>());
+        target.SetTeamsInitializingList([]);
         await task.WaitAsync(TimeSpan.FromSeconds(1));
 
         // Verify
@@ -305,7 +298,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test" });
+        target.SetTeamsInitializingList(["test"]);
 
         // Act
         var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
@@ -351,10 +344,10 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test team", "team2" });
+        target.SetTeamsInitializingList(["test team", "team2"]);
 
         // Act
-        var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+        var task = Task.Factory.StartNew<IScrumTeamLock>(() => target.GetScrumTeam("test team"), default, TaskCreationOptions.None, TaskScheduler.Default);
         Assert.IsFalse(task.IsCompleted);
         await Task.Delay(50);
         Assert.IsFalse(task.IsCompleted);
@@ -371,7 +364,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "test team", "team2" });
+        target.SetTeamsInitializingList(["test team", "team2"]);
         target.InitializeScrumTeam(new ScrumTeam("test team"));
 
         // Act
@@ -405,7 +398,7 @@ public class AzurePlanningPokerControllerTest
         var target = CreateAzurePlanningPokerController(repository: repository.Object);
 
         // Act
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
 
         // Verify
         repository.Verify(r => r.DeleteAll());
@@ -421,7 +414,7 @@ public class AzurePlanningPokerControllerTest
         target.EndInitialization();
 
         // Act
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
 
         // Verify
         repository.Verify(r => r.DeleteAll(), Times.Never());
@@ -434,7 +427,7 @@ public class AzurePlanningPokerControllerTest
         // Arrange
         var target = CreateAzurePlanningPokerController();
         var team = new ScrumTeam("team");
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         Assert.IsFalse(target.IsInitialized);
 
         // Act
@@ -452,7 +445,7 @@ public class AzurePlanningPokerControllerTest
         // Arrange
         var target = CreateAzurePlanningPokerController();
         var team = new ScrumTeam("team");
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         ScrumTeamMessage? message = null;
         target.ObservableMessages.Subscribe(m => message = m);
 
@@ -468,7 +461,7 @@ public class AzurePlanningPokerControllerTest
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
-        target.SetTeamsInitializingList(new string[] { "team" });
+        target.SetTeamsInitializingList(["team"]);
         Assert.IsFalse(target.IsInitialized);
 
         // Act
@@ -487,11 +480,7 @@ public class AzurePlanningPokerControllerTest
         TaskProvider? taskProvider = null,
         ILogger<AzurePlanningPokerController>? logger = null)
     {
-        if (logger == null)
-        {
-            logger = Mock.Of<ILogger<AzurePlanningPokerController>>();
-        }
-
+        logger ??= Mock.Of<ILogger<AzurePlanningPokerController>>();
         return new AzurePlanningPokerController(dateTimeProvider, guidProvider, deckProvider, configuration, repository, taskProvider, logger);
     }
 }

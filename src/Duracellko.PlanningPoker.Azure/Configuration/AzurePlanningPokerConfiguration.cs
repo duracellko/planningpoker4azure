@@ -44,23 +44,11 @@ public class AzurePlanningPokerConfiguration : PlanningPokerConfiguration, IAzur
     /// <value>The subscription inactivity time.</value>
     public int SubscriptionInactivityTimeout { get; set; } = 900;
 
-    TimeSpan IAzurePlanningPokerConfiguration.InitializationTimeout
-    {
-        get { return TimeSpan.FromSeconds(InitializationTimeout); }
-    }
+    TimeSpan IAzurePlanningPokerConfiguration.InitializationTimeout => TimeSpan.FromSeconds(InitializationTimeout);
 
-    TimeSpan IAzurePlanningPokerConfiguration.InitializationMessageTimeout
-    {
-        get { return TimeSpan.FromSeconds(InitializationMessageTimeout); }
-    }
+    TimeSpan IAzurePlanningPokerConfiguration.InitializationMessageTimeout => TimeSpan.FromSeconds(InitializationMessageTimeout);
 
-    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionMaintenanceInterval
-    {
-        get { return TimeSpan.FromSeconds(SubscriptionMaintenanceInterval); }
-    }
+    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionMaintenanceInterval => TimeSpan.FromSeconds(SubscriptionMaintenanceInterval);
 
-    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionInactivityTimeout
-    {
-        get { return TimeSpan.FromSeconds(SubscriptionInactivityTimeout); }
-    }
+    TimeSpan IAzurePlanningPokerConfiguration.SubscriptionInactivityTimeout => TimeSpan.FromSeconds(SubscriptionInactivityTimeout);
 }

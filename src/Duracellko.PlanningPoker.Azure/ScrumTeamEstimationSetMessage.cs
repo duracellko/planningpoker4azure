@@ -33,5 +33,5 @@ public class ScrumTeamEstimationSetMessage : ScrumTeamMessage
     /// The estimations collection.
     /// </value>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Data contract has all properties read-write.")]
-    public IList<double?> Estimations { get; set; } = new List<double?>();
+    public IList<double?> Estimations { get; set; } = [];
 }

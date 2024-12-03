@@ -69,7 +69,7 @@ public class PlanningPokerException : Exception
 
     private static string GetExceptionMessage(string error, string argument)
     {
-        string? message = error switch
+        var message = error switch
         {
             ErrorCodes.ScrumTeamNotExist => Resources.Error_ScrumTeamNotExist,
             ErrorCodes.ScrumTeamAlreadyExists => Resources.Error_ScrumTeamAlreadyExists,

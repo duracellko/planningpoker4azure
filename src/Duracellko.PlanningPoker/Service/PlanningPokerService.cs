@@ -61,16 +61,15 @@ public class PlanningPokerService : ControllerBase
         try
         {
             var domainDeck = ServiceEntityMapper.Map(deck);
-            using (var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck))
+
+            using var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck);
+            teamLock.Lock();
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new TeamResult
             {
-                teamLock.Lock();
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new TeamResult
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = teamLock.Team.ScrumMaster!.SessionId
-                };
-            }
+                ScrumTeam = resultTeam,
+                SessionId = teamLock.Team.ScrumMaster!.SessionId
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -95,19 +94,17 @@ public class PlanningPokerService : ControllerBase
 
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-            {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                var member = team.Join(memberName, asObserver);
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            var member = team.Join(memberName, asObserver);
 
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new TeamResult
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = member.SessionId
-                };
-            }
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new TeamResult
+            {
+                ScrumTeam = resultTeam,
+                SessionId = member.SessionId
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -134,34 +131,32 @@ public class PlanningPokerService : ControllerBase
 
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            var observer = team.CreateSession(memberName);
+            if (observer == null)
             {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                var observer = team.CreateSession(memberName);
-                if (observer == null)
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
-                }
-
-                Estimation? selectedEstimation = null;
-                if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
-                {
-                    selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
-                }
-
-                var lastMessageId = observer.ClearMessages();
-                observer.UpdateActivity();
-
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new ReconnectTeamResult()
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = observer.SessionId,
-                    LastMessageId = lastMessageId,
-                    SelectedEstimation = selectedEstimation
-                };
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
             }
+
+            Estimation? selectedEstimation = null;
+            if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
+            {
+                selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
+            }
+
+            var lastMessageId = observer.ClearMessages();
+            observer.UpdateActivity();
+
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new ReconnectTeamResult()
+            {
+                ScrumTeam = resultTeam,
+                SessionId = observer.SessionId,
+                LastMessageId = lastMessageId,
+                SelectedEstimation = selectedEstimation
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -184,12 +179,10 @@ public class PlanningPokerService : ControllerBase
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.Disconnect(memberName);
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.Disconnect(memberName);
     }
 
     /// <summary>
@@ -201,12 +194,10 @@ public class PlanningPokerService : ControllerBase
     {
         ValidateTeamName(teamName);
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ScrumMaster?.StartEstimation();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.StartEstimation();
     }
 
     /// <summary>
@@ -218,12 +209,10 @@ public class PlanningPokerService : ControllerBase
     {
         ValidateTeamName(teamName);
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ScrumMaster?.CancelEstimation();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.CancelEstimation();
     }
 
     /// <summary>
@@ -238,29 +227,19 @@ public class PlanningPokerService : ControllerBase
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        double? domainEstimation;
-        if (estimation == -1111111.0)
+        double? domainEstimation = estimation switch
         {
-            domainEstimation = null;
-        }
-        else if (estimation == Estimation.PositiveInfinity)
-        {
-            domainEstimation = double.PositiveInfinity;
-        }
-        else
-        {
-            domainEstimation = estimation;
-        }
+            -1111111.0 => null,
+            Estimation.PositiveInfinity => double.PositiveInfinity,
+            _ => estimation
+        };
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        if (team.FindMemberOrObserver(memberName) is D.Member member)
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            if (member != null)
-            {
-                member.Estimation = new D.Estimation(domainEstimation);
-            }
+            member.Estimation = new D.Estimation(domainEstimation);
         }
     }
 
@@ -276,12 +255,11 @@ public class PlanningPokerService : ControllerBase
 
         var domainDeck = ServiceEntityMapper.Map(deck);
         var availableEstimations = _deckProvider.GetDeck(domainDeck);
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ChangeAvailableEstimations(availableEstimations);
-        }
+
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ChangeAvailableEstimations(availableEstimations);
     }
 
     /// <summary>
@@ -301,13 +279,11 @@ public class PlanningPokerService : ControllerBase
             throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
         }
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            member?.StartTimer(TimeSpan.FromSeconds(duration));
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        var member = team.FindMemberOrObserver(memberName) as D.Member;
+        member?.StartTimer(TimeSpan.FromSeconds(duration));
     }
 
     /// <summary>
@@ -321,13 +297,11 @@ public class PlanningPokerService : ControllerBase
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            member?.CancelTimer();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        var member = team.FindMemberOrObserver(memberName) as D.Member;
+        member?.CancelTimer();
     }
 
     /// <summary>
@@ -351,33 +325,31 @@ public class PlanningPokerService : ControllerBase
 
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            var member = team.FindMemberOrObserver(memberName);
+
+            if (member == null)
             {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                var member = team.FindMemberOrObserver(memberName);
-
-                if (member == null)
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
-                }
-
-                // Removes old messages, which the member has already read, from the member's message queue.
-                try
-                {
-                    member.AcknowledgeMessages(sessionId, lastMessageId);
-                }
-                catch (ArgumentException ex) when (ex.ParamName == "sessionId")
-                {
-                    return NotFound(ex.Message);
-                }
-
-                // Updates last activity on member to record time, when member checked for new messages.
-                // also notifies to save the team into repository
-                member.UpdateActivity();
-
-                receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
             }
+
+            // Removes old messages, which the member has already read, from the member's message queue.
+            try
+            {
+                member.AcknowledgeMessages(sessionId, lastMessageId);
+            }
+            catch (ArgumentException ex) when (ex.ParamName == "sessionId")
+            {
+                return NotFound(ex.Message);
+            }
+
+            // Updates last activity on member to record time, when member checked for new messages.
+            // also notifies to save the team into repository
+            member.UpdateActivity();
+
+            receiveMessagesTask = PlanningPoker.GetMessagesAsync(member, cancellationToken);
         }
         catch (D.PlanningPokerException ex)
         {

@@ -16,9 +16,9 @@ public class ScrumMasterTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "My team";
-        string scrumMaster = "Test ScrumMaster";
-        string deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
+        var team = "My team";
+        var scrumMaster = "Test ScrumMaster";
+        var deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
 
         await ClientTest.OpenApplication();
         await TakeScreenshot("01-Loading");
@@ -51,9 +51,9 @@ public class ScrumMasterTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "RPSLS";
-        string scrumMaster = "Initiator";
-        string deckText = "Rock, Paper, Scissors, Lizard, Spock";
+        var team = "RPSLS";
+        var scrumMaster = "Initiator";
+        var deckText = "Rock, Paper, Scissors, Lizard, Spock";
         var availableEstimations = new string[]
         {
             "\uD83D\uDC8E", // Rock
@@ -120,8 +120,8 @@ public class ScrumMasterTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "My team";
-        string member = "Test Member";
+        var team = "My team";
+        var member = "Test Member";
 
         await ClientTest.OpenApplication();
         await TakeScreenshot("01-Loading");
@@ -143,10 +143,10 @@ public class ScrumMasterTest : E2ETestBase
         await StartServer();
         await StartClients();
 
-        string team = "My team";
-        string scrumMaster = "Test ScrumMaster";
-        string deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
-        string newDeckText = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10";
+        var team = "My team";
+        var scrumMaster = "Test ScrumMaster";
+        var deckText = "0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100";
+        var newDeckText = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10";
         var availableEstimations = new string[]
         {
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"

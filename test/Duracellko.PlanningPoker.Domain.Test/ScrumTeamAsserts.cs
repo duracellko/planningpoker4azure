@@ -76,7 +76,7 @@ public static class ScrumTeamAsserts
                     var actualMessages = actual.Messages.ToList();
                     Assert.AreEqual(expectedMessages.Count, actualMessages.Count);
 
-                    for (int i = 0; i < expectedMessages.Count; i++)
+                    for (var i = 0; i < expectedMessages.Count; i++)
                     {
                         AssertMessagesAreEqual(expectedMessages[i], actualMessages[i]);
                     }

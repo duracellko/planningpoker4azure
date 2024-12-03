@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
@@ -25,8 +26,8 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = "MessageType";
     private const string MessageSubtypePropertyName = "MessageSubtype";
 
-    private static readonly BinaryData _emptyBinaryData = new BinaryData(Array.Empty<byte>());
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private static readonly BinaryData _emptyBinaryData = new([]);
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
     };
@@ -36,12 +37,13 @@ public class MessageConverter : IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Converted message of ServiceBusMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has 3 branches.")]
     public ServiceBusMessage ConvertToServiceBusMessage(NodeMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
         BinaryData messageBody;
-        if (message.MessageType == NodeMessageType.InitializeTeam || message.MessageType == NodeMessageType.TeamCreated)
+        if (message.MessageType is NodeMessageType.InitializeTeam or NodeMessageType.TeamCreated)
         {
             messageBody = ConvertToMessageBody((byte[])message.Data!);
         }
@@ -71,6 +73,7 @@ public class MessageConverter : IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
+    [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
     public NodeMessage ConvertToNodeMessage(ServiceBusReceivedMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -82,26 +85,28 @@ public class MessageConverter : IMessageConverter
             messageSubtype = (string)messageSubtypeObject;
         }
 
-        var result = new NodeMessage(messageType);
-        result.SenderNodeId = (string)message.ApplicationProperties[SenderIdPropertyName];
-        result.RecipientNodeId = (string)message.ApplicationProperties[RecipientIdPropertyName];
+        var result = new NodeMessage(messageType)
+        {
+            SenderNodeId = (string)message.ApplicationProperties[SenderIdPropertyName],
+            RecipientNodeId = (string)message.ApplicationProperties[RecipientIdPropertyName]
+        };
 
         switch (result.MessageType)
         {
             case NodeMessageType.ScrumTeamMessage:
-                if (string.Equals(messageSubtype, typeof(ScrumTeamMemberMessage).Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(messageSubtype, nameof(ScrumTeamMemberMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamMemberEstimationMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamMemberEstimationMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamMemberEstimationMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamEstimationSetMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamEstimationSetMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamEstimationSetMessage>(message.Body);
                 }
-                else if (string.Equals(messageSubtype, typeof(ScrumTeamTimerMessage).Name, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(messageSubtype, nameof(ScrumTeamTimerMessage), StringComparison.OrdinalIgnoreCase))
                 {
                     result.Data = ConvertFromMessageBody<ScrumTeamTimerMessage>(message.Body);
                 }
@@ -119,6 +124,9 @@ public class MessageConverter : IMessageConverter
             case NodeMessageType.RequestTeams:
                 result.Data = ConvertFromMessageBody<string[]>(message.Body);
                 break;
+            case NodeMessageType.RequestTeamList:
+            default:
+                break;
         }
 
         return result;
@@ -132,33 +140,24 @@ public class MessageConverter : IMessageConverter
 
     private static BinaryData ConvertToMessageBody(byte[] data)
     {
-        using (var dataStream = new MemoryStream())
+        using var dataStream = new MemoryStream();
+        using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
         {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Compress, true))
-            {
-                deflateStream.Write(data, 0, data.Length);
-                deflateStream.Flush();
-            }
-
-            return BinaryData.FromBytes(dataStream.ToArray());
+            deflateStream.Write(data, 0, data.Length);
+            deflateStream.Flush();
         }
+
+        return BinaryData.FromBytes(dataStream.ToArray());
     }
 
-    private static T? ConvertFromMessageBody<T>(BinaryData body)
-    {
-        return JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
-    }
+    private static T? ConvertFromMessageBody<T>(BinaryData body) => JsonSerializer.Deserialize<T>(body, _jsonSerializerOptions);
 
     private static byte[] ConvertFromMessageBody(BinaryData body)
     {
-        using (var dataStream = body.ToStream())
-        {
-            using (var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress))
-            {
-                using var memoryStream = new MemoryStream();
-                deflateStream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
+        using var dataStream = body.ToStream();
+        using var deflateStream = new DeflateStream(dataStream, CompressionMode.Decompress);
+        using var memoryStream = new MemoryStream();
+        deflateStream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
 }

@@ -69,16 +69,15 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         try
         {
             var domainDeck = ServiceEntityMapper.Map(deck);
-            using (var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck))
+
+            using var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck);
+            teamLock.Lock();
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new TeamResult
             {
-                teamLock.Lock();
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new TeamResult
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = teamLock.Team.ScrumMaster!.SessionId
-                };
-            }
+                ScrumTeam = resultTeam,
+                SessionId = teamLock.Team.ScrumMaster!.SessionId
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -103,19 +102,17 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
 
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-            {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                var member = team.Join(memberName, asObserver);
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            var member = team.Join(memberName, asObserver);
 
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new TeamResult
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = member.SessionId
-                };
-            }
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new TeamResult
+            {
+                ScrumTeam = resultTeam,
+                SessionId = member.SessionId
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -142,34 +139,32 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
 
         try
         {
-            using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+            using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+            teamLock.Lock();
+            var team = teamLock.Team;
+            var observer = team.CreateSession(memberName);
+            if (observer == null)
             {
-                teamLock.Lock();
-                var team = teamLock.Team;
-                var observer = team.CreateSession(memberName);
-                if (observer == null)
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
-                }
-
-                Estimation? selectedEstimation = null;
-                if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
-                {
-                    selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
-                }
-
-                var lastMessageId = observer.ClearMessages();
-                observer.UpdateActivity();
-
-                var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
-                return new ReconnectTeamResult()
-                {
-                    ScrumTeam = resultTeam,
-                    SessionId = observer.SessionId,
-                    LastMessageId = lastMessageId,
-                    SelectedEstimation = selectedEstimation
-                };
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorMemberNotFound, memberName), nameof(memberName));
             }
+
+            Estimation? selectedEstimation = null;
+            if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
+            {
+                selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
+            }
+
+            var lastMessageId = observer.ClearMessages();
+            observer.UpdateActivity();
+
+            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            return new ReconnectTeamResult()
+            {
+                ScrumTeam = resultTeam,
+                SessionId = observer.SessionId,
+                LastMessageId = lastMessageId,
+                SelectedEstimation = selectedEstimation
+            };
         }
         catch (D.PlanningPokerException ex)
         {
@@ -192,12 +187,10 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.Disconnect(memberName);
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.Disconnect(memberName);
     }
 
     /// <summary>
@@ -209,12 +202,10 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         _logger.StartEstimation(teamName);
         ValidateTeamName(teamName);
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ScrumMaster?.StartEstimation();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.StartEstimation();
     }
 
     /// <summary>
@@ -226,12 +217,10 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         _logger.CancelEstimation(teamName);
         ValidateTeamName(teamName);
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ScrumMaster?.CancelEstimation();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.CancelEstimation();
     }
 
     /// <summary>
@@ -251,15 +240,12 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
             estimation = double.PositiveInfinity;
         }
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        if (team.FindMemberOrObserver(memberName) is D.Member member)
         {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            if (member != null)
-            {
-                member.Estimation = new D.Estimation(estimation);
-            }
+            member.Estimation = new D.Estimation(estimation);
         }
     }
 
@@ -275,12 +261,11 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
 
         var domainDeck = ServiceEntityMapper.Map(deck);
         var availableEstimations = _deckProvider.GetDeck(domainDeck);
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            team.ChangeAvailableEstimations(availableEstimations);
-        }
+
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ChangeAvailableEstimations(availableEstimations);
     }
 
     /// <summary>
@@ -300,13 +285,11 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
             throw new ArgumentOutOfRangeException(nameof(duration), duration, Resources.Error_InvalidTimerDuraction);
         }
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            member?.StartTimer(duration);
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        var member = team.FindMemberOrObserver(memberName) as D.Member;
+        member?.StartTimer(duration);
     }
 
     /// <summary>
@@ -320,13 +303,11 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        using (var teamLock = PlanningPoker.GetScrumTeam(teamName))
-        {
-            teamLock.Lock();
-            var team = teamLock.Team;
-            var member = team.FindMemberOrObserver(memberName) as D.Member;
-            member?.CancelTimer();
-        }
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        var member = team.FindMemberOrObserver(memberName) as D.Member;
+        member?.CancelTimer();
     }
 
     /// <summary>

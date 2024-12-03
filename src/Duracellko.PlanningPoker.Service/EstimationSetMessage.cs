@@ -15,5 +15,5 @@ public class EstimationSetMessage : Message
     /// The estimations collection.
     /// </value>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "Data contract has all properties read-write.")]
-    public IList<Estimation> Estimations { get; set; } = new List<Estimation>();
+    public IList<Estimation> Estimations { get; set; } = [];
 }

@@ -24,7 +24,7 @@ public sealed class PlanningPokerHubTest : IDisposable
     private const string LongTeamName = "ttttttttttttttttttttttttttttttttttttttttttttttttttt";
     private const string LongMemberName = "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
 
-    private readonly LoggerFactory _loggerFactory = new LoggerFactory();
+    private readonly LoggerFactory _loggerFactory = new();
 
     [TestMethod]
     public void Constructor_PlanningPoker_PlanningPokerPropertyIsSet()
@@ -33,11 +33,10 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
 
         // Act
-        using (var result = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Verify
-            Assert.AreEqual<D.IPlanningPoker>(planningPoker.Object, result.PlanningPoker);
-        }
+        using var result = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Verify
+        Assert.AreEqual<D.IPlanningPoker>(planningPoker.Object, result.PlanningPoker);
     }
 
     [TestMethod]
@@ -62,25 +61,24 @@ public sealed class PlanningPokerHubTest : IDisposable
         planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, domainDeck))
             .Returns(teamLock.Object).Verifiable();
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.CreateTeam(TeamName, ScrumMasterName, deck);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.CreateTeam(TeamName, ScrumMasterName, deck);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            var resultTeam = result.ScrumTeam;
-            Assert.IsNotNull(resultTeam);
-            Assert.AreEqual<string>(TeamName, resultTeam.Name);
-            Assert.IsNotNull(resultTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-            Assert.AreEqual<string>(typeof(D.ScrumMaster).Name, resultTeam.ScrumMaster.Type);
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        var resultTeam = result.ScrumTeam;
+        Assert.IsNotNull(resultTeam);
+        Assert.AreEqual<string>(TeamName, resultTeam.Name);
+        Assert.IsNotNull(resultTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+        Assert.AreEqual<string>(nameof(D.ScrumMaster), resultTeam.ScrumMaster.Type);
     }
 
     [TestMethod]
@@ -93,20 +91,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Standard))
             .Returns(teamLock.Object).Verifiable();
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            // Verify
-            var resultTeam = result.ScrumTeam;
-            Assert.IsNotNull(resultTeam?.AvailableEstimations);
-            var expectedCollection = new double?[]
-            {
+        // Act
+        var result = target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard);
+
+        // Verify
+        var resultTeam = result.ScrumTeam;
+        Assert.IsNotNull(resultTeam?.AvailableEstimations);
+        var expectedCollection = new double?[]
+        {
                 0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, Estimation.PositiveInfinity, null
-            };
-            CollectionAssert.AreEquivalent(expectedCollection, resultTeam.AvailableEstimations.Select(e => e.Value).ToList());
-        }
+        };
+        CollectionAssert.AreEquivalent(expectedCollection, resultTeam.AvailableEstimations.Select(e => e.Value).ToList());
     }
 
     [TestMethod]
@@ -114,11 +111,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -126,11 +122,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
     }
 
     [TestMethod]
@@ -138,11 +133,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -150,11 +144,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
     }
 
     [TestMethod]
@@ -166,16 +159,15 @@ public sealed class PlanningPokerHubTest : IDisposable
         planningPoker.Setup(p => p.CreateScrumTeam(TeamName, ScrumMasterName, D.Deck.Standard))
             .Throws(planningPokerException).Verifiable();
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard));
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            // Verify
-            planningPoker.Verify();
-            var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamAlreadyExists"",""Message"":""Cannot create Scrum Team \u0027test team\u0027. Team with that name already exists."",""Argument"":""test team""}";
-            Assert.AreEqual(expectedMessage, exception.Message);
-        }
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard));
+
+        // Verify
+        planningPoker.Verify();
+        var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamAlreadyExists"",""Message"":""Cannot create Scrum Team \u0027test team\u0027. Team with that name already exists."",""Argument"":""test team""}";
+        Assert.AreEqual(expectedMessage, exception.Message);
     }
 
     [TestMethod]
@@ -190,33 +182,32 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.JoinTeam(TeamName, MemberName, false);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.JoinTeam(TeamName, MemberName, false);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            var resultTeam = result.ScrumTeam;
-            Assert.IsNotNull(resultTeam);
-            Assert.AreEqual<string>(TeamName, resultTeam.Name);
-            Assert.IsNotNull(resultTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), resultTeam.TimerEndTime);
-            Assert.IsNotNull(resultTeam.Members);
-            var expectedMembers = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Members.Select(m => m.Type).ToList());
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        var resultTeam = result.ScrumTeam;
+        Assert.IsNotNull(resultTeam);
+        Assert.AreEqual<string>(TeamName, resultTeam.Name);
+        Assert.IsNotNull(resultTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+        Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), resultTeam.TimerEndTime);
+        Assert.IsNotNull(resultTeam.Members);
+        var expectedMembers = new string[] { ScrumMasterName, MemberName };
+        CollectionAssert.AreEquivalent(expectedMembers, resultTeam.Members.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Members.Select(m => m.Type).ToList());
     }
 
     [TestMethod]
@@ -227,15 +218,15 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.JoinTeam(TeamName, MemberName, false);
 
-            // Verify
-            var expectedMembers = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        target.JoinTeam(TeamName, MemberName, false);
+
+        // Verify
+        var expectedMembers = new string[] { ScrumMasterName, MemberName };
+        CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
     }
 
     [TestMethod]
@@ -247,16 +238,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.JoinTeam(TeamName, MemberName, false);
 
-            // Verify
-            var expectedParticipants = new string[] { ScrumMasterName };
-            Assert.IsNotNull(team.EstimationParticipants);
-            CollectionAssert.AreEquivalent(expectedParticipants, team.EstimationParticipants.Select(m => m.MemberName).ToList());
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        target.JoinTeam(TeamName, MemberName, false);
+
+        // Verify
+        var expectedParticipants = new string[] { ScrumMasterName };
+        Assert.IsNotNull(team.EstimationParticipants);
+        CollectionAssert.AreEquivalent(expectedParticipants, team.EstimationParticipants.Select(m => m.MemberName).ToList());
     }
 
     [TestMethod]
@@ -268,33 +259,32 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.JoinTeam(TeamName, ObserverName, true);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.JoinTeam(TeamName, ObserverName, true);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            var resultTeam = result.ScrumTeam;
-            Assert.IsNotNull(resultTeam);
-            Assert.AreEqual<string>(TeamName, resultTeam.Name);
-            Assert.IsNotNull(resultTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
-            Assert.IsNull(resultTeam.TimerEndTime);
-            Assert.IsNotNull(resultTeam.Observers);
-            var expectedObservers = new string[] { ObserverName };
-            CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.Observer).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Observers.Select(m => m.Type).ToList());
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        var resultTeam = result.ScrumTeam;
+        Assert.IsNotNull(resultTeam);
+        Assert.AreEqual<string>(TeamName, resultTeam.Name);
+        Assert.IsNotNull(resultTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, resultTeam.ScrumMaster.Name);
+        Assert.IsNull(resultTeam.TimerEndTime);
+        Assert.IsNotNull(resultTeam.Observers);
+        var expectedObservers = new string[] { ObserverName };
+        CollectionAssert.AreEquivalent(expectedObservers, resultTeam.Observers.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.Observer) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, resultTeam.Observers.Select(m => m.Type).ToList());
     }
 
     [TestMethod]
@@ -305,15 +295,15 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.JoinTeam(TeamName, ObserverName, true);
 
-            // Verify
-            var expectedObservers = new string[] { ObserverName };
-            CollectionAssert.AreEquivalent(expectedObservers, team.Observers.Select(m => m.Name).ToList());
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        target.JoinTeam(TeamName, ObserverName, true);
+
+        // Verify
+        var expectedObservers = new string[] { ObserverName };
+        CollectionAssert.AreEquivalent(expectedObservers, team.Observers.Select(m => m.Name).ToList());
     }
 
     [TestMethod]
@@ -321,11 +311,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
     }
 
     [TestMethod]
@@ -333,11 +322,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
     }
 
     [TestMethod]
@@ -349,16 +337,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
 
-            // Verify
-            planningPoker.Verify();
-            var expectedMessage = @"PlanningPokerException:{""Error"":""MemberAlreadyExists"",""Message"":""Member or observer named \u0027member\u0027 already exists in the team."",""Argument"":""member""}";
-            Assert.AreEqual(expectedMessage, exception.Message);
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+
+        // Verify
+        planningPoker.Verify();
+        var expectedMessage = @"PlanningPokerException:{""Error"":""MemberAlreadyExists"",""Message"":""Member or observer named \u0027member\u0027 already exists in the team."",""Argument"":""member""}";
+        Assert.AreEqual(expectedMessage, exception.Message);
     }
 
     [TestMethod]
@@ -368,16 +356,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamNotExist, TeamName);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(planningPokerException).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
 
-            // Verify
-            planningPoker.Verify();
-            var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
-            Assert.AreEqual(expectedMessage, exception.Message);
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+
+        // Verify
+        planningPoker.Verify();
+        var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
+        Assert.AreEqual(expectedMessage, exception.Message);
     }
 
     [TestMethod]
@@ -385,11 +373,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
     }
 
     [TestMethod]
@@ -397,11 +384,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
     }
 
     [TestMethod]
@@ -413,33 +399,32 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.ReconnectTeam(TeamName, ScrumMasterName);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.ReconnectTeam(TeamName, ScrumMasterName);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.AreEqual<long>(0, result.LastMessageId);
-            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
-            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
-            Assert.IsNull(result.ScrumTeam.TimerEndTime);
-            Assert.IsNotNull(result.ScrumTeam.Members);
-            var expectedMembers = new string[] { ScrumMasterName };
-            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.AreEqual<long>(0, result.LastMessageId);
+        Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+        Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+        Assert.IsNull(result.ScrumTeam.TimerEndTime);
+        Assert.IsNotNull(result.ScrumTeam.Members);
+        var expectedMembers = new string[] { ScrumMasterName };
+        CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
     [TestMethod]
@@ -452,33 +437,32 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.AreEqual<long>(0, result.LastMessageId);
-            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
-            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
-            Assert.IsNull(result.ScrumTeam.TimerEndTime);
-            Assert.IsNotNull(result.ScrumTeam.Members);
-            var expectedMembers = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.AreEqual<long>(0, result.LastMessageId);
+        Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+        Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+        Assert.IsNull(result.ScrumTeam.TimerEndTime);
+        Assert.IsNotNull(result.ScrumTeam.Members);
+        var expectedMembers = new string[] { ScrumMasterName, MemberName };
+        CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
     }
 
     [TestMethod]
@@ -494,38 +478,37 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.ReconnectTeam(TeamName, ObserverName);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.ReconnectTeam(TeamName, ObserverName);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.AreEqual<long>(0, result.LastMessageId);
-            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
-            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
-            Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), result.ScrumTeam.TimerEndTime);
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
 
-            Assert.IsNotNull(result.ScrumTeam.Members);
-            var expectedMembers = new string[] { ScrumMasterName };
-            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.AreEqual<long>(0, result.LastMessageId);
+        Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+        Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+        Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), result.ScrumTeam.TimerEndTime);
 
-            Assert.IsNotNull(result.ScrumTeam.Observers);
-            var expectedObservers = new string[] { ObserverName };
-            CollectionAssert.AreEquivalent(expectedObservers, result.ScrumTeam.Observers.Select(m => m.Name).ToList());
-        }
+        Assert.IsNotNull(result.ScrumTeam.Members);
+        var expectedMembers = new string[] { ScrumMasterName };
+        CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+
+        Assert.IsNotNull(result.ScrumTeam.Observers);
+        var expectedObservers = new string[] { ObserverName };
+        CollectionAssert.AreEquivalent(expectedObservers, result.ScrumTeam.Observers.Select(m => m.Name).ToList());
     }
 
     [TestMethod]
@@ -539,34 +522,33 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            var result = target.ReconnectTeam(TeamName, ScrumMasterName);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        // Act
+        var result = target.ReconnectTeam(TeamName, ScrumMasterName);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<Guid>(guid, result.SessionId);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.AreEqual<long>(3, result.LastMessageId);
-            Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
-            Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
-            Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
-            Assert.IsNotNull(result.ScrumTeam.Members);
-            var expectedMembers = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
-            var expectedMemberTypes = new string[] { typeof(D.ScrumMaster).Name, typeof(D.Member).Name };
-            CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
 
-            Assert.IsFalse(team.ScrumMaster!.IsDormant);
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual<Guid>(guid, result.SessionId);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.AreEqual<long>(3, result.LastMessageId);
+        Assert.AreEqual<string>(TeamName, result.ScrumTeam.Name);
+        Assert.IsNotNull(result.ScrumTeam.ScrumMaster);
+        Assert.AreEqual<string>(ScrumMasterName, result.ScrumTeam.ScrumMaster.Name);
+        Assert.IsNotNull(result.ScrumTeam.Members);
+        var expectedMembers = new string[] { ScrumMasterName, MemberName };
+        CollectionAssert.AreEquivalent(expectedMembers, result.ScrumTeam.Members.Select(m => m.Name).ToList());
+        var expectedMemberTypes = new string[] { nameof(D.ScrumMaster), nameof(D.Member) };
+        CollectionAssert.AreEquivalent(expectedMemberTypes, result.ScrumTeam.Members.Select(m => m.Type).ToList());
+
+        Assert.IsFalse(team.ScrumMaster!.IsDormant);
     }
 
     [TestMethod]
@@ -577,11 +559,11 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
-        }
+
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
     }
 
     [TestMethod]
@@ -595,21 +577,21 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.AreEqual<long>(1, result.LastMessageId);
-            Assert.IsFalse(member.HasMessage);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.AreEqual<long>(1, result.LastMessageId);
+        Assert.IsFalse(member.HasMessage);
     }
 
     [TestMethod]
@@ -624,20 +606,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.IsNull(result.ScrumTeam.EstimationResult);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.IsNull(result.ScrumTeam.EstimationResult);
     }
 
     [TestMethod]
@@ -653,23 +635,23 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
 
-            var expectedEstimations = new double?[] { 2, 1 };
-            CollectionAssert.AreEquivalent(expectedEstimations, result.ScrumTeam.EstimationResult.Select(e => e.Estimation!.Value).ToList());
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.IsNotNull(result.ScrumTeam.EstimationResult);
+
+        var expectedEstimations = new double?[] { 2, 1 };
+        CollectionAssert.AreEquivalent(expectedEstimations, result.ScrumTeam.EstimationResult.Select(e => e.Estimation!.Value).ToList());
     }
 
     [TestMethod]
@@ -684,20 +666,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.SelectedEstimation);
-            Assert.AreEqual<double?>(1, result.SelectedEstimation.Value);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.SelectedEstimation);
+        Assert.AreEqual<double?>(1, result.SelectedEstimation.Value);
     }
 
     [TestMethod]
@@ -711,19 +693,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNull(result.SelectedEstimation);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNull(result.SelectedEstimation);
     }
 
     [TestMethod]
@@ -736,19 +718,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNull(result.SelectedEstimation);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNull(result.SelectedEstimation);
     }
 
     [TestMethod]
@@ -762,22 +744,22 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.IsNotNull(result.ScrumTeam.EstimationParticipants);
-            var expectedParticipants = new string[] { ScrumMasterName, MemberName };
-            CollectionAssert.AreEqual(expectedParticipants, result.ScrumTeam.EstimationParticipants.Select(p => p.MemberName).ToList());
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.IsNotNull(result.ScrumTeam.EstimationParticipants);
+        var expectedParticipants = new string[] { ScrumMasterName, MemberName };
+        CollectionAssert.AreEqual(expectedParticipants, result.ScrumTeam.EstimationParticipants.Select(p => p.MemberName).ToList());
     }
 
     [TestMethod]
@@ -790,20 +772,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var result = target.ReconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.ScrumTeam);
-            Assert.IsNull(result.ScrumTeam.EstimationParticipants);
-        }
+        // Act
+        var result = target.ReconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.ScrumTeam);
+        Assert.IsNull(result.ScrumTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -818,20 +800,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            utcNow = utcNow.AddMinutes(2.2);
-            dateTimeProvider.SetUtcNow(utcNow);
-            var guid = Guid.NewGuid();
-            guidProvider.SetGuid(guid);
 
-            // Act
-            target.ReconnectTeam(TeamName, ScrumMasterName);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+        utcNow = utcNow.AddMinutes(2.2);
+        dateTimeProvider.SetUtcNow(utcNow);
+        var guid = Guid.NewGuid();
+        guidProvider.SetGuid(guid);
 
-            // Verify
-            Assert.AreEqual<DateTime>(utcNow, team.ScrumMaster!.LastActivity);
-            Assert.AreEqual<Guid>(guid, team.ScrumMaster.SessionId);
-        }
+        // Act
+        target.ReconnectTeam(TeamName, ScrumMasterName);
+
+        // Verify
+        Assert.AreEqual<DateTime>(utcNow, team.ScrumMaster!.LastActivity);
+        Assert.AreEqual<Guid>(guid, team.ScrumMaster.SessionId);
     }
 
     [TestMethod]
@@ -839,11 +820,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -851,11 +831,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -863,11 +842,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -875,11 +853,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -889,16 +866,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPokerException = new D.PlanningPokerException(ErrorCodes.ScrumTeamNotExist, TeamName);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Throws(planningPokerException).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
 
-            // Verify
-            planningPoker.Verify();
-            var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
-            Assert.AreEqual(expectedMessage, exception.Message);
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
+
+        // Verify
+        planningPoker.Verify();
+        var expectedMessage = @"PlanningPokerException:{""Error"":""ScrumTeamNotExist"",""Message"":""Scrum Team \u0027test team\u0027 does not exist."",""Argument"":""test team""}";
+        Assert.AreEqual(expectedMessage, exception.Message);
     }
 
     [TestMethod]
@@ -909,20 +886,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.DisconnectTeam(TeamName, ScrumMasterName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsTrue(team.ScrumMaster!.IsDormant);
-            var expectedMembers = new string[] { ScrumMasterName };
-            CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
-        }
+        // Act
+        target.DisconnectTeam(TeamName, ScrumMasterName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsTrue(team.ScrumMaster!.IsDormant);
+        var expectedMembers = new string[] { ScrumMasterName };
+        CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
     }
 
     [TestMethod]
@@ -934,19 +911,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.DisconnectTeam(TeamName, MemberName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            var expectedMembers = new string[] { ScrumMasterName };
-            CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
-        }
+        // Act
+        target.DisconnectTeam(TeamName, MemberName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        var expectedMembers = new string[] { ScrumMasterName };
+        CollectionAssert.AreEquivalent(expectedMembers, team.Members.Select(m => m.Name).ToList());
     }
 
     [TestMethod]
@@ -958,18 +935,18 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.DisconnectTeam(TeamName, ObserverName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsFalse(team.Observers.Any());
-        }
+        // Act
+        target.DisconnectTeam(TeamName, ObserverName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsFalse(team.Observers.Any());
     }
 
     [TestMethod]
@@ -977,11 +954,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -989,11 +965,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -1001,11 +976,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -1013,11 +987,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -1028,18 +1001,18 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.StartEstimation(TeamName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.AreEqual<D.TeamState>(D.TeamState.EstimationInProgress, team.State);
-        }
+        // Act
+        target.StartEstimation(TeamName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.AreEqual<D.TeamState>(D.TeamState.EstimationInProgress, team.State);
     }
 
     [TestMethod]
@@ -1047,11 +1020,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.StartEstimation(null!));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.StartEstimation(null!));
     }
 
     [TestMethod]
@@ -1059,11 +1031,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.StartEstimation(LongTeamName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.StartEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1075,18 +1046,18 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.CancelEstimation(TeamName);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.AreEqual<D.TeamState>(D.TeamState.EstimationCanceled, team.State);
-        }
+        // Act
+        target.CancelEstimation(TeamName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.AreEqual<D.TeamState>(D.TeamState.EstimationCanceled, team.State);
     }
 
     [TestMethod]
@@ -1094,11 +1065,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.CancelEstimation(null!));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.CancelEstimation(null!));
     }
 
     [TestMethod]
@@ -1106,11 +1076,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.CancelEstimation(LongTeamName));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.CancelEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1121,19 +1090,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, ScrumMasterName, 2.0);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(team.ScrumMaster!.Estimation);
-            Assert.AreEqual<double?>(2.0, team.ScrumMaster.Estimation.Value);
-        }
+        // Act
+        target.SubmitEstimation(TeamName, ScrumMasterName, 2.0);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(team.ScrumMaster!.Estimation);
+        Assert.AreEqual<double?>(2.0, team.ScrumMaster.Estimation.Value);
     }
 
     [TestMethod]
@@ -1144,19 +1113,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, ScrumMasterName, null);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(team.ScrumMaster!.Estimation);
-            Assert.IsNull(team.ScrumMaster.Estimation.Value);
-        }
+        // Act
+        target.SubmitEstimation(TeamName, ScrumMasterName, null);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(team.ScrumMaster!.Estimation);
+        Assert.IsNull(team.ScrumMaster.Estimation.Value);
     }
 
     [TestMethod]
@@ -1169,20 +1138,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, ScrumMasterName, -1111100.0);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(scrumMaster.Estimation);
-            Assert.IsNotNull(scrumMaster.Estimation.Value);
-            Assert.IsTrue(double.IsPositiveInfinity(scrumMaster.Estimation.Value.Value));
-        }
+        // Act
+        target.SubmitEstimation(TeamName, ScrumMasterName, -1111100.0);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(scrumMaster.Estimation);
+        Assert.IsNotNull(scrumMaster.Estimation.Value);
+        Assert.IsTrue(double.IsPositiveInfinity(scrumMaster.Estimation.Value.Value));
     }
 
     [TestMethod]
@@ -1194,19 +1163,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, MemberName, 8.0);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(member.Estimation);
-            Assert.AreEqual<double?>(8.0, member.Estimation.Value);
-        }
+        // Act
+        target.SubmitEstimation(TeamName, MemberName, 8.0);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(member.Estimation);
+        Assert.AreEqual<double?>(8.0, member.Estimation.Value);
     }
 
     [TestMethod]
@@ -1218,20 +1187,20 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, MemberName, -1111100.0);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(member.Estimation);
-            Assert.IsNotNull(member.Estimation.Value);
-            Assert.IsTrue(double.IsPositiveInfinity(member.Estimation.Value.Value));
-        }
+        // Act
+        target.SubmitEstimation(TeamName, MemberName, -1111100.0);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(member.Estimation);
+        Assert.IsNotNull(member.Estimation.Value);
+        Assert.IsTrue(double.IsPositiveInfinity(member.Estimation.Value.Value));
     }
 
     [TestMethod]
@@ -1243,19 +1212,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.SubmitEstimation(TeamName, MemberName, null);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            Assert.IsNotNull(member.Estimation);
-            Assert.IsNull(member.Estimation.Value);
-        }
+        // Act
+        target.SubmitEstimation(TeamName, MemberName, null);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(member.Estimation);
+        Assert.IsNull(member.Estimation.Value);
     }
 
     [TestMethod]
@@ -1263,11 +1232,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
     }
 
     [TestMethod]
@@ -1275,11 +1243,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
     }
 
     [TestMethod]
@@ -1287,11 +1254,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
     }
 
     [TestMethod]
@@ -1299,11 +1265,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
     }
 
     [TestMethod]
@@ -1314,19 +1279,19 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            target.ChangeDeck(TeamName, Deck.Fibonacci);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            teamLock.Verify(l => l.Team);
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            var fibonacciDeck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
-            Assert.AreEqual(fibonacciDeck, team.AvailableEstimations);
-        }
+        // Act
+        target.ChangeDeck(TeamName, Deck.Fibonacci);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        var fibonacciDeck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
+        Assert.AreEqual(fibonacciDeck, team.AvailableEstimations);
     }
 
     [TestMethod]
@@ -1334,11 +1299,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
     }
 
     [TestMethod]
@@ -1346,11 +1310,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
     }
 
     [TestMethod]
@@ -1364,6 +1327,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
@@ -1446,6 +1410,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
@@ -1521,28 +1486,26 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
-        {
-            // Act
-            target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0);
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+        // Act
+        target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(1, result.Count);
-            Assert.AreEqual<long>(1, result[0].Id);
-            Assert.AreEqual<MessageType>(MessageType.MemberJoined, result[0].Type);
-            Assert.IsInstanceOfType(result[0], typeof(MemberMessage));
-            var memberMessage = (MemberMessage)result[0];
-            Assert.IsNotNull(memberMessage.Member);
-            Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
-            Assert.AreEqual(1, team.ScrumMaster!.Messages.Count());
-            Assert.AreEqual(0, team.ScrumMaster.AcknowledgedMessageId);
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(1, result.Count);
+        Assert.AreEqual<long>(1, result[0].Id);
+        Assert.AreEqual<MessageType>(MessageType.MemberJoined, result[0].Type);
+        Assert.IsInstanceOfType<MemberMessage>(result[0], out var memberMessage);
+        Assert.IsNotNull(memberMessage.Member);
+        Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
+
+        Assert.AreEqual(1, team.ScrumMaster!.Messages.Count());
+        Assert.AreEqual(0, team.ScrumMaster.AcknowledgedMessageId);
     }
 
     [TestMethod]
@@ -1569,42 +1532,40 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
+
+        // Act
+        target.GetMessages(TeamName, ScrumMasterName, guid, 1);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(4, result.Count);
+        Assert.AreEqual<long>(2, result[0].Id);
+        Assert.AreEqual<MessageType>(MessageType.EstimationStarted, result[0].Type);
+
+        Assert.AreEqual<long>(3, result[1].Id);
+        Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[1].Type);
+        Assert.AreEqual<long>(4, result[2].Id);
+        Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[2].Type);
+
+        Assert.AreEqual<long>(5, result[3].Id);
+        Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
+        Assert.IsInstanceOfType<EstimationResultMessage>(result[3], out var estimationResultMessage);
+
+        Assert.IsNotNull(estimationResultMessage.EstimationResult);
+        var expectedResult = new Tuple<string, double>[]
         {
-            // Act
-            target.GetMessages(TeamName, ScrumMasterName, guid, 1);
+                new(ScrumMasterName, 1.0),
+                new(MemberName, 2.0)
+        };
+        CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(4, result.Count);
-            Assert.AreEqual<long>(2, result[0].Id);
-            Assert.AreEqual<MessageType>(MessageType.EstimationStarted, result[0].Type);
-
-            Assert.AreEqual<long>(3, result[1].Id);
-            Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[1].Type);
-            Assert.AreEqual<long>(4, result[2].Id);
-            Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[2].Type);
-
-            Assert.AreEqual<long>(5, result[3].Id);
-            Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
-            Assert.IsInstanceOfType(result[3], typeof(EstimationResultMessage));
-            var estimationResultMessage = (EstimationResultMessage)result[3];
-
-            Assert.IsNotNull(estimationResultMessage.EstimationResult);
-            var expectedResult = new Tuple<string, double>[]
-            {
-                new Tuple<string, double>(ScrumMasterName, 1.0),
-                new Tuple<string, double>(MemberName, 2.0)
-            };
-            CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
-
-            Assert.AreEqual(4, team.ScrumMaster!.Messages.Count());
-            Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
-        }
+        Assert.AreEqual(4, team.ScrumMaster!.Messages.Count());
+        Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
     }
 
     [TestMethod]
@@ -1629,40 +1590,38 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
-        {
-            // Act
-            target.GetMessages(TeamName, MemberName, guid, 0);
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+        // Act
+        target.GetMessages(TeamName, MemberName, guid, 0);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(1, result.Count);
-            Assert.AreEqual<long>(1, result[0].Id);
-            Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
-            Assert.IsInstanceOfType(result[0], typeof(EstimationSetMessage));
-            var estimationSetMessage = (EstimationSetMessage)result[0];
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
-            var estimations = estimationSetMessage.Estimations;
-            Assert.IsNotNull(estimations);
-            Assert.AreEqual(13, estimations.Count);
-            Assert.AreEqual(0, estimations[0].Value);
-            Assert.AreEqual(1, estimations[1].Value);
-            Assert.AreEqual(2, estimations[2].Value);
-            Assert.AreEqual(3, estimations[3].Value);
-            Assert.AreEqual(5, estimations[4].Value);
-            Assert.AreEqual(8, estimations[5].Value);
-            Assert.AreEqual(13, estimations[6].Value);
-            Assert.AreEqual(21, estimations[7].Value);
-            Assert.AreEqual(34, estimations[8].Value);
-            Assert.AreEqual(55, estimations[9].Value);
-            Assert.AreEqual(89, estimations[10].Value);
-            Assert.AreEqual(Estimation.PositiveInfinity, estimations[11].Value);
-            Assert.IsNull(estimations[12].Value);
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(1, result.Count);
+        Assert.AreEqual<long>(1, result[0].Id);
+        Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
+        Assert.IsInstanceOfType<EstimationSetMessage>(result[0], out var estimationSetMessage);
+
+        var estimations = estimationSetMessage.Estimations;
+        Assert.IsNotNull(estimations);
+        Assert.AreEqual(13, estimations.Count);
+        Assert.AreEqual(0, estimations[0].Value);
+        Assert.AreEqual(1, estimations[1].Value);
+        Assert.AreEqual(2, estimations[2].Value);
+        Assert.AreEqual(3, estimations[3].Value);
+        Assert.AreEqual(5, estimations[4].Value);
+        Assert.AreEqual(8, estimations[5].Value);
+        Assert.AreEqual(13, estimations[6].Value);
+        Assert.AreEqual(21, estimations[7].Value);
+        Assert.AreEqual(34, estimations[8].Value);
+        Assert.AreEqual(55, estimations[9].Value);
+        Assert.AreEqual(89, estimations[10].Value);
+        Assert.AreEqual(Estimation.PositiveInfinity, estimations[11].Value);
+        Assert.IsNull(estimations[12].Value);
     }
 
     [TestMethod]
@@ -1684,21 +1643,20 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
-        {
-            // Act
-            target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0);
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+        // Act
+        target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(1, result.Count);
-            Assert.AreEqual<long>(1, result[0].Id);
-            Assert.AreEqual<MessageType>(MessageType.Empty, result[0].Type);
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(1, result.Count);
+        Assert.AreEqual<long>(1, result[0].Id);
+        Assert.AreEqual<MessageType>(MessageType.Empty, result[0].Type);
     }
 
     [TestMethod]
@@ -1721,25 +1679,23 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
-        {
-            // Act
-            target.GetMessages(TeamName, ScrumMasterName, guid, 0);
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+        // Act
+        target.GetMessages(TeamName, ScrumMasterName, guid, 0);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(2, result.Count);
-            Assert.AreEqual<long>(2, result[1].Id);
-            Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
-            Assert.IsInstanceOfType(result[1], typeof(MemberMessage));
-            var memberMessage = (MemberMessage)result[1];
-            Assert.IsNotNull(memberMessage.Member);
-            Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
-        }
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(2, result.Count);
+        Assert.AreEqual<long>(2, result[1].Id);
+        Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
+        Assert.IsInstanceOfType<MemberMessage>(result[1], out var memberMessage);
+        Assert.IsNotNull(memberMessage.Member);
+        Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
     }
 
     [TestMethod]
@@ -1778,8 +1734,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.AreEqual<int>(1, result.Count);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
-        Assert.IsInstanceOfType(result[0], typeof(TimerMessage));
-        var timerMessage = (TimerMessage)result[0];
+        Assert.IsInstanceOfType<TimerMessage>(result[0], out var timerMessage);
         Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), timerMessage.EndTime);
     }
 
@@ -1792,7 +1747,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
         planningPoker.Setup(p => p.GetMessagesAsync(team.ScrumMaster!, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<D.Message>()).Verifiable();
+            .ReturnsAsync([]).Verifiable();
 
         IList<Message>? result = null;
         var clientContext = new Mock<IPlanningPokerClient>(MockBehavior.Strict);
@@ -1800,18 +1755,17 @@ public sealed class PlanningPokerHubTest : IDisposable
             .Callback<IList<Message>>(m => result = m)
             .Returns(Task.CompletedTask);
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object))
-        {
-            // Act
-            target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0);
+        using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
-            // Verify
-            planningPoker.Verify();
-            clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+        // Act
+        target.GetMessages(TeamName, ScrumMasterName, GuidProviderMock.DefaultGuid, 0);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual<int>(0, result.Count);
-        }
+        // Verify
+        planningPoker.Verify();
+        clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual<int>(0, result.Count);
     }
 
     [TestMethod]
@@ -1826,17 +1780,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0));
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
-            Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
-        }
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0));
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
+        Assert.AreEqual(messageCount, team.ScrumMaster.Messages.Count());
     }
 
     [TestMethod]
@@ -1858,17 +1811,16 @@ public sealed class PlanningPokerHubTest : IDisposable
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
         planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
 
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
 
-            // Verify
-            planningPoker.Verify();
-            teamLock.Verify();
-            Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
-            Assert.AreEqual(messageCount, member.Messages.Count());
-        }
+        // Act
+        var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        Assert.IsTrue(exception.Message.Contains("Invalid session ID.", StringComparison.Ordinal));
+        Assert.AreEqual(messageCount, member.Messages.Count());
     }
 
     [TestMethod]
@@ -1876,11 +1828,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1888,11 +1839,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1900,11 +1850,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1912,11 +1861,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Arrange
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
-        using (var target = CreatePlanningPokerHub(planningPoker.Object))
-        {
-            // Act
-            Assert.ThrowsException<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0));
-        }
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsException<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1927,6 +1875,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         var dateTimeProvider = new DateTimeProviderMock();
         dateTimeProvider.SetUtcNow(utcNow);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+
         using var target = CreatePlanningPokerHub(planningPoker.Object, dateTimeProvider: dateTimeProvider);
 
         // Act
@@ -1963,10 +1912,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         D.DateTimeProvider? dateTimeProvider = null,
         string? connectionId = null)
     {
-        if (connectionId == null)
-        {
-            connectionId = Guid.NewGuid().ToString();
-        }
+        connectionId ??= Guid.NewGuid().ToString();
 
         var clientContext = new Mock<IHubContext<PlanningPokerHub, IPlanningPokerClient>>(MockBehavior.Strict);
         if (client != null)
@@ -1976,11 +1922,7 @@ public sealed class PlanningPokerHubTest : IDisposable
             clients.Setup(o => o.Client(connectionId)).Returns(client);
         }
 
-        if (dateTimeProvider == null)
-        {
-            dateTimeProvider = D.DateTimeProvider.Default;
-        }
-
+        dateTimeProvider ??= D.DateTimeProvider.Default;
         var logger = new Logger<PlanningPokerHub>(_loggerFactory);
 
         var result = new PlanningPokerHub(planningPoker, clientContext.Object, dateTimeProvider, D.DeckProvider.Default, logger);

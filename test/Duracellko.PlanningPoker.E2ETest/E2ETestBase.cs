@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.E2ETest;
 [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "Disposable objects are disposed in TestCleanup.")]
 public abstract class E2ETestBase : PageTest
 {
-    private readonly List<IBrowserContext> _contexts = new List<IBrowserContext>();
+    private readonly List<IBrowserContext> _contexts = [];
 
     private int _setupClientsCount = 1;
 
@@ -23,7 +23,7 @@ public abstract class E2ETestBase : PageTest
 
     protected ServerFixture? Server { get; private set; }
 
-    protected IList<ClientTest> ClientTests { get; } = new List<ClientTest>();
+    protected IList<ClientTest> ClientTests { get; } = [];
 
     protected ClientTest ClientTest => ClientTests[0];
 
@@ -107,7 +107,7 @@ public abstract class E2ETestBase : PageTest
     protected async Task StartClients()
     {
         Assert.IsNotNull(Server);
-        for (int i = 0; i < SetupClientsCount; i++)
+        for (var i = 0; i < SetupClientsCount; i++)
         {
             IPage page;
             if (i == 0)
@@ -146,8 +146,10 @@ public abstract class E2ETestBase : PageTest
     private async Task AssertServerIsHealthy()
     {
         Assert.IsNotNull(Server);
-        var client = new HttpClient();
-        client.BaseAddress = Server.Uri;
+        var client = new HttpClient
+        {
+            BaseAddress = Server.Uri
+        };
         var response = await client.GetStringAsync(new Uri("health", UriKind.Relative));
         Assert.AreEqual("Healthy", response);
     }
@@ -167,8 +169,10 @@ public abstract class E2ETestBase : PageTest
     private async Task AssertClientConnectionType()
     {
         Assert.IsNotNull(Server);
-        var client = new HttpClient();
-        client.BaseAddress = Server.Uri;
+        var client = new HttpClient
+        {
+            BaseAddress = Server.Uri
+        };
         var response = await client.GetStringAsync(new Uri("configuration", UriKind.Relative));
         Assert.IsNotNull(response);
 

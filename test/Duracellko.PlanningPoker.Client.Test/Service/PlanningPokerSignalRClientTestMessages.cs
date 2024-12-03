@@ -25,8 +25,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -34,7 +33,7 @@ public class PlanningPokerSignalRClientTestMessages
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
+        var notifyMessage = new InvocationMessage(ResponseName, [new List<Message>()]);
         await fixture.ReceiveMessage(notifyMessage);
 
         await resultTask;
@@ -53,13 +52,12 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { new List<Message>() });
+        var notifyMessage = new InvocationMessage(ResponseName, [new List<Message>()]);
         await fixture.ReceiveMessage(notifyMessage);
 
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
@@ -160,8 +158,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 8,
             Type = MessageType.EstimationEnded,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = PlanningPokerData.ScrumMasterName, Type = PlanningPokerData.ScrumMasterType },
@@ -181,7 +179,7 @@ public class PlanningPokerSignalRClientTestMessages
                     Member = new TeamMember { Name = PlanningPokerData.ObserverName, Type = PlanningPokerData.MemberType },
                     Estimation = new Estimation { Value = Estimation.PositiveInfinity }
                 }
-            }
+            ]
         };
         await ProvideMessages(fixture, message);
 
@@ -207,8 +205,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 22,
             Type = MessageType.AvailableEstimationsChanged,
-            Estimations = new List<Estimation>
-            {
+            Estimations =
+            [
                 new Estimation { Value = 0 },
                 new Estimation { Value = 0.5 },
                 new Estimation { Value = 1 },
@@ -218,7 +216,7 @@ public class PlanningPokerSignalRClientTestMessages
                 new Estimation { Value = 100 },
                 new Estimation { Value = Estimation.PositiveInfinity },
                 new Estimation()
-            }
+            ]
         };
         await ProvideMessages(fixture, message);
 
@@ -281,8 +279,8 @@ public class PlanningPokerSignalRClientTestMessages
         {
             Id = 10,
             Type = MessageType.MemberEstimated,
-            EstimationResult = new List<EstimationResultItem>
-            {
+            EstimationResult =
+            [
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = PlanningPokerData.ScrumMasterName, Type = PlanningPokerData.ScrumMasterType },
@@ -293,7 +291,7 @@ public class PlanningPokerSignalRClientTestMessages
                     Member = new TeamMember { Name = PlanningPokerData.MemberName, Type = PlanningPokerData.MemberType },
                     Estimation = new Estimation { Value = 40 }
                 }
-            }
+            ]
         };
         await ProvideMessages(fixture, estimationStartedMessage, memberEstimatedMessage, estimationEndedMessage);
 
@@ -319,8 +317,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -336,8 +333,7 @@ public class PlanningPokerSignalRClientTestMessages
     {
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType(sentMessage, typeof(InvocationMessage));
-        var sentInvocationMessage = (InvocationMessage)sentMessage;
+        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -345,7 +341,7 @@ public class PlanningPokerSignalRClientTestMessages
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var notifyMessage = new InvocationMessage(ResponseName, new object[] { messages.ToList() });
+        var notifyMessage = new InvocationMessage(ResponseName, [messages.ToList()]);
         await fixture.ReceiveMessage(notifyMessage);
     }
 }

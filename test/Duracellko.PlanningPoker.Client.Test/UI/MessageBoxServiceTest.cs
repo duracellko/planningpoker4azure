@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Client.UI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -182,7 +181,7 @@ public class MessageBoxServiceTest
     private static MessageBoxService CreateMessageBoxService(MessageHandler? messageHandler = null)
     {
         var result = new MessageBoxService();
-        result.SetMessageHandler(messageHandler != null ? messageHandler.HandleMessage : default(Func<string, string?, string?, Task<bool>>));
+        result.SetMessageHandler(messageHandler != null ? messageHandler.HandleMessage : default);
         return result;
     }
 

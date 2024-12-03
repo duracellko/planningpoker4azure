@@ -33,7 +33,7 @@ public class EstimationSetMessage : Message
             throw new ArgumentNullException(nameof(messageData));
         }
 
-        Estimations = messageData.Estimations.ToList();
+        Estimations = [.. messageData.Estimations];
     }
 
     /// <summary>

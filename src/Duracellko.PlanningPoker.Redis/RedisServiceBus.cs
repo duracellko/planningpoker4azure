@@ -17,7 +17,7 @@ public class RedisServiceBus : IServiceBus, IDisposable
 {
     private const string DefaultChannelName = "PlanningPoker";
 
-    private readonly Subject<NodeMessage> _observableMessages = new Subject<NodeMessage>();
+    private readonly Subject<NodeMessage> _observableMessages = new();
     private readonly ILogger<RedisServiceBus> _logger;
 
     private volatile string? _nodeId;
@@ -214,7 +214,7 @@ public class RedisServiceBus : IServiceBus, IDisposable
         var connectionString = Configuration.ServiceBusConnectionString!;
         if (connectionString.StartsWith("REDIS:", StringComparison.Ordinal))
         {
-            connectionString = connectionString.Substring(6);
+            connectionString = connectionString[6..];
         }
 
         return connectionString;

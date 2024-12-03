@@ -20,7 +20,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class PlanningPokerSettingsTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new Bunit.TestContext();
+    private readonly Bunit.TestContext _context = new();
 
     public void Dispose()
     {
@@ -181,7 +181,7 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         _context.JSInterop.VerifyInvoke("Duracellko.PlanningPoker.registerOnModalHidden");
         Assert.IsNotNull(modalEventHandler);
 
-        await target.InvokeAsync(() => modalEventHandler.Value.OnModalHidden());
+        await target.InvokeAsync(modalEventHandler.Value.OnModalHidden);
 
         AssertSuccessMessageElement(target, false);
     }

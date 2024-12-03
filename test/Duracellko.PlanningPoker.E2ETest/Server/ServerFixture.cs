@@ -74,7 +74,7 @@ public class ServerFixture : IAsyncDisposable, IDisposable
             throw new InvalidOperationException("WebHost is already started.");
         }
 
-        WebHost = Program.CreateWebApplication(GetProgramArguments());
+        WebHost = Program.CreateWebApplication(GetProgramArguments(), true);
         await RunInBackgroundThread(() => WebHost.StartAsync()).ConfigureAwait(false);
     }
 
@@ -152,12 +152,12 @@ public class ServerFixture : IAsyncDisposable, IDisposable
     {
         var useServerSideValue = UseServerSide ? "Always" : "Never";
 
-        return new string[]
-        {
+        return
+        [
             "--urls", "http://127.0.0.1:0",
             "--applicationName", "Duracellko.PlanningPoker.Web",
             "--PlanningPokerClient:UseServerSide", useServerSideValue,
             "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
-        };
+        ];
     }
 }

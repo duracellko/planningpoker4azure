@@ -26,14 +26,14 @@ public class ScrumTeam
     /// </summary>
     /// <value>The members collection.</value>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-    public IList<TeamMember> Members { get; set; } = new List<TeamMember>();
+    public IList<TeamMember> Members { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the observers watching planning poker game of the Scrum team.
     /// </summary>
     /// <value>The observers collection.</value>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-    public IList<TeamMember> Observers { get; set; } = new List<TeamMember>();
+    public IList<TeamMember> Observers { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the current Scrum team state.
@@ -46,7 +46,7 @@ public class ScrumTeam
     /// </summary>
     /// <value>The collection of available estimations.</value>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-    public IList<Estimation> AvailableEstimations { get; set; } = new List<Estimation>();
+    public IList<Estimation> AvailableEstimations { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the estimation result of last team estimation.

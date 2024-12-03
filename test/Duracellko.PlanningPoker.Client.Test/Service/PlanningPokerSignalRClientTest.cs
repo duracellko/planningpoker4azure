@@ -653,8 +653,8 @@ public class PlanningPokerSignalRClientTest
     private static InvocationMessage AssertIsInvocationMessage([NotNull] HubMessage? message)
     {
         Assert.IsNotNull(message);
-        Assert.IsInstanceOfType(message, typeof(InvocationMessage));
-        return (InvocationMessage)message;
+        Assert.IsInstanceOfType<InvocationMessage>(message, out var invocationMessage);
+        return invocationMessage;
     }
 
     private static void AssertAvailableEstimations(ScrumTeam scrumTeam)

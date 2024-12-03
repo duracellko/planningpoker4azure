@@ -11,9 +11,9 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 [SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Collection is queue.")]
 public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposable
 {
-    private readonly ConcurrentQueue<HubMessage> _queue = new ConcurrentQueue<HubMessage>();
+    private readonly ConcurrentQueue<HubMessage> _queue = new();
     private IDisposable? _subscription;
-    private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new TaskCompletionSource<(bool, Exception?)>();
+    private volatile TaskCompletionSource<(bool, Exception?)> _receiveMessageTask = new();
 
     public HubMessageQueue(IObservable<HubMessage> messages)
     {
@@ -26,7 +26,7 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
 
     public async Task<HubMessage?> GetNextAsync()
     {
-        bool moreMessages = true;
+        var moreMessages = true;
         Exception? error = null;
         while (true)
         {
@@ -60,15 +60,9 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
         return _queue.TryDequeue(out message);
     }
 
-    public IEnumerator<HubMessage> GetEnumerator()
-    {
-        return _queue.GetEnumerator();
-    }
+    public IEnumerator<HubMessage> GetEnumerator() => _queue.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return _queue.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => _queue.GetEnumerator();
 
     public void Dispose()
     {
@@ -101,7 +95,7 @@ public sealed class HubMessageQueue : IReadOnlyCollection<HubMessage>, IDisposab
 
         public void OnNext(HubMessage value)
         {
-            if (!(value is PingMessage))
+            if (value is not PingMessage)
             {
                 _parent._queue.Enqueue(value);
                 _parent.NotifyMessageReceived(true, null);

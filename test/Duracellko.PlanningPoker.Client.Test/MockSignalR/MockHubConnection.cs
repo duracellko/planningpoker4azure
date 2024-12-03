@@ -10,7 +10,7 @@ namespace Duracellko.PlanningPoker.Client.Test.MockSignalR;
 
 public sealed class MockHubConnection : IDisposable, IAsyncDisposable
 {
-    private readonly HubMessageStore _messageStore = new HubMessageStore();
+    private readonly HubMessageStore _messageStore = new();
     private readonly InMemoryTransport _transport;
     private readonly Lazy<HubConnection> _hubConnection;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -70,12 +71,7 @@ internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
 
     private static string GetPropertyName(string propertyName, JsonSerializerOptions options)
     {
-        if (options.PropertyNamingPolicy != null)
-        {
-            return options.PropertyNamingPolicy.ConvertName(propertyName);
-        }
-
-        return propertyName;
+        return options.PropertyNamingPolicy != null ? options.PropertyNamingPolicy.ConvertName(propertyName) : propertyName;
     }
 
     private static bool IsPropertyName(ref Utf8JsonReader reader, string propertyName, JsonSerializerOptions options)
@@ -85,6 +81,7 @@ internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
         return string.Equals(reader.GetString(), propertyName, stringComparison);
     }
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Estimation value is only number, string or null.")]
     private static double? GetEstimationValue(ref Utf8JsonReader reader)
     {
         switch (reader.TokenType)

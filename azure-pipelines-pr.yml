@@ -2,13 +2,15 @@
 
 variables:
 - name: BuildConfiguration
-  value: Release
+  value: release
 - name: BuildPlatform
   value: Any CPU
 - name: BuildProjects
   value: PlanningPokerCore.sln
 - name: PublishProjects
   value: src/Duracellko.PlanningPoker.Web/Duracellko.PlanningPoker.Web.csproj
+- name: UnitTestProjects
+  value: test/*.Test/*.Test.csproj
 
 trigger: none
 

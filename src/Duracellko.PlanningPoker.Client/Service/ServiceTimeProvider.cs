@@ -14,8 +14,6 @@ public class ServiceTimeProvider : IServiceTimeProvider
 
     private readonly IPlanningPokerClient _planningPokerClient;
     private readonly DateTimeProvider _dateTimeProvider;
-
-    private TimeSpan _serviceTimeOffset;
     private DateTime _lastUpdateTime;
 
     /// <summary>
@@ -36,7 +34,7 @@ public class ServiceTimeProvider : IServiceTimeProvider
     /// This value is used to convert time in service responses to client time.
     /// This solves problems, when client time is not correctly set.
     /// </remarks>
-    public TimeSpan ServiceTimeOffset => _serviceTimeOffset;
+    public TimeSpan ServiceTimeOffset { get; private set; }
 
     /// <summary>
     /// Obtains server time and updates <see cref="ServiceTimeOffset"/> value.
@@ -58,7 +56,7 @@ public class ServiceTimeProvider : IServiceTimeProvider
         {
             var timeResult = await _planningPokerClient.GetCurrentTime(cancellationToken);
             var utcNow = _dateTimeProvider.UtcNow;
-            _serviceTimeOffset = timeResult.CurrentUtcTime - utcNow;
+            ServiceTimeOffset = timeResult.CurrentUtcTime - utcNow;
             _lastUpdateTime = utcNow;
         }
         catch (Exception ex)

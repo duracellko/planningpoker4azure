@@ -38,12 +38,12 @@ public class ScrumTeamDeserializationTest
             AvailableEstimations = DeckProvider.Default.GetDeck(Deck.Fibonacci).ToList(),
             State = TeamState.Initial,
             TimerEndTime = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Unspecified),
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.Member, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "Master" },
                 new MemberData { MemberType = MemberType.Observer, Name = "PO" }
-            }
+            ]
         };
 
         // Act
@@ -131,12 +131,12 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.Member, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "Master" },
                 new MemberData { MemberType = MemberType.Observer, Name = "PO" }
-            }
+            ]
         };
 
         var emptyMember = scrumTeamData.Members.First(m => m.MemberType == emptyMemberType);
@@ -155,12 +155,12 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.Member, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "the member" },
                 new MemberData { MemberType = MemberType.Observer, Name = "PO" }
-            }
+            ]
         };
 
         // Act
@@ -176,12 +176,12 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.Member, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "Master" },
                 new MemberData { MemberType = MemberType.Observer, Name = "Master" }
-            }
+            ]
         };
 
         // Act
@@ -197,12 +197,12 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.Member, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "Master" },
                 new MemberData { MemberType = MemberType.Observer, Name = "the member" }
-            }
+            ]
         };
 
         // Act
@@ -218,11 +218,11 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "the member" },
                 new MemberData { MemberType = MemberType.ScrumMaster, Name = "Master" }
-            }
+            ]
         };
 
         // Act
@@ -238,29 +238,26 @@ public class ScrumTeamDeserializationTest
             Name = "The Team",
             AvailableEstimations = GetAvailableEstimations(),
             State = TeamState.Initial,
-            Members = new List<MemberData>
-            {
+            Members =
+            [
                 new MemberData
                 {
                     MemberType = MemberType.ScrumMaster,
                     Name = "Master",
                     LastMessageId = 1,
-                    Messages = new List<MessageData>
-                    {
+                    Messages =
+                    [
                         new MessageData { Id = 1, MessageType = MessageType.MemberActivity }
-                    }
+                    ]
                 }
-            }
+            ]
         };
 
         // Act
         Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
-    private static List<Estimation> GetAvailableEstimations()
-    {
-        return DeckProvider.Default.GetDefaultDeck().ToList();
-    }
+    private static List<Estimation> GetAvailableEstimations() => DeckProvider.Default.GetDefaultDeck().ToList();
 
     private static ScrumTeam CreateScrumTeam(ScrumTeamData scrumTeamData)
     {

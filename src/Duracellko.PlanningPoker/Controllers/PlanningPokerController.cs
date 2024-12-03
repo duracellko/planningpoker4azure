@@ -17,7 +17,7 @@ namespace Duracellko.PlanningPoker.Controllers;
 /// </summary>
 public class PlanningPokerController : IPlanningPoker
 {
-    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, object>> _scrumTeams = new ConcurrentDictionary<string, Tuple<ScrumTeam, object>>(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Tuple<ScrumTeam, Lock>> _scrumTeams = new(StringComparer.OrdinalIgnoreCase);
     private readonly DeckProvider _deckProvider;
     private readonly TaskProvider _taskProvider;
     private readonly ILogger<PlanningPokerController> _logger;
@@ -115,8 +115,8 @@ public class PlanningPokerController : IPlanningPoker
         var availableEstimations = _deckProvider.GetDeck(deck);
         var team = new ScrumTeam(teamName, availableEstimations, DateTimeProvider, GuidProvider);
         team.SetScrumMaster(scrumMasterName);
-        var teamLock = new object();
-        var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var teamTuple = new Tuple<ScrumTeam, Lock>(team, teamLock);
 
         // loads team from repository and adds it to in-memory collection
         LoadScrumTeam(teamName);
@@ -142,8 +142,8 @@ public class PlanningPokerController : IPlanningPoker
         ArgumentNullException.ThrowIfNull(team);
 
         var teamName = team.Name;
-        var teamLock = new object();
-        var teamTuple = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var teamTuple = new Tuple<ScrumTeam, Lock>(team, teamLock);
 
         // loads team from repository and adds it to in-memory collection
         LoadScrumTeam(teamName);
@@ -206,8 +206,7 @@ public class PlanningPokerController : IPlanningPoker
         }
 
         // not need to load from repository, because team was already obtained
-        Tuple<ScrumTeam, object>? teamTuple;
-        if (!_scrumTeams.TryGetValue(observer.Team.Name, out teamTuple) || teamTuple.Item1 != observer.Team)
+        if (!_scrumTeams.TryGetValue(observer.Team.Name, out var teamTuple) || teamTuple.Item1 != observer.Team)
         {
             throw new PlanningPokerException(Service.ErrorCodes.ScrumTeamNotExist, observer.Team.Name);
         }
@@ -234,12 +233,10 @@ public class PlanningPokerController : IPlanningPoker
         var teamTuples = _scrumTeams.ToArray();
         foreach (var teamTuple in teamTuples)
         {
-            using (var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2))
-            {
-                teamLock.Lock();
-                _logger.DisconnectingInactiveObservers(teamLock.Team.Name);
-                teamLock.Team.DisconnectInactiveObservers(inactivityTime);
-            }
+            using var teamLock = new ScrumTeamLock(teamTuple.Value.Item1, teamTuple.Value.Item2);
+            teamLock.Lock();
+            _logger.DisconnectingInactiveObservers(teamLock.Team.Name);
+            teamLock.Team.DisconnectInactiveObservers(inactivityTime);
         }
     }
 
@@ -294,7 +291,7 @@ public class PlanningPokerController : IPlanningPoker
     private void ScrumTeamOnMessageReceived(object? sender, MessageReceivedEventArgs e)
     {
         var team = (ScrumTeam)(sender ?? throw new ArgumentNullException(nameof(sender)));
-        bool saveTeam = true;
+        var saveTeam = true;
 
         LogScrumTeamMessage(team, e.Message);
 
@@ -314,10 +311,10 @@ public class PlanningPokerController : IPlanningPoker
         }
     }
 
-    private Tuple<ScrumTeam, object>? LoadScrumTeam(string teamName)
+    private Tuple<ScrumTeam, Lock>? LoadScrumTeam(string teamName)
     {
-        Tuple<ScrumTeam, object>? result = null;
-        bool retry = true;
+        Tuple<ScrumTeam, Lock>? result = null;
+        var retry = true;
 
         while (retry)
         {
@@ -351,10 +348,10 @@ public class PlanningPokerController : IPlanningPoker
         Repository.SaveScrumTeam(team);
     }
 
-    private Tuple<ScrumTeam, object>? AttachLoadedScrumTeam(ScrumTeam team)
+    private Tuple<ScrumTeam, Lock>? AttachLoadedScrumTeam(ScrumTeam team)
     {
-        var teamLock = new object();
-        var result = new Tuple<ScrumTeam, object>(team, teamLock);
+        var teamLock = new Lock();
+        var result = new Tuple<ScrumTeam, Lock>(team, teamLock);
         if (_scrumTeams.TryAdd(team.Name, result))
         {
             OnTeamAdded(team);
@@ -387,7 +384,7 @@ public class PlanningPokerController : IPlanningPoker
     /// </summary>
     private sealed class ScrumTeamLock : IScrumTeamLock
     {
-        private readonly object _lockObject;
+        private readonly Lock _lockObject;
         private bool _locked;
 
         /// <summary>
@@ -395,7 +392,7 @@ public class PlanningPokerController : IPlanningPoker
         /// </summary>
         /// <param name="team">The Scrum team.</param>
         /// <param name="lockObj">The object used to lock the Scrum team.</param>
-        public ScrumTeamLock(ScrumTeam team, object lockObj)
+        public ScrumTeamLock(ScrumTeam team, Lock lockObj)
         {
             Team = team;
             _lockObject = lockObj;
@@ -416,7 +413,7 @@ public class PlanningPokerController : IPlanningPoker
         {
             if (!_locked)
             {
-                Monitor.TryEnter(_lockObject, 10000, ref _locked);
+                _locked = _lockObject.TryEnter(10000);
                 if (!_locked)
                 {
                     throw new TimeoutException(Resources.Error_ScrumTeamTimeout);
@@ -431,7 +428,7 @@ public class PlanningPokerController : IPlanningPoker
         {
             if (_locked)
             {
-                Monitor.Exit(_lockObject);
+                _lockObject.Exit();
             }
         }
     }
@@ -441,7 +438,7 @@ public class PlanningPokerController : IPlanningPoker
     /// </summary>
     private sealed class ReceiveMessagesTask
     {
-        private readonly TaskCompletionSource<IEnumerable<Message>> _taskCompletionSource = new TaskCompletionSource<IEnumerable<Message>>();
+        private readonly TaskCompletionSource<IEnumerable<Message>> _taskCompletionSource = new();
 
         private readonly ScrumTeamLock _scrumTeamLock;
         private readonly Observer _observer;
@@ -470,60 +467,52 @@ public class PlanningPokerController : IPlanningPoker
         /// <returns>Messages received by observer or empty collection if timeed out.</returns>
         public async Task<IEnumerable<Message>> GetMessagesAsync(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            using var timeoutCancellationTokenSource = new CancellationTokenSource();
+            using var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
+            try
             {
-                using (var combinedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token))
+                _observer.MessageReceived += ObserverOnMessageReceived;
+                _isReceivedEventHandlerHooked = true;
+
+                var messagesReceivedTask = _taskCompletionSource.Task;
+                var timeoutTask = _taskProvider.Delay(timeout, combinedCancellationTokenSource.Token);
+                var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (completedTask == messagesReceivedTask)
                 {
-                    try
-                    {
-                        _observer.MessageReceived += ObserverOnMessageReceived;
-                        _isReceivedEventHandlerHooked = true;
+                    return await messagesReceivedTask;
+                }
+                else
+                {
+                    return [];
+                }
+            }
+            finally
+            {
+                await timeoutCancellationTokenSource.CancelAsync();
 
-                        var messagesReceivedTask = _taskCompletionSource.Task;
-                        var timeoutTask = _taskProvider.Delay(timeout, combinedCancellationTokenSource.Token);
-                        var completedTask = await Task.WhenAny(messagesReceivedTask, timeoutTask);
-
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        if (completedTask == messagesReceivedTask)
-                        {
-                            return await messagesReceivedTask;
-                        }
-                        else
-                        {
-                            return Enumerable.Empty<Message>();
-                        }
-                    }
-                    finally
-                    {
-                        await timeoutCancellationTokenSource.CancelAsync();
-
-                        if (_isReceivedEventHandlerHooked)
-                        {
-                            using (var teamLock = _scrumTeamLock)
-                            {
-                                teamLock.Lock();
-                                _observer.MessageReceived -= ObserverOnMessageReceived;
-                                _isReceivedEventHandlerHooked = false;
-                            }
-                        }
-                    }
+                if (_isReceivedEventHandlerHooked)
+                {
+                    using var teamLock = _scrumTeamLock;
+                    teamLock.Lock();
+                    _observer.MessageReceived -= ObserverOnMessageReceived;
+                    _isReceivedEventHandlerHooked = false;
                 }
             }
         }
 
         private void ObserverOnMessageReceived(object? sender, EventArgs e)
         {
-            using (var teamLock = _scrumTeamLock)
-            {
-                teamLock.Lock();
+            using var teamLock = _scrumTeamLock;
+            teamLock.Lock();
 
-                _observer.MessageReceived -= ObserverOnMessageReceived;
-                _isReceivedEventHandlerHooked = false;
+            _observer.MessageReceived -= ObserverOnMessageReceived;
+            _isReceivedEventHandlerHooked = false;
 
-                IEnumerable<Message> messages = _observer.Messages.ToList();
-                _taskCompletionSource.TrySetResult(messages);
-            }
+            IEnumerable<Message> messages = _observer.Messages.ToList();
+            _taskCompletionSource.TrySetResult(messages);
         }
     }
 }

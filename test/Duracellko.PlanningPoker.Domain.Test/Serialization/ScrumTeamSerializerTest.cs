@@ -305,20 +305,16 @@ public class ScrumTeamSerializerTest
 
     private static byte[] SerializeTeam(ScrumTeam scrumTeam, DateTimeProvider? dateTimeProvider = null)
     {
-        using (var stream = new MemoryStream())
-        {
-            var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
-            serializer.Serialize(stream, scrumTeam);
-            return stream.ToArray();
-        }
+        using var stream = new MemoryStream();
+        var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
+        serializer.Serialize(stream, scrumTeam);
+        return stream.ToArray();
     }
 
     private static ScrumTeam DeserializeTeam(byte[] json, DateTimeProvider? dateTimeProvider = null)
     {
-        using (var stream = new MemoryStream(json))
-        {
-            var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
-            return serializer.Deserialize(stream);
-        }
+        using var stream = new MemoryStream(json);
+        var serializer = new ScrumTeamSerializer(dateTimeProvider, GuidProvider.Default);
+        return serializer.Deserialize(stream);
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Controllers;
 using Duracellko.PlanningPoker.Data;
@@ -19,8 +20,8 @@ namespace Duracellko.PlanningPoker.Azure;
 [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Destructor is placed together with Dispose.")]
 public class AzurePlanningPokerController : PlanningPokerController, IAzurePlanningPoker, IInitializationStatusProvider, IDisposable
 {
-    private readonly Subject<ScrumTeamMessage> _observableMessages = new Subject<ScrumTeamMessage>();
-    private readonly object _teamsToInitializeLock = new object();
+    private readonly Subject<ScrumTeamMessage> _observableMessages = new();
+    private readonly Lock _teamsToInitializeLock = new();
     private HashSet<string>? _teamsToInitialize;
     private volatile bool _initialized;
 
@@ -165,7 +166,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
         base.OnTeamAdded(team);
         team.MessageReceived += ScrumTeamOnMessageReceived;
 
-        bool isInitializingTeam = false;
+        var isInitializingTeam = false;
         if (!_initialized)
         {
             lock (_teamsToInitializeLock)
@@ -201,7 +202,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
     {
         if (!_initialized)
         {
-            bool teamListInitialized = false;
+            bool teamListInitialized;
             lock (_teamsToInitializeLock)
             {
                 teamListInitialized = _teamsToInitialize != null;
@@ -249,7 +250,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
     {
         if (!_initialized)
         {
-            bool teamInitialized = false;
+            bool teamInitialized;
             lock (_teamsToInitializeLock)
             {
                 teamInitialized = _teamsToInitialize != null && !_teamsToInitialize.Contains(teamName);
@@ -274,15 +275,9 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
         base.OnBeforeGetScrumTeam(teamName);
     }
 
-    private TimeSpan InitializationTimeout
-    {
-        get
-        {
-            var configuration = Configuration as IAzurePlanningPokerConfiguration;
-            return configuration != null ? configuration.InitializationTimeout : TimeSpan.FromMinutes(1.0);
-        }
-    }
+    private TimeSpan InitializationTimeout => Configuration is IAzurePlanningPokerConfiguration configuration ? configuration.InitializationTimeout : TimeSpan.FromMinutes(1.0);
 
+    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Handles special cases only. Other cases produce empty message.")]
     private void ScrumTeamOnMessageReceived(object? sender, MessageReceivedEventArgs e)
     {
         var team = (ScrumTeam)(sender ?? throw new ArgumentNullException(nameof(sender)));
@@ -304,8 +299,7 @@ public class AzurePlanningPokerController : PlanningPokerController, IAzurePlann
                 break;
             case MessageType.MemberEstimated:
                 var memberEstimatedMessage = (MemberMessage)e.Message;
-                var member = memberEstimatedMessage.Member as Member;
-                if (member != null && member.Estimation != null)
+                if (memberEstimatedMessage.Member is Member member && member.Estimation != null)
                 {
                     scrumTeamMessage = new ScrumTeamMemberEstimationMessage(team.Name, memberEstimatedMessage.MessageType)
                     {

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Duracellko.PlanningPoker.Web.Model;
@@ -12,9 +13,9 @@ public class ClientScriptsLibrary
 {
     private const string LibManFileName = "libman.json";
 
-    private readonly List<ClientScriptReference> _cascadingStyleSheets = new List<ClientScriptReference>();
-    private readonly List<ClientScriptReference> _javaScripts = new List<ClientScriptReference>();
-    private readonly object _initializationLock = new object();
+    private readonly List<ClientScriptReference> _cascadingStyleSheets = [];
+    private readonly List<ClientScriptReference> _javaScripts = [];
+    private readonly Lock _initializationLock = new();
 
     private bool _initialized;
 
@@ -89,19 +90,19 @@ public class ClientScriptsLibrary
         }
 
         var separatorPosition = libraryFullName.IndexOf('@', StringComparison.Ordinal);
-        var libraryName = libraryFullName.Substring(0, separatorPosition);
-        var libraryVersion = libraryFullName.Substring(separatorPosition + 1);
+        var libraryName = libraryFullName[..separatorPosition];
+        var libraryVersion = libraryFullName[(separatorPosition + 1)..];
 
         var libraryFiles = libraryElement.GetProperty("files").EnumerateArray()
             .Select(f => f.GetString());
 
-        var cssFile = libraryFiles.FirstOrDefault(f => IsCascadingStyleSheet(f));
+        var cssFile = libraryFiles.FirstOrDefault(IsCascadingStyleSheet);
         if (cssFile != null)
         {
             yield return new ClientScriptReference(libraryName, libraryVersion, cssFile);
         }
 
-        var jsFile = libraryFiles.FirstOrDefault(f => IsJavaScript(f));
+        var jsFile = libraryFiles.FirstOrDefault(IsJavaScript);
         if (jsFile != null)
         {
             yield return new ClientScriptReference(libraryName, libraryVersion, jsFile);

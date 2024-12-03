@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 
 namespace Duracellko.PlanningPoker.Azure;
 
@@ -11,7 +12,7 @@ namespace Duracellko.PlanningPoker.Azure;
 public class InitializationList
 {
     private readonly StringComparer _comparer = StringComparer.OrdinalIgnoreCase;
-    private readonly object _listLock = new object();
+    private readonly Lock _listLock = new();
     private List<string>? _list;
 
     /// <summary>
@@ -105,7 +106,7 @@ public class InitializationList
     {
         lock (_listLock)
         {
-            _list = new List<string>();
+            _list = [];
         }
     }
 }

@@ -10,10 +10,10 @@ namespace Duracellko.PlanningPoker.E2ETest;
 
 public class ClientTest
 {
-    private static readonly string[] _availableEstimations = new string[]
-    {
+    private static readonly string[] _availableEstimations =
+    [
         "0", "\u00BD", "1", "2", "3", "5", "8", "13", "20", "40", "100", "\u221E", "?"
-    };
+    ];
 
     public ClientTest(IPage page, Uri serverUri)
     {
@@ -218,7 +218,7 @@ public class ClientTest
 
     public Task SelectEstimation(string estimation)
     {
-        int index = Array.IndexOf<string>(_availableEstimations, estimation);
+        var index = Array.IndexOf<string>(_availableEstimations, estimation);
         return SelectEstimation(index);
     }
 
@@ -237,7 +237,7 @@ public class ClientTest
         var estimationResultElements = PlanningPokerDeskElement.Locator("div.estimationResult ul li");
         Assert.AreEqual(estimations.Length, await estimationResultElements.CountAsync());
 
-        for (int i = 0; i < estimations.Length; i++)
+        for (var i = 0; i < estimations.Length; i++)
         {
             var estimation = estimations[i];
             var estimationResultElement = estimationResultElements.Nth(i);
@@ -261,7 +261,7 @@ public class ClientTest
         var summaryItemElements = PlanningPokerDeskElement.Locator("div.estimationResult div.estimationSummary div.card");
         Assert.AreEqual(summaryItems.Length, await summaryItemElements.CountAsync());
 
-        for (int i = 0; i < summaryItems.Length; i++)
+        for (var i = 0; i < summaryItems.Length; i++)
         {
             var summaryItem = summaryItems[i];
             var summaryItemElement = summaryItemElements.Nth(i);
@@ -366,7 +366,7 @@ public class ClientTest
     private static async Task AssertElementsText(ILocator elements, string[] texts)
     {
         Assert.AreEqual(texts.Length, await elements.CountAsync());
-        for (int i = 0; i < texts.Length; i++)
+        for (var i = 0; i < texts.Length; i++)
         {
             await Assertions.Expect(elements.Nth(i)).ToHaveTextAsync(texts[i]);
         }

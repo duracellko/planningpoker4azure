@@ -23,7 +23,7 @@ public class MemberData
     /// Gets or sets the collection messages sent to the member.
     /// </summary>
     [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "All properties of data contract are read-write.")]
-    public IList<MessageData> Messages { get; set; } = new List<MessageData>();
+    public IList<MessageData> Messages { get; set; } = [];
 
     /// <summary>
     /// Gets or sets ID of last message received by client.

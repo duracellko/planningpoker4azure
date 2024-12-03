@@ -45,11 +45,7 @@ public class Member : Observer
     /// </value>
     public Estimation? Estimation
     {
-        get
-        {
-            return _estimation;
-        }
-
+        get => _estimation;
         set
         {
             if (_estimation != value)

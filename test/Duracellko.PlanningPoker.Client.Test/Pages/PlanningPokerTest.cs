@@ -17,7 +17,7 @@ public sealed class PlanningPokerTest : IDisposable
 {
     private const string BaseUrl = "http://planningpoker.duracellko.net/PlanningPoker?";
 
-    private readonly Bunit.TestContext _context = new Bunit.TestContext();
+    private readonly Bunit.TestContext _context = new();
 
     public void Dispose()
     {
@@ -62,7 +62,7 @@ public sealed class PlanningPokerTest : IDisposable
     public void Initialized_TeamNameAndMemberNameProvided_OpensIndexPage(string? queryString)
     {
         var navigationManager = new Mock<INavigationManager>();
-        navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl);
+        navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
         using var target = _context.RenderComponent<PlanningPokerPage>(
