@@ -20,8 +20,6 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     private const string DefaultExchangeName = "PlanningPoker";
     private const string QueuePrefix = "PlanningPoker-";
 
-    private static readonly TimeSpan PublishTimeout = TimeSpan.FromSeconds(5);
-
     private readonly Subject<NodeMessage> _observableMessages = new();
     private readonly IMessageConverter _messageConverter;
     private readonly GuidProvider _guidProvider;
@@ -29,7 +27,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
 
     private volatile string? _nodeId;
     private IConnection? _connection;
-    private IModel? _receivingChannel;
+    private IChannel? _receivingChannel;
     private string? _sendingExchangeName;
     private string? _receivingExchangeName;
     private string? _queueName;
@@ -77,10 +75,10 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        var shouldRetry = await Task.Run(() => SendMessage(message, false));
+        var shouldRetry = await SendMessage(message, false);
         if (shouldRetry)
         {
-            await Task.Run(() => SendMessage(message, true));
+            await SendMessage(message, true);
         }
     }
 
@@ -89,39 +87,38 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     /// </summary>
     /// <param name="nodeId">Current node ID.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task Register(string nodeId)
+    public async Task Register(string nodeId)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(nodeId);
 
         _nodeId = nodeId;
-        _connection = CreateConnectionFactory().CreateConnection();
-        _connection.CallbackException += ConnectionOnCallbackException;
+        _connection = await CreateConnectionFactory().CreateConnectionAsync();
+        _connection.CallbackExceptionAsync += ConnectionOnCallbackException;
 
         InitializeExchangeName();
-        InitializeTopology();
+        await InitializeTopology();
 
         var receivingChannel = _receivingChannel!;
         var queueName = _queueName!;
 
-        var consumer = new EventingBasicConsumer(receivingChannel);
-        consumer.Received += ConsumerOnReceived;
-        receivingChannel.BasicConsume(queueName, false, consumer);
+        var consumer = new AsyncEventingBasicConsumer(receivingChannel);
+        consumer.ReceivedAsync += ConsumerOnReceived;
+        await receivingChannel.BasicConsumeAsync(queueName, false, consumer);
         _logger.QueueCreated(_receivingExchangeName, nodeId);
-        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Stop receiving messages from other nodes.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task Unregister()
+    public async Task Unregister()
     {
-        DeleteQueue();
+        await DeleteQueue();
 
         if (_connection != null)
         {
-            _connection.Close();
-            _connection.CallbackException -= ConnectionOnCallbackException;
+            await _connection.CloseAsync();
+            _connection.CallbackExceptionAsync -= ConnectionOnCallbackException;
             _connection.Dispose();
             _connection = null;
         }
@@ -139,7 +136,6 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         }
 
         _nodeId = null;
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -164,7 +160,7 @@ public class RabbitServiceBus : IServiceBus, IDisposable
     }
 
     [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error.")]
-    private bool SendMessage(NodeMessage message, bool isRetry)
+    private async ValueTask<bool> SendMessage(NodeMessage message, bool isRetry)
     {
         var connection = _connection;
         if (connection == null)
@@ -172,18 +168,18 @@ public class RabbitServiceBus : IServiceBus, IDisposable
             throw new InvalidOperationException(Resources.Error_RabbitMQNotInitialized);
         }
 
-        IModel? sendingChannel = null;
+        IChannel? sendingChannel = null;
         try
         {
-            sendingChannel = connection.CreateModel();
-            sendingChannel.ConfirmSelect();
+            var channelOptions = new CreateChannelOptions(true, false);
+            sendingChannel = await connection.CreateChannelAsync(channelOptions);
 
-            var properties = CreateBasicProperties(message, sendingChannel);
+            var properties = CreateBasicProperties(message);
             properties.Headers = _messageConverter.GetMessageHeaders(message);
             var body = _messageConverter.GetMessageBody(message);
 
-            sendingChannel.BasicPublish(_sendingExchangeName, string.Empty, properties, body);
-            sendingChannel.WaitForConfirmsOrDie(PublishTimeout);
+            System.Diagnostics.Debug.Assert(_sendingExchangeName != null, "SendingExchangeName should not be null, when connection is opened.");
+            await sendingChannel.BasicPublishAsync(_sendingExchangeName, string.Empty, false, properties, body);
             _logger.SendMessage(properties.MessageId);
             return false;
         }
@@ -198,19 +194,24 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         }
         finally
         {
-            sendingChannel?.Close();
+            if (sendingChannel != null)
+            {
+                await sendingChannel.CloseAsync();
+            }
+
             sendingChannel?.Dispose();
         }
     }
 
     [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Log error and try again.")]
-    private void ConsumerOnReceived(object? sender, BasicDeliverEventArgs e)
+    private async Task ConsumerOnReceived(object? sender, BasicDeliverEventArgs e)
     {
         var nodeId = _nodeId;
         var receivingChannel = _receivingChannel;
         if (nodeId != null && receivingChannel != null)
         {
             var headers = e.BasicProperties.Headers;
+            System.Diagnostics.Debug.Assert(headers != null, "Receiving message headers should not be null.");
             var senderId = _messageConverter.GetHeader(headers, MessageConverter.SenderIdPropertyName);
             var recipientId = _messageConverter.GetHeader(headers, MessageConverter.RecipientIdPropertyName);
 
@@ -226,20 +227,21 @@ public class RabbitServiceBus : IServiceBus, IDisposable
             {
                 var nodeMessage = _messageConverter.GetNodeMessage(headers, e.Body);
                 _observableMessages.OnNext(nodeMessage);
-                receivingChannel.BasicAck(e.DeliveryTag, false);
+                await receivingChannel.BasicAckAsync(e.DeliveryTag, false);
                 _logger.MessageProcessed(_receivingExchangeName, nodeId, messageId);
             }
             catch (Exception ex)
             {
-                receivingChannel.BasicNack(e.DeliveryTag, false, false);
+                await receivingChannel.BasicNackAsync(e.DeliveryTag, false, false);
                 _logger.ErrorProcessMessage(ex, _receivingExchangeName, nodeId, messageId);
             }
         }
     }
 
-    private void ConnectionOnCallbackException(object? sender, CallbackExceptionEventArgs e)
+    private Task ConnectionOnCallbackException(object? sender, CallbackExceptionEventArgs e)
     {
         _logger.ConnectionCallbackError(e.Exception, _receivingExchangeName, _nodeId);
+        return Task.CompletedTask;
     }
 
     private ConnectionFactory CreateConnectionFactory()
@@ -280,26 +282,29 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         }
     }
 
-    private void InitializeTopology()
+    private async ValueTask InitializeTopology()
     {
-        var receivingChannel = _connection!.CreateModel();
-        receivingChannel.ExchangeDeclare(_sendingExchangeName, ExchangeType.Fanout);
-        receivingChannel.ExchangeDeclare(_receivingExchangeName, ExchangeType.Fanout);
+        var receivingChannel = await _connection!.CreateChannelAsync();
+
+        System.Diagnostics.Debug.Assert(_sendingExchangeName != null, "SendingExchangeName should not be null, when connection is opened.");
+        await receivingChannel.ExchangeDeclareAsync(_sendingExchangeName, ExchangeType.Fanout);
+        System.Diagnostics.Debug.Assert(_receivingExchangeName != null, "ReceivingExchangeName should not be null, when connection is opened.");
+        await receivingChannel.ExchangeDeclareAsync(_receivingExchangeName, ExchangeType.Fanout);
         _receivingChannel = receivingChannel;
 
-        var queue = receivingChannel.QueueDeclare(QueuePrefix + _nodeId, false, false, false);
+        var queue = await receivingChannel.QueueDeclareAsync(QueuePrefix + _nodeId, false, false, false);
         _queueName = queue.QueueName;
-        receivingChannel.QueueBind(queue.QueueName, _receivingExchangeName, string.Empty);
+        await receivingChannel.QueueBindAsync(queue.QueueName, _receivingExchangeName, string.Empty);
     }
 
     [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Continue disposing other resources.")]
-    private void DeleteQueue()
+    private async ValueTask DeleteQueue()
     {
         if (_queueName != null && _receivingChannel != null)
         {
             try
             {
-                _receivingChannel.QueueDelete(_queueName);
+                await _receivingChannel.QueueDeleteAsync(_queueName);
                 _queueName = null;
                 _logger.QueueClosed(_receivingExchangeName, _nodeId);
             }
@@ -310,13 +315,14 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         }
     }
 
-    private IBasicProperties CreateBasicProperties(NodeMessage message, IModel model)
+    private BasicProperties CreateBasicProperties(NodeMessage message)
     {
-        var properties = model.CreateBasicProperties();
-
-        properties.MessageId = _guidProvider.NewGuid().ToString();
-        properties.Type = message.MessageType.ToString();
-        properties.Expiration = "60000"; // 1 minute
+        var properties = new BasicProperties
+        {
+            MessageId = _guidProvider.NewGuid().ToString(),
+            Type = message.MessageType.ToString(),
+            Expiration = "60000" // 1 minute
+        };
 
         if (message.Data != null)
         {

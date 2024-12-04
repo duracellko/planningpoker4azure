@@ -50,6 +50,7 @@ dotnet_diagnostic.S2325.severity = none
 dotnet_diagnostic.S2346.severity = none
 dotnet_diagnostic.S2583.severity = none
 dotnet_diagnostic.S2589.severity = none
+dotnet_diagnostic.S3236.severity = none
 dotnet_diagnostic.S3267.severity = none
 dotnet_diagnostic.S4070.severity = none
 dotnet_diagnostic.S6960.severity = none

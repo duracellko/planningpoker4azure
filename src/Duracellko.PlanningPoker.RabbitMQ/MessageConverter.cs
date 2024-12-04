@@ -41,11 +41,11 @@ public class MessageConverter : IMessageConverter
     /// </summary>
     /// <param name="message">The message to convert.</param>
     /// <returns>Headers of the message.</returns>
-    public IDictionary<string, object> GetMessageHeaders(NodeMessage message)
+    public IDictionary<string, object?> GetMessageHeaders(NodeMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        var headers = new Dictionary<string, object>();
+        var headers = new Dictionary<string, object?>();
         SetHeader(headers, MessageTypePropertyName, message.MessageType.ToString());
         if (message.Data != null)
         {
@@ -88,7 +88,7 @@ public class MessageConverter : IMessageConverter
     /// <param name="body">Body of the message to convert.</param>
     /// <returns>Converted message of NodeMessage type.</returns>
     [SuppressMessage("Style", "IDE0045:Convert to conditional expression", Justification = "Condition has multiple branches.")]
-    public NodeMessage GetNodeMessage(IDictionary<string, object> headers, ReadOnlyMemory<byte> body)
+    public NodeMessage GetNodeMessage(IDictionary<string, object?> headers, ReadOnlyMemory<byte> body)
     {
         ArgumentNullException.ThrowIfNull(headers);
 
@@ -149,7 +149,7 @@ public class MessageConverter : IMessageConverter
     /// <param name="headers">The collection of header key-value pairs.</param>
     /// <param name="key">The key to get header value for.</param>
     /// <returns>Value header with specified key.</returns>
-    public string? GetHeader(IDictionary<string, object> headers, string key)
+    public string? GetHeader(IDictionary<string, object?> headers, string key)
     {
         ArgumentNullException.ThrowIfNull(headers);
         ArgumentNullException.ThrowIfNullOrEmpty(key);
@@ -190,7 +190,7 @@ public class MessageConverter : IMessageConverter
         return memoryStream.ToArray();
     }
 
-    private static void SetHeader(Dictionary<string, object> headers, string key, string? value)
+    private static void SetHeader(Dictionary<string, object?> headers, string key, string? value)
     {
         if (value != null)
         {
