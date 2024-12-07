@@ -1,8 +1,10 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <AssemblyVersion>3.3.0.0</AssemblyVersion>
-    <FileVersion>3.3.0.0</FileVersion>
+    <Version>3.3</Version>
+    <VersionBuild Condition="'$(VersionBuild)'==''">0</VersionBuild>
+    <AssemblyVersion>$(Version).$(VersionBuild).0</AssemblyVersion>
+    <FileVersion>$(Version).$(VersionBuild).0</FileVersion>
     <Company>Duracellko</Company>
     <Copyright>Copyright © Duracellko 2012</Copyright>
     <NeutralLanguage>en</NeutralLanguage>

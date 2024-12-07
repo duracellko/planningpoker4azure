@@ -68,16 +68,6 @@ try {
     if (!$?) {
         throw "dotnet publish failed"
     }
-
-    $publishFolder = Join-Path -Path $scriptDir -ChildPath "artifacts\publish\Duracellko.PlanningPoker.Web\$buildConfiguration"
-    $dockerAppFolder = Join-Path -Path $scriptDir -ChildPath "docker\app"
-    if (!(Test-Path -Path $dockerAppFolder)) {
-        New-Item -Path $dockerAppFolder -ItemType Directory
-    }
-
-    $exclude = @('*.xml', 'libman.json', '*.config', 'appsettings.Development.json')
-    Get-ChildItem -Path $dockerAppFolder | Remove-Item -Recurse -Force
-    Get-ChildItem -Path $publishFolder -Exclude $exclude | Copy-Item -Destination $dockerAppFolder -Recurse
 }
 catch {
     throw

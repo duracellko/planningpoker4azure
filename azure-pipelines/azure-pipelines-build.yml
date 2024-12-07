@@ -2,6 +2,7 @@
 
 parameters:
   RunEnd2EndTests: true
+  RunContainerTests: true
   PublishArtifacts: true
 
 jobs:
@@ -16,6 +17,7 @@ jobs:
 
   variables:
     RunEnd2EndTests: ${{ parameters.RunEnd2EndTests }}
+    RunContainerTests: ${{ parameters.RunContainerTests }}
     PublishArtifacts: ${{ parameters.PublishArtifacts }}
 
   steps:
@@ -23,10 +25,6 @@ jobs:
     displayName: Install .NET SDK
     inputs:
       version: 9.0.x
-
-  - pwsh: './scripts/UpdateVersion.ps1 -VersionNumber $env:BUILD_BUILDID'
-    displayName: 'PowerShell UpdateVersion.ps1'
-    failOnStderr: true
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
@@ -40,14 +38,14 @@ jobs:
     inputs:
       command: build
       projects: $(BuildProjects)
-      arguments: --configuration $(BuildConfiguration) --verbosity normal
+      arguments: --configuration $(BuildConfiguration) -p:VersionBuild=$(Build.BuildId) --no-restore --verbosity normal
 
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
       command: test
       projects: $(UnitTestProjects)
-      arguments: --configuration $(BuildConfiguration) --no-build
+      arguments: --configuration $(BuildConfiguration) -p:VersionBuild=$(Build.BuildId) --no-build
       testRunTitle: Planning Poker
 
   - pwsh: '.\artifacts\bin\Duracellko.PlanningPoker.E2ETest\$(BuildConfiguration)\playwright.ps1 install chromium'
@@ -69,9 +67,8 @@ jobs:
       command: publish
       publishWebProjects: false
       projects: $(PublishProjects)
-      arguments: --configuration $(BuildConfiguration) --verbosity normal
+      arguments: --configuration $(BuildConfiguration) -p:VersionBuild=$(Build.BuildId) --verbosity normal
       zipAfterPublish: false
-    condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
 
   - task: ArchiveFiles@2
     displayName: Zip web
@@ -88,6 +85,42 @@ jobs:
     inputs:
       PathtoPublish: $(Build.StagingDirectory)/web
       ArtifactName: web
+    condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish container
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: $(PublishProjects)
+      arguments: /t:PublishContainer --configuration $(BuildConfiguration) -p:VersionBuild=$(Build.BuildId) -p:ContainerArchiveOutputPath=../../artifacts/staging/planningpoker4azure.tar.gz --verbosity normal
+      zipAfterPublish: false
+    condition: and(succeeded(), or(eq(variables['PublishArtifacts'], 'true'), eq(variables['RunContainerTests'], 'true')))
+
+  - pwsh: '& docker image load -i artifacts/staging/planningpoker4azure.tar.gz'
+    displayName: Load Docker image
+    workingDirectory: $(Build.SourcesDirectory)
+    condition: and(succeeded(), eq(variables['RunContainerTests'], 'true'))
+
+  - pwsh: './test/container/RunTests.ps1 -PlanningPokerImageTag "b$env:BUILD_BUILDID" -TestResultPath (Join-Path -Path $env:BUILD_STAGINGDIRECTORY -ChildPath PlanningPokerDocker.TestResult.xml)'
+    displayName: 'Run Docker container tests'
+    workingDirectory: $(Build.SourcesDirectory)
+    condition: and(succeeded(), eq(variables['RunContainerTests'], 'true'))
+
+  - task: PublishTestResults@2
+    displayName: Public Docker container test results
+    inputs:
+      testResultsFormat: NUnit
+      searchFolder: $(Build.StagingDirectory)
+      testResultsFiles: PlanningPokerDocker.TestResult.xml
+      testRunTitle: Planning Poker - Docker
+    condition: and(succeededOrFailed(), eq(variables['RunContainerTests'], 'true'))
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: container'
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/artifacts/staging/planningpoker4azure.tar.gz
+      ArtifactName: container
     condition: and(succeeded(), eq(variables['PublishArtifacts'], 'true'))
 
   - task: CopyFiles@2
