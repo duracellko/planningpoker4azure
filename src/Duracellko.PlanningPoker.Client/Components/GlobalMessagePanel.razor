@@ -46,29 +46,30 @@
         _messageBoxService.SetMessageHandler(ShowMessage);
     }
 
-    private Task<bool> ShowMessage(string message, string? title, string? primaryButton)
+    private async Task<bool> ShowMessage(string message, string? title, string? primaryButton)
     {
         Message = message;
         Title = title;
         PrimaryButtonText = primaryButton;
 
         StateHasChanged();
-        ShowDialog();
 
-        _showMessageTask = new TaskCompletionSource<bool>();
-        return _showMessageTask.Task;
+        var showMessageTask = new TaskCompletionSource<bool>();
+        _showMessageTask = showMessageTask;
+        await ShowDialog();
+        return await showMessageTask.Task;
     }
 
-    private void CloseDialog()
+    private async Task CloseDialog()
     {
+        await HideDialog();
         EndShowMessageTask(false);
-        HideDialog();
     }
 
-    private void PrimaryCommand()
+    private async Task PrimaryCommand()
     {
+        await HideDialog();
         EndShowMessageTask(true);
-        HideDialog();
     }
 
     private void EndShowMessageTask(bool result)
@@ -80,12 +81,12 @@
         }
     }
 
-    private async void ShowDialog()
+    private async Task ShowDialog()
     {
         await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", messageBoxElement);
     }
 
-    private async void HideDialog()
+    private async Task HideDialog()
     {
         await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.hide", messageBoxElement);
     }

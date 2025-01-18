@@ -97,5 +97,5 @@
         return TryRun(() => Controller.CreateTeam(TeamName, ScrumMasterName, SelectedDeck));
     }
 
-    private string GetFormControlCss(bool valid) => valid ? "form-control" : "form-control is-invalid";
+    private static string GetFormControlCss(bool valid) => valid ? "form-control" : "form-control is-invalid";
 }

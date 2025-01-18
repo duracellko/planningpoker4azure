@@ -34,7 +34,7 @@ This guide assumes that you already know what planning poker is about and how to
 
 Requirements:
 
-- .NET 8.0 runtime
+- .NET 9.0 runtime
 
 Run: `dotnet Duracellko.PlanningPoker.Web.dll`
 
@@ -49,7 +49,7 @@ docker run -p 80:8080 duracellko/planningpoker
 
 ## Architecture
 
-Application is implemented using [ASP.NET Core 8.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-8.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
+Application is implemented using [ASP.NET Core 9.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
 
 - Locally on Windows or Linux
 - In Docker container
@@ -60,7 +60,7 @@ The application does not have any dependencies to run in basic mode. However, th
 
 ### Blazor models
 
-Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-8.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **UseServerSide** setting.
+Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-9.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **UseServerSide** setting.
 
 ### Teams storage
 
@@ -124,7 +124,7 @@ The application has following configuration settings:
 
 Requirements:
 
-- .NET SDK 8.0
+- .NET SDK 9.0
 
 To run build and tests simply execute PowerShell script BuildAndRun.ps1.
 
@@ -145,7 +145,7 @@ Optionally it is possible to include execution of end-2-end tests using Selenium
 For end-2-end tests (Duracellko.PlanningPoker.E2ETest) Playwright dependencies (browser) need to be installed. Simply execute following commands:
 
 ```
-.\Build\bin\Debug\net8.0\playwright.ps1 install chromium
+.\artifacts\bin\Duracellko.PlanningPoker.E2ETest\debug\playwright.ps1 install chromium
 ```
 
 ## Solution projects
