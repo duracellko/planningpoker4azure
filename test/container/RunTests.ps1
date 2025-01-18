@@ -4,7 +4,7 @@ Param (
 )
 
 $projectPath = $PSScriptRoot
-$pesterVersion = '5.6.1'
+$pesterVersion = '5.7.1'
 $rabbitmqVersion = '4.0'
 
 $imageTag = 'local-test'

@@ -1,6 +1,5 @@
 Param (
-    [bool] $E2ETest = $false,
-    [string] $ChromeVersion = ''
+    [bool] $E2ETest = $false
 )
 
 $scriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent

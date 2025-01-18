@@ -227,63 +227,23 @@
         {
             return Resources.Estimation_Infinity;
         }
-        else if (value == 0.5)
+
+        return value switch
         {
-            return Resources.Estimation_Half;
-        }
-        else if (value == -999509.0)
-        {
-            return Resources.Estimation_XS;
-        }
-        else if (value == -999508.0)
-        {
-            return Resources.Estimation_S;
-        }
-        else if (value == -999507.0)
-        {
-            return Resources.Estimation_M;
-        }
-        else if (value == -999506.0)
-        {
-            return Resources.Estimation_L;
-        }
-        else if (value == -999505.0)
-        {
-            return Resources.Estimation_XL;
-        }
-        else if (value == -999909.0)
-        {
-            return Resources.Estimation_Rock;
-        }
-        else if (value == -999908.0)
-        {
-            return Resources.Estimation_Paper;
-        }
-        else if (value == -999907.0)
-        {
-            return Resources.Estimation_Scissors;
-        }
-        else if (value == -999906.0)
-        {
-            return Resources.Estimation_Lizard;
-        }
-        else if (value == -999905.0)
-        {
-            return Resources.Estimation_Spock;
-        }
-        else
-        {
-            return value.ToString();
-        }
+            0.5 => Resources.Estimation_Half,
+            -999509.0 => Resources.Estimation_XS,
+            -999508.0 => Resources.Estimation_S,
+            -999507.0 => Resources.Estimation_M,
+            -999506.0 => Resources.Estimation_L,
+            -999505.0 => Resources.Estimation_XL,
+            -999909.0 => Resources.Estimation_Rock,
+            -999908.0 => Resources.Estimation_Paper,
+            -999907.0 => Resources.Estimation_Scissors,
+            -999906.0 => Resources.Estimation_Lizard,
+            -999905.0 => Resources.Estimation_Spock,
+            _ => value.ToString()
+        };
     }
 
-    private static string FormatSummaryValue(double? value)
-    {
-        if (!value.HasValue)
-        {
-            return "\u00A0";
-        }
-
-        return value.Value.ToString("N2");
-    }
+    private static string FormatSummaryValue(double? value) => value.HasValue ? value.Value.ToString("N2") : "\u00A0";
 }
