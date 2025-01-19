@@ -18,11 +18,11 @@
               onerror="this.onerror = null; this.href = 'lib/@cssScript.File'" />
     }
     <link href="Content/Site.css" rel="stylesheet" />
-    <HeadOutlet @rendermode="@AppRenderMode" />
+    <HeadOutlet @rendermode="_model.ApplicationRenderMode" />
 </head>
 <body>
     <div id="app">
-        <AppLoader @rendermode="@AppRenderMode" />
+        <AppLoader @rendermode="_model.ApplicationRenderMode" />
     </div>
 
     <div id="blazor-error-ui" class="alert alert-warning alert-dismissible" role="alert">
@@ -52,9 +52,6 @@
 
 @code
 {
-    private IComponentRenderMode AppRenderMode =>
-        _model.UseServerSide ? RenderMode.InteractiveServer : RenderMode.InteractiveWebAssembly;
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
