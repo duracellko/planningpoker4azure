@@ -62,12 +62,12 @@ public static class Program
         var clientConfiguration = GetPlanningPokerClientConfiguration(configuration);
         var razorComponentsBuilder = services.AddRazorComponents();
 
-        if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
+        if (clientConfiguration.ApplicationMode != ApplicationMode.ServerSide)
         {
             razorComponentsBuilder = razorComponentsBuilder.AddInteractiveWebAssemblyComponents();
         }
 
-        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+        if (clientConfiguration.ApplicationMode != ApplicationMode.ClientSide)
         {
             razorComponentsBuilder.AddInteractiveServerComponents();
         }
@@ -152,7 +152,7 @@ public static class Program
 
         services.AddSingleton<PlanningPokerClientConfiguration>(clientConfiguration);
 
-        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+        if (clientConfiguration.ApplicationMode != ApplicationMode.ClientSide)
         {
             services.AddSingleton<HttpClient>();
             services.AddSingleton<PlanningPokerServerUriProvider>();
@@ -172,7 +172,7 @@ public static class Program
         {
             app.UseDeveloperExceptionPage();
 
-            if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
+            if (clientConfiguration.ApplicationMode != ApplicationMode.ServerSide)
             {
                 app.UseWebAssemblyDebugging();
             }
@@ -195,12 +195,12 @@ public static class Program
         var componentsEndpoint = endpoints.MapRazorComponents<Components.App>()
             .AddAdditionalAssemblies(typeof(Client.AppLoader).Assembly);
 
-        if (clientConfiguration.UseServerSide != ServerSideConditions.Always)
+        if (clientConfiguration.ApplicationMode != ApplicationMode.ServerSide)
         {
             componentsEndpoint = componentsEndpoint.AddInteractiveWebAssemblyRenderMode();
         }
 
-        if (clientConfiguration.UseServerSide != ServerSideConditions.Never)
+        if (clientConfiguration.ApplicationMode != ApplicationMode.ClientSide)
         {
             componentsEndpoint.AddInteractiveServerRenderMode();
         }
