@@ -150,13 +150,13 @@ public class ServerFixture : IAsyncDisposable, IDisposable
 
     private string[] GetProgramArguments()
     {
-        var useServerSideValue = UseServerSide ? "Always" : "Never";
+        var applicationMode = UseServerSide ? "ServerSide" : "ClientSide";
 
         return
         [
             "--urls", "http://127.0.0.1:0",
             "--applicationName", "Duracellko.PlanningPoker.Web",
-            "--PlanningPokerClient:UseServerSide", useServerSideValue,
+            "--PlanningPokerClient:ApplicationMode", applicationMode,
             "--PlanningPokerClient:UseHttpClient", UseHttpClient.ToString(CultureInfo.InvariantCulture)
         ];
     }
