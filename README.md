@@ -58,9 +58,9 @@ Application is implemented using [ASP.NET Core 9.0](https://docs.microsoft.com/e
 
 The application does not have any dependencies to run in basic mode. However, there are configurable advanced features.
 
-### Blazor models
+### Blazor rendering modes
 
-Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-9.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **UseServerSide** setting.
+Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-9.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **ApplicationMode** setting.
 
 ### Teams storage
 
@@ -84,7 +84,7 @@ The application has following configuration settings:
 ```javascript
 {
     "PlanningPokerClient": {
-        "UseServerSide": "Never" // string - Never | Always | Mobile
+        "ApplicationMode": "Auto" // string - Auto | ClientSide | ServerSide
     },
     "PlanningPoker": {
         "RepositoryFolder": "", // string
@@ -104,10 +104,10 @@ The application has following configuration settings:
 }
 ```
 
-- **UseServerSide** (default: Never) - This setting has following options:
-    - **Always** - Blazor runs in server-side and HTML is synchronized with browser using SignalR.
-    - **Never** - Blazor runs in WebAssembly on client.
-    - **Mobile** - Blazor runs on server for mobile devices and on client otherwise. Startup of Blazor can be slow on mobile devices, therefore this option fallbacks to server-side for faster start.
+- **ApplicationMode** (default: Auto) - This setting has following options:
+    - **Auto** - Application runs server-side at first. And second visit of the application runs client-side, when application bundle is downloaded.
+    - **ClientSide** - Blazor runs in WebAssembly on client.
+    - **ServerSide** - Blazor runs on server-side and HTML is synchronized with browser using SignalR.
 - **RepositoryFolder** (default: empty) - Path to folder, where data are stored between application restarts. Path is relative to the application folder. When this setting is empty, no data are stored and all are lost on application restart.
 - **RepositoryTeamExpiration** (default: 1200) - Team is deleted after specified time with no user activity.
 - **ClientInactivityTimeout** (default: 900) - User is disconnected from the team after specified time with no connection from the user.
