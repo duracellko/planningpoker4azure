@@ -35,6 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{30E23547-0298-4D24-AB67-C7867D316A03}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		src\SonarLint.xml = src\SonarLint.xml
 		src\stylecop.json = src\stylecop.json
 	EndProjectSection
 EndProject
