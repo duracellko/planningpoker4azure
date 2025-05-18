@@ -80,24 +80,26 @@ internal static class ControllerHelper
         ArgumentNullException.ThrowIfNull(navigationManager);
 
         var urlEncoder = UrlEncoder.Default;
-        var uri = "Index";
+        var uri = new StringBuilder("Index");
 
         if (!string.IsNullOrEmpty(team))
         {
-            uri += '/' + urlEncoder.Encode(team);
+            uri.Append('/');
+            uri.Append(urlEncoder.Encode(team));
 
             if (!string.IsNullOrEmpty(member))
             {
-                uri += '/' + urlEncoder.Encode(member);
+                uri.Append('/');
+                uri.Append(urlEncoder.Encode(member));
 
                 if (callbackReference != null)
                 {
-                    uri += $"?{CallbackUriName}={urlEncoder.Encode(callbackReference.Url.ToString())}&{CallbackReferenceName}={urlEncoder.Encode(callbackReference.Reference)}";
+                    uri.Append($"?{CallbackUriName}={urlEncoder.Encode(callbackReference.Url.ToString())}&{CallbackReferenceName}={urlEncoder.Encode(callbackReference.Reference)}");
                 }
             }
         }
 
-        navigationManager.NavigateTo(uri);
+        navigationManager.NavigateTo(uri.ToString());
     }
 
     /// <summary>

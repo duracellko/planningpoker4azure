@@ -133,7 +133,7 @@ public class ClientTest
 
         await Assertions.Expect(PlanningPokerDeskElement).ToBeVisibleAsync();
         await Assertions.Expect(MembersPanelElement).ToBeVisibleAsync();
-        await Assertions.Expect(Page).ToHaveURLAsync($"{ServerUri}PlanningPoker/{team}/{scrumMaster}");
+        Assert.AreEqual($"{ServerUri}PlanningPoker/{team}/{scrumMaster}", Page.Url);
     }
 
     public async Task AssertTeamName(string team, string member)
