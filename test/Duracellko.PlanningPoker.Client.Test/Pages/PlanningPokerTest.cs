@@ -24,7 +24,7 @@ public sealed class PlanningPokerTest : IDisposable
         _context.Dispose();
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null)]
     [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254")]
     public void Initialized_NoTeamAndNoMember_OpensIndexPage(string? queryString)
@@ -39,7 +39,7 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.Verify(o => o.NavigateTo(expectedUri));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null)]
     [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254")]
     public void Initialized_TeamNameProvided_OpensIndexPage(string? queryString)
@@ -55,7 +55,7 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.Verify(o => o.NavigateTo(expectedUri));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null)]
     [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254")]
     [DataRow("CallbackReference=ID%23254")]

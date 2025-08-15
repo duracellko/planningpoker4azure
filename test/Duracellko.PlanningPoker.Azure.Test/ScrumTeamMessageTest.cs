@@ -43,6 +43,6 @@ public class ScrumTeamMessageTest
         var messageType = MessageType.Empty;
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeamMessage(teamName, messageType));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new ScrumTeamMessage(teamName, messageType));
     }
 }

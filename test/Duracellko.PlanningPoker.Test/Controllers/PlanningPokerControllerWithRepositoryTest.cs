@@ -114,7 +114,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -282,7 +282,7 @@ public class PlanningPokerControllerWithRepositoryTest
         target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.CreateScrumTeam("team", "master", Deck.Standard));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -330,7 +330,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var inputTeam = new ScrumTeam("team");
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.AttachScrumTeam(inputTeam));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.AttachScrumTeam(inputTeam));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -411,7 +411,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
@@ -429,7 +429,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(repository: repository.Object);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
@@ -483,7 +483,7 @@ public class PlanningPokerControllerWithRepositoryTest
         var target = CreatePlanningPokerController(timeProvider, configuration.Object, repository.Object);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);

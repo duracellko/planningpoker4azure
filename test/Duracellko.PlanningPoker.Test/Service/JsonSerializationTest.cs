@@ -15,7 +15,7 @@ public class JsonSerializationTest
         [JsonSerializerDefaults.Web],
     ];
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_ScrumTeam_Initial(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -51,7 +51,7 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.AvailableEstimations[2].Value, result.AvailableEstimations[2].Value);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_ScrumTeam_Estimated(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -109,7 +109,7 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.EstimationResult[1].Estimation!.Value, result.EstimationResult[1].Estimation!.Value);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_ScrumTeam_EstimationInProgress(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -159,7 +159,7 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.EstimationParticipants[1].Estimated, result.EstimationParticipants[1].Estimated);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_ReconnectTeamResult_Initial(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -207,7 +207,7 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.AvailableEstimations[2].Value, resultScrumTeam.AvailableEstimations[2].Value);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_ReconnectTeamResult_EstimationInProgress(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -270,7 +270,7 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.EstimationParticipants[1].Estimated, resultScrumTeam.EstimationParticipants[1].Estimated);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_Empty(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -287,7 +287,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Type, result.Type);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_EstimationStarted(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -304,7 +304,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Type, result.Type);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_MemberJoined(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -327,7 +327,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Member.Type, memberMessageResult.Member.Type);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_EstimationEnded(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -365,7 +365,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.EstimationResult[1].Estimation!.Value, estimationResult.EstimationResult[1].Estimation!.Value);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_AvailableEstimationsChanged(JsonSerializerDefaults jsonSerializerDefaults)
     {
@@ -420,7 +420,7 @@ public class JsonSerializationTest
         Assert.IsNull(estimationSetMessage.Estimations[6].Value);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(JsonTestData))]
     public void JsonSerialize_Message_TimerStarted(JsonSerializerDefaults jsonSerializerDefaults)
     {

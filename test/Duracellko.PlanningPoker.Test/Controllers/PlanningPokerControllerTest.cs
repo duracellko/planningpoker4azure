@@ -189,7 +189,7 @@ public class PlanningPokerControllerTest
         team.Dispose();
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("team", "master2", Deck.Standard));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.CreateScrumTeam("team", "master2", Deck.Standard));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -203,7 +203,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateScrumTeam(string.Empty, "master", Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateScrumTeam(string.Empty, "master", Deck.Standard));
     }
 
     [TestMethod]
@@ -213,7 +213,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateScrumTeam("test team", string.Empty, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateScrumTeam("test team", string.Empty, Deck.Standard));
     }
 
     [TestMethod]
@@ -268,7 +268,7 @@ public class PlanningPokerControllerTest
         var team = new ScrumTeam("team");
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.AttachScrumTeam(team));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.AttachScrumTeam(team));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -282,7 +282,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.AttachScrumTeam(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.AttachScrumTeam(null!));
     }
 
     [TestMethod]
@@ -311,7 +311,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
@@ -325,7 +325,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetScrumTeam(string.Empty));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetScrumTeam(string.Empty));
     }
 
     [TestMethod]
@@ -345,7 +345,7 @@ public class PlanningPokerControllerTest
         }
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
@@ -376,7 +376,7 @@ public class PlanningPokerControllerTest
         }
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
@@ -390,7 +390,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessagesAsync(null!, default));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessagesAsync(null!, default));
     }
 
     [TestMethod]
@@ -471,7 +471,7 @@ public class PlanningPokerControllerTest
         }
 
         await cancellationToken.CancelAsync();
-        await Assert.ThrowsExceptionAsync<OperationCanceledException>(() => messagesTask);
+        await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => messagesTask);
     }
 
     [TestMethod]
@@ -642,7 +642,7 @@ public class PlanningPokerControllerTest
         target.DisconnectInactiveObservers(TimeSpan.FromSeconds(30.0));
 
         // Verify
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("team"));
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);
     }
 

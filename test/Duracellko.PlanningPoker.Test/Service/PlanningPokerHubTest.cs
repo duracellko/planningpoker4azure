@@ -44,10 +44,10 @@ public sealed class PlanningPokerHubTest : IDisposable
     {
         // Act
         var logger = new Logger<PlanningPokerHub>(_loggerFactory);
-        Assert.ThrowsException<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, null!, logger));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new PlanningPokerHub(null!, null!, null!, null!, logger));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard, D.Deck.Standard)]
     [DataRow(Deck.Fibonacci, D.Deck.Fibonacci)]
     [DataRow(Deck.RockPaperScissorsLizardSpock, D.Deck.RockPaperScissorsLizardSpock)]
@@ -114,7 +114,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -125,7 +125,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -147,7 +147,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
     }
 
     [TestMethod]
@@ -162,7 +162,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.CreateTeam(TeamName, ScrumMasterName, Deck.Standard));
 
         // Verify
         planningPoker.Verify();
@@ -314,7 +314,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
     }
 
     [TestMethod]
@@ -325,7 +325,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
     }
 
     [TestMethod]
@@ -341,7 +341,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
 
         // Verify
         planningPoker.Verify();
@@ -360,7 +360,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.JoinTeam(TeamName, MemberName, false));
 
         // Verify
         planningPoker.Verify();
@@ -376,7 +376,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
+        Assert.ThrowsExactly<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
     }
 
     [TestMethod]
@@ -387,7 +387,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
+        Assert.ThrowsExactly<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
     }
 
     [TestMethod]
@@ -563,7 +563,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
+        Assert.ThrowsExactly<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
     }
 
     [TestMethod]
@@ -823,7 +823,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -834,7 +834,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -845,7 +845,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -856,7 +856,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -870,7 +870,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.ReconnectTeam(TeamName, MemberName));
 
         // Verify
         planningPoker.Verify();
@@ -957,7 +957,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -968,7 +968,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -979,7 +979,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -990,7 +990,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -1023,7 +1023,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartEstimation(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartEstimation(null!));
     }
 
     [TestMethod]
@@ -1034,7 +1034,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartEstimation(LongTeamName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1068,7 +1068,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelEstimation(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelEstimation(null!));
     }
 
     [TestMethod]
@@ -1079,7 +1079,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelEstimation(LongTeamName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1235,7 +1235,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
     }
 
     [TestMethod]
@@ -1246,7 +1246,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
     }
 
     [TestMethod]
@@ -1257,7 +1257,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
     }
 
     [TestMethod]
@@ -1268,7 +1268,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
     }
 
     [TestMethod]
@@ -1302,7 +1302,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
     }
 
     [TestMethod]
@@ -1313,7 +1313,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
     }
 
     [TestMethod]
@@ -1349,7 +1349,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(null!, MemberName, TimeSpan.FromSeconds(122)));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartTimer(null!, MemberName, TimeSpan.FromSeconds(122)));
     }
 
     [TestMethod]
@@ -1360,7 +1360,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartTimer(LongTeamName, MemberName, TimeSpan.FromSeconds(122)));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartTimer(LongTeamName, MemberName, TimeSpan.FromSeconds(122)));
     }
 
     [TestMethod]
@@ -1371,7 +1371,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(TeamName, null!, TimeSpan.FromSeconds(122)));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartTimer(TeamName, null!, TimeSpan.FromSeconds(122)));
     }
 
     [TestMethod]
@@ -1382,10 +1382,10 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartTimer(TeamName, LongMemberName, TimeSpan.FromSeconds(122)));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartTimer(TeamName, LongMemberName, TimeSpan.FromSeconds(122)));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(-122)]
     public void StartTimer_NegativeDuration_ArgumentOutOfRangeException(int duration)
@@ -1395,7 +1395,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => target.StartTimer(TeamName, MemberName, TimeSpan.FromSeconds(duration)));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => target.StartTimer(TeamName, MemberName, TimeSpan.FromSeconds(duration)));
     }
 
     [TestMethod]
@@ -1432,7 +1432,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelTimer(null!, MemberName));
     }
 
     [TestMethod]
@@ -1443,7 +1443,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelTimer(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -1454,7 +1454,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelTimer(TeamName, null!));
     }
 
     [TestMethod]
@@ -1465,7 +1465,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelTimer(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -1783,7 +1783,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.GetMessages(TeamName, ScrumMasterName, Guid.NewGuid(), 0));
 
         // Verify
         planningPoker.Verify();
@@ -1814,7 +1814,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        var exception = Assert.ThrowsException<HubException>(() => target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
+        var exception = Assert.ThrowsExactly<HubException>(() => target.GetMessages(TeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
 
         // Verify
         planningPoker.Verify();
@@ -1831,7 +1831,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1842,7 +1842,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1853,7 +1853,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]
@@ -1864,7 +1864,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0));
     }
 
     [TestMethod]

@@ -301,7 +301,7 @@ public class AzurePlanningPokerControllerTest
         target.SetTeamsInitializingList(["test"]);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
 
         // Verify
         Assert.AreEqual("ScrumTeamAlreadyExists", exception.Error);
@@ -316,7 +316,7 @@ public class AzurePlanningPokerControllerTest
         var target = CreateAzurePlanningPokerController(configuration: configuration);
 
         // Act
-        Assert.ThrowsException<TimeoutException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
+        Assert.ThrowsExactly<TimeoutException>(() => target.CreateScrumTeam("test", "master", Deck.Standard));
     }
 
     [TestMethod]
@@ -382,7 +382,7 @@ public class AzurePlanningPokerControllerTest
         var target = CreateAzurePlanningPokerController(configuration: configuration);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.GetScrumTeam("test team"));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.GetScrumTeam("test team"));
 
         // Verify
         Assert.AreEqual("ScrumTeamNotExist", exception.Error);

@@ -29,7 +29,7 @@ public class ServiceTimeProviderTest
         Assert.AreEqual(TimeSpan.Zero, result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TestData))]
     public async Task UpdateServiceTimeOffset_ServiceCurrentTime_UpdatesServiceTimeOffset(DateTime serviceTime, TimeSpan expectedOffset)
     {
@@ -51,7 +51,7 @@ public class ServiceTimeProviderTest
         Assert.AreEqual(expectedOffset, target.ServiceTimeOffset);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task UpdateServiceTimeOffset_CallTwiceInTheSameTime_CallsClientOnce()
     {
         var dateTimeProvider = new DateTimeProviderMock();
@@ -70,7 +70,7 @@ public class ServiceTimeProviderTest
         planningPokerClient.Verify(o => o.GetCurrentTime(It.IsAny<CancellationToken>()), Times.Once());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task UpdateServiceTimeOffset_CallTwiceAfter5Minutes_CallsClientOnce()
     {
         var dateTimeProvider = new DateTimeProviderMock();
@@ -90,7 +90,7 @@ public class ServiceTimeProviderTest
         planningPokerClient.Verify(o => o.GetCurrentTime(It.IsAny<CancellationToken>()), Times.Once());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task UpdateServiceTimeOffset_CallTwiceAfter6Minutes_UpdatesServiceTimeOffset()
     {
         var dateTimeProvider = new DateTimeProviderMock();
@@ -124,7 +124,7 @@ public class ServiceTimeProviderTest
         Assert.AreEqual(TimeSpan.FromSeconds(-57), target.ServiceTimeOffset);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task UpdateServiceTimeOffset_ThrowsInvalidOperationExceptionSecondTime_KeepServiceTimeOffsetUnchanged()
     {
         var dateTimeProvider = new DateTimeProviderMock();

@@ -61,7 +61,7 @@ public class CreateTeamControllerTest
         Assert.AreEqual("Rock, Paper, Scissors, Lizard, Spock", result[Deck.RockPaperScissorsLizardSpock]);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("", false)]
     [DataRow("Something=true", false)]
     [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
@@ -112,7 +112,7 @@ public class CreateTeamControllerTest
         Assert.IsNull(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard)]
     [DataRow(Deck.Fibonacci)]
     [DataRow(Deck.RockPaperScissorsLizardSpock)]
@@ -144,7 +144,7 @@ public class CreateTeamControllerTest
         Assert.IsTrue(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.TeamName, "", DisplayName = "ScrumMasterName Is Empty")]
     [DataRow(PlanningPokerData.TeamName, null, DisplayName = "ScrumMasterName Is Null")]
     [DataRow("", PlanningPokerData.ScrumMasterName, DisplayName = "TeamName Is Empty")]

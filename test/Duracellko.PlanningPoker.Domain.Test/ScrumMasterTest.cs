@@ -44,7 +44,7 @@ public class ScrumMasterTest
         var name = "test";
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(null!, name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new ScrumMaster(null!, name));
     }
 
     [TestMethod]
@@ -54,7 +54,7 @@ public class ScrumMasterTest
         var team = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new ScrumMaster(team, string.Empty));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new ScrumMaster(team, string.Empty));
     }
 
     [TestMethod]
@@ -221,7 +221,7 @@ public class ScrumMasterTest
         master.StartEstimation();
 
         // Act
-        Assert.ThrowsException<InvalidOperationException>(master.StartEstimation);
+        Assert.ThrowsExactly<InvalidOperationException>(master.StartEstimation);
     }
 
     [TestMethod]

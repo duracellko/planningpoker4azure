@@ -8,7 +8,7 @@ namespace Duracellko.PlanningPoker.E2ETest;
 [TestClass]
 public class ScrumMasterTest : E2ETestBase
 {
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task ScrumMaster_Should_Be_Able_To_Estimate(bool serverSide, bool useHttpClient)
     {
@@ -43,7 +43,7 @@ public class ScrumMasterTest : E2ETestBase
         await TakeScreenshot("07-Disconnected");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task ScrumMaster_Can_Select_Estimation_Deck(bool serverSide, bool useHttpClient)
     {
@@ -86,7 +86,7 @@ public class ScrumMasterTest : E2ETestBase
         await TakeScreenshot("07-Disconnected");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Shows_Error_When_Creating_Empty_Team(bool serverSide, bool useHttpClient)
     {
@@ -112,7 +112,7 @@ public class ScrumMasterTest : E2ETestBase
         await Assertions.Expect(required).ToHaveTextAsync("Required");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Shows_Error_When_Joining_Not_Existing_Team(bool serverSide, bool useHttpClient)
     {
@@ -135,7 +135,7 @@ public class ScrumMasterTest : E2ETestBase
         await ClientTest.AssertMessageBox("Scrum Team 'My team' does not exist.");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task ScrumMaster_Can_Change_Deck(bool serverSide, bool useHttpClient)
     {

@@ -39,10 +39,10 @@ public class PlanningPokerServiceTest
     public void Constructor_Null_ArgumentNullException()
     {
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerService(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => CreatePlanningPokerService(null!));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard, D.Deck.Standard)]
     [DataRow(Deck.Fibonacci, D.Deck.Fibonacci)]
     [DataRow(Deck.RockPaperScissorsLizardSpock, D.Deck.RockPaperScissorsLizardSpock)]
@@ -110,7 +110,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateTeam(null!, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -121,7 +121,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CreateTeam(TeamName, null!, Deck.Standard));
     }
 
     [TestMethod]
@@ -132,7 +132,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CreateTeam(LongTeamName, ScrumMasterName, Deck.Standard));
     }
 
     [TestMethod]
@@ -143,7 +143,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CreateTeam(TeamName, LongMemberName, Deck.Standard));
     }
 
     [TestMethod]
@@ -307,7 +307,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.JoinTeam(null!, MemberName, false));
     }
 
     [TestMethod]
@@ -318,7 +318,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.JoinTeam(TeamName, null!, false));
     }
 
     [TestMethod]
@@ -329,7 +329,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
+        Assert.ThrowsExactly<ArgumentException>(() => target.JoinTeam(LongTeamName, MemberName, false));
     }
 
     [TestMethod]
@@ -340,7 +340,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
+        Assert.ThrowsExactly<ArgumentException>(() => target.JoinTeam(TeamName, LongMemberName, false));
     }
 
     [TestMethod]
@@ -808,7 +808,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ReconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -819,7 +819,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ReconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -830,7 +830,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ReconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -841,7 +841,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ReconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -938,7 +938,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.DisconnectTeam(null!, MemberName));
     }
 
     [TestMethod]
@@ -949,7 +949,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.DisconnectTeam(TeamName, null!));
     }
 
     [TestMethod]
@@ -960,7 +960,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.DisconnectTeam(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -971,7 +971,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.DisconnectTeam(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -1003,7 +1003,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartEstimation(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartEstimation(null!));
     }
 
     [TestMethod]
@@ -1014,7 +1014,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartEstimation(LongTeamName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1047,7 +1047,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelEstimation(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelEstimation(null!));
     }
 
     [TestMethod]
@@ -1058,7 +1058,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelEstimation(LongTeamName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelEstimation(LongTeamName));
     }
 
     [TestMethod]
@@ -1208,7 +1208,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.SubmitEstimation(null!, MemberName, 0.0));
     }
 
     [TestMethod]
@@ -1219,7 +1219,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.SubmitEstimation(TeamName, null!, 0.0));
     }
 
     [TestMethod]
@@ -1230,7 +1230,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.SubmitEstimation(LongTeamName, MemberName, 1.0));
     }
 
     [TestMethod]
@@ -1241,7 +1241,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
+        Assert.ThrowsExactly<ArgumentException>(() => target.SubmitEstimation(TeamName, LongMemberName, 1.0));
     }
 
     [TestMethod]
@@ -1274,7 +1274,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ChangeDeck(string.Empty, Deck.Fibonacci));
     }
 
     [TestMethod]
@@ -1285,7 +1285,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
+        Assert.ThrowsExactly<ArgumentException>(() => target.ChangeDeck(LongTeamName, Deck.Standard));
     }
 
     [TestMethod]
@@ -1320,7 +1320,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(null!, MemberName, 122));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartTimer(null!, MemberName, 122));
     }
 
     [TestMethod]
@@ -1331,7 +1331,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartTimer(LongTeamName, MemberName, 122));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartTimer(LongTeamName, MemberName, 122));
     }
 
     [TestMethod]
@@ -1342,7 +1342,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.StartTimer(TeamName, null!, 122));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.StartTimer(TeamName, null!, 122));
     }
 
     [TestMethod]
@@ -1353,10 +1353,10 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.StartTimer(TeamName, LongMemberName, 122));
+        Assert.ThrowsExactly<ArgumentException>(() => target.StartTimer(TeamName, LongMemberName, 122));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(-122)]
     public void StartTimer_NegativeDuration_ArgumentOutOfRangeException(int duration)
@@ -1366,7 +1366,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => target.StartTimer(TeamName, MemberName, duration));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => target.StartTimer(TeamName, MemberName, duration));
     }
 
     [TestMethod]
@@ -1402,7 +1402,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(null!, MemberName));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelTimer(null!, MemberName));
     }
 
     [TestMethod]
@@ -1413,7 +1413,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(LongTeamName, MemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelTimer(LongTeamName, MemberName));
     }
 
     [TestMethod]
@@ -1424,7 +1424,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.CancelTimer(TeamName, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CancelTimer(TeamName, null!));
     }
 
     [TestMethod]
@@ -1435,7 +1435,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => target.CancelTimer(TeamName, LongMemberName));
+        Assert.ThrowsExactly<ArgumentException>(() => target.CancelTimer(TeamName, LongMemberName));
     }
 
     [TestMethod]
@@ -1760,7 +1760,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0, default));
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => target.GetMessages(null!, MemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1771,7 +1771,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0, default));
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => target.GetMessages(TeamName, null!, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1782,7 +1782,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default));
+        await Assert.ThrowsExactlyAsync<ArgumentException>(() => target.GetMessages(LongTeamName, MemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]
@@ -1793,7 +1793,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default));
+        await Assert.ThrowsExactlyAsync<ArgumentException>(() => target.GetMessages(TeamName, LongMemberName, GuidProviderMock.DefaultGuid, 0, default));
     }
 
     [TestMethod]

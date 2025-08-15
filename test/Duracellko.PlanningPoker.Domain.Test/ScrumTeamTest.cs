@@ -28,7 +28,7 @@ public class ScrumTeamTest
         var name = string.Empty;
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new ScrumTeam(name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new ScrumTeam(name));
     }
 
     [TestMethod]
@@ -386,7 +386,7 @@ public class ScrumTeamTest
         var target = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.SetScrumMaster(name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.SetScrumMaster(name));
     }
 
     [TestMethod]
@@ -398,7 +398,7 @@ public class ScrumTeamTest
         target.SetScrumMaster("master");
 
         // Act
-        Assert.ThrowsException<InvalidOperationException>(() => target.SetScrumMaster(name));
+        Assert.ThrowsExactly<InvalidOperationException>(() => target.SetScrumMaster(name));
     }
 
     [TestMethod]
@@ -410,7 +410,7 @@ public class ScrumTeamTest
         target.Join("test", false);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.SetScrumMaster(name));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.SetScrumMaster(name));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -426,7 +426,7 @@ public class ScrumTeamTest
         target.Join("test", true);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.SetScrumMaster(name));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.SetScrumMaster(name));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -469,7 +469,7 @@ public class ScrumTeamTest
         Assert.IsFalse(result.IsDormant);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public void Join_GuidProvider_MemberHasSessionId(bool isObserver)
@@ -495,7 +495,7 @@ public class ScrumTeamTest
         var target = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.Join(name, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.Join(name, false));
     }
 
     [TestMethod]
@@ -659,7 +659,7 @@ public class ScrumTeamTest
         target.Join(name, false);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, false));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.Join(name, false));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -675,7 +675,7 @@ public class ScrumTeamTest
         target.Join(name, true);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, false));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.Join(name, false));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -691,7 +691,7 @@ public class ScrumTeamTest
         target.Join(name, false);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, true));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.Join(name, true));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -707,7 +707,7 @@ public class ScrumTeamTest
         target.Join(name, true);
 
         // Act
-        var exception = Assert.ThrowsException<PlanningPokerException>(() => target.Join(name, true));
+        var exception = Assert.ThrowsExactly<PlanningPokerException>(() => target.Join(name, true));
 
         // Verify
         Assert.AreEqual("MemberAlreadyExists", exception.Error);
@@ -980,7 +980,7 @@ public class ScrumTeamTest
         var target = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.Disconnect(name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.Disconnect(name));
     }
 
     [TestMethod]
@@ -1532,7 +1532,7 @@ public class ScrumTeamTest
         var newEstimationsSet = DeckProvider.Default.GetDeck(Deck.Rating);
 
         // Act
-        Assert.ThrowsException<InvalidOperationException>(() => target.ChangeAvailableEstimations(newEstimationsSet));
+        Assert.ThrowsExactly<InvalidOperationException>(() => target.ChangeAvailableEstimations(newEstimationsSet));
     }
 
     [TestMethod]
@@ -1543,7 +1543,7 @@ public class ScrumTeamTest
         target.SetScrumMaster("master");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.ChangeAvailableEstimations(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ChangeAvailableEstimations(null!));
     }
 
     [TestMethod]

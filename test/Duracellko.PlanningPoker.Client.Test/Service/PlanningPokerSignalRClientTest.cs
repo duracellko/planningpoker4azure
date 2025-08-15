@@ -11,7 +11,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service;
 [TestClass]
 public class PlanningPokerSignalRClientTest
 {
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard)]
     [DataRow(Deck.Fibonacci)]
     [DataRow(Deck.RockPaperScissorsLizardSpock)]
@@ -71,7 +71,7 @@ public class PlanningPokerSignalRClientTest
         var returnMessage = new CompletionMessage(invocationId, errorMessage, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
+        var exception = await Assert.ThrowsExactlyAsync<PlanningPokerException>(() => resultTask);
 
         Assert.AreEqual(ErrorCodes.ScrumTeamAlreadyExists, exception.Error);
         Assert.AreEqual("test team", exception.Argument);
@@ -279,7 +279,7 @@ public class PlanningPokerSignalRClientTest
         var returnMessage = new CompletionMessage(invocationId, errorMessage, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
+        var exception = await Assert.ThrowsExactlyAsync<PlanningPokerException>(() => resultTask);
 
         Assert.AreEqual(ErrorCodes.MemberAlreadyExists, exception.Error);
         Assert.AreEqual("member", exception.Argument);
@@ -299,7 +299,7 @@ public class PlanningPokerSignalRClientTest
         var returnMessage = new CompletionMessage(invocationId, "An unexpected error occured. HubException: ", null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => resultTask);
+        var exception = await Assert.ThrowsExactlyAsync<PlanningPokerException>(() => resultTask);
 
         Assert.AreEqual(string.Empty, exception.Message);
         Assert.IsNull(exception.Error);
@@ -515,7 +515,7 @@ public class PlanningPokerSignalRClientTest
         await resultTask;
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, 3.0, 3.0)]
     [DataRow(PlanningPokerData.ScrumMasterName, 0.0, 0.0)]
     [DataRow(PlanningPokerData.MemberName, 100.0, 100.0)]
@@ -539,7 +539,7 @@ public class PlanningPokerSignalRClientTest
         await resultTask;
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard)]
     [DataRow(Deck.Rating)]
     [DataRow(Deck.Tshirt)]

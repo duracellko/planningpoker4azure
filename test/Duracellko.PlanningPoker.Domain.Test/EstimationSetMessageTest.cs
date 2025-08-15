@@ -28,6 +28,6 @@ public class EstimationSetMessageTest
         var type = MessageType.AvailableEstimationsChanged;
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new EstimationSetMessage(type, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new EstimationSetMessage(type, null!));
     }
 }

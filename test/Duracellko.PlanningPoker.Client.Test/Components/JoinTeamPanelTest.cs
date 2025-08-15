@@ -124,7 +124,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         Assert.AreEqual("Required", validationElements[0].TextContent);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public void ClickJoinButton_SendsJoinTeamRequest(bool asObserver)

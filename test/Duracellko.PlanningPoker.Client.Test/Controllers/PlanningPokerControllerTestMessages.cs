@@ -1315,7 +1315,7 @@ public class PlanningPokerControllerTestMessages
         using var target = CreateController(propertyChangedCounter);
         await target.InitializeTeam(CreateTeamResult(scrumTeam), PlanningPokerData.ScrumMasterName, null);
 
-        Assert.ThrowsException<ArgumentNullException>(() => target.ProcessMessages(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ProcessMessages(null!));
     }
 
     private static PlanningPokerController CreateController(

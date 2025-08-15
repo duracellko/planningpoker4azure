@@ -326,7 +326,7 @@ public class PlanningPokerSignalRClientTestMessages
         var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, errorMessage, null, false);
         await fixture.ReceiveMessage(returnMessage);
 
-        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => resultTask);
+        await Assert.ThrowsExactlyAsync<UserDisconnectedException>(() => resultTask);
     }
 
     private static async Task ProvideMessages(PlanningPokerSignalRClientFixture fixture, params Message[] messages)
