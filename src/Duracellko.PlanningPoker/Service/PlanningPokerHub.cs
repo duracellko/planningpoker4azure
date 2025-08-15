@@ -72,7 +72,7 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
 
             using var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck);
             teamLock.Lock();
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new TeamResult
             {
                 ScrumTeam = resultTeam,
@@ -107,7 +107,7 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
             var team = teamLock.Team;
             var member = team.Join(memberName, asObserver);
 
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new TeamResult
             {
                 ScrumTeam = resultTeam,
@@ -151,13 +151,13 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
             Estimation? selectedEstimation = null;
             if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
             {
-                selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
+                selectedEstimation = ServiceEntityMapper.Map(member.Estimation);
             }
 
             var lastMessageId = observer.ClearMessages();
             observer.UpdateActivity();
 
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new ReconnectTeamResult()
             {
                 ScrumTeam = resultTeam,
@@ -407,7 +407,7 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         {
             var messages = await receiveMessagesTask;
             var clientMessages = messages.Select(ServiceEntityMapper.FilterMessage)
-                .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+                .Select(ServiceEntityMapper.Map).ToList();
 
             _logger.MessageReceived(connectionId);
             var client = _clientContext.Clients.Client(connectionId);

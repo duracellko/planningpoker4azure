@@ -4,7 +4,6 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AutoMapper" Version="14.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.Publisher.ApplicationInsights" Version="9.0.0" />
     <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
     <PackageVersion Include="bunit" Version="1.40.0" />

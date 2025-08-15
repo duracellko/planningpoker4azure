@@ -64,7 +64,7 @@ public class PlanningPokerService : ControllerBase
 
             using var teamLock = PlanningPoker.CreateScrumTeam(teamName, scrumMasterName, domainDeck);
             teamLock.Lock();
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new TeamResult
             {
                 ScrumTeam = resultTeam,
@@ -99,7 +99,7 @@ public class PlanningPokerService : ControllerBase
             var team = teamLock.Team;
             var member = team.Join(memberName, asObserver);
 
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new TeamResult
             {
                 ScrumTeam = resultTeam,
@@ -143,13 +143,13 @@ public class PlanningPokerService : ControllerBase
             Estimation? selectedEstimation = null;
             if (team.State == D.TeamState.EstimationInProgress && observer is D.Member member)
             {
-                selectedEstimation = ServiceEntityMapper.Map<D.Estimation?, Estimation?>(member.Estimation);
+                selectedEstimation = ServiceEntityMapper.Map(member.Estimation);
             }
 
             var lastMessageId = observer.ClearMessages();
             observer.UpdateActivity();
 
-            var resultTeam = ServiceEntityMapper.Map<D.ScrumTeam, ScrumTeam>(teamLock.Team);
+            var resultTeam = ServiceEntityMapper.Map(teamLock.Team);
             return new ReconnectTeamResult()
             {
                 ScrumTeam = resultTeam,
@@ -362,7 +362,7 @@ public class PlanningPokerService : ControllerBase
 
         var messages = await receiveMessagesTask;
         return messages.Select(ServiceEntityMapper.FilterMessage)
-            .Select(ServiceEntityMapper.Map<D.Message, Message>).ToList();
+            .Select(ServiceEntityMapper.Map).ToList();
     }
 
     /// <summary>
