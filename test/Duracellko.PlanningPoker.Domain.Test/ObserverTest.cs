@@ -44,7 +44,7 @@ public class ObserverTest
         var name = "test";
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new Observer(null!, name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Observer(null!, name));
     }
 
     [TestMethod]
@@ -54,7 +54,7 @@ public class ObserverTest
         var team = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new Observer(team, string.Empty));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Observer(team, string.Empty));
     }
 
     [TestMethod]
@@ -86,7 +86,7 @@ public class ObserverTest
         Assert.IsFalse(result.Any());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(1)]
     public void AcknowledgeMessages_SessionIdIsValid_MessageQueueIsNotChanged(int lastMessageId)
@@ -108,7 +108,7 @@ public class ObserverTest
         Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(1)]
     public void AcknowledgeMessages_SessionIdIsNotValid_ArgumentException(int lastMessageId)
@@ -121,13 +121,13 @@ public class ObserverTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.NewGuid(), lastMessageId));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => target.AcknowledgeMessages(Guid.NewGuid(), lastMessageId));
 
         // Verify
         Assert.AreEqual("sessionId", exception.ParamName);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(1)]
     public void AcknowledgeMessages_SessionIdIsZeroGuid_ArgumentException(int lastMessageId)
@@ -137,13 +137,13 @@ public class ObserverTest
         var target = new Observer(team, "test");
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => target.AcknowledgeMessages(Guid.Empty, lastMessageId));
+        var exception = Assert.ThrowsExactly<ArgumentException>(() => target.AcknowledgeMessages(Guid.Empty, lastMessageId));
 
         // Verify
         Assert.AreEqual("sessionId", exception.ParamName);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0)]
     [DataRow(-1)]
     [DataRow(int.MinValue)]
@@ -164,7 +164,7 @@ public class ObserverTest
         Assert.AreEqual(0, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(1)]
     [DataRow(2)]
     [DataRow(3)]
@@ -186,7 +186,7 @@ public class ObserverTest
         Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(5)]
     [DataRow(6)]
     [DataRow(10)]
@@ -207,7 +207,7 @@ public class ObserverTest
         Assert.AreEqual(lastMessageId, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(1, 0)]
     [DataRow(2, 2)]
     [DataRow(3, 1)]
@@ -230,7 +230,7 @@ public class ObserverTest
         Assert.AreEqual(messageId1, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(5, 2)]
     [DataRow(6, -5)]
     [DataRow(10, 0)]
@@ -308,7 +308,7 @@ public class ObserverTest
         Assert.AreEqual<long>(result, target.AcknowledgedMessageId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(2)]
     [DataRow(5)]
     [DataRow(6)]

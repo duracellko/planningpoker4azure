@@ -13,7 +13,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Controllers;
 [TestClass]
 public class PlanningPokerControllerTestEstimationSummary
 {
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_SingleEstimation_CalculatesAverage(bool useEstimationEndedMessage)
@@ -32,7 +32,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(true, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_11Estimations_CalculatesAverage(bool useEstimationEndedMessage)
@@ -51,7 +51,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(!useEstimationEndedMessage, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_8Estimations_CalculatesAverage(bool useEstimationEndedMessage)
@@ -71,7 +71,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(false, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_EstimationsWithNonNumericValues_CalculatesAverage(bool useEstimationEndedMessage)
@@ -91,7 +91,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(!useEstimationEndedMessage, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_MemberNotEstimated_CalculatesAverage(bool useEstimationEndedMessage)
@@ -110,7 +110,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(!useEstimationEndedMessage, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_EstimationsWithNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
@@ -129,7 +129,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(!useEstimationEndedMessage, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_EstimationsWithOnlyNegativeNumbers_CalculatesAverage(bool useEstimationEndedMessage)
@@ -148,7 +148,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(false, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task ShowEstimationSummary_StartNewEstimation_EstimationSummaryIsNull(bool useEstimationEndedMessage)
@@ -170,7 +170,7 @@ public class PlanningPokerControllerTestEstimationSummary
         AssertCanPostEstimationResult(false, target);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(EstimationSummaryFunction.Average, 17.5)]
     [DataRow(EstimationSummaryFunction.Median, 5)]
     [DataRow(EstimationSummaryFunction.Sum, 192.5)]

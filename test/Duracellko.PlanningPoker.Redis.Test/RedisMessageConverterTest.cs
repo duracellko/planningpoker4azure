@@ -22,21 +22,21 @@ public class RedisMessageConverterTest
     public void ConvertToRedisMessage_Null_ArgumentNullException()
     {
         var target = new RedisMessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToRedisMessage(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ConvertToRedisMessage(null!));
     }
 
     [TestMethod]
     public void ConvertToNodeMessage_Null_ArgumentNullException()
     {
         var target = new RedisMessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(RedisValue.Null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ConvertToNodeMessage(RedisValue.Null));
     }
 
     [TestMethod]
     public void ConvertToNodeMessage_EmptyString_ArgumentNullException()
     {
         var target = new RedisMessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(RedisValue.EmptyString));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ConvertToNodeMessage(RedisValue.EmptyString));
     }
 
     [TestMethod]
@@ -81,7 +81,7 @@ public class RedisMessageConverterTest
         Assert.AreEqual(scrumTeamMessage.SessionId, resultData.SessionId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(8.0)]
     [DataRow(0.5)]
     [DataRow(0.0)]
@@ -235,14 +235,14 @@ public class RedisMessageConverterTest
     public void GetMessageHeader_Null_ArgumentNullException()
     {
         var target = new RedisMessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.Null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.Null));
     }
 
     [TestMethod]
     public void GetMessageHeader_EmptyString_ArgumentNullException()
     {
         var target = new RedisMessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.EmptyString));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessageHeader(RedisValue.EmptyString));
     }
 
     [TestMethod]

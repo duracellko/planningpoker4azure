@@ -11,7 +11,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Service;
 [TestClass]
 public class TimerSettingsRepositoryTest
 {
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("00:00:00", 0)]
     [DataRow("00:00:01", 1)]
     [DataRow("00:01:00", 60)]
@@ -37,7 +37,7 @@ public class TimerSettingsRepositoryTest
         Assert.AreEqual(TimeSpan.FromSeconds(expectedTimeInSeconds), result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null)]
     [DataRow("")]
     public async Task GetTimerDurationAsync_EmptyString_ReturnsNull(string? loadedStringValue)
@@ -53,7 +53,7 @@ public class TimerSettingsRepositoryTest
         Assert.IsNull(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("00h05m00s")]
     [DataRow("hh:mm:ss")]
     public async Task GetTimerDurationAsync_InvalidTimeSpanValue_ReturnsNull(string loadedStringValue)
@@ -69,7 +69,7 @@ public class TimerSettingsRepositoryTest
         Assert.IsNull(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0, "00:00:00")]
     [DataRow(1, "00:00:01")]
     [DataRow(60, "00:01:00")]

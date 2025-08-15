@@ -28,6 +28,6 @@ public class EstimationResultMessageTest
         var type = MessageType.EstimationEnded;
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new EstimationResultMessage(type, null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new EstimationResultMessage(type, null!));
     }
 }

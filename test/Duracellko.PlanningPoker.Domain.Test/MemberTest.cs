@@ -69,7 +69,7 @@ public class MemberTest
         var name = "test";
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new Member(null!, name));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Member(null!, name));
     }
 
     [TestMethod]
@@ -79,7 +79,7 @@ public class MemberTest
         var team = new ScrumTeam("test team");
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new Member(team, string.Empty));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new Member(team, string.Empty));
     }
 
     [TestMethod]
@@ -617,7 +617,7 @@ public class MemberTest
         var masterEstimation = new Estimation(55.0);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => master.Estimation = masterEstimation);
+        Assert.ThrowsExactly<ArgumentException>(() => master.Estimation = masterEstimation);
     }
 
     [TestMethod]
@@ -631,7 +631,7 @@ public class MemberTest
         var masterEstimation = new Estimation(40.0);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => master.Estimation = masterEstimation);
+        Assert.ThrowsExactly<ArgumentException>(() => master.Estimation = masterEstimation);
     }
 
     [TestMethod]
@@ -645,10 +645,10 @@ public class MemberTest
         var masterEstimation = new Estimation(double.PositiveInfinity);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => master.Estimation = masterEstimation);
+        Assert.ThrowsExactly<ArgumentException>(() => master.Estimation = masterEstimation);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerTestData))]
     public void StartTimer_TimerNotStarted_TimerEndTimeIsSet(DateTime now, TimeSpan duration, DateTime expectedEndTime)
     {
@@ -666,7 +666,7 @@ public class MemberTest
         Assert.AreEqual(expectedEndTime, team.TimerEndTime);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerTestData))]
     public void StartTimer_TimerIsStarted_TimerEndTimeIsOverwritten(DateTime now, TimeSpan duration, DateTime expectedEndTime)
     {
@@ -848,7 +848,7 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.Zero));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.Zero));
     }
 
     [TestMethod]
@@ -862,10 +862,10 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.FromSeconds(-1)));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => member.StartTimer(TimeSpan.FromSeconds(-1)));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_TimerEndTimeIsNull()
     {
         // Arrange
@@ -882,7 +882,7 @@ public class MemberTest
         Assert.IsNull(team.TimerEndTime);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsNotStarted_TimerEndTimeIsNull()
     {
         // Arrange
@@ -898,7 +898,7 @@ public class MemberTest
         Assert.IsNull(team.TimerEndTime);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_MemberGetTimerCanceledMessage()
     {
         // Arrange
@@ -919,7 +919,7 @@ public class MemberTest
         Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_MemberMessageReceived()
     {
         // Arrange
@@ -938,7 +938,7 @@ public class MemberTest
         Assert.IsNotNull(eventArgs);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_ScrumMasterGetTimerCanceledMessage()
     {
         // Arrange
@@ -959,7 +959,7 @@ public class MemberTest
         Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_ScrumMasterMessageReceived()
     {
         // Arrange
@@ -978,7 +978,7 @@ public class MemberTest
         Assert.IsNotNull(eventArgs);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_ObserverGetTimerCanceledMessage()
     {
         // Arrange
@@ -999,7 +999,7 @@ public class MemberTest
         Assert.AreEqual<MessageType>(MessageType.TimerCanceled, message.MessageType);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_ObserverMessageReceived()
     {
         // Arrange
@@ -1019,7 +1019,7 @@ public class MemberTest
         Assert.IsNotNull(eventArgs);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public void CancelTimer_TimerIsStarted_ScrumTeamGetTimerCanceledMessage()
     {
         // Arrange

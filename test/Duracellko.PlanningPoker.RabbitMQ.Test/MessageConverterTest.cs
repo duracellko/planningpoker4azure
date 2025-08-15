@@ -21,21 +21,21 @@ public class MessageConverterTest
     public void GetHeaders_Null_ArgumentNullException()
     {
         var target = new MessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageHeaders(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessageHeaders(null!));
     }
 
     [TestMethod]
     public void GetMessageBody_Null_ArgumentNullException()
     {
         var target = new MessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetMessageBody(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessageBody(null!));
     }
 
     [TestMethod]
     public void GetNodeMessage_Null_ArgumentNullException()
     {
         var target = new MessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.GetNodeMessage(null!, null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetNodeMessage(null!, null));
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class MessageConverterTest
         Assert.AreEqual(scrumTeamMessage.SessionId, resultData.SessionId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(8.0)]
     [DataRow(0.5)]
     [DataRow(0.0)]

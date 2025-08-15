@@ -81,7 +81,7 @@ public class ScrumTeamDeserializationTest
 
         // Act
         // Assert
-        Assert.ThrowsException<ArgumentNullException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentNullException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -97,7 +97,7 @@ public class ScrumTeamDeserializationTest
 
         // Act
         // Assert
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -113,10 +113,10 @@ public class ScrumTeamDeserializationTest
 
         // Act
         // Assert
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(MemberType.ScrumMaster, null)]
     [DataRow(MemberType.ScrumMaster, "")]
     [DataRow(MemberType.Member, null)]
@@ -143,7 +143,7 @@ public class ScrumTeamDeserializationTest
         emptyMember.Name = name;
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -164,7 +164,7 @@ public class ScrumTeamDeserializationTest
         };
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -185,7 +185,7 @@ public class ScrumTeamDeserializationTest
         };
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -206,7 +206,7 @@ public class ScrumTeamDeserializationTest
         };
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -226,7 +226,7 @@ public class ScrumTeamDeserializationTest
         };
 
         // Act
-        Assert.ThrowsException<InvalidOperationException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<InvalidOperationException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     [TestMethod]
@@ -254,7 +254,7 @@ public class ScrumTeamDeserializationTest
         };
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
+        Assert.ThrowsExactly<ArgumentException>(() => CreateScrumTeam(scrumTeamData));
     }
 
     private static List<Estimation> GetAvailableEstimations() => DeckProvider.Default.GetDefaultDeck().ToList();

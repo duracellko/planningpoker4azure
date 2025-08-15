@@ -83,7 +83,7 @@ public class PlanningPokerAzureNodeTest
         var serviceBus = new Mock<IServiceBus>(MockBehavior.Strict);
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(null!, serviceBus.Object, null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => CreatePlanningPokerAzureNode(null!, serviceBus.Object, null));
     }
 
     [TestMethod]
@@ -93,7 +93,7 @@ public class PlanningPokerAzureNodeTest
         var planningPoker = CreatePlanningPokerMock();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null!, null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => CreatePlanningPokerAzureNode(planningPoker.Object, null!, null));
     }
 
     [TestMethod]
@@ -956,7 +956,7 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(true)]
     [DataRow(false)]
     public async Task Start_TimerCanceledFromServiceBus_TeamTimerCanceled(bool timerStarted)

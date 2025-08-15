@@ -26,7 +26,7 @@ public class EstimationParticipantStatusTest
         string? name = null;
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new EstimationParticipantStatus(name!, false));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new EstimationParticipantStatus(name!, false));
     }
 
     [TestMethod]

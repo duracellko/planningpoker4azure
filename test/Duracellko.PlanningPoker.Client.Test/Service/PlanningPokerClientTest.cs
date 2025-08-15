@@ -18,7 +18,7 @@ public class PlanningPokerClientTest
     internal const string JsonType = "application/json";
     internal const string TextType = "text/plain";
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard, nameof(Deck.Standard))]
     [DataRow(Deck.Fibonacci, nameof(Deck.Fibonacci))]
     [DataRow(Deck.RockPaperScissorsLizardSpock, nameof(Deck.RockPaperScissorsLizardSpock))]
@@ -81,7 +81,7 @@ public class PlanningPokerClientTest
             .Respond(HttpStatusCode.BadRequest, TextType, response);
         var target = CreatePlanningPokerClient(httpMock);
 
-        var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(
+        var exception = await Assert.ThrowsExactlyAsync<PlanningPokerException>(
             () => target.CreateTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.ScrumMasterName, Deck.Standard, CancellationToken.None));
 
         Assert.AreEqual(ErrorCodes.ScrumTeamAlreadyExists, exception.Error);
@@ -419,7 +419,7 @@ public class PlanningPokerClientTest
             .Respond(HttpStatusCode.BadRequest, TextType, response);
         var target = CreatePlanningPokerClient(httpMock);
 
-        var exception = await Assert.ThrowsExceptionAsync<PlanningPokerException>(() => target.JoinTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, false, CancellationToken.None));
+        var exception = await Assert.ThrowsExactlyAsync<PlanningPokerException>(() => target.JoinTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, false, CancellationToken.None));
 
         Assert.AreEqual(ErrorCodes.ScrumTeamNotExist, exception.Error);
         Assert.AreEqual("test team", exception.Argument);
@@ -806,7 +806,7 @@ public class PlanningPokerClientTest
         httpMock.VerifyNoOutstandingExpectation();
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard, nameof(Deck.Standard))]
     [DataRow(Deck.Rating, nameof(Deck.Rating))]
     [DataRow(Deck.Tshirt, nameof(Deck.Tshirt))]

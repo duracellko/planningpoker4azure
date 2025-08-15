@@ -48,7 +48,7 @@ public class JoinTeamControllerTest
         }
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("", false)]
     [DataRow("Something=true", false)]
     [DataRow("CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254", false)]
@@ -99,7 +99,7 @@ public class JoinTeamControllerTest
         Assert.IsNull(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, false, DisplayName = "Member name")]
     [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
     public async Task JoinTeam_MemberName_JoinTeamOnService(string memberName, bool asObserver)
@@ -118,7 +118,7 @@ public class JoinTeamControllerTest
         serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Once());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, false, DisplayName = "Member name")]
     [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
     public async Task JoinTeam_MemberName_ReturnsTrue(string memberName, bool asObserver)
@@ -131,7 +131,7 @@ public class JoinTeamControllerTest
         Assert.IsTrue(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("", PlanningPokerData.MemberName, false, DisplayName = "Team name is Empty and not observer")]
     [DataRow(null, PlanningPokerData.MemberName, false, DisplayName = "Team name is Null and not observer")]
     [DataRow(PlanningPokerData.TeamName, "", false, DisplayName = "Member name is Empty and not observer")]
@@ -152,7 +152,7 @@ public class JoinTeamControllerTest
         planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task JoinTeam_ServiceReturnsTeam_InitializePlanningPokerController()
     {
         var teamResult = PlanningPokerData.GetTeamResult();
@@ -164,7 +164,7 @@ public class JoinTeamControllerTest
         planningPokerInitializer.Verify(o => o.InitializeTeam(teamResult, PlanningPokerData.MemberName, null));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task JoinTeam_ServiceReturnsTeamAndUrlHasCallback_InitializePlanningPokerController()
     {
         var teamResult = PlanningPokerData.GetTeamResult();
@@ -308,7 +308,7 @@ public class JoinTeamControllerTest
         planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, false, DisplayName = "Member name")]
     [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
     public async Task ReconnectTeam_MemberName_JoinTeamOnService(string memberName, bool asObserver)
@@ -329,7 +329,7 @@ public class JoinTeamControllerTest
         serviceTimeProvider.Verify(o => o.UpdateServiceTimeOffset(It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, false, DisplayName = "Member name")]
     [DataRow(PlanningPokerData.ObserverName, true, DisplayName = "Observer name")]
     public async Task ReconnectTeam_MemberName_ReturnsTrue(string memberName, bool asObserver)
@@ -342,7 +342,7 @@ public class JoinTeamControllerTest
         Assert.IsTrue(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task ReconnectTeam_ServiceReturnsTeam_InitializePlanningPokerController()
     {
         var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
@@ -358,7 +358,7 @@ public class JoinTeamControllerTest
         planningPokerInitializer.Verify(o => o.InitializeTeam(reconnectTeamResult, PlanningPokerData.MemberName, null));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task ReconnectTeam_ServiceReturnsTeamAndUrlHasCallback_InitializePlanningPokerController()
     {
         var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
@@ -517,7 +517,7 @@ public class JoinTeamControllerTest
         memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null, PlanningPokerData.MemberName, DisplayName = "TeamName is null.")]
     [DataRow("", PlanningPokerData.MemberName, DisplayName = "TeamName is empty.")]
     [DataRow(PlanningPokerData.TeamName, null, DisplayName = "MemberName is null.")]
@@ -533,7 +533,7 @@ public class JoinTeamControllerTest
         memberCredentialsStore.Verify(o => o.GetCredentialsAsync(It.IsAny<bool>()), Times.Never());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(PlanningPokerData.TeamName, PlanningPokerData.MemberName, DisplayName = "Test team, Test member")]
     [DataRow("test team", "test member", DisplayName = "test team, test member")]
     [DataRow("TEST TEAM", "TEST MEMBER", DisplayName = "TEST TEAM, TEST MEMBER")]
@@ -567,7 +567,7 @@ public class JoinTeamControllerTest
         Assert.IsTrue(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("CallbackUri=&CallbackReference=2")]
     [DataRow("AutoConnect=Yes&CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254")]
     public async Task TryReconnectTeam_ReconnectTeamIsSuccessful_InitializePlanningPokerController(string queryString)
@@ -721,7 +721,7 @@ public class JoinTeamControllerTest
         planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("Test team 2", PlanningPokerData.MemberName, DisplayName = "Test team 2, Test member")]
     [DataRow("Tesu team", PlanningPokerData.MemberName, DisplayName = "Tesu team, Test member")]
     [DataRow("", PlanningPokerData.MemberName, DisplayName = "[empty], Test member")]
@@ -746,7 +746,7 @@ public class JoinTeamControllerTest
         planningPokerService.Verify(o => o.ReconnectTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null, PlanningPokerData.MemberName, DisplayName = "TeamName is null.")]
     [DataRow("", PlanningPokerData.MemberName, DisplayName = "TeamName is empty.")]
     [DataRow(PlanningPokerData.TeamName, null, DisplayName = "MemberName is null.")]
@@ -899,7 +899,7 @@ public class JoinTeamControllerTest
         Assert.IsTrue(result);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     public async Task AutoJoinTeam_MemberAlreadyExists_InitializePlanningPokerController()
     {
         var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();

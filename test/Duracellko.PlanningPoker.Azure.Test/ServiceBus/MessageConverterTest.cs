@@ -22,14 +22,14 @@ public class MessageConverterTest
     public void ConvertToServiceBusMessage_Null_ArgumentNullException()
     {
         var target = new MessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToServiceBusMessage(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ConvertToServiceBusMessage(null!));
     }
 
     [TestMethod]
     public void ConvertToNodeMessage_Null_ArgumentNullException()
     {
         var target = new MessageConverter();
-        Assert.ThrowsException<ArgumentNullException>(() => target.ConvertToNodeMessage(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.ConvertToNodeMessage(null!));
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class MessageConverterTest
         Assert.AreEqual(scrumTeamMessage.SessionId, resultData.SessionId);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(8.0)]
     [DataRow(0.5)]
     [DataRow(0.0)]

@@ -7,7 +7,7 @@ namespace Duracellko.PlanningPoker.E2ETest;
 [TestClass]
 public class PlanningPokerTest : E2ETestBase
 {
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Estimate_2_Rounds(bool serverSide, bool useHttpClient)
     {
@@ -132,7 +132,7 @@ public class PlanningPokerTest : E2ETestBase
         await TakeScreenshot("25-A-Disconnected");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Cancel_Estimation(bool serverSide, bool useHttpClient)
     {
@@ -246,7 +246,7 @@ public class PlanningPokerTest : E2ETestBase
         await TakeScreenshot(1, "23-A-Disconnected");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Observer_Cannot_Estimate(bool serverSide, bool useHttpClient)
     {
@@ -367,7 +367,7 @@ public class PlanningPokerTest : E2ETestBase
         await TakeScreenshot("25-C-Disconnected");
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [EnvironmentDataSource]
     public async Task Cannot_Estimate_When_Joining_After_Start(bool serverSide, bool useHttpClient)
     {

@@ -1153,7 +1153,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual("0/1", target.MembersCount);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerStartedTestData))]
     public async Task InitializeTeam_ScrumMasterAndTimerIsStarted_TimerCountdownTimeIsCalculated(DateTime timerEndTime, TimeSpan serviceOffset, TimeSpan expectedRemainingTimerTime)
     {
@@ -1181,7 +1181,7 @@ public class PlanningPokerControllerTest
         timerFactory.Verify(o => o.StartTimer(It.IsAny<Action>()));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerFinishedTestData))]
     public async Task InitializeTeam_ScrumMasterAndTimerIsFinished_TimerCountdownTimeIsZero(DateTime timerEndTime, TimeSpan serviceOffset)
     {
@@ -1209,7 +1209,7 @@ public class PlanningPokerControllerTest
         timerFactory.Verify(o => o.StartTimer(It.IsAny<Action>()), Times.Never);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerStartedTestData))]
     public async Task InitializeTeam_MemberAndTimerIsStarted_TimerCountdownTimeIsCalculated(DateTime timerEndTime, TimeSpan serviceOffset, TimeSpan expectedRemainingTimerTime)
     {
@@ -1238,7 +1238,7 @@ public class PlanningPokerControllerTest
         timerFactory.Verify(o => o.StartTimer(It.IsAny<Action>()));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerFinishedTestData))]
     public async Task InitializeTeam_MemberAndTimerIsFinished_TimerCountdownTimeIsZero(DateTime timerEndTime, TimeSpan serviceOffset)
     {
@@ -1267,7 +1267,7 @@ public class PlanningPokerControllerTest
         timerFactory.Verify(o => o.StartTimer(It.IsAny<Action>()), Times.Never);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerStartedTestData))]
     public async Task InitializeTeam_ObserverAndTimerIsStarted_TimerCountdownTimeIsCalculated(DateTime timerEndTime, TimeSpan serviceOffset, TimeSpan expectedRemainingTimerTime)
     {
@@ -1296,7 +1296,7 @@ public class PlanningPokerControllerTest
         timerFactory.Verify(o => o.StartTimer(It.IsAny<Action>()));
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DynamicData(nameof(TimerFinishedTestData))]
     public async Task InitializeTeam_ObserverAndTimerIsFinished_TimerCountdownTimeIsZero(DateTime timerEndTime, TimeSpan serviceOffset)
     {
@@ -1591,7 +1591,7 @@ public class PlanningPokerControllerTest
         using var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => target.DisconnectMember(PlanningPokerData.ScrumMasterName));
+        await Assert.ThrowsExactlyAsync<ArgumentException>(() => target.DisconnectMember(PlanningPokerData.ScrumMasterName));
     }
 
     [TestMethod]
@@ -1603,7 +1603,7 @@ public class PlanningPokerControllerTest
         using var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(null!));
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => target.DisconnectMember(null!));
     }
 
     [TestMethod]
@@ -1615,7 +1615,7 @@ public class PlanningPokerControllerTest
         using var target = CreateController(planningPokerClient: planningPokerClient.Object);
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => target.DisconnectMember(string.Empty));
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(() => target.DisconnectMember(string.Empty));
     }
 
     [TestMethod]
@@ -1907,7 +1907,7 @@ public class PlanningPokerControllerTest
         busyIndicatorDisposable.Verify(o => o.Dispose());
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(Deck.Standard)]
     [DataRow(Deck.Rating)]
     [DataRow(Deck.Tshirt)]

@@ -46,7 +46,7 @@ public class EstimationResultTest
     public void Constructor_Null_ArgumentNullException()
     {
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => new EstimationResult(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => new EstimationResult(null!));
     }
 
     [TestMethod]
@@ -58,7 +58,7 @@ public class EstimationResultTest
         var member = (Member)team.Join("member", false);
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => new EstimationResult([master, member, master]));
+        Assert.ThrowsExactly<ArgumentException>(() => new EstimationResult([master, member, master]));
     }
 
     [TestMethod]
@@ -116,7 +116,7 @@ public class EstimationResultTest
         var estimation = new Estimation();
 
         // Act
-        Assert.ThrowsException<KeyNotFoundException>(() => target[member] = estimation);
+        Assert.ThrowsExactly<KeyNotFoundException>(() => target[member] = estimation);
     }
 
     [TestMethod]
@@ -131,7 +131,7 @@ public class EstimationResultTest
 
         // Act
         target.SetReadOnly();
-        Assert.ThrowsException<InvalidOperationException>(() => target[member] = estimation);
+        Assert.ThrowsExactly<InvalidOperationException>(() => target[member] = estimation);
     }
 
     [TestMethod]
@@ -144,7 +144,7 @@ public class EstimationResultTest
         var target = new EstimationResult([master]);
 
         // Act
-        Assert.ThrowsException<KeyNotFoundException>(() => target[member]);
+        Assert.ThrowsExactly<KeyNotFoundException>(() => target[member]);
     }
 
     [TestMethod]

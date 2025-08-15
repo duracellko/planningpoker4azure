@@ -286,7 +286,7 @@ public class PlanningPokerClientTestMessages
             .Respond(HttpStatusCode.NotFound, "text/plain", "Invalid Session ID.");
         var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
+        await Assert.ThrowsExactlyAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
     }
 
     [TestMethod]
@@ -297,6 +297,6 @@ public class PlanningPokerClientTestMessages
             .Respond(HttpStatusCode.BadRequest, "text/plain", "Team does not exist.");
         var target = PlanningPokerClientTest.CreatePlanningPokerClient(httpMock);
 
-        await Assert.ThrowsExceptionAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
+        await Assert.ThrowsExactlyAsync<UserDisconnectedException>(() => target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None));
     }
 }

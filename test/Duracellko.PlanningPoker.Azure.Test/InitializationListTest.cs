@@ -185,7 +185,7 @@ public class InitializationListTest
         var target = new InitializationList();
 
         // Act
-        Assert.ThrowsException<ArgumentNullException>(() => target.Setup(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.Setup(null!));
     }
 
     [TestMethod]
