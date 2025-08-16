@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AutoMapper;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using D = Duracellko.PlanningPoker.Domain;
 
 namespace Duracellko.PlanningPoker.Service;
@@ -10,19 +11,85 @@ namespace Duracellko.PlanningPoker.Service;
 /// </summary>
 internal static class ServiceEntityMapper
 {
-    private static readonly Lazy<IConfigurationProvider> Configuration = new(CreateMapperConfiguration);
-    private static readonly Lazy<IMapper> MappingEngine = new(() => new Mapper(Configuration.Value));
+    /// <summary>
+    /// Maps a domain <see cref="D.ScrumTeam"/> entity to a service <see cref="ScrumTeam"/> data object.
+    /// </summary>
+    /// <param name="team">The domain Scrum Team entity to map.</param>
+    /// <returns>The mapped service Scrum Team data object.</returns>
+    public static ScrumTeam Map(D.ScrumTeam team)
+    {
+        ArgumentNullException.ThrowIfNull(team);
+
+        var result = new ScrumTeam
+        {
+            Name = team.Name,
+            State = (TeamState)team.State,
+            ScrumMaster = MapTeamMember(team.ScrumMaster),
+            EstimationResult = team.EstimationResult?.Select(MapEstimationResultItem).ToList(),
+            EstimationParticipants = team.EstimationParticipants?.Select(MapEstimationParticipantStatus).ToList(),
+            TimerEndTime = team.TimerEndTime
+        };
+
+        foreach (var member in team.Members)
+        {
+            result.Members.Add(MapTeamMember(member));
+        }
+
+        foreach (var member in team.Observers)
+        {
+            result.Observers.Add(MapTeamMember(member));
+        }
+
+        foreach (var estimation in team.AvailableEstimations)
+        {
+            result.AvailableEstimations.Add(Map(estimation));
+        }
+
+        return result;
+    }
 
     /// <summary>
-    /// Maps the specified source entity to destination entity.
+    /// Maps a domain <see cref="D.Message"/> entity to a service <see cref="Message"/> data object.
     /// </summary>
-    /// <typeparam name="TSource">The type of the source entity.</typeparam>
-    /// <typeparam name="TDestination">The type of the destination entity.</typeparam>
-    /// <param name="source">The source entity to map.</param>
-    /// <returns>The mapped destination entity.</returns>
-    public static TDestination Map<TSource, TDestination>(TSource source)
+    /// <param name="message">The domain message entity to map.</param>
+    /// <returns>The mapped service message data object.</returns>
+    public static Message Map(D.Message message)
     {
-        return MappingEngine.Value.Map<TSource, TDestination>(source);
+        ArgumentNullException.ThrowIfNull(message);
+
+        return message switch
+        {
+            D.MemberMessage memberMsg => MapMemberMessage(memberMsg),
+            D.EstimationResultMessage estimationResultMsg => MapEstimationResultMessage(estimationResultMsg),
+            D.EstimationSetMessage estimationSetMsg => MapEstimationSetMessage(estimationSetMsg),
+            D.TimerMessage timerMsg => MapTimerMessage(timerMsg),
+            _ => MapMessage(message)
+        };
+    }
+
+    /// <summary>
+    /// Maps a domain <see cref="D.Estimation"/> entity to a service <see cref="Estimation"/> data object.
+    /// </summary>
+    /// <param name="estimation">The domain estimation entity to map.</param>
+    /// <returns>The mapped service estimation data object.</returns>
+    [return: NotNullIfNotNull(nameof(estimation))]
+    public static Estimation? Map(D.Estimation? estimation)
+    {
+        if (estimation == null)
+        {
+            return null;
+        }
+
+        var value = estimation.Value;
+        if (value.HasValue && double.IsPositiveInfinity(value.Value))
+        {
+            value = Estimation.PositiveInfinity;
+        }
+
+        return new Estimation
+        {
+            Value = value
+        };
     }
 
     /// <summary>
@@ -68,36 +135,117 @@ internal static class ServiceEntityMapper
         return message;
     }
 
-    private static MapperConfiguration CreateMapperConfiguration()
+    [return: NotNullIfNotNull(nameof(member))]
+    private static TeamMember? MapTeamMember(D.Observer? member)
     {
-        var result = new MapperConfiguration(config =>
+        if (member == null)
         {
-            config.AllowNullCollections = true;
-            config.CreateMap<D.ScrumTeam, ScrumTeam>();
-            config.CreateMap<D.Observer, TeamMember>()
-                .ForMember(m => m.Type, mc => mc.MapFrom((s, d, m) => s.GetType().Name));
-            config.CreateMap<D.Message, Message>()
-                .Include<D.MemberMessage, MemberMessage>()
-                .Include<D.EstimationResultMessage, EstimationResultMessage>()
-                .Include<D.EstimationSetMessage, EstimationSetMessage>()
-                .Include<D.TimerMessage, TimerMessage>()
-                .ForMember(m => m.Type, mc => mc.MapFrom(m => m.MessageType));
-            config.CreateMap<D.MemberMessage, MemberMessage>();
-            config.CreateMap<D.EstimationResultMessage, EstimationResultMessage>();
-            config.CreateMap<D.EstimationSetMessage, EstimationSetMessage>();
-            config.CreateMap<D.TimerMessage, TimerMessage>();
-            config.CreateMap<KeyValuePair<D.Member, D.Estimation>, EstimationResultItem>()
-                .ForMember(i => i.Member, mc => mc.MapFrom(p => p.Key))
-                .ForMember(i => i.Estimation, mc => mc.MapFrom(p => p.Value));
-            config.CreateMap<D.EstimationParticipantStatus, EstimationParticipantStatus>();
-            config.CreateMap<D.Estimation, Estimation>()
-                .ForMember(e => e.Value, mc => mc.MapFrom((s, d, m) => MapEstimationValue(s.Value)));
-        });
+            return null;
+        }
 
-        result.AssertConfigurationIsValid();
+        return new TeamMember
+        {
+            Name = member.Name,
+            Type = member.GetType().Name
+        };
+    }
+
+    private static EstimationResultItem MapEstimationResultItem(KeyValuePair<D.Member, D.Estimation?> item)
+    {
+        return new EstimationResultItem
+        {
+            Member = MapTeamMember(item.Key),
+            Estimation = Map(item.Value)
+        };
+    }
+
+    private static EstimationParticipantStatus MapEstimationParticipantStatus(D.EstimationParticipantStatus value)
+    {
+        return new EstimationParticipantStatus
+        {
+            MemberName = value.MemberName,
+            Estimated = value.Estimated
+        };
+    }
+
+    private static void MapBaseMessage(D.Message source, Message target)
+    {
+        target.Id = source.Id;
+        target.Type = MapMessageType(source.MessageType);
+    }
+
+    private static Message MapMessage(D.Message message)
+    {
+        var result = new Message();
+        MapBaseMessage(message, result);
         return result;
     }
 
-    private static double? MapEstimationValue(double? value) =>
-        value.HasValue && double.IsPositiveInfinity(value.Value) ? Estimation.PositiveInfinity : value;
+    private static MemberMessage MapMemberMessage(D.MemberMessage message)
+    {
+        var result = new MemberMessage();
+        MapBaseMessage(message, result);
+        result.Member = MapTeamMember(message.Member);
+        return result;
+    }
+
+    private static EstimationResultMessage MapEstimationResultMessage(D.EstimationResultMessage message)
+    {
+        var result = new EstimationResultMessage();
+        MapBaseMessage(message, result);
+
+        if (message.EstimationResult != null)
+        {
+            foreach (var item in message.EstimationResult)
+            {
+                result.EstimationResult.Add(MapEstimationResultItem(item));
+            }
+        }
+
+        return result;
+    }
+
+    private static EstimationSetMessage MapEstimationSetMessage(D.EstimationSetMessage message)
+    {
+        var result = new EstimationSetMessage();
+        MapBaseMessage(message, result);
+
+        if (message.Estimations != null)
+        {
+            foreach (var estimation in message.Estimations)
+            {
+                result.Estimations.Add(Map(estimation));
+            }
+        }
+
+        return result;
+    }
+
+    private static TimerMessage MapTimerMessage(D.TimerMessage message)
+    {
+        var result = new TimerMessage();
+        MapBaseMessage(message, result);
+        result.EndTime = message.EndTime;
+        return result;
+    }
+
+    private static MessageType MapMessageType(D.MessageType messageType)
+    {
+        return messageType switch
+        {
+            D.MessageType.Empty => MessageType.Empty,
+            D.MessageType.MemberJoined => MessageType.MemberJoined,
+            D.MessageType.MemberDisconnected => MessageType.MemberDisconnected,
+            D.MessageType.EstimationStarted => MessageType.EstimationStarted,
+            D.MessageType.EstimationEnded => MessageType.EstimationEnded,
+            D.MessageType.EstimationCanceled => MessageType.EstimationCanceled,
+            D.MessageType.MemberEstimated => MessageType.MemberEstimated,
+            D.MessageType.AvailableEstimationsChanged => MessageType.AvailableEstimationsChanged,
+            D.MessageType.TimerStarted => MessageType.TimerStarted,
+            D.MessageType.TimerCanceled => MessageType.TimerCanceled,
+            D.MessageType.MemberActivity => MessageType.Empty,
+            D.MessageType.TeamCreated => MessageType.Empty,
+            _ => throw new ArgumentOutOfRangeException(nameof(messageType), messageType, "Unknown message type.")
+        };
+    }
 }
