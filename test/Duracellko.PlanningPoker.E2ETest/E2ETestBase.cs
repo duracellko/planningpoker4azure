@@ -178,7 +178,6 @@ public abstract class E2ETestBase : PageTest
 
         var configuration = System.Text.Json.JsonDocument.Parse(response);
         var property = configuration.RootElement.GetProperty("useHttpClient");
-        Assert.IsNotNull(property);
 
         Assert.AreEqual(GetConfiguration().UseHttpClient, property.GetBoolean());
     }

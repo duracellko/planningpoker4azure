@@ -560,7 +560,7 @@ public class PlanningPokerControllerTestMessages
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(2, estimations.Count);
+        Assert.HasCount(2, estimations);
         var estimation = estimations[0];
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
         Assert.IsFalse(estimation.HasEstimation);
@@ -691,7 +691,7 @@ public class PlanningPokerControllerTestMessages
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(5, estimations.Count);
+        Assert.HasCount(5, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -782,7 +782,7 @@ public class PlanningPokerControllerTestMessages
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(5, estimations.Count);
+        Assert.HasCount(5, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
@@ -880,7 +880,7 @@ public class PlanningPokerControllerTestMessages
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(6, estimations.Count);
+        Assert.HasCount(6, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -983,7 +983,7 @@ public class PlanningPokerControllerTestMessages
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(6, estimations.Count);
+        Assert.HasCount(6, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -1047,7 +1047,7 @@ public class PlanningPokerControllerTestMessages
         Assert.AreEqual(5, target.LastMessageId);
 
         var availableEstimations = target.ScrumTeam!.AvailableEstimations;
-        Assert.AreEqual(9, availableEstimations.Count);
+        Assert.HasCount(9, availableEstimations);
         Assert.AreEqual(0.0, availableEstimations[0].Value);
         Assert.AreEqual(0.5, availableEstimations[1].Value);
         Assert.AreEqual(1.0, availableEstimations[2].Value);

@@ -80,7 +80,7 @@ public class FileScrumTeamRepositoryTest
 
         var result = target.ScrumTeamNames.ToList();
 
-        Assert.AreEqual(0, result.Count);
+        Assert.IsEmpty(result);
     }
 
     [TestMethod]
@@ -103,7 +103,7 @@ public class FileScrumTeamRepositoryTest
 
         var result = target.ScrumTeamNames.ToList();
 
-        Assert.AreEqual(0, result.Count);
+        Assert.IsEmpty(result);
     }
 
     [TestMethod]
@@ -115,7 +115,7 @@ public class FileScrumTeamRepositoryTest
         target.SaveScrumTeam(team);
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         Assert.AreEqual("The team.json", files[0].Name);
     }
 
@@ -133,7 +133,7 @@ public class FileScrumTeamRepositoryTest
         target.SaveScrumTeam(team);
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         Assert.AreEqual("The team.json", files[0].Name);
     }
 
@@ -167,7 +167,7 @@ public class FileScrumTeamRepositoryTest
         target.SaveScrumTeam(team);
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         var expectedFileName = IsWindows ?
             "My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json" :
             "My \\?.%002F Team%0025 \ud83d\ude0e *.json";
@@ -245,7 +245,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteScrumTeam(team.Name);
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(0, files.Length);
+        Assert.IsEmpty(files);
     }
 
     [TestMethod]
@@ -261,7 +261,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteScrumTeam("My \\?./ Team% \ud83d\ude0e *");
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         Assert.AreEqual("The team.json", files[0].Name);
     }
 
@@ -276,7 +276,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteScrumTeam("Team 2");
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         Assert.AreEqual("The team.json", files[0].Name);
     }
 
@@ -288,7 +288,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteScrumTeam("Team 2");
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(0, files.Length);
+        Assert.IsEmpty(files);
     }
 
     [TestMethod]
@@ -304,7 +304,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteAll();
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(0, files.Length);
+        Assert.IsEmpty(files);
     }
 
     [TestMethod]
@@ -317,7 +317,7 @@ public class FileScrumTeamRepositoryTest
         target.DeleteAll();
 
         var files = _rootFolder!.GetFiles();
-        Assert.AreEqual(1, files.Length);
+        Assert.HasCount(1, files);
         Assert.AreEqual("Team 1.txt", files[0].Name);
     }
 

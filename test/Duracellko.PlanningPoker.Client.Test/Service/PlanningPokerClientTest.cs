@@ -57,19 +57,19 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(1, resultTeam.Members.Count);
+        Assert.HasCount(1, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
 
-        Assert.AreEqual(0, resultTeam.Observers.Count);
+        Assert.IsEmpty(resultTeam.Observers);
 
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+        Assert.IsEmpty(resultTeam.EstimationResult);
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, resultTeam.Members.Count);
+        Assert.HasCount(2, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -148,14 +148,14 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, resultTeam.Observers.Count);
+        Assert.IsEmpty(resultTeam.Observers);
 
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+        Assert.IsEmpty(resultTeam.EstimationResult);
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -180,12 +180,12 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(1, resultTeam.Members.Count);
+        Assert.HasCount(1, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
 
-        Assert.AreEqual(1, resultTeam.Observers.Count);
+        Assert.HasCount(1, resultTeam.Observers);
         member = resultTeam.Observers[0];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ObserverType, member.Type);
@@ -193,9 +193,9 @@ public class PlanningPokerClientTest
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+        Assert.IsEmpty(resultTeam.EstimationResult);
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -221,7 +221,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, resultTeam.Members.Count);
+        Assert.HasCount(2, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -230,7 +230,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(1, resultTeam.Observers.Count);
+        Assert.HasCount(1, resultTeam.Observers);
         member = resultTeam.Observers[0];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ObserverType, member.Type);
@@ -238,7 +238,7 @@ public class PlanningPokerClientTest
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(2, resultTeam.EstimationResult.Count);
+        Assert.HasCount(2, resultTeam.EstimationResult);
         var estimationResult = resultTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -250,7 +250,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(20.0, estimationResult.Estimation!.Value);
 
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -276,7 +276,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, resultTeam.Members.Count);
+        Assert.HasCount(2, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -285,7 +285,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(1, resultTeam.Observers.Count);
+        Assert.HasCount(1, resultTeam.Observers);
         member = resultTeam.Observers[0];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ObserverType, member.Type);
@@ -293,7 +293,7 @@ public class PlanningPokerClientTest
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(2, resultTeam.EstimationResult.Count);
+        Assert.HasCount(2, resultTeam.EstimationResult);
         var estimationResult = resultTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -305,7 +305,7 @@ public class PlanningPokerClientTest
         Assert.IsNull(estimationResult.Estimation!.Value);
 
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -331,7 +331,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, resultTeam.Members.Count);
+        Assert.HasCount(2, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -340,12 +340,12 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, resultTeam.Observers.Count);
+        Assert.IsEmpty(resultTeam.Observers);
 
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(2, resultTeam.EstimationResult.Count);
+        Assert.HasCount(2, resultTeam.EstimationResult);
         var estimationResult = resultTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -357,7 +357,7 @@ public class PlanningPokerClientTest
         Assert.IsNull(estimationResult.Estimation);
 
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(0, resultTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(resultTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -383,7 +383,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, resultTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, resultTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, resultTeam.Members.Count);
+        Assert.HasCount(2, resultTeam.Members);
         var member = resultTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -392,15 +392,15 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, resultTeam.Observers.Count);
+        Assert.IsEmpty(resultTeam.Observers);
 
         AssertAvailableEstimations(resultTeam);
 
         Assert.IsNotNull(resultTeam.EstimationResult);
-        Assert.AreEqual(0, resultTeam.EstimationResult.Count);
+        Assert.IsEmpty(resultTeam.EstimationResult);
 
         Assert.IsNotNull(resultTeam.EstimationParticipants);
-        Assert.AreEqual(2, resultTeam.EstimationParticipants.Count);
+        Assert.HasCount(2, resultTeam.EstimationParticipants);
         var estimationParticipant = resultTeam.EstimationParticipants[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationParticipant.MemberName);
         Assert.IsTrue(estimationParticipant.Estimated);
@@ -463,7 +463,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, scrumTeam.Members.Count);
+        Assert.HasCount(2, scrumTeam.Members);
         var member = scrumTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -472,14 +472,14 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, scrumTeam.Observers.Count);
+        Assert.IsEmpty(scrumTeam.Observers);
 
         AssertAvailableEstimations(scrumTeam);
 
         Assert.IsNotNull(scrumTeam.EstimationResult);
-        Assert.AreEqual(0, scrumTeam.EstimationResult.Count);
+        Assert.IsEmpty(scrumTeam.EstimationResult);
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
-        Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(scrumTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -506,7 +506,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, scrumTeam.Members.Count);
+        Assert.HasCount(2, scrumTeam.Members);
         var member = scrumTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -515,7 +515,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(1, scrumTeam.Observers.Count);
+        Assert.HasCount(1, scrumTeam.Observers);
         member = scrumTeam.Observers[0];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ObserverType, member.Type);
@@ -523,7 +523,7 @@ public class PlanningPokerClientTest
         AssertAvailableEstimations(scrumTeam);
 
         Assert.IsNotNull(scrumTeam.EstimationResult);
-        Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
+        Assert.HasCount(2, scrumTeam.EstimationResult);
         var estimationResult = scrumTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -535,7 +535,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(1.0, estimationResult.Estimation!.Value);
 
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
-        Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(scrumTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -564,7 +564,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, scrumTeam.Members.Count);
+        Assert.HasCount(2, scrumTeam.Members);
         var member = scrumTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -573,7 +573,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(1, scrumTeam.Observers.Count);
+        Assert.HasCount(1, scrumTeam.Observers);
         member = scrumTeam.Observers[0];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ObserverType, member.Type);
@@ -581,7 +581,7 @@ public class PlanningPokerClientTest
         AssertAvailableEstimations(scrumTeam);
 
         Assert.IsNotNull(scrumTeam.EstimationResult);
-        Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
+        Assert.HasCount(2, scrumTeam.EstimationResult);
         var estimationResult = scrumTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -593,7 +593,7 @@ public class PlanningPokerClientTest
         Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
 
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
-        Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(scrumTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -621,7 +621,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, scrumTeam.Members.Count);
+        Assert.HasCount(2, scrumTeam.Members);
         var member = scrumTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -630,12 +630,12 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, scrumTeam.Observers.Count);
+        Assert.IsEmpty(scrumTeam.Observers);
 
         AssertAvailableEstimations(scrumTeam);
 
         Assert.IsNotNull(scrumTeam.EstimationResult);
-        Assert.AreEqual(2, scrumTeam.EstimationResult.Count);
+        Assert.HasCount(2, scrumTeam.EstimationResult);
         var estimationResult = scrumTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -647,7 +647,7 @@ public class PlanningPokerClientTest
         Assert.IsNull(estimationResult.Estimation);
 
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
-        Assert.AreEqual(0, scrumTeam.EstimationParticipants.Count);
+        Assert.IsEmpty(scrumTeam.EstimationParticipants);
     }
 
     [TestMethod]
@@ -675,7 +675,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, scrumTeam.ScrumMaster.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, scrumTeam.ScrumMaster.Type);
 
-        Assert.AreEqual(2, scrumTeam.Members.Count);
+        Assert.HasCount(2, scrumTeam.Members);
         var member = scrumTeam.Members[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, member.Type);
@@ -684,15 +684,15 @@ public class PlanningPokerClientTest
         Assert.AreEqual(PlanningPokerClientData.MemberName, member.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, member.Type);
 
-        Assert.AreEqual(0, scrumTeam.Observers.Count);
+        Assert.IsEmpty(scrumTeam.Observers);
 
         AssertAvailableEstimations(scrumTeam);
 
         Assert.IsNotNull(scrumTeam.EstimationResult);
-        Assert.AreEqual(0, scrumTeam.EstimationResult.Count);
+        Assert.IsEmpty(scrumTeam.EstimationResult);
 
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
-        Assert.AreEqual(2, scrumTeam.EstimationParticipants.Count);
+        Assert.HasCount(2, scrumTeam.EstimationParticipants);
         var estimationParticipant = scrumTeam.EstimationParticipants[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationParticipant.MemberName);
         Assert.IsFalse(estimationParticipant.Estimated);
@@ -884,7 +884,7 @@ public class PlanningPokerClientTest
 
     private static void AssertAvailableEstimations(ScrumTeam scrumTeam)
     {
-        Assert.AreEqual(13, scrumTeam.AvailableEstimations.Count);
+        Assert.HasCount(13, scrumTeam.AvailableEstimations);
         Assert.AreEqual(0.0, scrumTeam.AvailableEstimations[0].Value);
         Assert.AreEqual(0.5, scrumTeam.AvailableEstimations[1].Value);
         Assert.AreEqual(1.0, scrumTeam.AvailableEstimations[2].Value);

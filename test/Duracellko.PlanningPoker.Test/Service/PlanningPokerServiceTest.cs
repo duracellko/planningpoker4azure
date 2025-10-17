@@ -1460,10 +1460,10 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, result[0].Type);
-        Assert.IsInstanceOfType<MemberMessage>(result[0], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(result[0]);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
 
@@ -1499,7 +1499,7 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(4, result.Count);
+        Assert.HasCount(4, result);
         Assert.AreEqual<long>(2, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.EstimationStarted, result[0].Type);
 
@@ -1510,7 +1510,7 @@ public class PlanningPokerServiceTest
 
         Assert.AreEqual<long>(5, result[3].Id);
         Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
-        Assert.IsInstanceOfType<EstimationResultMessage>(result[3], out var estimationResultMessage);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(result[3]);
 
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
         var expectedResult = new Tuple<string, double>[]
@@ -1550,14 +1550,14 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, result[0].Type);
-        Assert.IsInstanceOfType<EstimationSetMessage>(result[0], out var estimationSetMessage);
+        var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(result[0]);
 
         var estimations = estimationSetMessage.Estimations;
         Assert.IsNotNull(estimations);
-        Assert.AreEqual(13, estimations.Count);
+        Assert.HasCount(13, estimations);
         Assert.AreEqual(0, estimations[0].Value);
         Assert.AreEqual(1, estimations[1].Value);
         Assert.AreEqual(2, estimations[2].Value);
@@ -1596,7 +1596,7 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.Empty, result[0].Type);
     }
@@ -1625,10 +1625,10 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(2, result.Count);
+        Assert.HasCount(2, result);
         Assert.AreEqual<long>(2, result[1].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, result[1].Type);
-        Assert.IsInstanceOfType<MemberMessage>(result[1], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(result[1]);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual<string>(MemberName, memberMessage.Member.Name);
     }
@@ -1659,10 +1659,10 @@ public class PlanningPokerServiceTest
         teamLock.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual<long>(1, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, result[0].Type);
-        Assert.IsInstanceOfType<TimerMessage>(result[0], out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<TimerMessage>(result[0]);
         Assert.AreEqual(new DateTime(2021, 11, 17, 9, 0, 3, DateTimeKind.Utc), timerMessage.EndTime);
     }
 
@@ -1686,7 +1686,7 @@ public class PlanningPokerServiceTest
         planningPoker.Verify();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual<int>(0, result.Count);
+        Assert.IsEmpty(result);
     }
 
     [TestMethod]
@@ -1710,7 +1710,7 @@ public class PlanningPokerServiceTest
         planningPoker.Verify();
         teamLock.Verify();
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType<NotFoundObjectResult>(result, out var notFoundObjectResult);
+        var notFoundObjectResult = Assert.IsInstanceOfType<NotFoundObjectResult>(result);
         var resultValue = notFoundObjectResult.Value?.ToString();
         Assert.IsNotNull(resultValue);
         Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));
@@ -1745,7 +1745,7 @@ public class PlanningPokerServiceTest
         planningPoker.Verify();
         teamLock.Verify();
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType<NotFoundObjectResult>(result, out var notFoundObjectResult);
+        var notFoundObjectResult = Assert.IsInstanceOfType<NotFoundObjectResult>(result);
         var resultValue = notFoundObjectResult.Value?.ToString();
         Assert.IsNotNull(resultValue);
         Assert.IsTrue(resultValue.Contains("Invalid session ID.", StringComparison.Ordinal));

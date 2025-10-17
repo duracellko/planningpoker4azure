@@ -321,7 +321,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType<MemberMessage>(result, out var memberMessageResult);
+        var memberMessageResult = Assert.IsInstanceOfType<MemberMessage>(result);
         Assert.IsNotNull(memberMessageResult.Member);
         Assert.AreEqual(message.Member.Name, memberMessageResult.Member.Name);
         Assert.AreEqual(message.Member.Type, memberMessageResult.Member.Type);
@@ -356,7 +356,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType<EstimationResultMessage>(result, out var estimationResult);
+        var estimationResult = Assert.IsInstanceOfType<EstimationResultMessage>(result);
         Assert.AreEqual(message.EstimationResult[0].Member!.Name, estimationResult.EstimationResult[0].Member!.Name);
         Assert.AreEqual(message.EstimationResult[0].Member!.Type, estimationResult.EstimationResult[0].Member!.Type);
         Assert.AreEqual(message.EstimationResult[0].Estimation!.Value, estimationResult.EstimationResult[0].Estimation!.Value);
@@ -409,8 +409,8 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType<EstimationSetMessage>(result, out var estimationSetMessage);
-        Assert.AreEqual(7, estimationSetMessage.Estimations.Count);
+        var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(result);
+        Assert.HasCount(7, estimationSetMessage.Estimations);
         Assert.AreEqual(0.0, estimationSetMessage.Estimations[0].Value);
         Assert.AreEqual(0.5, estimationSetMessage.Estimations[1].Value);
         Assert.AreEqual(1.0, estimationSetMessage.Estimations[2].Value);
@@ -437,7 +437,7 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Id, result.Id);
         Assert.AreEqual(message.Type, result.Type);
 
-        Assert.IsInstanceOfType<TimerMessage>(result, out var timerMessageResult);
+        var timerMessageResult = Assert.IsInstanceOfType<TimerMessage>(result);
         Assert.AreEqual(message.EndTime, timerMessageResult.EndTime);
     }
 

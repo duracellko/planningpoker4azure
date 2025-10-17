@@ -25,7 +25,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
+        var sentInvocationMessage = Assert.IsInstanceOfType<InvocationMessage>(sentMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.ScrumMasterName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -52,7 +52,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
+        var sentInvocationMessage = Assert.IsInstanceOfType<InvocationMessage>(sentMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 2157483849L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -81,7 +81,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
     }
 
@@ -102,7 +102,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
     }
 
@@ -123,7 +123,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
     }
 
@@ -143,7 +143,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
     }
 
@@ -185,7 +185,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
         var estimationResult = ((EstimationResultMessage)result[0]).EstimationResult;
         Assert.AreEqual(2.0, estimationResult[0].Estimation!.Value);
@@ -222,7 +222,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
         var estimations = ((EstimationSetMessage)result[0]).Estimations;
         Assert.AreEqual(0.0, estimations[0].Value);
@@ -253,7 +253,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual(message, result[0]);
     }
 
@@ -297,7 +297,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var result = await resultTask;
         await Task.Yield();
-        Assert.AreEqual(3, result.Count);
+        Assert.HasCount(3, result);
         Assert.AreEqual(estimationStartedMessage, result[0]);
         Assert.AreEqual(memberEstimatedMessage, result[1]);
         Assert.AreEqual(estimationEndedMessage, result[2]);
@@ -317,7 +317,7 @@ public class PlanningPokerSignalRClientTestMessages
 
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
+        var sentInvocationMessage = Assert.IsInstanceOfType<InvocationMessage>(sentMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, sessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
@@ -333,7 +333,7 @@ public class PlanningPokerSignalRClientTestMessages
     {
         var sentMessage = await fixture.GetSentMessage();
         Assert.IsNotNull(sentMessage);
-        Assert.IsInstanceOfType<InvocationMessage>(sentMessage, out var sentInvocationMessage);
+        var sentInvocationMessage = Assert.IsInstanceOfType<InvocationMessage>(sentMessage);
         Assert.AreEqual(RequestName, sentInvocationMessage.Target);
         var expectedArguments = new object[] { PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.SessionId, 0L };
         CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);

@@ -414,7 +414,7 @@ public class PlanningPokerControllerTest
 
         // Verify
         var messages = result.ToList();
-        Assert.AreEqual(2, messages.Count);
+        Assert.HasCount(2, messages);
         Assert.AreEqual(MessageType.MemberJoined, messages[0].MessageType);
         Assert.AreEqual(MessageType.EstimationStarted, messages[1].MessageType);
     }
@@ -450,7 +450,7 @@ public class PlanningPokerControllerTest
 
         // Verify
         var messages = result.ToList();
-        Assert.AreEqual(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual(MessageType.EstimationStarted, messages[0].MessageType);
     }
 
