@@ -131,7 +131,7 @@ public class PlanningPokerAzureNodeTest
         Assert.AreEqual<NodeMessageType>(NodeMessageType.TeamCreated, nodeMessage.MessageType);
         Assert.AreEqual<string?>(target.NodeId, nodeMessage.SenderNodeId);
         Assert.IsNotNull(nodeMessage.Data);
-        Assert.IsInstanceOfType<byte[]>(nodeMessage.Data, out var data);
+        var data = Assert.IsInstanceOfType<byte[]>(nodeMessage.Data);
         var expectedData = SerializeScrumTeam(team);
         CollectionAssert.AreEqual(expectedData, data);
     }
@@ -1417,7 +1417,7 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
         Assert.IsNotNull(initializeTeamMessage);
         Assert.IsNotNull(initializeTeamMessage.Data);
-        Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data, out var data);
+        var data = Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data);
         var expectedData = SerializeScrumTeam(team);
         CollectionAssert.AreEqual(expectedData, data);
         Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
@@ -1454,7 +1454,7 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
         Assert.IsNotNull(initializeTeamMessage);
         Assert.IsNotNull(initializeTeamMessage.Data);
-        Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data, out var data);
+        var data = Assert.IsInstanceOfType<byte[]>(initializeTeamMessage.Data);
         Assert.AreEqual<string>("Deleted:" + TeamName, Encoding.UTF8.GetString(data));
         Assert.AreEqual<string?>(nodeMessage.SenderNodeId, initializeTeamMessage.RecipientNodeId);
     }

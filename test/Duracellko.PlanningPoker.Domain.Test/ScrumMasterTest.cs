@@ -303,7 +303,7 @@ public class ScrumMasterTest
         master.CancelEstimation();
 
         // Verify
-        Assert.AreEqual<int>(2, eventArgsList.Count);
+        Assert.HasCount(2, eventArgsList);
         var message1 = eventArgsList[0].Message;
         var message2 = eventArgsList[1].Message;
         Assert.AreEqual<MessageType>(MessageType.EstimationStarted, message1.MessageType);

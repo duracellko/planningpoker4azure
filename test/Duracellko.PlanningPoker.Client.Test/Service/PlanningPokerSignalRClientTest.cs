@@ -609,7 +609,7 @@ public class PlanningPokerSignalRClientTest
         var sentMessage = await fixture.GetSentMessage();
         var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
         Assert.AreEqual("GetCurrentTime", sentInvocationMessage.Target);
-        Assert.AreEqual(0, sentInvocationMessage.Arguments.Length);
+        Assert.IsEmpty(sentInvocationMessage.Arguments);
 
         var timeResult = new TimeResult
         {
@@ -653,13 +653,13 @@ public class PlanningPokerSignalRClientTest
     private static InvocationMessage AssertIsInvocationMessage([NotNull] HubMessage? message)
     {
         Assert.IsNotNull(message);
-        Assert.IsInstanceOfType<InvocationMessage>(message, out var invocationMessage);
+        var invocationMessage = Assert.IsInstanceOfType<InvocationMessage>(message);
         return invocationMessage;
     }
 
     private static void AssertAvailableEstimations(ScrumTeam scrumTeam)
     {
-        Assert.AreEqual(13, scrumTeam.AvailableEstimations.Count);
+        Assert.HasCount(13, scrumTeam.AvailableEstimations);
         Assert.AreEqual(0.0, scrumTeam.AvailableEstimations[0].Value);
         Assert.AreEqual(0.5, scrumTeam.AvailableEstimations[1].Value);
         Assert.AreEqual(1.0, scrumTeam.AvailableEstimations[2].Value);

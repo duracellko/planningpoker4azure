@@ -33,7 +33,7 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.TeamCreated, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
     }
@@ -54,10 +54,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.MemberJoined, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0]);
         Assert.AreEqual<string>("member", memberMessage.MemberName);
         Assert.AreEqual<string>("Member", memberMessage.MemberType);
         Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
@@ -78,10 +78,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.MemberDisconnected, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0]);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
     }
@@ -103,10 +103,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.MemberActivity, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<ScrumTeamMemberMessage>(messages[0]);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<string>("ScrumMaster", memberMessage.MemberType);
         Assert.AreEqual<Guid>(guid, memberMessage.SessionId);
@@ -128,7 +128,7 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.EstimationStarted, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
     }
@@ -149,7 +149,7 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.EstimationCanceled, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
     }
@@ -170,10 +170,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(2, messages.Count);
+        Assert.HasCount(2, messages);
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamMemberEstimationMessage>(messages[0], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<ScrumTeamMemberEstimationMessage>(messages[0]);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
         Assert.AreEqual<double?>(3.0, memberMessage.Estimation);
     }
@@ -194,10 +194,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamEstimationSetMessage>(messages[0], out var estimationSetMessage);
+        var estimationSetMessage = Assert.IsInstanceOfType<ScrumTeamEstimationSetMessage>(messages[0]);
         var expectedEstimations = new double?[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, double.PositiveInfinity, null };
         CollectionAssert.AreEqual(expectedEstimations, estimationSetMessage.Estimations.ToList());
     }
@@ -220,10 +220,10 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
-        Assert.IsInstanceOfType<ScrumTeamTimerMessage>(messages[0], out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<ScrumTeamTimerMessage>(messages[0]);
         Assert.AreEqual<DateTime>(new DateTime(2021, 11, 16, 23, 51, 23, DateTimeKind.Utc), timerMessage.EndTime);
     }
 
@@ -246,7 +246,7 @@ public class AzurePlanningPokerControllerTest
         target.Dispose();
 
         // Verify
-        Assert.AreEqual<int>(1, messages.Count);
+        Assert.HasCount(1, messages);
         Assert.AreEqual<MessageType>(MessageType.TimerCanceled, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
     }

@@ -74,7 +74,7 @@ public class PlanningPokerControllerTest
 
         var result = target.EstimationDecks;
 
-        Assert.AreEqual(5, result.Count);
+        Assert.HasCount(5, result);
         Assert.AreEqual("0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100", result[Deck.Standard]);
         Assert.AreEqual("0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89", result[Deck.Fibonacci]);
         Assert.AreEqual("1, 2, 3, 4, 5, 6, 7, 8, 9, 10", result[Deck.Rating]);
@@ -271,9 +271,9 @@ public class PlanningPokerControllerTest
         CollectionAssert.AreEqual(Array.Empty<string>(), target.Members.ToList());
         CollectionAssert.AreEqual(Array.Empty<string>(), target.Observers.ToList());
         Assert.IsNotNull(target.ScrumTeam?.Members);
-        Assert.AreEqual(0, target.ScrumTeam.Members.Count);
+        Assert.IsEmpty(target.ScrumTeam.Members);
         Assert.IsNotNull(target.ScrumTeam.Observers);
-        Assert.AreEqual(0, target.ScrumTeam.Observers.Count);
+        Assert.IsEmpty(target.ScrumTeam.Observers);
     }
 
     [TestMethod]
@@ -554,7 +554,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(5, estimations.Count);
+        Assert.HasCount(5, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -647,7 +647,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(5, estimations.Count);
+        Assert.HasCount(5, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
@@ -747,7 +747,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(6, estimations.Count);
+        Assert.HasCount(6, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -844,7 +844,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(6, estimations.Count);
+        Assert.HasCount(6, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -950,7 +950,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsNotNull(target.Estimations);
         var estimations = target.Estimations.ToList();
-        Assert.AreEqual(3, estimations.Count);
+        Assert.HasCount(3, estimations);
 
         var estimation = estimations[0];
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);

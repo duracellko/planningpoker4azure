@@ -53,7 +53,7 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         var message = result[0];
         Assert.AreEqual(0, message.Id);
         Assert.AreEqual(MessageType.Empty, message.Type);
@@ -70,8 +70,8 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<MemberMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<MemberMessage>(result[0]);
         Assert.AreEqual(1, message.Id);
         Assert.AreEqual(MessageType.MemberJoined, message.Type);
         Assert.IsNotNull(message.Member);
@@ -90,8 +90,8 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<MemberMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<MemberMessage>(result[0]);
         Assert.AreEqual(2, message.Id);
         Assert.AreEqual(MessageType.MemberDisconnected, message.Type);
         Assert.IsNotNull(message.Member);
@@ -110,7 +110,7 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         var message = result[0];
         Assert.AreEqual(2157483849, message.Id);
         Assert.AreEqual(MessageType.EstimationStarted, message.Type);
@@ -127,12 +127,12 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<EstimationResultMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<EstimationResultMessage>(result[0]);
         Assert.AreEqual(8, message.Id);
         Assert.AreEqual(MessageType.EstimationEnded, message.Type);
 
-        Assert.AreEqual(4, message.EstimationResult.Count);
+        Assert.HasCount(4, message.EstimationResult);
         var estimationResult = message.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
@@ -165,7 +165,7 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         var message = result[0];
         Assert.AreEqual(123, message.Id);
         Assert.AreEqual(MessageType.EstimationCanceled, message.Type);
@@ -182,8 +182,8 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<MemberMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<MemberMessage>(result[0]);
         Assert.AreEqual(22, message.Id);
         Assert.AreEqual(MessageType.MemberEstimated, message.Type);
         Assert.IsNotNull(message.Member);
@@ -202,8 +202,8 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<EstimationSetMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<EstimationSetMessage>(result[0]);
         Assert.AreEqual(8, message.Id);
         Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.Type);
         var estimations = message.Estimations;
@@ -229,8 +229,8 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(1, result.Count);
-        Assert.IsInstanceOfType<TimerMessage>(result[0], out var message);
+        Assert.HasCount(1, result);
+        var message = Assert.IsInstanceOfType<TimerMessage>(result[0]);
         Assert.AreEqual(1, message.Id);
         Assert.AreEqual(MessageType.TimerStarted, message.Type);
         Assert.AreEqual(new DateTime(2021, 11, 17, 10, 3, 46, DateTimeKind.Utc), message.EndTime);
@@ -250,23 +250,23 @@ public class PlanningPokerClientTestMessages
 
         var result = await target.GetMessages(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, Guid.NewGuid(), 0, CancellationToken.None);
 
-        Assert.AreEqual(3, result.Count);
+        Assert.HasCount(3, result);
         var message = result[0];
         Assert.AreEqual(8, message.Id);
         Assert.AreEqual(MessageType.EstimationStarted, message.Type);
 
-        Assert.IsInstanceOfType<MemberMessage>(result[1], out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(result[1]);
         Assert.AreEqual(9, memberMessage.Id);
         Assert.AreEqual(MessageType.MemberEstimated, memberMessage.Type);
         Assert.IsNotNull(memberMessage.Member);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, memberMessage.Member.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, memberMessage.Member.Type);
 
-        Assert.IsInstanceOfType<EstimationResultMessage>(result[2], out var estimationMessage);
+        var estimationMessage = Assert.IsInstanceOfType<EstimationResultMessage>(result[2]);
         Assert.AreEqual(10, estimationMessage.Id);
         Assert.AreEqual(MessageType.EstimationEnded, estimationMessage.Type);
 
-        Assert.AreEqual(2, estimationMessage.EstimationResult.Count);
+        Assert.HasCount(2, estimationMessage.EstimationResult);
         var estimationResult = estimationMessage.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);

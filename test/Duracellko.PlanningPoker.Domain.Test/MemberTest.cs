@@ -322,7 +322,7 @@ public class MemberTest
         // Verify
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
-        Assert.IsInstanceOfType<EstimationResultMessage>(message, out var estimationResultMessage);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
         Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
@@ -370,7 +370,7 @@ public class MemberTest
         Assert.IsTrue(master.HasMessage);
         Assert.AreEqual(3, master.Messages.Count());
         var message = master.Messages.Last();
-        Assert.IsInstanceOfType<EstimationResultMessage>(message, out var estimationResultMessage);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
         Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
@@ -414,7 +414,7 @@ public class MemberTest
         Assert.IsTrue(master.HasMessage);
         var message = master.Messages.First();
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
-        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(message);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -462,7 +462,7 @@ public class MemberTest
         Assert.IsTrue(member.HasMessage);
         Assert.AreEqual(2, member.Messages.Count());
         var message = member.Messages.Last();
-        Assert.IsInstanceOfType<EstimationResultMessage>(message, out var estimationResultMessage);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
         Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
@@ -506,7 +506,7 @@ public class MemberTest
         Assert.IsTrue(member.HasMessage);
         var message = member.Messages.First();
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
-        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(message);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -557,7 +557,7 @@ public class MemberTest
         Assert.IsTrue(observer.HasMessage);
         Assert.AreEqual(2, observer.Messages.Count());
         var message = observer.Messages.Last();
-        Assert.IsInstanceOfType<EstimationResultMessage>(message, out var estimationResultMessage);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
         Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
@@ -603,7 +603,7 @@ public class MemberTest
         Assert.IsTrue(observer.HasMessage);
         var message = observer.Messages.First();
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, message.MessageType);
-        Assert.IsInstanceOfType<MemberMessage>(message, out var memberMessage);
+        var memberMessage = Assert.IsInstanceOfType<MemberMessage>(message);
         Assert.AreEqual<Observer>(member, memberMessage.Member);
     }
 
@@ -704,7 +704,7 @@ public class MemberTest
         Assert.AreEqual(1, member.Messages.Count());
         var message = member.Messages.Single();
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
-        Assert.IsInstanceOfType<TimerMessage>(message, out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<TimerMessage>(message);
         Assert.AreEqual(ExpectedEndTimeData[0], timerMessage.EndTime);
     }
 
@@ -746,7 +746,7 @@ public class MemberTest
         Assert.AreEqual(1, master.Messages.Count());
         var message = master.Messages.Single();
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
-        Assert.IsInstanceOfType<TimerMessage>(message, out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<TimerMessage>(message);
         Assert.AreEqual(ExpectedEndTimeData[1], timerMessage.EndTime);
     }
 
@@ -789,7 +789,7 @@ public class MemberTest
         Assert.AreEqual(1, observer.Messages.Count());
         var message = observer.Messages.Single();
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
-        Assert.IsInstanceOfType<TimerMessage>(message, out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<TimerMessage>(message);
         Assert.AreEqual(ExpectedEndTimeData[2], timerMessage.EndTime);
     }
 
@@ -833,7 +833,7 @@ public class MemberTest
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
         Assert.AreEqual<MessageType>(MessageType.TimerStarted, message.MessageType);
-        Assert.IsInstanceOfType<TimerMessage>(message, out var timerMessage);
+        var timerMessage = Assert.IsInstanceOfType<TimerMessage>(message);
         Assert.AreEqual(ExpectedEndTimeData[0], timerMessage.EndTime);
     }
 
