@@ -4,7 +4,7 @@ Param (
 
 $scriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 $buildConfiguration = 'Release'
-$buildProjects = Join-Path -Path $scriptDir -ChildPath 'PlanningPokerCore.sln'
+$buildProjects = Join-Path -Path $scriptDir -ChildPath 'PlanningPoker.slnx'
 $webProject = Join-Path -Path $scriptDir '.\src\Duracellko.PlanningPoker.Web\Duracellko.PlanningPoker.Web.csproj'
 
 try {

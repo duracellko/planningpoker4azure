@@ -30,7 +30,8 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     private readonly IApplicationIntegrationService _applicationIntegrationService;
     private bool _disposed;
     private List<MemberEstimation>? _memberEstimations;
-    private bool _isConnected;
+
+    [SuppressMessage("Style", "IDE0032:Use auto property", Justification = "HasJoinedEstimation is not property, but internal state.")]
     private bool _hasJoinedEstimation;
     private Estimation? _selectedEstimation;
     private TimeSpan _timerDuration = TimeSpan.FromMinutes(5);
@@ -97,12 +98,12 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     /// </summary>
     public bool IsConnected
     {
-        get => _isConnected;
+        get;
         private set
         {
-            if (_isConnected != value)
+            if (field != value)
             {
-                _isConnected = value;
+                field = value;
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsConnected)));
             }
         }
