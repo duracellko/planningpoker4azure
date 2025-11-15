@@ -14,7 +14,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class BusyIndicatorPanelTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -28,7 +28,7 @@ public sealed class BusyIndicatorPanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(busyIndicatorService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<BusyIndicatorPanel>();
+        using var target = _context.Render<BusyIndicatorPanel>();
 
         await target.InvokeAsync(busyIndicatorService.Show);
 
@@ -42,7 +42,7 @@ public sealed class BusyIndicatorPanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(busyIndicatorService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<BusyIndicatorPanel>();
+        using var target = _context.Render<BusyIndicatorPanel>();
 
         IDisposable? disposable = null;
         await target.InvokeAsync(() => disposable = busyIndicatorService.Show());
