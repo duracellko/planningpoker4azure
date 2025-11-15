@@ -24,7 +24,7 @@ jobs:
   - task: UseDotNet@2
     displayName: Install .NET SDK
     inputs:
-      version: 9.0.x
+      version: 10.0.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore

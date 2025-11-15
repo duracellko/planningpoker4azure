@@ -6,7 +6,7 @@ variables:
 - name: BuildPlatform
   value: Any CPU
 - name: BuildProjects
-  value: PlanningPokerCore.sln
+  value: PlanningPoker.slnx
 - name: PublishProjects
   value: src/Duracellko.PlanningPoker.Web/Duracellko.PlanningPoker.Web.csproj
 - name: UnitTestProjects
