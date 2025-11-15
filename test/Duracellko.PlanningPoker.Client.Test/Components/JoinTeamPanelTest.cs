@@ -2,7 +2,6 @@
 using System.Threading;
 using AngleSharp.Html.Dom;
 using Bunit;
-using Bunit.Web.AngleSharp;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
@@ -18,7 +17,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class JoinTeamPanelTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -31,7 +30,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         Assert.AreEqual("form-control", teamNameElement.ClassName);
@@ -50,7 +49,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -74,7 +73,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -102,7 +101,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -133,7 +132,7 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController(planningPokerClient: planningPokerClient.Object);
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -154,13 +153,13 @@ public sealed class JoinTeamPanelTest : IDisposable
         var controller = CreateJoinTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<JoinTeamPanel>(
-            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+        using var target = _context.Render<JoinTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName)
+            .Add(p => p.MemberName, PlanningPokerData.MemberName));
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]");
         Assert.AreEqual(string.Empty, memberNameElement.Value);
     }
 
@@ -179,9 +178,9 @@ public sealed class JoinTeamPanelTest : IDisposable
         planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
             .ReturnsAsync(PlanningPokerData.GetReconnectTeamResult());
 
-        using var target = _context.RenderComponent<JoinTeamPanel>(
-            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+        using var target = _context.Render<JoinTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName)
+            .Add(p => p.MemberName, PlanningPokerData.MemberName));
 
         memberCredentialsStore.Verify(o => o.GetCredentialsAsync(false), Times.Once());
         planningPokerClient.Verify(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()));
@@ -203,13 +202,13 @@ public sealed class JoinTeamPanelTest : IDisposable
         planningPokerClient.Setup(o => o.ReconnectTeam(PlanningPokerData.TeamName, PlanningPokerData.MemberName, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException());
 
-        using var target = _context.RenderComponent<JoinTeamPanel>(
-            ComponentParameter.CreateParameter("TeamName", PlanningPokerData.TeamName),
-            ComponentParameter.CreateParameter("MemberName", PlanningPokerData.MemberName));
+        using var target = _context.Render<JoinTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName)
+            .Add(p => p.MemberName, PlanningPokerData.MemberName));
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]");
         Assert.AreEqual(string.Empty, memberNameElement.Value);
     }
 
@@ -223,11 +222,11 @@ public sealed class JoinTeamPanelTest : IDisposable
         memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
             .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
 
-        using var target = _context.RenderComponent<JoinTeamPanel>();
+        using var target = _context.Render<JoinTeamPanel>();
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]");
         Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
     }
 
@@ -248,13 +247,13 @@ public sealed class JoinTeamPanelTest : IDisposable
         memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
             .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
 
-        using var target = _context.RenderComponent<JoinTeamPanel>(
-            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
-            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+        using var target = _context.Render<JoinTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, "Hello")
+            .Add(p => p.MemberName, "World"));
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual("Hello", teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]");
         Assert.AreEqual("World", memberNameElement.Value);
     }
 
@@ -275,13 +274,13 @@ public sealed class JoinTeamPanelTest : IDisposable
         memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
             .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
 
-        using var target = _context.RenderComponent<JoinTeamPanel>(
-            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.TeamName), "Hello"),
-            ComponentParameter.CreateParameter(nameof(JoinTeamPanel.MemberName), "World"));
+        using var target = _context.Render<JoinTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, "Hello")
+            .Add(p => p.MemberName, "World"));
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual("Hello", teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=memberName]");
         Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
     }
 

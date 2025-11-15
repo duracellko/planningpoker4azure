@@ -17,7 +17,7 @@ public sealed class PlanningPokerTest : IDisposable
 {
     private const string BaseUrl = "http://planningpoker.duracellko.net/PlanningPoker?";
 
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -33,7 +33,7 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
-        using var target = _context.RenderComponent<PlanningPokerPage>();
+        using var target = _context.Render<PlanningPokerPage>();
 
         var expectedUri = "Index";
         navigationManager.Verify(o => o.NavigateTo(expectedUri));
@@ -48,8 +48,8 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
-        using var target = _context.RenderComponent<PlanningPokerPage>(
-            ComponentParameter.CreateParameter(nameof(PlanningPokerPage.TeamName), PlanningPokerData.TeamName));
+        using var target = _context.Render<PlanningPokerPage>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName));
 
         var expectedUri = "Index/Test%20team";
         navigationManager.Verify(o => o.NavigateTo(expectedUri));
@@ -65,9 +65,9 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
-        using var target = _context.RenderComponent<PlanningPokerPage>(
-            ComponentParameter.CreateParameter(nameof(PlanningPokerPage.TeamName), PlanningPokerData.TeamName),
-            ComponentParameter.CreateParameter(nameof(PlanningPokerPage.MemberName), PlanningPokerData.MemberName));
+        using var target = _context.Render<PlanningPokerPage>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName)
+            .Add(p => p.MemberName, PlanningPokerData.MemberName));
 
         var expectedUri = "Index/Test%20team/Test%20member";
         navigationManager.Verify(o => o.NavigateTo(expectedUri));
@@ -82,9 +82,9 @@ public sealed class PlanningPokerTest : IDisposable
         navigationManager.SetupGet(o => o.Uri).Returns(BaseUrl + queryString);
         InitializeContext(navigationManager.Object);
 
-        using var target = _context.RenderComponent<PlanningPokerPage>(
-            ComponentParameter.CreateParameter(nameof(PlanningPokerPage.TeamName), PlanningPokerData.TeamName),
-            ComponentParameter.CreateParameter(nameof(PlanningPokerPage.MemberName), PlanningPokerData.MemberName));
+        using var target = _context.Render<PlanningPokerPage>(parameters => parameters
+            .Add(p => p.TeamName, PlanningPokerData.TeamName)
+            .Add(p => p.MemberName, PlanningPokerData.MemberName));
 
         var expectedUri = "Index/Test%20team/Test%20member?CallbackUri=https%3A%2F%2Fwww.testweb.net%2Fsome%2Fitem%3Fid%3D254&CallbackReference=ID%23254";
         navigationManager.Verify(o => o.NavigateTo(expectedUri));

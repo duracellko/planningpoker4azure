@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class PlanningPokerDeskTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -34,7 +34,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
         InitializeContext(controller);
         await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerDesk>();
+        using var target = _context.Render<PlanningPokerDesk>();
 
         // Team name and user name
         var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -70,7 +70,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
         ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerDesk>();
+        using var target = _context.Render<PlanningPokerDesk>();
 
         // Team name and user name
         var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -138,7 +138,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
         ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerDesk>();
+        using var target = _context.Render<PlanningPokerDesk>();
 
         // Team name and user name
         var h2Element = target.Find("div.pokerDeskPanel > div.team-title > h2");
@@ -186,7 +186,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
         ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.MemberName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerDesk>();
+        using var target = _context.Render<PlanningPokerDesk>();
 
         // Available estimations
         var h3Element = target.Find("div.availableEstimations > h3");
@@ -240,7 +240,7 @@ public sealed class PlanningPokerDeskTest : IDisposable
         ];
         await controller.InitializeTeam(reconnectResult, PlanningPokerData.ObserverName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerDesk>();
+        using var target = _context.Render<PlanningPokerDesk>();
 
         // Estimations
         var h3Element = target.Find("div.estimationResult > h3");

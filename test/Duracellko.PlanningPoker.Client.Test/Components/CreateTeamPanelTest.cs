@@ -2,7 +2,6 @@
 using System.Threading;
 using AngleSharp.Html.Dom;
 using Bunit;
-using Bunit.Web.AngleSharp;
 using Duracellko.PlanningPoker.Client.Components;
 using Duracellko.PlanningPoker.Client.Controllers;
 using Duracellko.PlanningPoker.Client.Service;
@@ -18,7 +17,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class CreateTeamPanelTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -31,7 +30,7 @@ public sealed class CreateTeamPanelTest : IDisposable
         var controller = CreateCreateTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         Assert.AreEqual("form-control", teamNameElement.ClassName);
@@ -50,7 +49,7 @@ public sealed class CreateTeamPanelTest : IDisposable
         var controller = CreateCreateTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -74,7 +73,7 @@ public sealed class CreateTeamPanelTest : IDisposable
         var controller = CreateCreateTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -102,7 +101,7 @@ public sealed class CreateTeamPanelTest : IDisposable
         var controller = CreateCreateTeamController();
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -131,7 +130,7 @@ public sealed class CreateTeamPanelTest : IDisposable
         var controller = CreateCreateTeamController(planningPokerClient: planningPokerClient.Object);
         InitializeContext(controller);
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
         var teamNameElement = target.Find("input[name=teamName]");
         teamNameElement.Change(PlanningPokerData.TeamName);
@@ -154,11 +153,11 @@ public sealed class CreateTeamPanelTest : IDisposable
         memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
             .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
 
-        using var target = _context.RenderComponent<CreateTeamPanel>();
+        using var target = _context.Render<CreateTeamPanel>();
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual(PlanningPokerData.TeamName, teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]");
         Assert.AreEqual(PlanningPokerData.MemberName, memberNameElement.Value);
     }
 
@@ -173,13 +172,13 @@ public sealed class CreateTeamPanelTest : IDisposable
         memberCredentialsStore.Setup(o => o.GetCredentialsAsync(true))
             .ReturnsAsync(new MemberCredentials { TeamName = PlanningPokerData.TeamName, MemberName = PlanningPokerData.MemberName });
 
-        using var target = _context.RenderComponent<CreateTeamPanel>(
-            ComponentParameter.CreateParameter(nameof(CreateTeamPanel.TeamName), "Hello"),
-            ComponentParameter.CreateParameter(nameof(CreateTeamPanel.ScrumMasterName), "World"));
+        using var target = _context.Render<CreateTeamPanel>(parameters => parameters
+            .Add(p => p.TeamName, "Hello")
+            .Add(p => p.ScrumMasterName, "World"));
 
-        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]").Unwrap();
+        var teamNameElement = (IHtmlInputElement)target.Find("input[name=teamName]");
         Assert.AreEqual("Hello", teamNameElement.Value);
-        var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]").Unwrap();
+        var memberNameElement = (IHtmlInputElement)target.Find("input[name=scrumMasterName]");
         Assert.AreEqual("World", memberNameElement.Value);
     }
 

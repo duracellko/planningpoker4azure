@@ -9,6 +9,7 @@ using Duracellko.PlanningPoker.Client.Service;
 using Duracellko.PlanningPoker.Client.Test.Controllers;
 using Duracellko.PlanningPoker.Client.UI;
 using Duracellko.PlanningPoker.Service;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -20,7 +21,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class PlanningPokerSettingsTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -34,7 +35,7 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         InitializeContext(controller);
         await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         // Timer input
         var inputGroupElement = target.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form > fieldset > div.mb-3 > div.input-group");
@@ -59,13 +60,13 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         InitializeContext(controller);
         await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         // Timer input
         var inputGroupElement = target.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form > fieldset > div.mb-3 > div.input-group");
         var selectElements = inputGroupElement.GetElementsByTagName("select");
         var minutesElement = (IHtmlSelectElement)selectElements[0];
-        minutesElement.Change("0");
+        await minutesElement.ChangeAsync(CreateChangeEventArgs("0"));
 
         selectElements = inputGroupElement.GetElementsByTagName("select");
         minutesElement = (IHtmlSelectElement)selectElements[0];
@@ -83,17 +84,17 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         InitializeContext(controller);
         await controller.InitializeTeam(PlanningPokerData.GetTeamResult(), PlanningPokerData.ScrumMasterName, null);
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         // Timer input
         var inputGroupElement = target.Find("div#planningPokerSettingsModal > div.modal-dialog > div.modal-content > div.modal-body > form > fieldset > div.mb-3 > div.input-group");
         var selectElements = inputGroupElement.GetElementsByTagName("select");
         var minutesElement = (IHtmlSelectElement)selectElements[0];
-        minutesElement.Change("0");
+        await minutesElement.ChangeAsync(CreateChangeEventArgs("0"));
 
         selectElements = inputGroupElement.GetElementsByTagName("select");
         var secondsElement = (IHtmlSelectElement)selectElements[1];
-        secondsElement.Change("0");
+        await secondsElement.ChangeAsync(CreateChangeEventArgs("0"));
 
         selectElements = inputGroupElement.GetElementsByTagName("select");
         minutesElement = (IHtmlSelectElement)selectElements[0];
@@ -114,14 +115,14 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
             .SetVoidResult();
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         var selectDeckElement = GetSelectDeckElement(target);
         var changeDeckButtonElement = GetChangeDeckButtonElement(target);
         AssertSuccessMessageElement(target, false);
 
         Assert.AreEqual(nameof(Deck.Standard), selectDeckElement.Value);
-        selectDeckElement.Change(nameof(Deck.Fibonacci));
+        await selectDeckElement.ChangeAsync(CreateChangeEventArgs(nameof(Deck.Fibonacci)));
         await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
 
         AssertSuccessMessageElement(target, true);
@@ -138,18 +139,18 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         _context.JSInterop.SetupVoid("Duracellko.PlanningPoker.registerOnModalHidden", _ => true)
             .SetVoidResult();
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         var selectDeckElement = GetSelectDeckElement(target);
         var changeDeckButtonElement = GetChangeDeckButtonElement(target);
-        selectDeckElement.Change(nameof(Deck.Fibonacci));
+        await selectDeckElement.ChangeAsync(CreateChangeEventArgs(nameof(Deck.Fibonacci)));
         await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
 
         AssertSuccessMessageElement(target, true);
 
         selectDeckElement = GetSelectDeckElement(target);
         Assert.AreEqual(nameof(Deck.Fibonacci), selectDeckElement.Value);
-        selectDeckElement.Change(nameof(Deck.Standard));
+        await selectDeckElement.ChangeAsync(CreateChangeEventArgs(nameof(Deck.Standard)));
 
         AssertSuccessMessageElement(target, false);
     }
@@ -170,11 +171,11 @@ public sealed class PlanningPokerSettingsTest : IDisposable
                 return true;
             }).SetVoidResult();
 
-        using var target = _context.RenderComponent<PlanningPokerSettings>();
+        using var target = _context.Render<PlanningPokerSettings>();
 
         var selectDeckElement = GetSelectDeckElement(target);
         var changeDeckButtonElement = GetChangeDeckButtonElement(target);
-        selectDeckElement.Change(nameof(Deck.Fibonacci));
+        await selectDeckElement.ChangeAsync(CreateChangeEventArgs(nameof(Deck.Fibonacci)));
         await changeDeckButtonElement.ClickAsync(new MouseEventArgs());
 
         AssertSuccessMessageElement(target, true);
@@ -253,6 +254,11 @@ public sealed class PlanningPokerSettingsTest : IDisposable
         {
             Assert.IsNull(successMessageElement);
         }
+    }
+
+    private static ChangeEventArgs CreateChangeEventArgs(string value)
+    {
+        return new ChangeEventArgs { Value = value };
     }
 
     private void InitializeContext(PlanningPokerController controller, IMessageBoxService? messageBoxService = null)

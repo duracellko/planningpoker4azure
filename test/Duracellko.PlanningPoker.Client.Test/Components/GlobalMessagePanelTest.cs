@@ -15,7 +15,7 @@ namespace Duracellko.PlanningPoker.Client.Test.Components;
 [TestClass]
 public sealed class GlobalMessagePanelTest : IDisposable
 {
-    private readonly Bunit.TestContext _context = new();
+    private readonly BunitContext _context = new();
 
     public void Dispose()
     {
@@ -28,7 +28,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var messageBoxService = new MessageBoxService();
         InitializeContext(messageBoxService);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         await target.InvokeAsync(() =>
         {
@@ -52,7 +52,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var messageBoxService = new MessageBoxService();
         InitializeContext(messageBoxService);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         await target.InvokeAsync(() =>
         {
@@ -79,7 +79,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(messageBoxService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         await target.InvokeAsync(() =>
         {
@@ -97,7 +97,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(messageBoxService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         Task<bool>? showMessageTask = null;
         await target.InvokeAsync(() =>
@@ -107,7 +107,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         });
 
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-footer > button.btn-secondary");
-        buttonElement.Click();
+        await buttonElement.ClickAsync();
 
         Assert.IsNotNull(showMessageTask);
         Assert.IsTrue(showMessageTask.IsCompleted);
@@ -122,7 +122,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(messageBoxService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         Task<bool>? showMessageTask = null;
         await target.InvokeAsync(() =>
@@ -132,7 +132,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         });
 
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-footer > button.btn-primary");
-        buttonElement.Click();
+        await buttonElement.ClickAsync();
 
         Assert.IsNotNull(showMessageTask);
         Assert.IsTrue(showMessageTask.IsCompleted);
@@ -147,7 +147,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(messageBoxService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         await target.InvokeAsync(() =>
         {
@@ -156,7 +156,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         });
 
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-header > button.btn-close");
-        buttonElement.Click();
+        await buttonElement.ClickAsync();
 
         jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
@@ -168,7 +168,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var jsRuntime = new Mock<IJSRuntime>();
         InitializeContext(messageBoxService, jsRuntime: jsRuntime.Object);
 
-        using var target = _context.RenderComponent<GlobalMessagePanel>();
+        using var target = _context.Render<GlobalMessagePanel>();
 
         await target.InvokeAsync(() =>
         {
@@ -177,7 +177,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         });
 
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-footer > button.btn-primary");
-        buttonElement.Click();
+        await buttonElement.ClickAsync();
 
         jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
