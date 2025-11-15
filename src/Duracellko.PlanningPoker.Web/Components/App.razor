@@ -10,14 +10,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@UIResources.App_Title</title>
     <base href="/" />
+    <ResourcePreloader />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     @foreach (var cssScript in _model.ClientScripts.CascadingStyleSheets)
     {
         <link href="//cdnjs.cloudflare.com/ajax/libs/@cssScript" rel="stylesheet"
-              onerror="this.onerror = null; this.href = 'lib/@cssScript.File'" />
+              onerror="this.onerror = null; this.href = '@Assets[$"lib/{cssScript.File}"]'" />
     }
-    <link href="Content/Site.css" rel="stylesheet" />
+    <link href="@Assets["Content/Site.css"]" rel="stylesheet" />
+    <ImportMap />
     <HeadOutlet @rendermode="_model.ApplicationRenderMode" />
 </head>
 <body>
@@ -43,10 +45,10 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/@jsScript"></script>
     }
 
-    <script>window.bootstrap || document.write('<script src="lib/js/bootstrap.bundle.min.js"><\/script>')</script>
+    <script>window.bootstrap || document.write('<script src="@Assets["lib/js/bootstrap.bundle.min.js"]"><\/script>')</script>
 
-    <script src="Scripts/PlanningPoker.js"></script>
-    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["Scripts/PlanningPoker.js"]"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 
