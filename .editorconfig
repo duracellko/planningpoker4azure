@@ -10,6 +10,7 @@ insert_final_newline = true
 [*.cs]
 dotnet_analyzer_diagnostic.category-Style.severity = error
 dotnet_sort_system_directives_first = true
+dotnet_style_null_propagation = false
 
 csharp_style_expression_bodied_accessors = when_on_single_line
 csharp_style_expression_bodied_indexers = when_on_single_line

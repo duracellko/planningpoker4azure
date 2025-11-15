@@ -17,6 +17,7 @@ public abstract class E2ETestBase : PageTest
 {
     private readonly List<IBrowserContext> _contexts = [];
 
+    [SuppressMessage("Style", "IDE0032:Use auto property", Justification = "Do not use auto-property with initialization.")]
     private int _setupClientsCount = 1;
 
     protected BrowserTestConfiguration? Configuration { get; private set; }

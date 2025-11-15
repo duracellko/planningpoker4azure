@@ -34,7 +34,7 @@ This guide assumes that you already know what planning poker is about and how to
 
 Requirements:
 
-- .NET 9.0 runtime
+- .NET 10.0 runtime
 
 Run: `dotnet Duracellko.PlanningPoker.Web.dll`
 
@@ -49,7 +49,7 @@ docker run -p 80:8080 duracellko/planningpoker
 
 ## Architecture
 
-Application is implemented using [ASP.NET Core 9.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
+Application is implemented using [ASP.NET Core 10.0](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-10.0). Front-end is Single-Page Application implemented using [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). This technology allows deployment to different environments:
 
 - Locally on Windows or Linux
 - In Docker container
@@ -60,7 +60,7 @@ The application does not have any dependencies to run in basic mode. However, th
 
 ### Blazor rendering modes
 
-Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-9.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **ApplicationMode** setting.
+Blazor supports multiple [rendering modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes?view=aspnetcore-10.0) including Client-side and Server-side. It is possible to simply switch between the modes by configuring **ApplicationMode** setting.
 
 ### Teams storage
 
@@ -124,7 +124,7 @@ The application has following configuration settings:
 
 Requirements:
 
-- .NET SDK 9.0
+- .NET SDK 10.0
 
 To run build and tests simply execute PowerShell script BuildAndRun.ps1.
 

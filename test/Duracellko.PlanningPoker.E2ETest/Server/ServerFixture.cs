@@ -15,7 +15,6 @@ namespace Duracellko.PlanningPoker.E2ETest.Server;
 public class ServerFixture : IAsyncDisposable, IDisposable
 {
     private bool _disposed;
-    private Uri? _uri;
 
     ~ServerFixture()
     {
@@ -37,19 +36,21 @@ public class ServerFixture : IAsyncDisposable, IDisposable
                 return null;
             }
 
-            if (_uri == null)
+            if (field == null)
             {
                 var server = (IServer)WebHost.Services.GetRequiredService(typeof(IServer));
                 var serverAddressesFeature = server.Features.Get<IServerAddressesFeature>();
                 if (serverAddressesFeature != null)
                 {
                     var address = serverAddressesFeature.Addresses.Single();
-                    _uri = new Uri(address);
+                    field = new Uri(address);
                 }
             }
 
-            return _uri;
+            return field;
         }
+
+        private set;
     }
 
     public async ValueTask DisposeAsync()
@@ -92,7 +93,7 @@ public class ServerFixture : IAsyncDisposable, IDisposable
             }
 
             WebHost = null;
-            _uri = null;
+            Uri = null;
         }
     }
 

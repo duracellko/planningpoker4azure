@@ -1,0 +1,33 @@
+<Solution>
+  <Folder Name="/global/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="src/stylecop.json" />
+    <File Path="src/SonarLint.xml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Duracellko.PlanningPoker.Domain/Duracellko.PlanningPoker.Domain.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.Service/Duracellko.PlanningPoker.Service.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker/Duracellko.PlanningPoker.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.Client/Duracellko.PlanningPoker.Client.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.Azure/Duracellko.PlanningPoker.Azure.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.RabbitMQ/Duracellko.PlanningPoker.RabbitMQ.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.Redis/Duracellko.PlanningPoker.Redis.csproj" />
+    <Project Path="src/Duracellko.PlanningPoker.Web/Duracellko.PlanningPoker.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Duracellko.PlanningPoker.Domain.Test/Duracellko.PlanningPoker.Domain.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.Test/Duracellko.PlanningPoker.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.Client.Test/Duracellko.PlanningPoker.Client.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.Azure.Test/Duracellko.PlanningPoker.Azure.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.RabbitMQ.Test/Duracellko.PlanningPoker.RabbitMQ.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.Redis.Test/Duracellko.PlanningPoker.Redis.Test.csproj" />
+    <Project Path="test/Duracellko.PlanningPoker.E2ETest/Duracellko.PlanningPoker.E2ETest.csproj" />
+    <File Path="test/.editorconfig" />
+  </Folder>
+  <Folder Name="/test/ApplicationIntegrationSimulator/">
+    <File Path="test/ApplicationIntegrationSimulator/index.htm" />
+    <File Path="test/ApplicationIntegrationSimulator/README.md" />
+  </Folder>
+</Solution>
