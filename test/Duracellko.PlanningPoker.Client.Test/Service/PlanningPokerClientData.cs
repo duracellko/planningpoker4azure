@@ -78,8 +78,8 @@ public static class PlanningPokerClientData
         { ""value"": 20 },
         { ""value"": 40 },
         { ""value"": 100 },
-        { ""value"": -1111100 },
-        { ""value"": null }
+        { ""value"": 5.4861240687936887E+303 },
+        { ""value"": 1.4044477616111843E+306 }
     ],");
 
         sb.AppendLine(@"    ""estimationResult"": [");
@@ -254,7 +254,7 @@ public static class PlanningPokerClientData
                         ""type"": ""Member""
                     },
                     ""estimation"": {
-                        ""value"": -1111100
+                        ""value"": 5.4861240687936887E+303
                     }
                 }
             ]
@@ -337,10 +337,10 @@ public static class PlanningPokerClientData
                     ""value"": 100
                 },
                 {
-                    ""value"": -1111100
+                    ""value"": 5.4861240687936887E+303
                 },
                 {
-                    ""value"": null
+                    ""value"": 1.4044477616111843E+306
                 }
             ]
 }";

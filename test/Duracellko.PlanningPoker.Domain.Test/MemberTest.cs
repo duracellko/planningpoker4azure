@@ -140,8 +140,8 @@ public class MemberTest
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
-        var masterEstimation = new Estimation(double.PositiveInfinity);
-        var memberEstimation = new Estimation();
+        var masterEstimation = new Estimation(EstimationTestData.Infinity);
+        var memberEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         master.Estimation = masterEstimation;
@@ -335,8 +335,8 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
         master.ClearMessages();
-        var masterEstimation = new Estimation();
-        var memberEstimation = new Estimation();
+        var masterEstimation = new Estimation(EstimationTestData.Unknown);
+        var memberEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         master.Estimation = masterEstimation;
@@ -359,8 +359,8 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
         master.ClearMessages();
-        var masterEstimation = new Estimation(double.PositiveInfinity);
-        var memberEstimation = new Estimation(double.PositiveInfinity);
+        var masterEstimation = new Estimation(EstimationTestData.Infinity);
+        var memberEstimation = new Estimation(EstimationTestData.Infinity);
 
         // Act
         master.Estimation = masterEstimation;
@@ -427,7 +427,7 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
         var masterEstimation = new Estimation(1);
-        var memberEstimation = new Estimation();
+        var memberEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         master.Estimation = masterEstimation;
@@ -594,7 +594,7 @@ public class MemberTest
         var observer = team.Join("observer", true);
         master.StartEstimation();
         observer.ClearMessages();
-        var memberEstimation = new Estimation();
+        var memberEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         member.Estimation = memberEstimation;
@@ -642,7 +642,7 @@ public class MemberTest
         var team = ScrumTeamTestData.CreateScrumTeam("test team", availableEstimations: availableEstimations);
         var master = team.SetScrumMaster("master");
         master.StartEstimation();
-        var masterEstimation = new Estimation(double.PositiveInfinity);
+        var masterEstimation = new Estimation(EstimationTestData.Infinity);
 
         // Act
         Assert.ThrowsExactly<ArgumentException>(() => master.Estimation = masterEstimation);

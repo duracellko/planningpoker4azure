@@ -230,7 +230,6 @@ public class PlanningPokerService : ControllerBase
         double? domainEstimation = estimation switch
         {
             -1111111.0 => null,
-            Estimation.PositiveInfinity => double.PositiveInfinity,
             _ => estimation
         };
 

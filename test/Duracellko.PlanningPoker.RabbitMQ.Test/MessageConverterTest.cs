@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Duracellko.PlanningPoker.Azure;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.RabbitMQ.Test;
@@ -85,7 +86,8 @@ public class MessageConverterTest
     [DataRow(0.5)]
     [DataRow(0.0)]
     [DataRow(null)]
-    [DataRow(double.PositiveInfinity)]
+    [DataRow(EstimationTestData.Infinity)]
+    [DataRow(EstimationTestData.Unknown)]
     public void ConvertToRabbitMQMessageAndBack_ScrumTeamMemberEstimationMessage(double? estimation)
     {
         var scrumTeamMessage = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)

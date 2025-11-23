@@ -97,7 +97,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(resultTeam?.AvailableEstimations);
         var expectedCollection = new double?[]
         {
-            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, Estimation.PositiveInfinity, null
+            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, resultTeam.AvailableEstimations.Select(e => e.Value).ToList());
     }
@@ -1084,7 +1084,7 @@ public class PlanningPokerServiceTest
     }
 
     [TestMethod]
-    public void SubmitEstimation_TeamNameAndScrumMasterNameAndMinus1111111_EstimationIsSetToNull()
+    public void SubmitEstimation_TeamNameAndScrumMasterNameAndUnknown_EstimationIsSetToUnknown()
     {
         // Arrange
         var team = CreateBasicTeam();
@@ -1094,7 +1094,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        target.SubmitEstimation(TeamName, ScrumMasterName, -1111111.0);
+        target.SubmitEstimation(TeamName, ScrumMasterName, EstimationTestData.Unknown);
 
         // Verify
         planningPoker.Verify();
@@ -1102,11 +1102,12 @@ public class PlanningPokerServiceTest
         teamLock.Verify(l => l.Team);
 
         Assert.IsNotNull(team.ScrumMaster!.Estimation);
-        Assert.IsNull(team.ScrumMaster.Estimation.Value);
+        Assert.IsNotNull(team.ScrumMaster.Estimation.Value);
+        Assert.AreEqual<double?>(EstimationTestData.Unknown, team.ScrumMaster.Estimation.Value);
     }
 
     [TestMethod]
-    public void SubmitEstimation_TeamNameAndScrumMasterNameAndMinus1111100_EstimationOfMemberIsSetToInfinity()
+    public void SubmitEstimation_TeamNameAndScrumMasterNameAndEstimationInfinity_EstimationOfMemberIsSetToInfinity()
     {
         // Arrange
         var team = CreateBasicTeam();
@@ -1118,7 +1119,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        target.SubmitEstimation(TeamName, ScrumMasterName, -1111100.0);
+        target.SubmitEstimation(TeamName, ScrumMasterName, EstimationTestData.Infinity);
 
         // Verify
         planningPoker.Verify();
@@ -1127,7 +1128,7 @@ public class PlanningPokerServiceTest
 
         Assert.IsNotNull(scrumMaster.Estimation);
         Assert.IsNotNull(scrumMaster.Estimation.Value);
-        Assert.IsTrue(double.IsPositiveInfinity(scrumMaster.Estimation.Value.Value));
+        Assert.AreEqual<double?>(EstimationTestData.Infinity, scrumMaster.Estimation.Value);
     }
 
     [TestMethod]
@@ -1154,7 +1155,7 @@ public class PlanningPokerServiceTest
     }
 
     [TestMethod]
-    public void SubmitEstimation_TeamNameAndMemberNameAndMinus1111100_EstimationOfMemberIsSetInifinty()
+    public void SubmitEstimation_TeamNameAndMemberNameAndEstimationInfinity_EstimationOfMemberIsSetInifinty()
     {
         // Arrange
         var team = CreateBasicTeam();
@@ -1165,7 +1166,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        target.SubmitEstimation(TeamName, MemberName, -1111100.0);
+        target.SubmitEstimation(TeamName, MemberName, EstimationTestData.Infinity);
 
         // Verify
         planningPoker.Verify();
@@ -1174,11 +1175,11 @@ public class PlanningPokerServiceTest
 
         Assert.IsNotNull(member.Estimation);
         Assert.IsNotNull(member.Estimation.Value);
-        Assert.IsTrue(double.IsPositiveInfinity(member.Estimation.Value.Value));
+        Assert.AreEqual<double?>(EstimationTestData.Infinity, member.Estimation.Value);
     }
 
     [TestMethod]
-    public void SubmitEstimation_TeamNameAndMemberNameAndMinus1111111_EstimationIsSetToNull()
+    public void SubmitEstimation_TeamNameAndMemberNameAndUnknown_EstimationIsSetToUnknown()
     {
         // Arrange
         var team = CreateBasicTeam();
@@ -1189,7 +1190,7 @@ public class PlanningPokerServiceTest
         var target = CreatePlanningPokerService(planningPoker.Object);
 
         // Act
-        target.SubmitEstimation(TeamName, MemberName, -1111111.0);
+        target.SubmitEstimation(TeamName, MemberName, EstimationTestData.Unknown);
 
         // Verify
         planningPoker.Verify();
@@ -1197,7 +1198,8 @@ public class PlanningPokerServiceTest
         teamLock.Verify(l => l.Team);
 
         Assert.IsNotNull(member.Estimation);
-        Assert.IsNull(member.Estimation.Value);
+        Assert.IsNotNull(member.Estimation.Value);
+        Assert.AreEqual<double?>(EstimationTestData.Unknown, member.Estimation.Value);
     }
 
     [TestMethod]
@@ -1480,7 +1482,7 @@ public class PlanningPokerServiceTest
         var member = (D.Member)team.Join(MemberName, false);
         var master = team.ScrumMaster!;
         master.StartEstimation();
-        master.Estimation = new D.Estimation(1.0);
+        master.Estimation = new D.Estimation(EstimationTestData.Infinity);
         member.Estimation = new D.Estimation(2.0);
 
         var teamLock = CreateTeamLock(team);
@@ -1515,7 +1517,7 @@ public class PlanningPokerServiceTest
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
         var expectedResult = new Tuple<string, double>[]
         {
-            new(ScrumMasterName, 1.0),
+            new(ScrumMasterName, EstimationTestData.Infinity),
             new(MemberName, 2.0)
         };
         CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
@@ -1569,8 +1571,8 @@ public class PlanningPokerServiceTest
         Assert.AreEqual(34, estimations[8].Value);
         Assert.AreEqual(55, estimations[9].Value);
         Assert.AreEqual(89, estimations[10].Value);
-        Assert.AreEqual(Estimation.PositiveInfinity, estimations[11].Value);
-        Assert.IsNull(estimations[12].Value);
+        Assert.AreEqual(EstimationTestData.Infinity, estimations[11].Value);
+        Assert.AreEqual(EstimationTestData.Unknown, estimations[12].Value);
     }
 
     [TestMethod]

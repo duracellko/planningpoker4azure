@@ -4,7 +4,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Duracellko.PlanningPoker.Azure;
 using StackExchange.Redis;
 
@@ -15,10 +14,7 @@ namespace Duracellko.PlanningPoker.Redis;
 /// </summary>
 public class RedisMessageConverter : IRedisMessageConverter
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-    };
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = JsonSerializerOptions.Default;
 
     /// <summary>
     /// Converts <see cref="T:NodeMessage"/> message to RedisValue object.

@@ -138,7 +138,7 @@ public class ScrumTeamSerializerTest
         master.StartEstimation();
         team.Join("Alice", false);
         member.Estimation = team.AvailableEstimations.Single(e => e.Value == 8);
-        master.Estimation = team.AvailableEstimations.Single(e => !e.Value.HasValue);
+        master.Estimation = team.AvailableEstimations.Single(e => e.Value == EstimationTestData.Unknown);
 
         // Act
         // Verify
@@ -157,7 +157,7 @@ public class ScrumTeamSerializerTest
         team.Join("Bob", true);
         team.Join("Alice", false);
         member.Estimation = team.AvailableEstimations.Single(e => e.Value == 0.5);
-        master.Estimation = team.AvailableEstimations.Single(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value));
+        master.Estimation = team.AvailableEstimations.Single(e => e.Value == EstimationTestData.Infinity);
 
         // Act
         // Verify
@@ -209,7 +209,7 @@ public class ScrumTeamSerializerTest
         team.Join("Bob", true);
         team.Join("Alice", false);
         member.Estimation = team.AvailableEstimations.Single(e => e.Value == 0.5);
-        master.Estimation = team.AvailableEstimations.Single(e => e.Value.HasValue && double.IsPositiveInfinity(e.Value.Value));
+        master.Estimation = team.AvailableEstimations.Single(e => e.Value == EstimationTestData.Infinity);
         team.Disconnect(observer.Name);
         team.Disconnect(member.Name);
 

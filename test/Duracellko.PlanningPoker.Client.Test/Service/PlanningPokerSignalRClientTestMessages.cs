@@ -177,7 +177,7 @@ public class PlanningPokerSignalRClientTestMessages
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = PlanningPokerData.ObserverName, Type = PlanningPokerData.MemberType },
-                    Estimation = new Estimation { Value = Estimation.PositiveInfinity }
+                    Estimation = new Estimation { Value = PlanningPokerData.InfinityEstimation }
                 }
             ]
         };
@@ -191,7 +191,7 @@ public class PlanningPokerSignalRClientTestMessages
         Assert.AreEqual(2.0, estimationResult[0].Estimation!.Value);
         Assert.IsNull(estimationResult[1].Estimation!.Value);
         Assert.IsNull(estimationResult[2].Estimation);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationResult[3].Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimationResult[3].Estimation!.Value);
     }
 
     [TestMethod]
@@ -214,8 +214,8 @@ public class PlanningPokerSignalRClientTestMessages
                 new Estimation { Value = 3 },
                 new Estimation { Value = 5 },
                 new Estimation { Value = 100 },
-                new Estimation { Value = Estimation.PositiveInfinity },
-                new Estimation()
+                new Estimation { Value = PlanningPokerData.InfinityEstimation },
+                new Estimation { Value = PlanningPokerData.UnknownEstimation }
             ]
         };
         await ProvideMessages(fixture, message);
@@ -232,8 +232,8 @@ public class PlanningPokerSignalRClientTestMessages
         Assert.AreEqual(3.0, estimations[4].Value);
         Assert.AreEqual(5.0, estimations[5].Value);
         Assert.AreEqual(100.0, estimations[6].Value);
-        Assert.IsTrue(double.IsPositiveInfinity(estimations[7].Value!.Value));
-        Assert.IsNull(estimations[8].Value);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimations[7].Value);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, estimations[8].Value);
     }
 
     [TestMethod]

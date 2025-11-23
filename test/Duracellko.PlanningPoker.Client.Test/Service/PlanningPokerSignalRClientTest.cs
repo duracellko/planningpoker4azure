@@ -200,7 +200,7 @@ public class PlanningPokerSignalRClientTest
         var sentMessage = await fixture.GetSentMessage();
         var invocationId = GetInvocationId(sentMessage);
 
-        var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: Estimation.PositiveInfinity, memberEstimation: null);
+        var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: PlanningPokerData.InfinityEstimation, memberEstimation: null);
         var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
         var teamResult = PlanningPokerData.GetTeamResult(scrumTeam);
         var returnMessage = new CompletionMessage(invocationId, null, teamResult, true);
@@ -212,7 +212,7 @@ public class PlanningPokerSignalRClientTest
         Assert.IsNotNull(result.ScrumTeam);
         AssertAvailableEstimations(result.ScrumTeam);
         Assert.IsNotNull(result.ScrumTeam.EstimationResult);
-        Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[0].Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, result.ScrumTeam.EstimationResult[0].Estimation!.Value);
         Assert.IsNull(result.ScrumTeam.EstimationResult[1].Estimation!.Value);
     }
 
@@ -387,9 +387,9 @@ public class PlanningPokerSignalRClientTest
         var sentMessage = await fixture.GetSentMessage();
         var invocationId = GetInvocationId(sentMessage);
 
-        var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: null, memberEstimation: Estimation.PositiveInfinity);
+        var estimationResult = PlanningPokerData.GetEstimationResult(scrumMasterEstimation: null, memberEstimation: PlanningPokerData.UnknownEstimation);
         var scrumTeam = PlanningPokerData.GetScrumTeam(member: true, observer: true, state: TeamState.EstimationFinished, estimationResult: estimationResult);
-        var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 123, selectedEstimation: Estimation.PositiveInfinity);
+        var reconnectResult = PlanningPokerData.GetReconnectTeamResult(scrumTeam, lastMessageId: 123, selectedEstimation: PlanningPokerData.UnknownEstimation);
         var returnMessage = new CompletionMessage(invocationId, null, reconnectResult, true);
         await fixture.ReceiveMessage(returnMessage);
 
@@ -399,10 +399,10 @@ public class PlanningPokerSignalRClientTest
         Assert.IsNotNull(result.ScrumTeam);
         AssertAvailableEstimations(result.ScrumTeam);
         Assert.IsNotNull(result.SelectedEstimation);
-        Assert.IsTrue(double.IsPositiveInfinity(result.SelectedEstimation.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, result.SelectedEstimation.Value!);
         Assert.IsNotNull(result.ScrumTeam.EstimationResult);
         Assert.IsNull(result.ScrumTeam.EstimationResult[0].Estimation!.Value);
-        Assert.IsTrue(double.IsPositiveInfinity(result.ScrumTeam.EstimationResult[1].Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, result.ScrumTeam.EstimationResult[1].Estimation!.Value);
     }
 
     [TestMethod]
@@ -519,7 +519,8 @@ public class PlanningPokerSignalRClientTest
     [DataRow(PlanningPokerData.MemberName, 3.0, 3.0)]
     [DataRow(PlanningPokerData.ScrumMasterName, 0.0, 0.0)]
     [DataRow(PlanningPokerData.MemberName, 100.0, 100.0)]
-    [DataRow(PlanningPokerData.MemberName, double.PositiveInfinity, Estimation.PositiveInfinity)]
+    [DataRow(PlanningPokerData.MemberName, PlanningPokerData.InfinityEstimation, PlanningPokerData.InfinityEstimation)]
+    [DataRow(PlanningPokerData.MemberName, PlanningPokerData.UnknownEstimation, PlanningPokerData.UnknownEstimation)]
     [DataRow(PlanningPokerData.MemberName, null, null)]
     public async Task SubmitEstimation_EstimationValue_InvocationMessageIsSent(string memberName, double? estimation, double? expectedSentValue)
     {
@@ -671,10 +672,7 @@ public class PlanningPokerSignalRClientTest
         Assert.AreEqual(20.0, scrumTeam.AvailableEstimations[8].Value);
         Assert.AreEqual(40.0, scrumTeam.AvailableEstimations[9].Value);
         Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-        Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-        var estimationValue = scrumTeam.AvailableEstimations[11].Value;
-        Assert.IsNotNull(estimationValue);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationValue.Value));
-        Assert.IsNull(scrumTeam.AvailableEstimations[12].Value);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, scrumTeam.AvailableEstimations[11].Value);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, scrumTeam.AvailableEstimations[12].Value);
     }
 }

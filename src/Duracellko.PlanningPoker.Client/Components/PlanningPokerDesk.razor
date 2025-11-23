@@ -162,6 +162,9 @@
 
 @code
 {
+    private static readonly double InfinityEstimationMinimum = double.Exp2(1009);
+    private static readonly double UnknownEstimationMinimum = double.Exp2(1017);
+
     private bool HasEstimationResult => Controller.Estimations != null;
 
     public void Dispose()
@@ -219,11 +222,16 @@
     {
         if (estimation == null)
         {
-            return Resources.Estimation_QuestionMark;
+            return string.Empty;
         }
 
         var value = estimation.Value;
-        if (double.IsPositiveInfinity(value))
+        if (value >= UnknownEstimationMinimum)
+        {
+            return Resources.Estimation_QuestionMark;
+        }
+
+        if (value >= InfinityEstimationMinimum)
         {
             return Resources.Estimation_Infinity;
         }

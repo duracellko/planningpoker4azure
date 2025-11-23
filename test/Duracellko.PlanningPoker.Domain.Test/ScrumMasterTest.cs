@@ -150,7 +150,7 @@ public class ScrumMasterTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
-        member.Estimation = new Estimation();
+        member.Estimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         master.StartEstimation();
@@ -245,7 +245,7 @@ public class ScrumMasterTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         master.StartEstimation();
-        master.Estimation = new Estimation();
+        master.Estimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         master.StartEstimation();

@@ -13,7 +13,7 @@ public class DeckProviderTest
 
         var expectedCollection = new double?[]
         {
-            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
+            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }
@@ -25,7 +25,7 @@ public class DeckProviderTest
 
         var expectedCollection = new double?[]
         {
-            0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, double.PositiveInfinity, null
+            0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }
@@ -73,7 +73,7 @@ public class DeckProviderTest
 
         var expectedCollection = new double?[]
         {
-            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
+            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }

@@ -99,7 +99,7 @@ public class ScrumTeamTest
         // Verify
         var expectedCollection = new double?[]
         {
-            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
+            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }
@@ -117,7 +117,7 @@ public class ScrumTeamTest
         // Verify
         var expectedCollection = new double?[]
         {
-            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, double.PositiveInfinity, null
+            0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 20.0, 40.0, 100.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }
@@ -135,7 +135,7 @@ public class ScrumTeamTest
         // Verify
         var expectedCollection = new double?[]
         {
-            0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, double.PositiveInfinity, null
+            0.0, 1.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0, 34.0, 55.0, 89.0, EstimationTestData.Infinity, EstimationTestData.Unknown
         };
         CollectionAssert.AreEquivalent(expectedCollection, result.Select(e => e.Value).ToList());
     }
@@ -721,7 +721,7 @@ public class ScrumTeamTest
         var target = new ScrumTeam("test team");
         var master = target.SetScrumMaster("master");
         master.StartEstimation();
-        var masterEstimation = new Estimation();
+        var masterEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         target.Join("member", false);
@@ -991,7 +991,7 @@ public class ScrumTeamTest
         var master = target.SetScrumMaster("master");
         var member = (Member)target.Join("member", false);
         master.StartEstimation();
-        var masterEstimation = new Estimation();
+        var masterEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         target.Disconnect(member.Name);
@@ -1016,7 +1016,7 @@ public class ScrumTeamTest
         var master = target.SetScrumMaster("master");
         var member = (Member)target.Join("member", false);
         master.StartEstimation();
-        var memberEstimation = new Estimation();
+        var memberEstimation = new Estimation(EstimationTestData.Unknown);
 
         // Act
         member.Estimation = memberEstimation;
@@ -1914,7 +1914,7 @@ public class ScrumTeamTest
         master.StartEstimation();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
-        master.Estimation = new Estimation();
+        master.Estimation = new Estimation(EstimationTestData.Unknown);
         master.UpdateActivity();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));
@@ -1946,7 +1946,7 @@ public class ScrumTeamTest
         master.StartEstimation();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
-        member.Estimation = new Estimation();
+        member.Estimation = new Estimation(EstimationTestData.Unknown);
         member.UpdateActivity();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));

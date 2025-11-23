@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.RabbitMQ\Duracellko.PlanningPoker.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj" />
   </ItemGroup>
 
 </Project>

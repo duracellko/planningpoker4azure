@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Duracellko.PlanningPoker.Redis\Duracellko.PlanningPoker.Redis.csproj" />
+    <ProjectReference Include="..\Duracellko.PlanningPoker.Domain.Test\Duracellko.PlanningPoker.Domain.Test.csproj" />
   </ItemGroup>
 
 </Project>

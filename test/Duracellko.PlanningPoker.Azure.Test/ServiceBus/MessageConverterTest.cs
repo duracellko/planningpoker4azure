@@ -5,6 +5,7 @@ using System.Text;
 using Azure.Messaging.ServiceBus;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
 using Duracellko.PlanningPoker.Domain;
+using Duracellko.PlanningPoker.Domain.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Duracellko.PlanningPoker.Azure.Test.ServiceBus;
@@ -79,7 +80,8 @@ public class MessageConverterTest
     [DataRow(0.5)]
     [DataRow(0.0)]
     [DataRow(null)]
-    [DataRow(double.PositiveInfinity)]
+    [DataRow(EstimationTestData.Infinity)]
+    [DataRow(EstimationTestData.Unknown)]
     public void ConvertToServiceBusMessageAndBack_ScrumTeamMemberEstimationMessage(double? estimation)
     {
         var scrumTeamMessage = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
