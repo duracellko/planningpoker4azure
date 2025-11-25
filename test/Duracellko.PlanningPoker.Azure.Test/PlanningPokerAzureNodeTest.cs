@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Duracellko.PlanningPoker.Azure.Configuration;
 using Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -28,10 +27,7 @@ public class PlanningPokerAzureNodeTest
     private const string MemberName = "member";
     private const string ObserverName = "observer";
 
-    private static readonly JsonSerializerOptions _serializerOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-    };
+    private static readonly JsonSerializerOptions _serializerOptions = JsonSerializerOptions.Default;
 
     [TestMethod]
     public void Constructor_PlanningPoker_PlanningPokerIsSet()

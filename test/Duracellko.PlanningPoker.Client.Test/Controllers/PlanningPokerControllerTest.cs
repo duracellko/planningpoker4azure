@@ -286,7 +286,7 @@ public class PlanningPokerControllerTest
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
 
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
-        var expectedEstimations = new double?[] { 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100, double.PositiveInfinity, null };
+        var expectedEstimations = new double?[] { 0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100, PlanningPokerData.InfinityEstimation, PlanningPokerData.UnknownEstimation };
         CollectionAssert.AreEqual(expectedEstimations, target.AvailableEstimations.ToList());
     }
 
@@ -605,12 +605,12 @@ public class PlanningPokerControllerTest
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
-                Estimation = new Estimation { Value = double.PositiveInfinity }
+                Estimation = new Estimation { Value = PlanningPokerData.InfinityEstimation }
             },
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
-                Estimation = new Estimation { Value = double.PositiveInfinity }
+                Estimation = new Estimation { Value = PlanningPokerData.InfinityEstimation }
             },
             new EstimationResultItem
             {
@@ -624,7 +624,7 @@ public class PlanningPokerControllerTest
             ScrumTeam = scrumTeam,
             SessionId = sessionId,
             LastMessageId = 22,
-            SelectedEstimation = new Estimation { Value = double.PositiveInfinity }
+            SelectedEstimation = new Estimation { Value = PlanningPokerData.InfinityEstimation }
         };
         using var target = CreateController();
 
@@ -652,12 +652,12 @@ public class PlanningPokerControllerTest
         var estimation = estimations[0];
         Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
         Assert.IsTrue(estimation.HasEstimation);
-        Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimation.Estimation);
 
         estimation = estimations[1];
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
         Assert.IsTrue(estimation.HasEstimation);
-        Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimation.Estimation);
 
         estimation = estimations[2];
         Assert.AreEqual("Developer 1", estimation.MemberName);
@@ -794,7 +794,7 @@ public class PlanningPokerControllerTest
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.ScrumMasterType, Name = PlanningPokerData.ScrumMasterName },
-                Estimation = new Estimation { Value = double.PositiveInfinity }
+                Estimation = new Estimation { Value = PlanningPokerData.UnknownEstimation }
             },
             new EstimationResultItem
             {
@@ -809,7 +809,7 @@ public class PlanningPokerControllerTest
             new EstimationResultItem
             {
                 Member = new TeamMember { Type = PlanningPokerData.MemberType, Name = PlanningPokerData.MemberName },
-                Estimation = new Estimation { Value = double.PositiveInfinity }
+                Estimation = new Estimation { Value = PlanningPokerData.UnknownEstimation }
             },
             new EstimationResultItem
             {
@@ -859,12 +859,12 @@ public class PlanningPokerControllerTest
         estimation = estimations[2];
         Assert.AreEqual(PlanningPokerData.MemberName, estimation.MemberName);
         Assert.IsTrue(estimation.HasEstimation);
-        Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, estimation.Estimation);
 
         estimation = estimations[3];
         Assert.AreEqual(PlanningPokerData.ScrumMasterName, estimation.MemberName);
         Assert.IsTrue(estimation.HasEstimation);
-        Assert.AreEqual(double.PositiveInfinity, estimation.Estimation);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, estimation.Estimation);
 
         estimation = estimations[4];
         Assert.AreEqual("Developer 2", estimation.MemberName);
@@ -1776,7 +1776,7 @@ public class PlanningPokerControllerTest
     }
 
     [TestMethod]
-    public async Task SelectEstimation_PositiveInfinityAndCanSelectEstimation_SelectEstimationOnService()
+    public async Task SelectEstimation_InfinityAndCanSelectEstimation_SelectEstimationOnService()
     {
         var planningPokerClient = new Mock<IPlanningPokerClient>();
         var scrumTeam = PlanningPokerData.GetScrumTeam();
@@ -1787,13 +1787,13 @@ public class PlanningPokerControllerTest
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
         target.ProcessMessages([message]);
 
-        await target.SelectEstimation(double.PositiveInfinity);
+        await target.SelectEstimation(PlanningPokerData.InfinityEstimation);
 
-        planningPokerClient.Verify(o => o.SubmitEstimation(PlanningPokerData.TeamName, PlanningPokerData.MemberName, double.PositiveInfinity, It.IsAny<CancellationToken>()));
+        planningPokerClient.Verify(o => o.SubmitEstimation(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.InfinityEstimation, It.IsAny<CancellationToken>()));
     }
 
     [TestMethod]
-    public async Task SelectEstimation_NullAndCanSelectEstimation_SelectEstimationOnService()
+    public async Task SelectEstimation_UnknownAndCanSelectEstimation_SelectEstimationOnService()
     {
         var planningPokerClient = new Mock<IPlanningPokerClient>();
         var scrumTeam = PlanningPokerData.GetScrumTeam();
@@ -1804,9 +1804,9 @@ public class PlanningPokerControllerTest
         var message = new Message { Id = 1, Type = MessageType.EstimationStarted };
         target.ProcessMessages([message]);
 
-        await target.SelectEstimation(null);
+        await target.SelectEstimation(PlanningPokerData.UnknownEstimation);
 
-        planningPokerClient.Verify(o => o.SubmitEstimation(PlanningPokerData.TeamName, PlanningPokerData.MemberName, null, It.IsAny<CancellationToken>()));
+        planningPokerClient.Verify(o => o.SubmitEstimation(PlanningPokerData.TeamName, PlanningPokerData.MemberName, PlanningPokerData.UnknownEstimation, It.IsAny<CancellationToken>()));
     }
 
     [TestMethod]
@@ -1842,7 +1842,7 @@ public class PlanningPokerControllerTest
     }
 
     [TestMethod]
-    public async Task SelectEstimation_SelectsPositiveInfinity_CannotSelectEstimation()
+    public async Task SelectEstimation_SelectsInfinity_CannotSelectEstimation()
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         var teamResult = CreateTeamResult(scrumTeam);
@@ -1854,13 +1854,13 @@ public class PlanningPokerControllerTest
 
         Assert.IsTrue(target.CanSelectEstimation);
 
-        await target.SelectEstimation(double.PositiveInfinity);
+        await target.SelectEstimation(PlanningPokerData.InfinityEstimation);
 
         Assert.IsFalse(target.CanSelectEstimation);
     }
 
     [TestMethod]
-    public async Task SelectEstimation_SelectsNull_CannotSelectEstimation()
+    public async Task SelectEstimation_SelectsUnknown_CannotSelectEstimation()
     {
         var scrumTeam = PlanningPokerData.GetScrumTeam();
         var teamResult = CreateTeamResult(scrumTeam);
@@ -1872,7 +1872,7 @@ public class PlanningPokerControllerTest
 
         Assert.IsTrue(target.CanSelectEstimation);
 
-        await target.SelectEstimation(null);
+        await target.SelectEstimation(PlanningPokerData.UnknownEstimation);
 
         Assert.IsFalse(target.CanSelectEstimation);
     }

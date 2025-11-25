@@ -198,7 +198,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, messages[0].MessageType);
         Assert.AreEqual<string>("test", messages[0].TeamName);
         var estimationSetMessage = Assert.IsInstanceOfType<ScrumTeamEstimationSetMessage>(messages[0]);
-        var expectedEstimations = new double?[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, double.PositiveInfinity, null };
+        var expectedEstimations = new double?[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, EstimationTestData.Infinity, EstimationTestData.Unknown };
         CollectionAssert.AreEqual(expectedEstimations, estimationSetMessage.Estimations.ToList());
     }
 

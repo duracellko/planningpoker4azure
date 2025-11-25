@@ -48,10 +48,7 @@ public class PlanningPokerClient : IPlanningPokerClient
         var encodedScrumMasterName = _urlEncoder.Encode(scrumMasterName);
         var uri = $"CreateTeam?teamName={encodedTeamName}&scrumMasterName={encodedScrumMasterName}&deck={deck}";
 
-        var result = await GetJsonAsync<TeamResult>(uri, cancellationToken);
-
-        ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-        return result;
+        return await GetJsonAsync<TeamResult>(uri, cancellationToken);
     }
 
     /// <summary>
@@ -71,10 +68,7 @@ public class PlanningPokerClient : IPlanningPokerClient
         var encodedAsObserver = asObserver.ToString(CultureInfo.InvariantCulture);
         var uri = $"JoinTeam?teamName={encodedTeamName}&memberName={encodedMemberName}&asObserver={encodedAsObserver}";
 
-        var result = await GetJsonAsync<TeamResult>(uri, cancellationToken);
-
-        ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-        return result;
+        return await GetJsonAsync<TeamResult>(uri, cancellationToken);
     }
 
     /// <summary>
@@ -95,11 +89,7 @@ public class PlanningPokerClient : IPlanningPokerClient
         var encodedMemberName = _urlEncoder.Encode(memberName);
         var uri = $"ReconnectTeam?teamName={encodedTeamName}&memberName={encodedMemberName}";
 
-        var result = await GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
-
-        ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-        ScrumTeamMapper.ConvertEstimation(result.SelectedEstimation);
-        return result;
+        return await GetJsonAsync<ReconnectTeamResult>(uri, cancellationToken);
     }
 
     /// <summary>
@@ -172,13 +162,9 @@ public class PlanningPokerClient : IPlanningPokerClient
         {
             encodedEstimation = "-1111111";
         }
-        else if (double.IsPositiveInfinity(estimation.Value))
-        {
-            encodedEstimation = "-1111100";
-        }
         else
         {
-            encodedEstimation = _urlEncoder.Encode(estimation.Value.ToString(CultureInfo.InvariantCulture));
+            encodedEstimation = _urlEncoder.Encode(estimation.Value.ToString("G17", CultureInfo.InvariantCulture));
         }
 
         var uri = $"SubmitEstimation?teamName={encodedTeamName}&memberName={encodedMemberName}&estimation={encodedEstimation}";
@@ -262,10 +248,7 @@ public class PlanningPokerClient : IPlanningPokerClient
 
         try
         {
-            var result = await GetJsonAsync<List<Message>>(uri, cancellationToken);
-
-            ScrumTeamMapper.ConvertMessages(result);
-            return result;
+            return await GetJsonAsync<List<Message>>(uri, cancellationToken);
         }
         catch (PlanningPokerException ex)
         {

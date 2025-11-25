@@ -256,7 +256,7 @@ public class PlanningPokerClientTest
     [TestMethod]
     public async Task JoinTeam_TeamAndMemberName_ReturnsScrumTeamWithEstimationFinishedAndEstimationIsInfinity()
     {
-        var estimationResultJson = PlanningPokerClientData.GetEstimationResultJson(scrumMasterEstimation: "-1111100", memberEstimation: "null");
+        var estimationResultJson = PlanningPokerClientData.GetEstimationResultJson(scrumMasterEstimation: "5.4861240687936887E+303", memberEstimation: "null");
         var scrumTeamJson = PlanningPokerClientData.GetScrumTeamJson(member: true, observer: true, state: 2, estimationResult: estimationResultJson);
         var httpMock = new MockHttpMessageHandler();
         httpMock.When(BaseUrl + $"api/PlanningPokerService/JoinTeam")
@@ -297,7 +297,7 @@ public class PlanningPokerClientTest
         var estimationResult = resultTeam.EstimationResult[0];
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.ScrumMasterType, estimationResult.Member.Type);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimationResult.Estimation!.Value);
 
         estimationResult = resultTeam.EstimationResult[1];
         Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
@@ -541,11 +541,11 @@ public class PlanningPokerClientTest
     [TestMethod]
     public async Task ReconnectTeam_TeamAndMemberName_ReturnsScrumTeamWithEstimationFinished()
     {
-        var estimationResultJson = PlanningPokerClientData.GetEstimationResultJson(scrumMasterEstimation: "null", memberEstimation: "-1111100");
+        var estimationResultJson = PlanningPokerClientData.GetEstimationResultJson(scrumMasterEstimation: "null", memberEstimation: "1.4044477616111843E+306");
         var scrumTeamJson = PlanningPokerClientData.GetScrumTeamJson(member: true, observer: true, state: 2, estimationResult: estimationResultJson);
         var httpMock = new MockHttpMessageHandler();
         httpMock.When(BaseUrl + $"api/PlanningPokerService/ReconnectTeam")
-            .Respond(JsonType, PlanningPokerClientData.GetReconnectTeamResultJson(scrumTeamJson, lastMessageId: "123", selectedEstimation: "-1111100"));
+            .Respond(JsonType, PlanningPokerClientData.GetReconnectTeamResultJson(scrumTeamJson, lastMessageId: "123", selectedEstimation: "1.4044477616111843E+306"));
         var target = CreatePlanningPokerClient(httpMock);
 
         var result = await target.ReconnectTeam(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, CancellationToken.None);
@@ -555,7 +555,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(123, result.LastMessageId);
         Assert.IsNotNull(result.SelectedEstimation);
         Assert.IsNotNull(result.SelectedEstimation.Value);
-        Assert.IsTrue(double.IsPositiveInfinity(result.SelectedEstimation.Value.Value));
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, result.SelectedEstimation.Value);
 
         var scrumTeam = result.ScrumTeam;
         Assert.AreEqual(TeamState.EstimationFinished, scrumTeam.State);
@@ -590,7 +590,7 @@ public class PlanningPokerClientTest
         estimationResult = scrumTeam.EstimationResult[1];
         Assert.AreEqual(PlanningPokerClientData.MemberName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, estimationResult.Estimation!.Value);
 
         Assert.IsNotNull(scrumTeam.EstimationParticipants);
         Assert.IsEmpty(scrumTeam.EstimationParticipants);
@@ -781,14 +781,14 @@ public class PlanningPokerClientTest
     }
 
     [TestMethod]
-    public async Task SubmitEstimation_PositiveInfinity_RequestsSubmitEstimationUrl()
+    public async Task SubmitEstimation_Infinity_RequestsSubmitEstimationUrl()
     {
         var httpMock = new MockHttpMessageHandler();
-        httpMock.Expect(BaseUrl + $"api/PlanningPokerService/SubmitEstimation?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&estimation=-1111100")
+        httpMock.Expect(BaseUrl + $"api/PlanningPokerService/SubmitEstimation?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&estimation=5.4861240687936887E%2B303")
             .Respond(TextType, string.Empty);
         var target = CreatePlanningPokerClient(httpMock);
 
-        await target.SubmitEstimation(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, double.PositiveInfinity, CancellationToken.None);
+        await target.SubmitEstimation(PlanningPokerClientData.TeamName, PlanningPokerClientData.MemberName, PlanningPokerData.InfinityEstimation, CancellationToken.None);
 
         httpMock.VerifyNoOutstandingExpectation();
     }
@@ -896,10 +896,7 @@ public class PlanningPokerClientTest
         Assert.AreEqual(20.0, scrumTeam.AvailableEstimations[8].Value);
         Assert.AreEqual(40.0, scrumTeam.AvailableEstimations[9].Value);
         Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-        Assert.AreEqual(100.0, scrumTeam.AvailableEstimations[10].Value);
-        var estimationValue = scrumTeam.AvailableEstimations[11].Value;
-        Assert.IsNotNull(estimationValue);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationValue.Value));
-        Assert.IsNull(scrumTeam.AvailableEstimations[12].Value);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, scrumTeam.AvailableEstimations[11].Value);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, scrumTeam.AvailableEstimations[12].Value);
     }
 }

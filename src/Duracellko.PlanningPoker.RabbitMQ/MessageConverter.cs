@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Duracellko.PlanningPoker.Azure;
 
 namespace Duracellko.PlanningPoker.RabbitMQ;
@@ -29,10 +28,7 @@ public class MessageConverter : IMessageConverter
     private const string MessageTypePropertyName = PropertyPrefix + "MessageType";
     private const string MessageSubtypePropertyName = PropertyPrefix + "MessageSubtype";
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-    };
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = JsonSerializerOptions.Default;
 
     private static readonly Encoding _headersEncoding = Encoding.UTF8;
 

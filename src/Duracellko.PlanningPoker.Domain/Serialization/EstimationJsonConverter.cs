@@ -7,8 +7,6 @@ namespace Duracellko.PlanningPoker.Domain.Serialization;
 
 internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
 {
-    private const string PositiveInfinity = "Infinity";
-
     public override Estimation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
@@ -57,10 +55,6 @@ internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
         {
             writer.WriteNullValue();
         }
-        else if (double.IsPositiveInfinity(value.Value.Value))
-        {
-            writer.WriteStringValue(PositiveInfinity);
-        }
         else
         {
             writer.WriteNumberValue(value.Value.Value);
@@ -81,25 +75,14 @@ internal sealed class EstimationJsonConverter : JsonConverter<Estimation>
         return string.Equals(reader.GetString(), propertyName, stringComparison);
     }
 
-    [SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "Estimation value is only number, string or null.")]
+    [SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Estimation value is only number, string or null.")]
     private static double? GetEstimationValue(ref Utf8JsonReader reader)
     {
-        switch (reader.TokenType)
+        return reader.TokenType switch
         {
-            case JsonTokenType.Number:
-                return reader.GetDouble();
-            case JsonTokenType.Null:
-                return null;
-            case JsonTokenType.String:
-                var estimationStringValue = reader.GetString();
-                if (!string.Equals(estimationStringValue, PositiveInfinity, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new JsonException();
-                }
-
-                return double.PositiveInfinity;
-            default:
-                throw new JsonException();
-        }
+            JsonTokenType.Number => reader.GetDouble(),
+            JsonTokenType.Null => null,
+            _ => throw new JsonException(),
+        };
     }
 }

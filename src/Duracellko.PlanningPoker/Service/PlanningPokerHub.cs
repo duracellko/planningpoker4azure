@@ -235,11 +235,6 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
 
-        if (estimation == Estimation.PositiveInfinity)
-        {
-            estimation = double.PositiveInfinity;
-        }
-
         using var teamLock = PlanningPoker.GetScrumTeam(teamName);
         teamLock.Lock();
         var team = teamLock.Team;

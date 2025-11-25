@@ -48,10 +48,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
         return InvokeOperation(async () =>
         {
             var hubConnection = await EnsureConnected(cancellationToken);
-            var result = await hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
-
-            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-            return result;
+            return await hubConnection.InvokeAsync<TeamResult>("CreateTeam", teamName, scrumMasterName, deck, cancellationToken);
         });
     }
 
@@ -70,10 +67,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
         return InvokeOperation(async () =>
         {
             var hubConnection = await EnsureConnected(cancellationToken);
-            var result = await hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
-
-            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-            return result;
+            return await hubConnection.InvokeAsync<TeamResult>("JoinTeam", teamName, memberName, asObserver, cancellationToken);
         });
     }
 
@@ -94,11 +88,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
         return InvokeOperation(async () =>
         {
             var hubConnection = await EnsureConnected(cancellationToken);
-            var result = await hubConnection.InvokeAsync<ReconnectTeamResult>("ReconnectTeam", teamName, memberName, cancellationToken);
-
-            ScrumTeamMapper.ConvertScrumTeam(result.ScrumTeam);
-            ScrumTeamMapper.ConvertEstimation(result.SelectedEstimation);
-            return result;
+            return await hubConnection.InvokeAsync<ReconnectTeamResult>("ReconnectTeam", teamName, memberName, cancellationToken);
         });
     }
 
@@ -168,11 +158,6 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
     {
         return InvokeOperation(async () =>
         {
-            if (estimation.HasValue && double.IsPositiveInfinity(estimation.Value))
-            {
-                estimation = Estimation.PositiveInfinity;
-            }
-
             var hubConnection = await EnsureConnected(cancellationToken);
             await hubConnection.InvokeAsync("SubmitEstimation", teamName, memberName, estimation, cancellationToken);
         });
@@ -275,9 +260,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
 
                 await hubConnection.InvokeAsync("GetMessages", teamName, memberName, sessionId, lastMessageId, cancellationToken);
 
-                var result = await getMessagesTask;
-                ScrumTeamMapper.ConvertMessages(result);
-                return result;
+                return await getMessagesTask;
             }
             catch (HubException ex)
             {

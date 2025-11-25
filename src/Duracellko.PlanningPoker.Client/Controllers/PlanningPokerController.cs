@@ -578,21 +578,7 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             .ToList();
     }
 
-    private static double GetEstimationValueKey(double? value)
-    {
-        if (!value.HasValue)
-        {
-            return -1111111.0;
-        }
-        else if (double.IsPositiveInfinity(value.Value))
-        {
-            return -1111100.0;
-        }
-        else
-        {
-            return value.Value;
-        }
-    }
+    private static double GetEstimationValueKey(double? value) => value.GetValueOrDefault(-1111111.0);
 
     private void InitializeTeam(ReconnectTeamResult teamInfo)
     {

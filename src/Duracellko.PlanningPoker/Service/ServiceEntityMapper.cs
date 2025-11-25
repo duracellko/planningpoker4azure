@@ -80,15 +80,9 @@ internal static class ServiceEntityMapper
             return null;
         }
 
-        var value = estimation.Value;
-        if (value.HasValue && double.IsPositiveInfinity(value.Value))
-        {
-            value = Estimation.PositiveInfinity;
-        }
-
         return new Estimation
         {
-            Value = value
+            Value = estimation.Value
         };
     }
 

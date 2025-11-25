@@ -11,6 +11,7 @@ namespace Duracellko.PlanningPoker.Client.Controllers;
 /// </summary>
 public class EstimationSummary
 {
+    private static readonly double InfinityEstimationMinimum = double.Exp2(1009);
     private static readonly CompositeFormat _errorUnsupportedEstimationSummaryFunction = CompositeFormat.Parse(Resources.Error_UnsupportedEstimationSummaryFunction);
 
     /// <summary>
@@ -70,7 +71,7 @@ public class EstimationSummary
         }
 
         var value = memberEstimation.Estimation.Value;
-        return double.IsFinite(value) && value >= 0;
+        return value >= 0 && value < InfinityEstimationMinimum;
     }
 
     private static double GetMedian(List<double> values)

@@ -6,6 +6,9 @@ namespace Duracellko.PlanningPoker.Client.Test.Service;
 
 public static class PlanningPokerData
 {
+    public const double InfinityEstimation = 5.4861240687936887E+303;
+    public const double UnknownEstimation = 1.4044477616111843E+306;
+
     public const string ScrumMasterType = "ScrumMaster";
     public const string MemberType = "Member";
     public const string ObserverType = "Observer";
@@ -42,8 +45,8 @@ public static class PlanningPokerData
                 new Estimation { Value = 20 },
                 new Estimation { Value = 40 },
                 new Estimation { Value = 100 },
-                new Estimation { Value = Estimation.PositiveInfinity },
-                new Estimation(),
+                new Estimation { Value = InfinityEstimation },
+                new Estimation { Value = UnknownEstimation }
             ],
             EstimationResult = estimationResult ?? [],
             EstimationParticipants = estimationParticipants ?? []

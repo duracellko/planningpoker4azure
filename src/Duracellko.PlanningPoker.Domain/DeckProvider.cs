@@ -10,6 +10,9 @@ namespace Duracellko.PlanningPoker.Domain;
 /// </summary>
 public class DeckProvider
 {
+    private const double Infinity = 5.4861240687936887E+303; // 2^1009
+    private const double Unknown = 1.4044477616111843E+306; // 2^1017 - Question mark
+
     private static readonly CompositeFormat _errorDeckNotSupported = CompositeFormat.Parse(Resources.Error_DeckNotSupported);
 
     private readonly IEnumerable<Estimation> _standardDeck =
@@ -25,8 +28,8 @@ public class DeckProvider
         new(20.0),
         new(40.0),
         new(100.0),
-        new(double.PositiveInfinity),
-        new()
+        new(Infinity),
+        new(Unknown)
     ];
 
     private readonly IEnumerable<Estimation> _fibonacciDeck =
@@ -42,8 +45,8 @@ public class DeckProvider
         new(34.0),
         new(55.0),
         new(89.0),
-        new(double.PositiveInfinity),
-        new()
+        new(Infinity),
+        new(Unknown)
     ];
 
     private readonly IEnumerable<Estimation> _ratingDeck =

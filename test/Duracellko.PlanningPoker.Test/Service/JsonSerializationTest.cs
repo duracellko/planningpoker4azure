@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Duracellko.PlanningPoker.Domain.Test;
 using Duracellko.PlanningPoker.Service;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -30,7 +31,7 @@ public class JsonSerializationTest
             AvailableEstimations =
             [
                 new Estimation { Value = null },
-                new Estimation { Value = 1 },
+                new Estimation { Value = EstimationTestData.Infinity },
                 new Estimation { Value = 2 }
             ]
         };
@@ -61,7 +62,7 @@ public class JsonSerializationTest
         var availableEstimations = new List<Estimation>
         {
             new() { Value = 1 },
-            new() { Value = 2 }
+            new() { Value = EstimationTestData.Unknown }
         };
 
         var scrumTeam = new ScrumTeam
@@ -175,7 +176,7 @@ public class JsonSerializationTest
             AvailableEstimations =
             [
                 new Estimation { Value = null },
-                new Estimation { Value = 1 },
+                new Estimation { Value = EstimationTestData.Infinity },
                 new Estimation { Value = 2 }
             ]
         };
@@ -345,7 +346,12 @@ public class JsonSerializationTest
                 new EstimationResultItem
                 {
                     Member = new TeamMember { Name = "dev", Type = "Member" },
-                    Estimation = new Estimation { Value = 13 }
+                    Estimation = new Estimation { Value = EstimationTestData.Infinity }
+                },
+                new EstimationResultItem
+                {
+                    Member = new TeamMember { Name = "test", Type = "Member" },
+                    Estimation = new Estimation()
                 }
             ]
         };
@@ -363,6 +369,9 @@ public class JsonSerializationTest
         Assert.AreEqual(message.EstimationResult[1].Member!.Name, estimationResult.EstimationResult[1].Member!.Name);
         Assert.AreEqual(message.EstimationResult[1].Member!.Type, estimationResult.EstimationResult[1].Member!.Type);
         Assert.AreEqual(message.EstimationResult[1].Estimation!.Value, estimationResult.EstimationResult[1].Estimation!.Value);
+        Assert.AreEqual(message.EstimationResult[2].Member!.Name, estimationResult.EstimationResult[2].Member!.Name);
+        Assert.AreEqual(message.EstimationResult[2].Member!.Type, estimationResult.EstimationResult[2].Member!.Type);
+        Assert.AreEqual(message.EstimationResult[2].Estimation!.Value, estimationResult.EstimationResult[2].Estimation!.Value);
     }
 
     [TestMethod]
@@ -397,7 +406,11 @@ public class JsonSerializationTest
                 },
                 new Estimation
                 {
-                    Value = Estimation.PositiveInfinity
+                    Value = EstimationTestData.Infinity
+                },
+                new Estimation
+                {
+                    Value = EstimationTestData.Unknown
                 },
                 new Estimation()
             ]
@@ -410,14 +423,15 @@ public class JsonSerializationTest
         Assert.AreEqual(message.Type, result.Type);
 
         var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(result);
-        Assert.HasCount(7, estimationSetMessage.Estimations);
+        Assert.HasCount(8, estimationSetMessage.Estimations);
         Assert.AreEqual(0.0, estimationSetMessage.Estimations[0].Value);
         Assert.AreEqual(0.5, estimationSetMessage.Estimations[1].Value);
         Assert.AreEqual(1.0, estimationSetMessage.Estimations[2].Value);
         Assert.AreEqual(2.0, estimationSetMessage.Estimations[3].Value);
         Assert.AreEqual(20.0, estimationSetMessage.Estimations[4].Value);
-        Assert.AreEqual(Estimation.PositiveInfinity, estimationSetMessage.Estimations[5].Value);
-        Assert.IsNull(estimationSetMessage.Estimations[6].Value);
+        Assert.AreEqual(EstimationTestData.Infinity, estimationSetMessage.Estimations[5].Value);
+        Assert.AreEqual(EstimationTestData.Unknown, estimationSetMessage.Estimations[6].Value);
+        Assert.IsNull(estimationSetMessage.Estimations[7].Value);
     }
 
     [TestMethod]

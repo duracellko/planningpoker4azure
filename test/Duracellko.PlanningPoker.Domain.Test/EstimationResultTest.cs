@@ -69,7 +69,7 @@ public class EstimationResultTest
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
         var target = new EstimationResult([master, member]);
-        var estimation = new Estimation();
+        var estimation = new Estimation(0.5);
 
         // Act
         target[master] = estimation;
@@ -113,7 +113,7 @@ public class EstimationResultTest
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
         var target = new EstimationResult([master]);
-        var estimation = new Estimation();
+        var estimation = new Estimation(2);
 
         // Act
         Assert.ThrowsExactly<KeyNotFoundException>(() => target[member] = estimation);

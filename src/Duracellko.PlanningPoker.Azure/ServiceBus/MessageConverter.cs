@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Azure.Messaging.ServiceBus;
 
 namespace Duracellko.PlanningPoker.Azure.ServiceBus;
@@ -27,10 +26,7 @@ public class MessageConverter : IMessageConverter
     private const string MessageSubtypePropertyName = "MessageSubtype";
 
     private static readonly BinaryData _emptyBinaryData = new([]);
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-    };
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = JsonSerializerOptions.Default;
 
     /// <summary>
     /// Converts <see cref="T:NodeMessage"/> message to ServiceBusMessage  object.

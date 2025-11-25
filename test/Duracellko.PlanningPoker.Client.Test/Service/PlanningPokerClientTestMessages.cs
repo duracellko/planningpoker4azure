@@ -151,7 +151,7 @@ public class PlanningPokerClientTestMessages
         estimationResult = message.EstimationResult[3];
         Assert.AreEqual(PlanningPokerClientData.ObserverName, estimationResult.Member!.Name);
         Assert.AreEqual(PlanningPokerClientData.MemberType, estimationResult.Member.Type);
-        Assert.IsTrue(double.IsPositiveInfinity(estimationResult.Estimation!.Value!.Value));
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimationResult.Estimation!.Value);
     }
 
     [TestMethod]
@@ -214,8 +214,8 @@ public class PlanningPokerClientTestMessages
         Assert.AreEqual(3.0, estimations[4].Value);
         Assert.AreEqual(5.0, estimations[5].Value);
         Assert.AreEqual(100.0, estimations[6].Value);
-        Assert.IsTrue(double.IsPositiveInfinity(estimations[7].Value!.Value));
-        Assert.IsNull(estimations[8].Value);
+        Assert.AreEqual(PlanningPokerData.InfinityEstimation, estimations[7].Value);
+        Assert.AreEqual(PlanningPokerData.UnknownEstimation, estimations[8].Value);
     }
 
     [TestMethod]

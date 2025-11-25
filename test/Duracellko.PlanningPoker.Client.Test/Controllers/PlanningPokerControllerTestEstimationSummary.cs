@@ -76,7 +76,7 @@ public class PlanningPokerControllerTestEstimationSummary
     [DataRow(true)]
     public async Task ShowEstimationSummary_EstimationsWithNonNumericValues_CalculatesAverage(bool useEstimationEndedMessage)
     {
-        var estimations = new double?[] { null, 0, 20, double.PositiveInfinity, 0.5, double.PositiveInfinity, null };
+        var estimations = new double?[] { null, 0, 20, PlanningPokerData.InfinityEstimation, 0.5, PlanningPokerData.UnknownEstimation, null };
         using var target = await CreateControllerWithEstimations(estimations, useEstimationEndedMessage, applicationCallback: CreateApplicationCallback());
 
         target.ShowEstimationSummary();
@@ -178,7 +178,24 @@ public class PlanningPokerControllerTestEstimationSummary
         EstimationSummaryFunction function,
         double expectedEstimation)
     {
-        var estimations = new double?[] { 13, 2, null, 5, 40, 8, 0, double.PositiveInfinity, 1, 0.5, 20, 100, 3, double.NaN };
+        var estimations = new double?[]
+        {
+            13,
+            2,
+            null,
+            PlanningPokerData.UnknownEstimation,
+            5,
+            40,
+            8,
+            0,
+            PlanningPokerData.InfinityEstimation,
+            1,
+            0.5,
+            20,
+            100,
+            3,
+            double.NaN
+        };
         var applicationCallback = CreateApplicationCallback();
         var applicationIntegrationService = new Mock<IApplicationIntegrationService>();
         using var target = await CreateControllerWithEstimations(
