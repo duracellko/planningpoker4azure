@@ -155,7 +155,10 @@ public class AzurePlanningPokerControllerTest
     }
 
     [TestMethod]
-    public void ObservableMessages_MemberEstimated_ScrumTeamMemberMessage()
+    [DataRow(3.0)]
+    [DataRow(EstimationTestData.Unknown)]
+    [DataRow(null)]
+    public void ObservableMessages_MemberEstimated_ScrumTeamMemberMessage(double? estimation)
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();
@@ -166,7 +169,7 @@ public class AzurePlanningPokerControllerTest
 
         // Act
         target.ObservableMessages.Subscribe(messages.Add);
-        teamLock.Team.ScrumMaster.Estimation = new Estimation(3.0);
+        teamLock.Team.ScrumMaster.Estimation = new Estimation(estimation);
         target.Dispose();
 
         // Verify
@@ -175,7 +178,7 @@ public class AzurePlanningPokerControllerTest
         Assert.AreEqual<string>("test", messages[0].TeamName);
         var memberMessage = Assert.IsInstanceOfType<ScrumTeamMemberEstimationMessage>(messages[0]);
         Assert.AreEqual<string>("master", memberMessage.MemberName);
-        Assert.AreEqual<double?>(3.0, memberMessage.Estimation);
+        Assert.AreEqual<double?>(estimation, memberMessage.Estimation);
     }
 
     [TestMethod]
@@ -422,7 +425,7 @@ public class AzurePlanningPokerControllerTest
     }
 
     [TestMethod]
-    public void InitializeScrumTeam_TeamSpeacified_TeamAddedToController()
+    public void InitializeScrumTeam_TeamSpecified_TeamAddedToController()
     {
         // Arrange
         var target = CreateAzurePlanningPokerController();

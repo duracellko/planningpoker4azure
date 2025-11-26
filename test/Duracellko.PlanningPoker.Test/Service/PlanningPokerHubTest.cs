@@ -20,6 +20,7 @@ public sealed class PlanningPokerHubTest : IDisposable
     private const string ScrumMasterName = "master";
     private const string MemberName = "member";
     private const string ObserverName = "observer";
+    private const string NoVoteName = "no vote";
 
     private const string LongTeamName = "ttttttttttttttttttttttttttttttttttttttttttttttttttt";
     private const string LongMemberName = "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm";
@@ -1156,6 +1157,31 @@ public sealed class PlanningPokerHubTest : IDisposable
     }
 
     [TestMethod]
+    public void SubmitEstimation_TeamNameAndScrumMasterNameAndNoVote_EstimationOfMemberIsSetToNull()
+    {
+        // Arrange
+        var team = CreateBasicTeam();
+        var scrumMaster = team.ScrumMaster!;
+        team.Join(MemberName, false);
+        var teamLock = CreateTeamLock(team);
+        var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+        planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        target.SubmitEstimation(TeamName, ScrumMasterName, null);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(scrumMaster.Estimation);
+        Assert.IsNull(scrumMaster.Estimation.Value);
+    }
+
+    [TestMethod]
     public void SubmitEstimation_TeamNameAndMemberName_EstimationOfMemberIsSet()
     {
         // Arrange
@@ -1227,6 +1253,30 @@ public sealed class PlanningPokerHubTest : IDisposable
         Assert.IsNotNull(member.Estimation);
         Assert.IsNotNull(member.Estimation.Value);
         Assert.AreEqual<double?>(EstimationTestData.Unknown, member.Estimation.Value);
+    }
+
+    [TestMethod]
+    public void SubmitEstimation_TeamNameAndMemberNameAndNoVote_EstimationIsSetToNull()
+    {
+        // Arrange
+        var team = CreateBasicTeam();
+        var member = (D.Member)team.Join(MemberName, false);
+        var teamLock = CreateTeamLock(team);
+        var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+        planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+
+        using var target = CreatePlanningPokerHub(planningPoker.Object);
+
+        // Act
+        target.SubmitEstimation(TeamName, MemberName, null);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.IsNotNull(member.Estimation);
+        Assert.IsNull(member.Estimation.Value);
     }
 
     [TestMethod]
@@ -1517,10 +1567,12 @@ public sealed class PlanningPokerHubTest : IDisposable
         var guid = Guid.NewGuid();
         var team = CreateBasicTeam(new GuidProviderMock(guid));
         var member = (D.Member)team.Join(MemberName, false);
+        var noVote = (D.Member)team.Join(NoVoteName, false);
         var master = team.ScrumMaster!;
         master.StartEstimation();
         master.Estimation = new D.Estimation(EstimationTestData.Infinity);
         member.Estimation = new D.Estimation(2.0);
+        noVote.Estimation = new D.Estimation();
 
         var teamLock = CreateTeamLock(team);
         var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
@@ -1537,7 +1589,7 @@ public sealed class PlanningPokerHubTest : IDisposable
         using var target = CreatePlanningPokerHub(planningPoker.Object, clientContext.Object);
 
         // Act
-        target.GetMessages(TeamName, ScrumMasterName, guid, 1);
+        target.GetMessages(TeamName, ScrumMasterName, guid, 2);
 
         // Verify
         planningPoker.Verify();
@@ -1545,29 +1597,32 @@ public sealed class PlanningPokerHubTest : IDisposable
         clientContext.Verify(o => o.Notify(It.IsAny<IList<Message>>()));
 
         Assert.IsNotNull(result);
-        Assert.HasCount(4, result);
-        Assert.AreEqual<long>(2, result[0].Id);
+        Assert.HasCount(5, result);
+        Assert.AreEqual<long>(3, result[0].Id);
         Assert.AreEqual<MessageType>(MessageType.EstimationStarted, result[0].Type);
 
-        Assert.AreEqual<long>(3, result[1].Id);
+        Assert.AreEqual<long>(4, result[1].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[1].Type);
-        Assert.AreEqual<long>(4, result[2].Id);
+        Assert.AreEqual<long>(5, result[2].Id);
         Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[2].Type);
+        Assert.AreEqual<long>(6, result[3].Id);
+        Assert.AreEqual<MessageType>(MessageType.MemberEstimated, result[3].Type);
 
-        Assert.AreEqual<long>(5, result[3].Id);
-        Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[3].Type);
-        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(result[3]);
+        Assert.AreEqual<long>(7, result[4].Id);
+        Assert.AreEqual<MessageType>(MessageType.EstimationEnded, result[4].Type);
+        var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(result[4]);
 
         Assert.IsNotNull(estimationResultMessage.EstimationResult);
-        var expectedResult = new Tuple<string, double>[]
+        var expectedResult = new Tuple<string, double?>[]
         {
-                new(ScrumMasterName, EstimationTestData.Infinity),
-                new(MemberName, 2.0)
+            new(ScrumMasterName, EstimationTestData.Infinity),
+            new(MemberName, 2.0),
+            new(NoVoteName, null)
         };
-        CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double>(i.Member!.Name, i.Estimation!.Value!.Value)).ToList());
+        CollectionAssert.AreEquivalent(expectedResult, estimationResultMessage.EstimationResult.Select(i => new Tuple<string, double?>(i.Member!.Name, i.Estimation!.Value)).ToList());
 
-        Assert.AreEqual(4, team.ScrumMaster!.Messages.Count());
-        Assert.AreEqual(1, team.ScrumMaster.AcknowledgedMessageId);
+        Assert.AreEqual(5, team.ScrumMaster!.Messages.Count());
+        Assert.AreEqual(2, team.ScrumMaster.AcknowledgedMessageId);
     }
 
     [TestMethod]

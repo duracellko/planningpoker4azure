@@ -157,17 +157,13 @@ public class PlanningPokerClient : IPlanningPokerClient
     {
         var encodedTeamName = _urlEncoder.Encode(teamName);
         var encodedMemberName = _urlEncoder.Encode(memberName);
-        string encodedEstimation;
-        if (!estimation.HasValue)
-        {
-            encodedEstimation = "-1111111";
-        }
-        else
-        {
-            encodedEstimation = _urlEncoder.Encode(estimation.Value.ToString("G17", CultureInfo.InvariantCulture));
-        }
+        var uri = $"SubmitEstimation?teamName={encodedTeamName}&memberName={encodedMemberName}";
 
-        var uri = $"SubmitEstimation?teamName={encodedTeamName}&memberName={encodedMemberName}&estimation={encodedEstimation}";
+        if (estimation.HasValue)
+        {
+            var encodedEstimation = _urlEncoder.Encode(estimation.Value.ToString("G17", CultureInfo.InvariantCulture));
+            uri += $"&estimation={encodedEstimation}";
+        }
 
         return SendAsync(uri, cancellationToken);
     }

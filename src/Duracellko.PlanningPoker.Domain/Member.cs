@@ -50,7 +50,7 @@ public class Member : Observer
         {
             if (_estimation != value)
             {
-                if (value != null && !Team.AvailableEstimations.Contains(value))
+                if (value != null && value.Value.HasValue && !Team.AvailableEstimations.Contains(value))
                 {
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, _errorEstimationIsNotAvailableInTeam, value.Value), nameof(value));
                 }

@@ -797,7 +797,7 @@ public class PlanningPokerClientTest
     public async Task SubmitEstimation_Null_RequestsSubmitEstimationUrl()
     {
         var httpMock = new MockHttpMessageHandler();
-        httpMock.Expect(BaseUrl + $"api/PlanningPokerService/SubmitEstimation?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}&estimation=-1111111")
+        httpMock.Expect(BaseUrl + $"api/PlanningPokerService/SubmitEstimation?teamName={PlanningPokerClientData.TeamName}&memberName={PlanningPokerClientData.MemberName}")
             .Respond(TextType, string.Empty);
         var target = CreatePlanningPokerClient(httpMock);
 

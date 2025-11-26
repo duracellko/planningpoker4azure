@@ -127,6 +127,24 @@ public class ScrumTeamSerializerTest
     }
 
     [TestMethod]
+    public void SerializeAndDeserialize_EstimationInProgress_CopyOfTheTeam()
+    {
+        // Arrange
+        var team = new ScrumTeam("test");
+        var master = team.SetScrumMaster("master");
+        team.Join("member", false);
+        var member = (Member)team.Join("Bob", false);
+        team.Join("observer", true);
+        master.StartEstimation();
+        team.Join("Alice", false);
+        member.Estimation = new Estimation();
+
+        // Act
+        // Verify
+        VerifySerialization(team);
+    }
+
+    [TestMethod]
     public void SerializeAndDeserialize_MemberEstimated_CopyOfTheTeam()
     {
         // Arrange
@@ -158,6 +176,25 @@ public class ScrumTeamSerializerTest
         team.Join("Alice", false);
         member.Estimation = team.AvailableEstimations.Single(e => e.Value == 0.5);
         master.Estimation = team.AvailableEstimations.Single(e => e.Value == EstimationTestData.Infinity);
+
+        // Act
+        // Verify
+        VerifySerialization(team);
+    }
+
+    [TestMethod]
+    public void SerializeAndDeserialize_EstimationEndedWithNoVote_CopyOfTheTeam()
+    {
+        // Arrange
+        var team = new ScrumTeam("test");
+        var master = team.SetScrumMaster("master");
+        var member = (Member)team.Join("member", false);
+        team.Join("observer", true);
+        master.StartEstimation();
+        team.Join("Bob", true);
+        team.Join("Alice", false);
+        master.Estimation = team.AvailableEstimations.Single(e => e.Value == 0);
+        member.Estimation = new Estimation();
 
         // Act
         // Verify

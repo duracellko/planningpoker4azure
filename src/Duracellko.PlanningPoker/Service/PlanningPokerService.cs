@@ -222,23 +222,17 @@ public class PlanningPokerService : ControllerBase
     /// <param name="memberName">Name of the member.</param>
     /// <param name="estimation">The estimation the member is submitting.</param>
     [HttpGet("SubmitEstimation")]
-    public void SubmitEstimation(string teamName, string memberName, double estimation)
+    public void SubmitEstimation(string teamName, string memberName, double? estimation = default)
     {
         ValidateTeamName(teamName);
         ValidateMemberName(memberName, nameof(memberName));
-
-        double? domainEstimation = estimation switch
-        {
-            -1111111.0 => null,
-            _ => estimation
-        };
 
         using var teamLock = PlanningPoker.GetScrumTeam(teamName);
         teamLock.Lock();
         var team = teamLock.Team;
         if (team.FindMemberOrObserver(memberName) is D.Member member)
         {
-            member.Estimation = new D.Estimation(domainEstimation);
+            member.Estimation = new D.Estimation(estimation);
         }
     }
 
