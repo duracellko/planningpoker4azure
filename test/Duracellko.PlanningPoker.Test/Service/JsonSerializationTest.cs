@@ -58,6 +58,7 @@ public class JsonSerializationTest
     {
         var scrumMaster = new TeamMember { Name = "master", Type = "ScrumMaster" };
         var teamMember = new TeamMember { Name = "John", Type = "Member" };
+        var noVoteMember = new TeamMember { Name = "No Vote", Type = "Member" };
 
         var availableEstimations = new List<Estimation>
         {
@@ -71,7 +72,7 @@ public class JsonSerializationTest
             State = TeamState.EstimationFinished,
             ScrumMaster = scrumMaster,
             TimerEndTime = new DateTime(2021, 11, 17, 8, 58, 1, DateTimeKind.Utc),
-            Members = [scrumMaster, teamMember],
+            Members = [scrumMaster, teamMember, noVoteMember],
             Observers =
             [
                 new TeamMember { Name = "Jane", Type = "Observer" }
@@ -80,7 +81,8 @@ public class JsonSerializationTest
             EstimationResult =
             [
                 new EstimationResultItem { Member = scrumMaster, Estimation = availableEstimations[1] },
-                new EstimationResultItem { Member = teamMember, Estimation = availableEstimations[0] }
+                new EstimationResultItem { Member = teamMember, Estimation = availableEstimations[0] },
+                new EstimationResultItem { Member = noVoteMember, Estimation = new Estimation() }
             ]
         };
 
@@ -97,6 +99,8 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.Members[0].Type, result.Members[0].Type);
         Assert.AreEqual(scrumTeam.Members[1].Name, result.Members[1].Name);
         Assert.AreEqual(scrumTeam.Members[1].Type, result.Members[1].Type);
+        Assert.AreEqual(scrumTeam.Members[2].Name, result.Members[2].Name);
+        Assert.AreEqual(scrumTeam.Members[2].Type, result.Members[2].Type);
         Assert.AreEqual(scrumTeam.Observers[0].Name, result.Observers[0].Name);
         Assert.AreEqual(scrumTeam.Observers[0].Type, result.Observers[0].Type);
         Assert.AreEqual(scrumTeam.AvailableEstimations[0].Value, result.AvailableEstimations[0].Value);
@@ -108,6 +112,9 @@ public class JsonSerializationTest
         Assert.AreEqual(scrumTeam.EstimationResult[1].Member!.Name, result.EstimationResult[1].Member!.Name);
         Assert.AreEqual(scrumTeam.EstimationResult[1].Member!.Type, result.EstimationResult[1].Member!.Type);
         Assert.AreEqual(scrumTeam.EstimationResult[1].Estimation!.Value, result.EstimationResult[1].Estimation!.Value);
+        Assert.AreEqual(scrumTeam.EstimationResult[2].Member!.Name, result.EstimationResult[2].Member!.Name);
+        Assert.AreEqual(scrumTeam.EstimationResult[2].Member!.Type, result.EstimationResult[2].Member!.Type);
+        Assert.AreEqual(scrumTeam.EstimationResult[2].Estimation!.Value, result.EstimationResult[2].Estimation!.Value);
     }
 
     [TestMethod]

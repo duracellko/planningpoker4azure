@@ -30,15 +30,14 @@ public class EstimationParticipantStatusTest
     }
 
     [TestMethod]
-    public void Constructor_EstimatedSpecified_EstimatedIsSet()
+    [DataRow(true)]
+    [DataRow(false)]
+    public void Constructor_EstimatedSpecified_EstimatedIsSet(bool estimated)
     {
-        // Arrange
-        var estimated = true;
-
         // Act
-        _ = new EstimationParticipantStatus("Member", estimated);
+        var result = new EstimationParticipantStatus("Member", estimated);
 
         // Verify
-        Assert.IsTrue(estimated);
+        Assert.AreEqual(estimated, result.Estimated);
     }
 }

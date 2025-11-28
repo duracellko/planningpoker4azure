@@ -598,7 +598,10 @@ public class PlanningPokerAzureNodeTest
     }
 
     [TestMethod]
-    public async Task Start_MasterEstimatedFromServiceBus_MasterEstimationIsSet()
+    [DataRow(5.0)]
+    [DataRow(EstimationTestData.Infinity)]
+    [DataRow(null)]
+    public async Task Start_MasterEstimatedFromServiceBus_MasterEstimationIsSet(double? estimation)
     {
         // Arrange
         var planningPoker = CreatePlanningPokerMock();
@@ -608,7 +611,7 @@ public class PlanningPokerAzureNodeTest
         var message = new ScrumTeamMemberEstimationMessage(TeamName, MessageType.MemberEstimated)
         {
             MemberName = ScrumMasterName,
-            Estimation = 5.0
+            Estimation = estimation
         };
         var nodeMessage = new NodeMessage(NodeMessageType.ScrumTeamMessage) { Data = message };
         var sendMessages = SetupServiceBus(serviceBus, target.NodeId, nodeMessage);
@@ -627,7 +630,7 @@ public class PlanningPokerAzureNodeTest
         serviceBus.Verify();
         teamLock.Verify();
         Assert.IsNotNull(team.ScrumMaster.Estimation);
-        Assert.AreEqual<double?>(5.0, team.ScrumMaster.Estimation.Value);
+        Assert.AreEqual<double?>(estimation, team.ScrumMaster.Estimation.Value);
     }
 
     [TestMethod]

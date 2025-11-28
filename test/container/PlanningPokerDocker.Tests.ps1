@@ -116,11 +116,15 @@ BeforeAll {
         Invoke-RestMethod -Uri $uri | Out-Null
     }
 
-    function Submit-Estimation([int] $Index, [double] $Estimation) {
+    function Submit-Estimation([int] $Index, [double] $Estimation = [double]::NaN) {
         $session = $sessions[$Index]
-        $invariantEstimation = $Estimation.ToString('G17', [System.Globalization.CultureInfo]::InvariantCulture)
-        $invariantEstimation = [System.Text.Encodings.Web.UrlEncoder]::Default.Encode($invariantEstimation)
-        $uri = "$($session.BaseUri)$($apiPath)SubmitEstimation?teamName=$teamName&memberName=$($session.Name)&estimation=$invariantEstimation"
+        $uri = "$($session.BaseUri)$($apiPath)SubmitEstimation?teamName=$teamName&memberName=$($session.Name)"
+        if (![double]::IsNaN($Estimation)) {
+            $invariantEstimation = $Estimation.ToString('G17', [System.Globalization.CultureInfo]::InvariantCulture)
+            $invariantEstimation = [System.Text.Encodings.Web.UrlEncoder]::Default.Encode($invariantEstimation)
+            $uri = "$uri&estimation=$invariantEstimation"
+        }
+
         Invoke-RestMethod -Uri $uri | Out-Null
     }
 
@@ -643,7 +647,7 @@ Describe 'Planning Poker' {
         $response[0].Member.Type | Should -Be $MemberTypes.ScrumMaster
         $response[0].Member.Name | Should -Be $sessions[0].Name
 
-        Submit-Estimation -Index 2 -Estimation 3
+        Submit-Estimation -Index 2
 
         $response = Get-Messages -Index 0
         $response.Length | Should -Be 1
@@ -698,7 +702,7 @@ Describe 'Planning Poker' {
         $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
         $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
-        $estimationResultItem.Estimation.Value | Should -Be 3
+        $estimationResultItem.Estimation.Value | Should -BeNullOrEmpty
 
         $response = Get-Messages -Index 1 -AtLeast 2
         $response.Length | Should -Be 2
@@ -719,7 +723,7 @@ Describe 'Planning Poker' {
         $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
         $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
-        $estimationResultItem.Estimation.Value | Should -Be 3
+        $estimationResultItem.Estimation.Value | Should -BeNullOrEmpty
 
         $response = Get-Messages -Index 2 -AtLeast 2
         $response.Length | Should -Be 2
@@ -740,7 +744,7 @@ Describe 'Planning Poker' {
         $estimationResultItem = $response[1].EstimationResult | Where-Object { $_.Member.Name -eq $sessions[2].Name }
         $estimationResultItem.Member.Name | Should -Be $sessions[2].Name
         $estimationResultItem.Member.Type | Should -Be $MemberTypes.Member
-        $estimationResultItem.Estimation.Value | Should -Be 3
+        $estimationResultItem.Estimation.Value | Should -BeNullOrEmpty
     }
 
     AfterEach {

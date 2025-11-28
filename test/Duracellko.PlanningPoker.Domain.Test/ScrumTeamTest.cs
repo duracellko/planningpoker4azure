@@ -1914,7 +1914,7 @@ public class ScrumTeamTest
         master.StartEstimation();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 30, DateTimeKind.Utc));
-        master.Estimation = new Estimation(EstimationTestData.Unknown);
+        master.Estimation = new Estimation();
         master.UpdateActivity();
 
         dateTimeProvider.SetUtcNow(new DateTime(2012, 1, 1, 3, 2, 55, DateTimeKind.Utc));

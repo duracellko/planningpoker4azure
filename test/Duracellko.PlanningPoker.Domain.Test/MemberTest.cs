@@ -139,13 +139,16 @@ public class MemberTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
+        var noVote = (Member)team.Join("no vote", false);
         master.StartEstimation();
         var masterEstimation = new Estimation(EstimationTestData.Infinity);
         var memberEstimation = new Estimation(EstimationTestData.Unknown);
+        var noVoteEstimation = new Estimation();
 
         // Act
         master.Estimation = masterEstimation;
         member.Estimation = memberEstimation;
+        noVote.Estimation = noVoteEstimation;
 
         // Verify
         Assert.AreEqual<TeamState>(TeamState.EstimationFinished, team.State);
@@ -158,11 +161,14 @@ public class MemberTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
+        var noVote = (Member)team.Join("no vote", false);
         master.StartEstimation();
         var masterEstimation = new Estimation(8);
         var memberEstimation = new Estimation(20);
+        var noVoteEstimation = new Estimation();
 
         // Act
+        noVote.Estimation = noVoteEstimation;
         master.Estimation = masterEstimation;
         member.Estimation = memberEstimation;
 
@@ -172,6 +178,7 @@ public class MemberTest
         {
             new(master, masterEstimation),
             new(member, memberEstimation),
+            new(noVote, noVoteEstimation),
         };
         CollectionAssert.AreEquivalent(expectedResult, team.EstimationResult.ToList());
     }
@@ -359,7 +366,7 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
         master.ClearMessages();
-        var masterEstimation = new Estimation(EstimationTestData.Infinity);
+        var masterEstimation = new Estimation();
         var memberEstimation = new Estimation(EstimationTestData.Infinity);
 
         // Act
@@ -405,7 +412,7 @@ public class MemberTest
         var member = (Member)team.Join("member", false);
         master.StartEstimation();
         master.ClearMessages();
-        var memberEstimation = new Estimation(3);
+        var memberEstimation = new Estimation();
 
         // Act
         member.Estimation = memberEstimation;
@@ -449,12 +456,15 @@ public class MemberTest
         var team = new ScrumTeam("test team");
         var master = team.SetScrumMaster("master");
         var member = (Member)team.Join("member", false);
+        var noVote = (Member)team.Join("no vote", false);
         master.StartEstimation();
         var masterEstimation = new Estimation(1);
         var memberEstimation = new Estimation(1);
+        var noVoteEstimation = new Estimation();
 
         // Act
         master.Estimation = masterEstimation;
+        noVote.Estimation = noVoteEstimation;
         member.ClearMessages();
         member.Estimation = memberEstimation;
 
@@ -572,7 +582,7 @@ public class MemberTest
         master.StartEstimation();
         observer.ClearMessages();
         var masterEstimation = new Estimation(5);
-        var memberEstimation = new Estimation(5);
+        var memberEstimation = new Estimation();
         EventArgs? eventArgs = null;
         observer.MessageReceived += new EventHandler((s, e) => eventArgs = e);
 
