@@ -516,6 +516,25 @@ public class PlanningPokerSignalRClientTest
     }
 
     [TestMethod]
+    public async Task CloseEstimation_TeamName_InvocationMessageIsSent()
+    {
+        await using var fixture = new PlanningPokerSignalRClientFixture();
+
+        var resultTask = fixture.Target.CloseEstimation(PlanningPokerData.TeamName, fixture.CancellationToken);
+
+        var sentMessage = await fixture.GetSentMessage();
+        var sentInvocationMessage = AssertIsInvocationMessage(sentMessage);
+        Assert.AreEqual("CloseEstimation", sentInvocationMessage.Target);
+        var expectedArguments = new object[] { PlanningPokerData.TeamName };
+        CollectionAssert.AreEqual(expectedArguments, sentInvocationMessage.Arguments);
+
+        var returnMessage = new CompletionMessage(sentInvocationMessage.InvocationId!, null, null, false);
+        await fixture.ReceiveMessage(returnMessage);
+
+        await resultTask;
+    }
+
+    [TestMethod]
     [DataRow(PlanningPokerData.MemberName, 3.0, 3.0)]
     [DataRow(PlanningPokerData.ScrumMasterName, 0.0, 0.0)]
     [DataRow(PlanningPokerData.MemberName, 100.0, 100.0)]

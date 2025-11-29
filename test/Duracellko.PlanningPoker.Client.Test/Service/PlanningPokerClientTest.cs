@@ -742,6 +742,19 @@ public class PlanningPokerClientTest
     }
 
     [TestMethod]
+    public async Task CloseEstimation_TeamName_RequestsCloseEstimationUrl()
+    {
+        var httpMock = new MockHttpMessageHandler();
+        httpMock.Expect(BaseUrl + $"api/PlanningPokerService/CloseEstimation?teamName={PlanningPokerClientData.TeamName}")
+            .Respond(TextType, string.Empty);
+        var target = CreatePlanningPokerClient(httpMock);
+
+        await target.CloseEstimation(PlanningPokerClientData.TeamName, CancellationToken.None);
+
+        httpMock.VerifyNoOutstandingExpectation();
+    }
+
+    [TestMethod]
     public async Task SubmitEstimation_3_RequestsSubmitEstimationUrl()
     {
         var httpMock = new MockHttpMessageHandler();
