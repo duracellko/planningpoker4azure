@@ -37,6 +37,11 @@ internal static class PlanningPokerHubLogger
         new EventId(BaseEventId + 6, nameof(CancelEstimation)),
         "{Action}(\"{TeamName}\")");
 
+    private static readonly Action<ILogger, string, string, Exception?> _closeEstimation = LoggerMessage.Define<string, string>(
+        LogLevel.Information,
+        new EventId(BaseEventId + 13, nameof(CloseEstimation)),
+        "{Action}(\"{TeamName}\")");
+
     private static readonly Action<ILogger, string, string, string, double?, Exception?> _submitEstimation = LoggerMessage.Define<string, string, string, double?>(
         LogLevel.Information,
         new EventId(BaseEventId + 7, nameof(SubmitEstimation)),
@@ -95,6 +100,11 @@ internal static class PlanningPokerHubLogger
     public static void CancelEstimation(this ILogger logger, string teamName)
     {
         _cancelEstimation(logger, nameof(CancelEstimation), teamName, null);
+    }
+
+    public static void CloseEstimation(this ILogger logger, string teamName)
+    {
+        _closeEstimation(logger, nameof(CloseEstimation), teamName, null);
     }
 
     public static void SubmitEstimation(this ILogger logger, string teamName, string memberName, double? estimation)

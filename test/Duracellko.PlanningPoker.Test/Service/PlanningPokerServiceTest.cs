@@ -1063,6 +1063,50 @@ public class PlanningPokerServiceTest
     }
 
     [TestMethod]
+    public void CloseEstimation_TeamName_ScrumTeamEstimationIsFinished()
+    {
+        // Arrange
+        var team = CreateBasicTeam();
+        team.ScrumMaster!.StartEstimation();
+        var teamLock = CreateTeamLock(team);
+        var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+        planningPoker.Setup(p => p.GetScrumTeam(TeamName)).Returns(teamLock.Object).Verifiable();
+        var target = CreatePlanningPokerService(planningPoker.Object);
+
+        // Act
+        target.CloseEstimation(TeamName);
+
+        // Verify
+        planningPoker.Verify();
+        teamLock.Verify();
+        teamLock.Verify(l => l.Team);
+
+        Assert.AreEqual<D.TeamState>(D.TeamState.EstimationFinished, team.State);
+    }
+
+    [TestMethod]
+    public void CloseEstimation_TeamNameIsEmpty_ArgumentNullException()
+    {
+        // Arrange
+        var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+        var target = CreatePlanningPokerService(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.CloseEstimation(null!));
+    }
+
+    [TestMethod]
+    public void CloseEstimation_TeamNameTooLong_ArgumentException()
+    {
+        // Arrange
+        var planningPoker = new Mock<D.IPlanningPoker>(MockBehavior.Strict);
+        var target = CreatePlanningPokerService(planningPoker.Object);
+
+        // Act
+        Assert.ThrowsExactly<ArgumentException>(() => target.CloseEstimation(LongTeamName));
+    }
+
+    [TestMethod]
     public void SubmitEstimation_TeamNameAndScrumMasterName_EstimationIsSetForScrumMaster()
     {
         // Arrange

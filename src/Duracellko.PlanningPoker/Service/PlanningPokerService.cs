@@ -216,6 +216,21 @@ public class PlanningPokerService : ControllerBase
     }
 
     /// <summary>
+    /// Signal from Scrum master to close the estimation by assigning nil vote to unvoted members.
+    /// </summary>
+    /// <param name="teamName">Name of the Scrum team.</param>
+    [HttpGet("CloseEstimation")]
+    public void CloseEstimation(string teamName)
+    {
+        ValidateTeamName(teamName);
+
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.CloseEstimation();
+    }
+
+    /// <summary>
     /// Submits the estimation for specified team member.
     /// </summary>
     /// <param name="teamName">Name of the Scrum team.</param>
