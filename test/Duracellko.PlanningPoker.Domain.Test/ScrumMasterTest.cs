@@ -597,6 +597,33 @@ public class ScrumMasterTest
     }
 
     [TestMethod]
+    public void CloseEstimation_MemberJoinsAfterEstimationStarted_MemberEstimationIsNullEstimation()
+    {
+        // Arrange
+        var team = new ScrumTeam("test team");
+        var master = team.SetScrumMaster("master");
+        var noVote1 = (Member)team.Join("no vote 1", false);
+        var member = (Member)team.Join("member", false);
+        master.StartEstimation();
+        var noVote2 = (Member)team.Join("no vote 2", false);
+        member.Estimation = new Estimation(5);
+        master.Estimation = new Estimation(2);
+
+        // Act
+        master.CloseEstimation();
+
+        // Verify
+        Assert.IsNotNull(noVote1.Estimation);
+        Assert.IsNull(noVote1.Estimation.Value);
+        Assert.IsNotNull(noVote2.Estimation);
+        Assert.IsNull(noVote2.Estimation.Value);
+        Assert.IsNotNull(master.Estimation);
+        Assert.AreEqual<double?>(2, master.Estimation.Value);
+        Assert.IsNotNull(member.Estimation);
+        Assert.AreEqual<double?>(5, member.Estimation.Value);
+    }
+
+    [TestMethod]
     public void CloseEstimation_NoVotes_StateChangedToEstimationFinished()
     {
         // Arrange
@@ -637,6 +664,33 @@ public class ScrumMasterTest
             new(member, new Estimation(0.5)),
             new(noVote1, new Estimation()),
             new(noVote2, new Estimation())
+        };
+        CollectionAssert.AreEquivalent(expectedResult, team.EstimationResult.ToList());
+    }
+
+    [TestMethod]
+    public void CloseEstimation_MemberJoinsAfterEstimationStarted_EstimationResultIsGeneratedWithoutMember()
+    {
+        // Arrange
+        var team = new ScrumTeam("test team");
+        var master = team.SetScrumMaster("master");
+        var noVote1 = (Member)team.Join("no vote 1", false);
+        var member = (Member)team.Join("member", false);
+        master.StartEstimation();
+        team.Join("no vote 2", false);
+        member.Estimation = new Estimation(5);
+        master.Estimation = new Estimation(2);
+
+        // Act
+        master.CloseEstimation();
+
+        // Verify
+        Assert.IsNotNull(team.EstimationResult);
+        var expectedResult = new KeyValuePair<Member, Estimation>[]
+        {
+            new(master, new Estimation(2)),
+            new(member, new Estimation(5)),
+            new(noVote1, new Estimation())
         };
         CollectionAssert.AreEquivalent(expectedResult, team.EstimationResult.ToList());
     }
