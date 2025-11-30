@@ -19,7 +19,7 @@ namespace Duracellko.PlanningPoker.Client {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class UIResources {
@@ -507,6 +507,24 @@ namespace Duracellko.PlanningPoker.Client {
         internal static string PlanningPokerDesk_CancelEstimationButton {
             get {
                 return ResourceManager.GetString("PlanningPokerDesk_CancelEstimationButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close estimation.
+        /// </summary>
+        internal static string PlanningPokerDesk_CloseEstimationButton {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_CloseEstimationButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to and reveal result.
+        /// </summary>
+        internal static string PlanningPokerDesk_CloseEstimationButtonFinePrint {
+            get {
+                return ResourceManager.GetString("PlanningPokerDesk_CloseEstimationButtonFinePrint", resourceCulture);
             }
         }
         

@@ -40,6 +40,15 @@
                     </button>
                 }
 
+                @if (Controller.CanCloseEstimation)
+                {
+                    <button type="button" @onclick="CloseEstimationCommand" class="btn btn-secondary col-md-auto me-3">
+                        <span class="oi oi-media-step-forward me-1" aria-hidden="true"></span>
+                        @UIResources.PlanningPokerDesk_CloseEstimationButton
+                        <small>@UIResources.PlanningPokerDesk_CloseEstimationButtonFinePrint</small>
+                    </button>
+                }
+
                 @if (Controller.CanShowEstimationSummary)
                 {
                     <button type="button" @onclick="ShowEstimationSummaryCommand" class="btn btn-secondary col-md-auto me-3">
@@ -191,6 +200,11 @@
     private Task CancelEstimationCommand()
     {
         return TryRun(() => Controller.CancelEstimation());
+    }
+
+    private Task CloseEstimationCommand()
+    {
+        return TryRun(() => Controller.CloseEstimation());
     }
 
     private void ShowEstimationSummaryCommand()

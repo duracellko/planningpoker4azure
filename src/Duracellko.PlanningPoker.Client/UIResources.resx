@@ -267,6 +267,12 @@
   <data name="PlanningPokerDesk_CancelEstimationButton" xml:space="preserve">
     <value>Cancel estimation</value>
   </data>
+  <data name="PlanningPokerDesk_CloseEstimationButton" xml:space="preserve">
+    <value>Close estimation</value>
+  </data>
+  <data name="PlanningPokerDesk_CloseEstimationButtonFinePrint" xml:space="preserve">
+    <value>and reveal result</value>
+  </data>
   <data name="PlanningPokerDesk_MedianLabel" xml:space="preserve">
     <value>Median</value>
   </data>

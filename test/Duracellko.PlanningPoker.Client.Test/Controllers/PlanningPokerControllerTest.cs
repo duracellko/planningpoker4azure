@@ -302,6 +302,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -328,6 +329,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsTrue(target.CanCancelEstimation);
+        Assert.IsTrue(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -354,6 +356,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -380,6 +383,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -405,6 +409,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -431,6 +436,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -457,6 +463,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -483,6 +490,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -540,6 +548,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsTrue(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -633,6 +642,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(sessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsTrue(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -733,6 +743,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(sessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsTrue(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -830,6 +841,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsTrue(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -891,6 +903,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(teamResult.SessionId, target.SessionId);
         Assert.IsTrue(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -936,6 +949,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsTrue(target.CanCancelEstimation);
+        Assert.IsTrue(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -994,6 +1008,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsTrue(target.CanCancelEstimation);
+        Assert.IsTrue(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -1029,6 +1044,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsTrue(target.CanCancelEstimation);
+        Assert.IsTrue(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -1067,6 +1083,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsTrue(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -1103,6 +1120,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -1143,6 +1161,7 @@ public class PlanningPokerControllerTest
         Assert.AreEqual(reconnectTeamResult.SessionId, target.SessionId);
         Assert.IsFalse(target.CanStartEstimation);
         Assert.IsFalse(target.CanCancelEstimation);
+        Assert.IsFalse(target.CanCloseEstimation);
         Assert.IsFalse(target.CanSelectEstimation);
         Assert.IsFalse(target.CanShowEstimationSummary);
         Assert.IsNull(target.EstimationSummary);
@@ -1748,6 +1767,64 @@ public class PlanningPokerControllerTest
 
         await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
         var result = target.CancelEstimation();
+
+        busyIndicatorService.Verify(o => o.Show());
+        busyIndicatorDisposable.Verify(o => o.Dispose(), Times.Never());
+
+        task.SetResult(true);
+        await result;
+
+        busyIndicatorDisposable.Verify(o => o.Dispose());
+    }
+
+    [TestMethod]
+    public async Task CloseEstimation_CanCloseEstimation_CloseEstimationOnService()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var scrumTeam = PlanningPokerData.GetScrumTeam();
+        scrumTeam.State = TeamState.EstimationInProgress;
+        var teamResult = CreateTeamResult(scrumTeam);
+        using var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+        await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
+        await target.CloseEstimation();
+
+        planningPokerClient.Verify(o => o.CloseEstimation(PlanningPokerData.TeamName, It.IsAny<CancellationToken>()));
+    }
+
+    [TestMethod]
+    public async Task CloseEstimation_CannotCloseEstimation_DoNothing()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var scrumTeam = PlanningPokerData.GetScrumTeam();
+        scrumTeam.State = TeamState.EstimationInProgress;
+        var teamResult = CreateTeamResult(scrumTeam);
+        using var target = CreateController(planningPokerClient: planningPokerClient.Object);
+
+        await target.InitializeTeam(teamResult, PlanningPokerData.MemberName, null);
+        await target.CloseEstimation();
+
+        planningPokerClient.Verify(o => o.CloseEstimation(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [TestMethod]
+    public async Task CloseEstimation_CanCloseEstimation_ShowsBusyIndicator()
+    {
+        var planningPokerClient = new Mock<IPlanningPokerClient>();
+        var task = new TaskCompletionSource<bool>();
+        planningPokerClient.Setup(o => o.CloseEstimation(PlanningPokerData.TeamName, It.IsAny<CancellationToken>()))
+            .Returns(task.Task);
+        var busyIndicatorService = new Mock<IBusyIndicatorService>();
+        var busyIndicatorDisposable = new Mock<IDisposable>();
+        busyIndicatorService.Setup(o => o.Show()).Returns(busyIndicatorDisposable.Object);
+
+        var scrumTeam = PlanningPokerData.GetScrumTeam();
+        scrumTeam.State = TeamState.EstimationInProgress;
+        var teamResult = CreateTeamResult(scrumTeam);
+        using var target = CreateController(planningPokerClient: planningPokerClient.Object, busyIndicator: busyIndicatorService.Object);
+
+        await target.InitializeTeam(teamResult, PlanningPokerData.ScrumMasterName, null);
+        var result = target.CloseEstimation();
 
         busyIndicatorService.Verify(o => o.Show());
         busyIndicatorDisposable.Verify(o => o.Dispose(), Times.Never());

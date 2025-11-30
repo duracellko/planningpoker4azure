@@ -188,6 +188,11 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
     public bool CanCancelEstimation => IsScrumMaster && ScrumTeam?.State == TeamState.EstimationInProgress;
 
     /// <summary>
+    /// Gets a value indicating whether user can close estimation.
+    /// </summary>
+    public bool CanCloseEstimation => IsScrumMaster && ScrumTeam?.State == TeamState.EstimationInProgress;
+
+    /// <summary>
     /// Gets a value indicating whether user can display estimation summary.
     /// </summary>
     public bool CanShowEstimationSummary => ScrumTeam?.State == TeamState.EstimationFinished &&
@@ -443,6 +448,21 @@ public sealed class PlanningPokerController : IPlanningPokerInitializer, INotify
             using (_busyIndicator.Show())
             {
                 await _planningPokerService.CancelEstimation(TeamName!, CancellationToken.None);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Closes estimation by Scrum Master.
+    /// </summary>
+    /// <returns><see cref="Task"/> representing asynchronous operation.</returns>
+    public async Task CloseEstimation()
+    {
+        if (CanCloseEstimation)
+        {
+            using (_busyIndicator.Show())
+            {
+                await _planningPokerService.CloseEstimation(TeamName!, CancellationToken.None);
             }
         }
     }
