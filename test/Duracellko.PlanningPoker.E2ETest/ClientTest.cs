@@ -190,6 +190,14 @@ public class ClientTest
         await button.ClickAsync();
     }
 
+    public async Task CloseEstimation()
+    {
+        Assert.IsNotNull(PlanningPokerDeskElement);
+        var button = PlanningPokerDeskElement.Locator("div.actionsBar button").Nth(1);
+        await Assertions.Expect(button).ToHaveTextAsync("Close estimation and reveal result");
+        await button.ClickAsync();
+    }
+
     public async Task ShowAverage(bool isScrumMaster)
     {
         Assert.IsNotNull(PlanningPokerDeskElement);

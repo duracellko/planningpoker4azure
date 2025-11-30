@@ -248,6 +248,95 @@ public class PlanningPokerTest : E2ETestBase
 
     [TestMethod]
     [EnvironmentDataSource]
+    public async Task Close_Estimation(bool serverSide, bool useHttpClient)
+    {
+        SetupClientsCount = 2;
+        Configure(serverSide, useHttpClient);
+        await StartServer();
+        await StartClients();
+
+        var team = "Duracellko.NET";
+        var scrumMaster = "Alice";
+        var member = "Bob";
+
+        // Alice creates team
+        await ClientTest.OpenApplication();
+        await TakeScreenshot("01-A-Loading");
+        await ClientTest.AssertIndexPage();
+        await TakeScreenshot("02-A-Index");
+        await ClientTest.FillCreateTeamForm(team, scrumMaster);
+        await TakeScreenshot("03-A-CreateTeamForm");
+        await ClientTest.SubmitCreateTeamForm();
+        await ClientTest.AssertPlanningPokerPage(team, scrumMaster);
+        await TakeScreenshot("04-A-PlanningPoker");
+        await ClientTest.AssertTeamName(team, scrumMaster);
+        await ClientTest.AssertScrumMasterInTeam(scrumMaster);
+        await ClientTest.AssertMembersInTeam();
+        await ClientTest.AssertObserversInTeam();
+
+        // Bob joins team
+        await ClientTests[1].OpenApplication();
+        await TakeScreenshot(1, "05-B-Loading");
+        await ClientTests[1].AssertIndexPage();
+        await TakeScreenshot(1, "06-B-Index");
+        await ClientTests[1].FillJoinTeamForm(team, member);
+        await TakeScreenshot(1, "07-B-JoinTeamForm");
+        await ClientTests[1].SubmitJoinTeamForm();
+        await ClientTests[1].AssertPlanningPokerPage(team, member);
+        await TakeScreenshot(1, "08-B-PlanningPoker");
+        await ClientTests[1].AssertTeamName(team, member);
+        await ClientTests[1].AssertScrumMasterInTeam(scrumMaster);
+        await ClientTests[1].AssertMembersInTeam(member);
+        await ClientTests[1].AssertObserversInTeam();
+
+        await ClientTest.AssertMembersInTeam(member);
+
+        // Alice starts estimation
+        await ClientTest.StartEstimation();
+        await TakeScreenshot("09-A-EstimationStarted");
+        await ClientTest.AssertAvailableEstimations();
+
+        await TakeScreenshot(1, "10-B-EstimationStarted");
+        await ClientTests[1].AssertAvailableEstimations();
+
+        // Alice estimates
+        await ClientTest.SelectEstimation("8");
+        var expectedResult = new[] { new KeyValuePair<string, string>(scrumMaster, string.Empty) };
+        await TakeScreenshot(1, "11-B-ScrumMasterEstimated");
+        await ClientTests[1].AssertSelectedEstimation(expectedResult);
+        await TakeScreenshot("12-A-ScrumMasterEstimated");
+        await ClientTest.AssertSelectedEstimation(expectedResult);
+        await ClientTest.AssertNotAvailableEstimations();
+
+        // Alice closes estimation
+        await ClientTest.CloseEstimation();
+
+        await TakeScreenshot("13-A-EstimationClosed");
+        expectedResult =
+        [
+            new KeyValuePair<string, string>(scrumMaster, "8"),
+            new KeyValuePair<string, string>(member, string.Empty)
+        ];
+        await ClientTest.AssertNotAvailableEstimations();
+        await ClientTest.AssertSelectedEstimation(expectedResult);
+        await TakeScreenshot(1, "14-B-EstimationClosed");
+        await ClientTests[1].AssertNotAvailableEstimations();
+        await ClientTests[1].AssertSelectedEstimation(expectedResult);
+
+        // Bob disconnects
+        await ClientTests[1].Disconnect();
+        await TakeScreenshot(1, "15-B-Disconnected");
+
+        await TakeScreenshot("16-A-Disconnected");
+        await ClientTest.AssertMembersInTeam();
+
+        // Alice disconnects
+        await ClientTest.Disconnect();
+        await TakeScreenshot("17-A-Disconnected");
+    }
+
+    [TestMethod]
+    [EnvironmentDataSource]
     public async Task Observer_Cannot_Estimate(bool serverSide, bool useHttpClient)
     {
         SetupClientsCount = 3;
