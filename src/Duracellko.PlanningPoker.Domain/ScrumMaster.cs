@@ -52,6 +52,20 @@ public class ScrumMaster : Member
     }
 
     /// <summary>
+    /// Closes current estimation. Scrum Master submits nil vote for all unvoted members.
+    /// </summary>
+    public void CloseEstimation()
+    {
+        if (Team.State == TeamState.EstimationInProgress)
+        {
+            foreach (var member in Team.Members)
+            {
+                member.Estimation ??= new Estimation();
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets serialization data of the object.
     /// </summary>
     /// <returns>The serialization data.</returns>

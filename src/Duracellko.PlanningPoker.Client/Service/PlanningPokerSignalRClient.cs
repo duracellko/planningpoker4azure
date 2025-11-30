@@ -145,6 +145,23 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
     }
 
     /// <summary>
+    /// Signal from Scrum master to close the estimation by assigning nil vote to unvoted members.
+    /// </summary>
+    /// <param name="teamName">Name of the Scrum team.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+    /// <returns>
+    /// Asynchronous operation.
+    /// </returns>
+    public Task CloseEstimation(string teamName, CancellationToken cancellationToken)
+    {
+        return InvokeOperation(async () =>
+        {
+            var hubConnection = await EnsureConnected(cancellationToken);
+            await hubConnection.InvokeAsync("CloseEstimation", teamName, cancellationToken);
+        });
+    }
+
+    /// <summary>
     /// Submits the estimation for specified team member.
     /// </summary>
     /// <param name="teamName">Name of the Scrum team.</param>

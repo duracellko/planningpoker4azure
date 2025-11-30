@@ -224,6 +224,21 @@ public class PlanningPokerHub : Hub<IPlanningPokerClient>
     }
 
     /// <summary>
+    /// Signal from Scrum master to close the estimation by assigning nil vote to unvoted members.
+    /// </summary>
+    /// <param name="teamName">Name of the Scrum team.</param>
+    public void CloseEstimation(string teamName)
+    {
+        _logger.CloseEstimation(teamName);
+        ValidateTeamName(teamName);
+
+        using var teamLock = PlanningPoker.GetScrumTeam(teamName);
+        teamLock.Lock();
+        var team = teamLock.Team;
+        team.ScrumMaster?.CloseEstimation();
+    }
+
+    /// <summary>
     /// Submits the estimation for specified team member.
     /// </summary>
     /// <param name="teamName">Name of the Scrum team.</param>
