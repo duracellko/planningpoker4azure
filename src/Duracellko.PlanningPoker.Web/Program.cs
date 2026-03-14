@@ -53,7 +53,6 @@ public static class Program
 
     private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddApplicationInsightsTelemetry();
         services.AddControllers()
             .AddApplicationPart(typeof(PlanningPokerService).Assembly)
             .AddMvcOptions(o => o.Conventions.Add(new PlanningPokerApplication()));
@@ -74,8 +73,7 @@ public static class Program
 
         var healthChecks = services.AddHealthChecks()
             .AddCheck<PlanningPokerControllerHealthCheck>("PlanningPoker")
-            .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository")
-            .AddApplicationInsightsPublisher();
+            .AddCheck<ScrumTeamRepositoryHealthCheck>("ScrumTeamRepository");
 
         var planningPokerConfiguration = GetPlanningPokerConfiguration(configuration);
         var isAzure = !string.IsNullOrEmpty(planningPokerConfiguration.ServiceBusConnectionString);
