@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -292,7 +293,11 @@ public class RabbitServiceBus : IServiceBus, IDisposable
         await receivingChannel.ExchangeDeclareAsync(_receivingExchangeName, ExchangeType.Fanout);
         _receivingChannel = receivingChannel;
 
-        var queue = await receivingChannel.QueueDeclareAsync(QueuePrefix + _nodeId, false, false, false);
+        var queueArguments = new Dictionary<string, object?>
+        {
+            { "x-expires", (int)Configuration.SubscriptionInactivityTimeout.TotalMilliseconds }
+        };
+        var queue = await receivingChannel.QueueDeclareAsync(QueuePrefix + _nodeId, true, false, false, queueArguments);
         _queueName = queue.QueueName;
         await receivingChannel.QueueBindAsync(queue.QueueName, _receivingExchangeName, string.Empty);
     }
