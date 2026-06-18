@@ -443,7 +443,7 @@ public class PlanningPokerControllerTest
             teamLock.Team.ScrumMaster!.StartEstimation();
         }
 
-        await Task.Yield();
+        await Task.WhenAny(messagesTask, Task.Delay(50));
         Assert.IsTrue(messagesTask.IsCompleted);
 
         var result = await messagesTask;
@@ -502,7 +502,7 @@ public class PlanningPokerControllerTest
 
         delayTask.SetResult(null);
 
-        await Task.Yield();
+        await Task.WhenAny(messagesTask, Task.Delay(50));
         Assert.IsTrue(messagesTask.IsCompleted);
 
         var result = await messagesTask;
