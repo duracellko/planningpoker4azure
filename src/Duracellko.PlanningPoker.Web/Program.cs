@@ -182,7 +182,6 @@ public static class Program
             .AddRewrite(@"^appsettings\.json$", "configuration", false);
         app.UseRewriter(rewriteOptions);
 
-        app.UseStaticFiles();
         app.UseRouting();
         app.UseAntiforgery();
 
