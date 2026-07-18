@@ -17,8 +17,8 @@ public class EstimationResultMessageTest
         var result = new EstimationResultMessage(type, estimationResult);
 
         // Verify
-        Assert.AreEqual<MessageType>(type, result.MessageType);
-        Assert.AreEqual<EstimationResult>(estimationResult, result.EstimationResult);
+        Assert.AreEqual(type, result.MessageType);
+        Assert.AreSame(estimationResult, result.EstimationResult);
     }
 
     [TestMethod]

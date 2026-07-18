@@ -1464,7 +1464,7 @@ public class ScrumTeamTest
         target.ChangeAvailableEstimations(newEstimationsSet);
 
         // Verify
-        Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        Assert.AreSame(newEstimationsSet, target.AvailableEstimations);
     }
 
     [TestMethod]
@@ -1479,7 +1479,7 @@ public class ScrumTeamTest
         target.ChangeAvailableEstimations(newEstimationsSet);
 
         // Verify
-        Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        Assert.AreSame(newEstimationsSet, target.AvailableEstimations);
     }
 
     [TestMethod]
@@ -1499,7 +1499,7 @@ public class ScrumTeamTest
         target.ChangeAvailableEstimations(newEstimationsSet);
 
         // Verify
-        Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        Assert.AreSame(newEstimationsSet, target.AvailableEstimations);
     }
 
     [TestMethod]
@@ -1519,7 +1519,7 @@ public class ScrumTeamTest
         target.ChangeAvailableEstimations(newEstimationsSet);
 
         // Verify
-        Assert.AreEqual(newEstimationsSet, target.AvailableEstimations);
+        Assert.AreSame(newEstimationsSet, target.AvailableEstimations);
     }
 
     [TestMethod]
@@ -1566,9 +1566,9 @@ public class ScrumTeamTest
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
         Assert.IsNotNull(message);
-        Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+        Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.MessageType);
         var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(message);
-        Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        Assert.AreSame(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
     [TestMethod]
@@ -1588,9 +1588,9 @@ public class ScrumTeamTest
         Assert.AreEqual(2, master.Messages.Count());
         var message = master.Messages.Last();
         Assert.IsNotNull(message);
-        Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+        Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.MessageType);
         var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(message);
-        Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        Assert.AreSame(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
     [TestMethod]
@@ -1629,9 +1629,9 @@ public class ScrumTeamTest
         Assert.AreEqual(1, member.Messages.Count());
         var message = member.Messages.Last();
         Assert.IsNotNull(message);
-        Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+        Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.MessageType);
         var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(message);
-        Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        Assert.AreSame(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
     [TestMethod]
@@ -1670,9 +1670,9 @@ public class ScrumTeamTest
         Assert.AreEqual(1, observer.Messages.Count());
         var message = observer.Messages.Last();
         Assert.IsNotNull(message);
-        Assert.AreEqual<MessageType>(MessageType.AvailableEstimationsChanged, message.MessageType);
+        Assert.AreEqual(MessageType.AvailableEstimationsChanged, message.MessageType);
         var estimationSetMessage = Assert.IsInstanceOfType<EstimationSetMessage>(message);
-        Assert.AreEqual(newEstimationsSet, estimationSetMessage.Estimations);
+        Assert.AreSame(newEstimationsSet, estimationSetMessage.Estimations);
     }
 
     [TestMethod]
