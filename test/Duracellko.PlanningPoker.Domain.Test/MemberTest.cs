@@ -330,7 +330,7 @@ public class MemberTest
         Assert.IsNotNull(eventArgs);
         var message = eventArgs.Message;
         var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
-        Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
+        Assert.AreSame(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
     [TestMethod]
@@ -378,7 +378,7 @@ public class MemberTest
         Assert.AreEqual(3, master.Messages.Count());
         var message = master.Messages.Last();
         var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
-        Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
+        Assert.AreSame(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
     [TestMethod]
@@ -473,7 +473,7 @@ public class MemberTest
         Assert.AreEqual(2, member.Messages.Count());
         var message = member.Messages.Last();
         var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
-        Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
+        Assert.AreSame(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
     [TestMethod]
@@ -568,7 +568,7 @@ public class MemberTest
         Assert.AreEqual(2, observer.Messages.Count());
         var message = observer.Messages.Last();
         var estimationResultMessage = Assert.IsInstanceOfType<EstimationResultMessage>(message);
-        Assert.AreEqual<EstimationResult?>(team.EstimationResult, estimationResultMessage.EstimationResult);
+        Assert.AreSame(team.EstimationResult, estimationResultMessage.EstimationResult);
     }
 
     [TestMethod]

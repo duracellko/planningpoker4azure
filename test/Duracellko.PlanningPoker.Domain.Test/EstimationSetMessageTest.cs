@@ -18,7 +18,7 @@ public class EstimationSetMessageTest
 
         // Verify
         Assert.AreEqual(type, result.MessageType);
-        Assert.AreEqual(estimations, result.Estimations);
+        Assert.AreSame(estimations, result.Estimations);
     }
 
     [TestMethod]

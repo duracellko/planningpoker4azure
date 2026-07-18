@@ -1357,7 +1357,7 @@ public class PlanningPokerServiceTest
         teamLock.Verify(l => l.Team);
 
         var fibonacciDeck = D.DeckProvider.Default.GetDeck(D.Deck.Fibonacci);
-        Assert.AreEqual(fibonacciDeck, team.AvailableEstimations);
+        Assert.AreSame(fibonacciDeck, team.AvailableEstimations);
     }
 
     [TestMethod]
