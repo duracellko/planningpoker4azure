@@ -29,4 +29,6 @@ public class HomeModel
             };
         }
     }
+
+    public int ClientLoadingTimeout => ClientConfiguration.ApplicationMode == ApplicationMode.Auto ? ClientConfiguration.ClientLoadingTimeout : 0;
 }

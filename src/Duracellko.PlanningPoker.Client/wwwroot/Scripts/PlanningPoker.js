@@ -104,5 +104,46 @@
         return PlanningPoker;
     })();
 
+    var PlanningPokerLoader = (function () {
+        function PlanningPokerLoader() {
+        }
+
+        PlanningPokerLoader.blazorResourceKey = "blazor-resource-hash:Duracellko.PlanningPoker.Client";
+        PlanningPokerLoader.appElementId = "app";
+        PlanningPokerLoader.loadingElementId = "duracellko-planningpoker-app-loader";
+        PlanningPokerLoader.defaultLoadingTimeout = 3000; // 3000 ms
+
+        // Starts timing of client-side loading of Blazor application.
+        // If the loading takes too long then the application is redirected to server-side version.
+        PlanningPokerLoader.startClientSideLoadingWatchdog = function (timeout) {
+            const blazorResourceHash = window.localStorage.getItem(PlanningPokerLoader.blazorResourceKey);
+            if (!blazorResourceHash) {
+                // Blazor is using server-side rendering, because the resource hash is not stored in LocalStorage.
+                // No need to start client-side loading watchdog.
+                return;
+            }
+
+            if (!timeout)
+            {
+                timeout = PlanningPokerLoader.defaultLoadingTimeout;
+            }
+
+            window.setTimeout(PlanningPokerLoader.onLoadingTimeout, timeout);
+        }
+
+        PlanningPokerLoader.onLoadingTimeout = function () {
+            const appElement = window.document.getElementById(PlanningPokerLoader.appElementId);
+            const loadingElement = window.document.getElementById(PlanningPokerLoader.loadingElementId);
+            if (!!appElement && !!loadingElement && loadingElement.parentElement === appElement) {
+                // Application is still loading, so it is redirected to server-side version.
+                window.localStorage.removeItem(PlanningPokerLoader.blazorResourceKey);
+                window.location.reload();
+            }
+        }
+
+        return PlanningPokerLoader;
+    })();
+
     Duracellko.PlanningPoker = PlanningPoker;
+    Duracellko.PlanningPokerLoader = PlanningPokerLoader;
 })(Duracellko || (Duracellko = {}));
