@@ -1031,7 +1031,7 @@ public class JoinTeamControllerTest
                 joinSetup.ThrowsAsync(new PlanningPokerException(ReconnectErrorMessage, ErrorCodes.MemberAlreadyExists, PlanningPokerData.MemberName));
                 if (exception == null)
                 {
-                    reconnectSetup!.ReturnsAsync(reconnectTeamResult);
+                    reconnectSetup.ReturnsAsync(reconnectTeamResult!);
                 }
                 else
                 {
@@ -1042,7 +1042,7 @@ public class JoinTeamControllerTest
             {
                 if (exception == null)
                 {
-                    joinSetup!.ReturnsAsync(teamResult);
+                    joinSetup.ReturnsAsync(teamResult!);
                 }
                 else
                 {

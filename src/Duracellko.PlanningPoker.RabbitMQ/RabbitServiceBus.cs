@@ -285,7 +285,8 @@ public class RabbitServiceBus : IServiceBus, IDisposable
 
     private async ValueTask InitializeTopology()
     {
-        var receivingChannel = await _connection!.CreateChannelAsync();
+        System.Diagnostics.Debug.Assert(_connection != null, "Connection should be setup in registration.");
+        var receivingChannel = await _connection.CreateChannelAsync();
 
         System.Diagnostics.Debug.Assert(_sendingExchangeName != null, "SendingExchangeName should not be null, when connection is opened.");
         await receivingChannel.ExchangeDeclareAsync(_sendingExchangeName, ExchangeType.Fanout);
