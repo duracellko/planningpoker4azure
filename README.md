@@ -85,6 +85,7 @@ The application has following configuration settings:
 {
     "PlanningPokerClient": {
         "ApplicationMode": "Auto" // string - Auto | ClientSide | ServerSide
+        "ClientLoadingTimeout": 0 // integer - time in milliseconds
     },
     "PlanningPoker": {
         "RepositoryFolder": "", // string
@@ -108,6 +109,7 @@ The application has following configuration settings:
     - **Auto** - Application runs server-side at first. And second visit of the application runs client-side, when application bundle is downloaded.
     - **ClientSide** - Blazor runs in WebAssembly on client.
     - **ServerSide** - Blazor runs on server-side and HTML is synchronized with browser using SignalR.
+- **ClientLoadingTimeout** (default: 0) - Timeout in milliseconds for loading of the client. When client does not start in the specified time (e.g. the cache is clean), then the application is restarted in server-size mode. Value 0 means no timeout is applied.
 - **RepositoryFolder** (default: empty) - Path to folder, where data are stored between application restarts. Path is relative to the application folder. When this setting is empty, no data are stored and all are lost on application restart.
 - **RepositoryTeamExpiration** (default: 1200) - Team is deleted after specified time with no user activity.
 - **ClientInactivityTimeout** (default: 900) - User is disconnected from the team after specified time with no connection from the user.

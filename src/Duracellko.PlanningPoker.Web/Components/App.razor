@@ -1,4 +1,5 @@
-﻿@using Duracellko.PlanningPoker.Client
+﻿@using System.Globalization
+@using Duracellko.PlanningPoker.Client
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 @inject Duracellko.PlanningPoker.Web.Model.HomeModel _model
@@ -49,6 +50,11 @@
 
     <script src="@Assets["Scripts/PlanningPoker.js"]"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+
+    @if (_model.ClientLoadingTimeout > 0)
+    {
+        <script>Duracellko.PlanningPokerLoader.startClientSideLoadingWatchdog(@_model.ClientLoadingTimeout.ToString(CultureInfo.InvariantCulture));</script>
+    }
 </body>
 </html>
 
