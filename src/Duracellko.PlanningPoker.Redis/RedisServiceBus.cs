@@ -174,7 +174,8 @@ public class RedisServiceBus : IServiceBus, IDisposable
     {
         if (!_subscribed)
         {
-            await _subscriber!.SubscribeAsync(redisChannel, ReceiveMessage);
+            System.Diagnostics.Debug.Assert(_subscriber != null, "Subscriber should be setup in registration.");
+            await _subscriber.SubscribeAsync(redisChannel, ReceiveMessage);
             _subscribed = true;
             _logger.SubscriptionCreated(channelName, nodeId);
         }

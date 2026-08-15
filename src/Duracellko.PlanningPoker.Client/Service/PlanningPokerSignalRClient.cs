@@ -287,7 +287,7 @@ public sealed class PlanningPokerSignalRClient : IPlanningPokerClient, IDisposab
             {
                 lock (_getMessagesLock)
                 {
-                    _getMessagesTask?.TrySetCanceled();
+                    _getMessagesTask?.TrySetCanceled(cancellationToken);
                     _getMessagesTask = null;
                 }
             }

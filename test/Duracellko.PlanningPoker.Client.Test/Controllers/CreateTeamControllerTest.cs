@@ -329,7 +329,7 @@ public class CreateTeamControllerTest
             var createSetup = planningPokerServiceMock.Setup(o => o.CreateTeam(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Deck>(), It.IsAny<CancellationToken>()));
             if (exception == null)
             {
-                createSetup!.ReturnsAsync(teamResult);
+                createSetup.ReturnsAsync(teamResult!);
             }
             else
             {

@@ -230,7 +230,8 @@ public class AzureServiceBus : IServiceBus, IDisposable
         var filter = new SqlRuleFilter(string.Format(CultureInfo.InvariantCulture, sqlPattern, senderIdPropertyName, recipientIdPropertyName, nodeId));
         var subscriptionRuleOptions = new CreateRuleOptions("RecipientFilter", filter);
 
-        await _serviceBusAdministrationClient!.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
+        System.Diagnostics.Debug.Assert(_serviceBusAdministrationClient != null, "ServiceBusAdministrationClient should be setup in registration.");
+        await _serviceBusAdministrationClient.CreateSubscriptionAsync(subscriptionOptions, subscriptionRuleOptions);
     }
 
     private async Task DeleteSubscription()
