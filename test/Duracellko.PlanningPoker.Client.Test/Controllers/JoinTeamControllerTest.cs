@@ -537,7 +537,7 @@ public class JoinTeamControllerTest
     [DataRow(PlanningPokerData.TeamName, PlanningPokerData.MemberName, DisplayName = "Test team, Test member")]
     [DataRow("test team", "test member", DisplayName = "test team, test member")]
     [DataRow("TEST TEAM", "TEST MEMBER", DisplayName = "TEST TEAM, TEST MEMBER")]
-    [DataRow("tEST tEAM", "tEST mEMBER", DisplayName = "TEST TEAM, TEST MEMBER")]
+    [DataRow("tEST tEAM", "tEST mEMBER", DisplayName = "tEST tEAM, tEST mEMBER")]
     public async Task TryReconnectTeam_CredentialsAreStored_ReconnectTeamOnService(string teamName, string memberName)
     {
         var reconnectTeamResult = PlanningPokerData.GetReconnectTeamResult();
