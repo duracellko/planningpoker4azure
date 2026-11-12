@@ -3,6 +3,7 @@
 /// <summary>
 /// Available estimation card decks that can be used be a team.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "List is not a sentence.")]
 public enum Deck
 {
     /// <summary>

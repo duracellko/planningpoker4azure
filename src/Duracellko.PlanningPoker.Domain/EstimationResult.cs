@@ -111,7 +111,7 @@ public sealed class EstimationResult : ICollection<KeyValuePair<Member, Estimati
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
-    /// <returns>A <see cref="System.Collections.Generic.IEnumerator&lt;T&gt;"/> that can be used to iterate through the collection.</returns>
+    /// <returns>A <see cref="System.Collections.Generic.IEnumerator{T}"/> that can be used to iterate through the collection.</returns>
     public IEnumerator<KeyValuePair<Member, Estimation?>> GetEnumerator() => _estimations.GetEnumerator();
 
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();

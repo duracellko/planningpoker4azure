@@ -168,9 +168,9 @@ public class FileScrumTeamRepositoryTest
 
         var files = _rootFolder!.GetFiles();
         Assert.HasCount(1, files);
-        var expectedFileName = IsWindows ?
-            "My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json" :
-            "My \\?.%002F Team%0025 \ud83d\ude0e *.json";
+        var expectedFileName = IsWindows
+            ? "My %005C%003F.%002F Team%0025 \ud83d\ude0e %002A.json"
+            : "My \\?.%002F Team%0025 \ud83d\ude0e *.json";
         Assert.AreEqual(expectedFileName, files[0].Name);
     }
 
