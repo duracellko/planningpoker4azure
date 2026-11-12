@@ -169,11 +169,6 @@ public static class Program
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-
-            if (clientConfiguration.ApplicationMode != ApplicationMode.ServerSide)
-            {
-                app.UseWebAssemblyDebugging();
-            }
         }
 
         app.UseRequestLocalization(SupportedCultures.Value);

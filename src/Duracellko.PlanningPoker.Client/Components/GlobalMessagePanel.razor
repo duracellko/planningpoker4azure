@@ -83,11 +83,25 @@
 
     private async Task ShowDialog()
     {
-        await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", messageBoxElement);
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.showMessageBox", messageBoxElement);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JSDisconnectedException, which can occur when the user navigates away from the page.
+        }
     }
 
     private async Task HideDialog()
     {
-        await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.hide", messageBoxElement);
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.hide", messageBoxElement);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JSDisconnectedException, which can occur when the user navigates away from the page.
+        }
     }
 }

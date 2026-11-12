@@ -15,6 +15,8 @@ namespace Duracellko.PlanningPoker.Test.Controllers;
 [TestClass]
 public class PlanningPokerControllerTest
 {
+    public TestContext? TestContext { get; set; }
+
     [TestMethod]
     public void PlanningPokerController_Create_DefaultDateTimeProvider()
     {
@@ -390,7 +392,7 @@ public class PlanningPokerControllerTest
         var target = CreatePlanningPokerController();
 
         // Act
-        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessagesAsync(null!, default));
+        Assert.ThrowsExactly<ArgumentNullException>(() => target.GetMessagesAsync(null!, TestContext!.CancellationToken));
     }
 
     [TestMethod]
@@ -408,7 +410,7 @@ public class PlanningPokerControllerTest
             teamLock.Team.ScrumMaster!.StartEstimation();
 
             // Act
-            var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, default);
+            var messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster, TestContext!.CancellationToken);
             result = messagesTask.Result;
         }
 
@@ -432,7 +434,7 @@ public class PlanningPokerControllerTest
             var member = teamLock.Team.Join("member", false);
 
             // Act
-            messagesTask = target.GetMessagesAsync(member, default);
+            messagesTask = target.GetMessagesAsync(member, TestContext!.CancellationToken);
         }
 
         Assert.IsFalse(messagesTask.IsCompleted);
@@ -443,7 +445,7 @@ public class PlanningPokerControllerTest
             teamLock.Team.ScrumMaster!.StartEstimation();
         }
 
-        await Task.WhenAny(messagesTask, Task.Delay(50));
+        await Task.WhenAny(messagesTask, Task.Delay(50, TestContext.CancellationToken));
         Assert.IsTrue(messagesTask.IsCompleted);
 
         var result = await messagesTask;
@@ -495,14 +497,14 @@ public class PlanningPokerControllerTest
             teamLock.Lock();
 
             // Act
-            messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, default);
+            messagesTask = target.GetMessagesAsync(teamLock.Team.ScrumMaster!, TestContext!.CancellationToken);
         }
 
         Assert.IsFalse(messagesTask.IsCompleted);
 
         delayTask.SetResult(null);
 
-        await Task.WhenAny(messagesTask, Task.Delay(50));
+        await Task.WhenAny(messagesTask, Task.Delay(50, TestContext.CancellationToken));
         Assert.IsTrue(messagesTask.IsCompleted);
 
         var result = await messagesTask;

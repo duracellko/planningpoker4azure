@@ -6,6 +6,7 @@ using Duracellko.PlanningPoker.Client.UI;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -32,7 +33,7 @@ public sealed class BusyIndicatorPanelTest : IDisposable
 
         await target.InvokeAsync(busyIndicatorService.Show);
 
-        jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
+        jsRuntime.Verify(o => o.InvokeAsync<IJSVoidResult>("Duracellko.PlanningPoker.showBusyIndicator", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
 
     [TestMethod]
@@ -50,7 +51,7 @@ public sealed class BusyIndicatorPanelTest : IDisposable
         Assert.IsNotNull(disposable);
         await target.InvokeAsync(() => disposable.Dispose());
 
-        jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
+        jsRuntime.Verify(o => o.InvokeAsync<IJSVoidResult>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
 
     private void InitializeContext(BusyIndicatorService busyIndicatorService, IJSRuntime? jsRuntime = null)
