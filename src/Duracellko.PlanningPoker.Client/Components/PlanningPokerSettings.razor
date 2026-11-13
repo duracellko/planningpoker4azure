@@ -148,8 +148,15 @@
     {
         if (_modalEventHandler == null)
         {
-            _modalEventHandler = DotNetObjectReference.Create(this);
-            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.registerOnModalHidden", settingsModalElement, _modalEventHandler);
+            try
+            {
+                _modalEventHandler = DotNetObjectReference.Create(this);
+                await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.registerOnModalHidden", settingsModalElement, _modalEventHandler);
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore JSDisconnectedException, which can occur when the user navigates away from the page.
+            }
         }
     }
 

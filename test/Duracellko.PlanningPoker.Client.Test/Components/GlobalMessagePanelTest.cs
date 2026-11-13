@@ -7,6 +7,7 @@ using Duracellko.PlanningPoker.Client.UI;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -87,7 +88,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
             messageBoxService.ShowMessage("Test", null);
         });
 
-        jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.showMessageBox", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
+        jsRuntime.Verify(o => o.InvokeAsync<IJSVoidResult>("Duracellko.PlanningPoker.showMessageBox", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
 
     [TestMethod]
@@ -158,7 +159,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-header > button.btn-close");
         await buttonElement.ClickAsync();
 
-        jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
+        jsRuntime.Verify(o => o.InvokeAsync<IJSVoidResult>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
 
     [TestMethod]
@@ -179,7 +180,7 @@ public sealed class GlobalMessagePanelTest : IDisposable
         var buttonElement = target.Find("div#messageBox > div.modal-dialog > div.modal-content > div.modal-footer > button.btn-primary");
         await buttonElement.ClickAsync();
 
-        jsRuntime.Verify(o => o.InvokeAsync<object>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
+        jsRuntime.Verify(o => o.InvokeAsync<IJSVoidResult>("Duracellko.PlanningPoker.hide", It.Is<object?[]>(args => args.Length == 1 && args[0] is ElementReference)));
     }
 
     private void InitializeContext(MessageBoxService messageBoxService, IJSRuntime? jsRuntime = null)

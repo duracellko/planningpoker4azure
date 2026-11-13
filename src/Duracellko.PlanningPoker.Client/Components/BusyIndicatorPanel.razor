@@ -30,13 +30,21 @@
     private async void SetVisibility(bool visible)
     {
         StateHasChanged();
-        if (visible)
+
+        try
         {
-            await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.showBusyIndicator", busyIndicatorElement);
+            if (visible)
+            {
+                await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.showBusyIndicator", busyIndicatorElement);
+            }
+            else
+            {
+                await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.hide", busyIndicatorElement);
+            }
         }
-        else
+        catch (JSDisconnectedException)
         {
-            await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.hide", busyIndicatorElement);
+            // Ignore JSDisconnectedException, which can occur when the user navigates away from the page.
         }
     }
 }

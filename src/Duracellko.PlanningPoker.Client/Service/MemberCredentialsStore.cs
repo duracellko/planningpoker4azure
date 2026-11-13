@@ -50,7 +50,7 @@ public class MemberCredentialsStore : IMemberCredentialsStore
     {
         try
         {
-            await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.setMemberCredentials", credentials);
+            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.setMemberCredentials", credentials);
         }
         catch (Exception)
         {

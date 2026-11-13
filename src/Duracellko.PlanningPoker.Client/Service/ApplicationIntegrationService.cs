@@ -28,6 +28,13 @@ public class ApplicationIntegrationService : IApplicationIntegrationService
     /// <returns>Asynchronous operation.</returns>
     public async Task PostEstimationResult(double estimation, ApplicationCallbackReference callbackReference)
     {
-        await _jsRuntime.InvokeAsync<object>("Duracellko.PlanningPoker.postEstimationResult", estimation, callbackReference);
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("Duracellko.PlanningPoker.postEstimationResult", estimation, callbackReference);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JSDisconnectedException, which can occur when the user navigates away from the page.
+        }
     }
 }

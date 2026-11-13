@@ -30,9 +30,9 @@ public class RabbitHealthCheck : IHealthCheck
     /// <returns>The health status of the RabbitMQ connection.</returns>
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        var healthResult = _rabbitServiceBus.IsConnected ?
-            HealthCheckResult.Healthy(Resources.Health_RabbitHealthy) :
-            HealthCheckResult.Unhealthy(Resources.Health_RabbitUnhealthy);
+        var healthResult = _rabbitServiceBus.IsConnected
+            ? HealthCheckResult.Healthy(Resources.Health_RabbitHealthy)
+            : HealthCheckResult.Unhealthy(Resources.Health_RabbitUnhealthy);
         return Task.FromResult(healthResult);
     }
 }
